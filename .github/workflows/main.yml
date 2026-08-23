@@ -1,0 +1,61 @@
+name: Update Podcast Feed
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v4
+
+      - name: Download Buzzsprout RSS feed
+        run: |
+          curl -L "https://feeds.buzzsprout.com/1840652.rss" -o feed.xml
+
+      - name: Create podcast data
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          import json
+          import re
+
+          root = ET.parse("feed.xml").getroot()
+          channel = root.find("channel")
+
+          episodes = []
+
+          for item in channel.findall("item"):
+              enclosure = item.find("enclosure")
+              description = item.find("description")
+
+              episodes.append({
+                  "title": item.findtext("title", ""),
+                  "date": item.findtext("pubDate", ""),
+                  "description": re.sub(
+                      "<[^>]+>", "",
+                      description.text if description is not None and description.text else ""
+                  ),
+                  "link": item.findtext("link", ""),
+                  "audio": enclosure.attrib.get("url", "") if enclosure is not None else ""
+              })
+
+          with open("episodes.json", "w", encoding="utf-8") as f:
+              json.dump(episodes, f, indent=2, ensure_ascii=False)
+          PY
+
+      - name: Save updated feed
+        run: |
+          rm -f feed.xml
+          git config user.name "Dump & Chase Bot"
+          git config user.email "actions@github.com"
+          git add episodes.json
+          git diff --cached --quiet || git commit -m "Update podcast episodes"
+          git push
