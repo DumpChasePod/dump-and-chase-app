@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1018">
+  <meta name="description" content="Dump & Chase Podcast — Youngstown Phantoms coverage, episodes, interviews and more.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Dump & Chase Podcast</title>
+  <style>
+    :root{
+      --bg:#070b11;--panel:#101722;--panel2:#151e2b;--text:#f4f7fb;--muted:#9aa7b8;
+      --accent:#8b4dff;--line:#243142;--danger:#df5b5b;--radius:18px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(circle at 80% -10%,#25344a 0,#0b1018 32%,#070b11 70%);
+      color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button{font:inherit;color:inherit}
+    .app{max-width:1100px;margin:auto;min-height:100vh;padding-bottom:92px}
+    header{padding:22px 20px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;
+      z-index:10;background:linear-gradient(#070b11f5,#070b11d9,transparent);backdrop-filter:blur(10px)}
+    .brand{display:flex;align-items:center;gap:12px}.brandlogo{width:58px;height:48px;object-fit:contain;filter:drop-shadow(0 4px 10px #0008)}.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#9b5cff,#6f32d6);
+      display:grid;place-items:center;color:#ffffff;font-weight:950;font-size:20px;box-shadow:0 8px 24px #0006}
+    .brand b{font-size:16px;letter-spacing:.04em}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .iconbtn{border:1px solid var(--line);background:#111925cc;width:42px;height:42px;border-radius:13px;cursor:pointer}
+    main{padding:0 20px}.hero{margin-top:10px;border:1px solid #2a3748;border-radius:26px;padding:28px;overflow:hidden;
+      background:linear-gradient(120deg,#171728,#0e141e 55%,#20143a);position:relative}
+    .hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff12;border-radius:50%;right:-80px;top:-80px;box-shadow:0 0 0 35px #ffffff05,0 0 0 70px #ffffff03}
+    .eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:11px}
+    h1{font-size:clamp(34px,7vw,64px);line-height:.95;margin:9px 0 12px;max-width:650px}
+    .hero p{max-width:620px;color:#b7c1cf;line-height:1.55;margin:0 0 22px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:2}.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+    .primary{background:var(--accent);color:#fff}.secondary{background:#ffffff0d;border:1px solid #ffffff18}
+    section{margin-top:28px}.sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}
+    h2{font-size:21px;margin:0}.sectionhead button{background:none;border:0;color:var(--accent);cursor:pointer;font-weight:700}
+    .featured{display:grid;grid-template-columns:170px 1fr;gap:16px;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:18px}
+    .art{border-radius:14px;min-height:150px;background:linear-gradient(145deg,#29384c,#0c1119);display:grid;place-items:center;text-align:center;padding:15px}
+    .art strong{font-size:22px;line-height:1}.art small{color:var(--accent);font-weight:800;margin-top:8px;display:block}
+    .tag{font-size:10px;color:var(--accent);font-weight:900;letter-spacing:.12em;text-transform:uppercase}.episode h3{margin:7px 0;font-size:20px}
+    .episode p{color:var(--muted);line-height:1.45;font-size:14px;margin:0 0 14px}.meta{color:#718095;font-size:12px}
+    .play{margin-top:12px;width:100%;border:0;border-radius:11px;background:#202d3d;padding:11px;font-weight:800;cursor:pointer}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px}
+    .card h3{margin:8px 0 6px;font-size:16px}.card p{color:var(--muted);font-size:13px;line-height:1.4;margin:0}.mini{color:var(--accent);font-size:11px;font-weight:800}
+    .game{display:flex;align-items:center;justify-content:space-between;gap:10px}.team{text-align:center;flex:1}.team b{display:block;font-size:14px}.vs{font-weight:900;color:var(--muted);font-size:12px}
+    .score{font-size:25px;font-weight:950}.status{font-size:10px;text-transform:uppercase;color:var(--accent);font-weight:900}
+    .bottomnav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,calc(100% - 24px));background:#101722ed;
+      border:1px solid #2b3848;border-radius:20px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;z-index:20;backdrop-filter:blur(18px)}
+    .navitem{border:0;background:transparent;border-radius:13px;padding:9px 5px;color:#8290a2;cursor:pointer;font-size:11px;font-weight:800}.navitem.active{background:#ffffff0d;color:var(--text)}
+    .navitem span{display:block;font-size:18px;margin-bottom:3px}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(15px);background:#f4f7fb;color:#07101a;
+      padding:11px 15px;border-radius:12px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:30}.toast.show{opacity:1;transform:translateX(-50%)}
+    .modal{position:fixed;inset:0;background:#0009;display:none;place-items:end center;z-index:40}.modal.show{display:grid}
+    .sheet{width:min(700px,100%);background:#111925;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px;max-height:80vh;overflow:auto}
+    .sheethead{display:flex;justify-content:space-between;align-items:center}.close{background:#ffffff0d;border:1px solid var(--line);border-radius:10px;width:36px;height:36px;cursor:pointer}
+    input,textarea{width:100%;background:#0b111a;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px;margin:7px 0 12px;font:inherit}
+    @media(max-width:700px){.featured{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.art{min-height:135px}.hero{padding:23px}}
+    @media(max-width:470px){.grid{grid-template-columns:1fr}.hero p{font-size:14px}}
+  
+.audio-player{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);width:min(760px,calc(100% - 24px));background:#151322f2;border:1px solid #3a2a58;border-radius:18px;padding:10px 12px;display:none;grid-template-columns:44px 1fr 28px 38px 30px;gap:10px;align-items:center;z-index:25;backdrop-filter:blur(18px);box-shadow:0 12px 35px #0009}
+.audio-player.show{display:grid}.audio-art{width:44px;height:44px;border-radius:12px;background:#8b4dff;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:950}.audio-info{min-width:0}.audio-kicker{font-size:9px;color:#8b4dff;font-weight:950;letter-spacing:.12em}.audio-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.audio-time{font-size:10px;color:#8995a5;margin-top:2px}.audio-range{grid-column:1/-1;width:100%;accent-color:#8b4dff;height:3px}.audio-btn{border:0;background:#8b4dff;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-weight:900}.secondary-audio{background:#ffffff0c;border:1px solid #ffffff15;width:30px;height:30px;font-size:11px}
+.gamehero{margin-top:16px;border:1px solid #3b2b59;border-radius:20px;padding:18px;background:linear-gradient(135deg,#1a1528,#111722 60%,#25183c)}
+.gamehero .game-top{display:flex;justify-content:space-between;align-items:center}.gamehero .label{color:#a56cff;font-size:10px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.gamehero .date{color:#9aa7b8;font-size:11px}.matchup{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:16px}.club{text-align:center}.club .emoji{font-size:32px}.club b{display:block;margin-top:5px;font-size:13px}.versus{font-size:12px;color:#9aa7b8;font-weight:900}.gamehero .game-actions{display:flex;gap:8px;margin-top:15px}.gamehero .game-actions button{flex:1}
+.schedule-list{display:grid;gap:8px}.sched{display:grid;grid-template-columns:74px 1fr auto;align-items:center;gap:10px;background:#101722;border:1px solid #243142;border-radius:13px;padding:11px}.sched .datebox{text-align:center}.sched .datebox b{display:block;font-size:15px}.sched .datebox span{font-size:9px;color:#8b4dff;font-weight:900;text-transform:uppercase}.sched .opp{font-weight:800;font-size:13px}.sched .where{font-size:10px;color:#7f8c9e;margin-top:2px}.sched .time{font-size:11px;color:#aeb8c5;font-weight:800}
+@media(max-width:600px){.audio-player{grid-template-columns:42px 1fr 36px 28px}.audio-player .secondary-audio{grid-column:auto}.audio-range{grid-column:1/-1}.audio-title{font-size:12px}.sched{grid-template-columns:62px 1fr auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP & CHASE</b><span>YOUNGSTOWN PHANTOMS PODCAST</span></div></div>
+  <button class="iconbtn" onclick="openSheet('notifications')">🔔</button>
+</header>
+
+<main id="home">
+  <div class="hero">
+    <div class="eyebrow">Season 9 • 2026–27</div>
+    <h1>All Phantoms.<br>All the time.</h1>
+    <p>The fan-made podcast dedicated to the Youngstown Phantoms — interviews, analysis, game coverage and everything happening around the team.</p>
+    <div class="actions"><button class="btn primary" onclick="playEpisode()">▶ Latest Episode</button><button class="btn secondary" onclick="openSheet('question')">Ask the Hosts</button></div>
+  </div>
+
+  <div style="margin-top:12px;color:#8f9bad;font-size:12px">● Buzzsprout feed connected • <span style="color:#8b4dff">1840652</span></div>
+
+  <div class="gamehero">
+    <div class="game-top"><span class="label">Next Phantoms Game</span><span class="date">September 17, 2026</span></div>
+    <div class="matchup">
+      <div class="club"><div class="emoji">👻</div><b>YOUNGSTOWN</b></div>
+      <div class="versus">VS</div>
+      <div class="club"><div class="emoji">🏒</div><b>DES MOINES</b></div>
+    </div>
+    <div class="game-actions">
+      <button class="btn primary" onclick="openSheet('schedule')">Full Schedule</button>
+      <button class="btn secondary" onclick="toast('Game-day coverage will live here.')">Game Day</button>
+    </div>
+  </div>
+
+  <section>
+    <div class="sectionhead"><h2>Latest Episode</h2><button onclick="openSheet('episodes')">View all</button></div>
+    <div class="featured">
+      <div class="art"><div><strong>A NEW<br>ERA</strong><small>EPISODE 225</small></div></div>
+      <div class="episode"><span class="tag">Head Coach Interview</span><h3>A New Era: Head Coach Nathan Paetsch</h3>
+        <p>We welcome new Phantoms head coach Nathan Paetsch to talk about his career, coaching philosophy and vision for Youngstown.</p>
+        <div class="meta">Dump & Chase Podcast • 2026</div><button class="play" onclick="playEpisode()">▶ Play Episode</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionhead"><h2>Phantoms Today</h2><button onclick="openSheet('news')">More</button></div>
+    <div class="grid">
+      <div class="card"><span class="mini">NEXT GAME</span><div class="game" style="margin-top:12px"><div class="team"><div style="font-size:25px">👻</div><b>YOUNGSTOWN</b></div><div class="vs">VS</div><div class="team"><div style="font-size:25px">🏒</div><b>DES MOINES</b></div></div><p style="text-align:center;margin-top:12px">Sep 17 • USHL Fall Classic</p></div>
+      <div class="card"><span class="mini">PODCAST</span><h3>Phantom Files</h3><p>Player stories, team history and the people behind the Phantoms.</p></div>
+      <div class="card"><span class="mini">FAN ZONE</span><h3>Phan Q&A</h3><p>Send your question for a future episode.</p><button class="play" onclick="openSheet('question')">Submit Question</button></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sectionhead"><h2>Featured</h2></div>
+    <div class="grid">
+      <div class="card"><span class="mini">INTERVIEW</span><h3>Inside the New Era</h3><p>Long-form conversations with the people shaping Phantoms hockey.</p></div>
+      <div class="card"><span class="mini">CAMP COVERAGE</span><h3>Training Camp</h3><p>Follow interviews and updates from camp as the roster takes shape.</p></div>
+      <div class="card"><span class="mini">ARCHIVE</span><h3>Since 2019</h3><p>Explore years of Dump & Chase episodes and Phantoms memories.</p></div>
+    </div>
+  </section>
+</main>
+
+
+<div class="audio-player" id="audioPlayer">
+  <div class="audio-art">D&C</div>
+  <div class="audio-info">
+    <div class="audio-kicker">NOW PLAYING</div>
+    <div class="audio-title" id="audioTitle">Dump & Chase Podcast</div>
+    <div class="audio-time"><span id="audioCurrent">0:00</span> / <span id="audioDuration">0:00</span></div>
+  </div>
+  <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
+  <button class="audio-btn" id="audioPlay" onclick="toggleAudio()">▶</button>
+  <button class="audio-btn secondary-audio" onclick="closePlayer()">✕</button>
+  <audio id="audio"></audio>
+</div>
+
+<nav class="bottomnav">
+  <button class="navitem active" onclick="goHome(this)"><span>⌂</span>Home</button>
+  <button class="navitem" onclick="openSheet('episodes');setActive(this)"><span>▶</span>Episodes</button>
+  <button class="navitem" onclick="openSheet('schedule');setActive(this)"><span>🏒</span>Phantoms</button>
+  <button class="navitem" onclick="openSheet('more');setActive(this)"><span>☰</span>More</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeSheet()"><div class="sheet">
+  <div class="sheethead"><h2 id="sheetTitle">Dump & Chase</h2><button class="close" onclick="closeSheet()">✕</button></div>
+  <div id="sheetBody"></div>
+</div></div>
+
+<script>
+const RSS_URL='https://feeds.buzzsprout.com/1840652.rss';
+const episodes=[
+ {n:'225',title:'A New Era: Head Coach Nathan Paetsch',date:'August 14, 2026',duration:'32:00',desc:"We welcome the new head coach of the Phantoms, Nathan Paetsch."},
+ {n:'224',title:'Ryan Ward: The Exit Interview',date:'July 30, 2026',duration:'41:12',desc:"Ryan, Jessica, Ollie & Teddy Ward join us to talk about Youngstown and Ryan's move to Providence."},
+ {n:'223',title:'2026 Main Camp: Part 8 - Jackson Adams & Kevyn Adams',date:'July 18, 2026',duration:'18:09',desc:"The final installment of the 2026 Main Camp recap."},
+ {n:'222',title:'2026 Main Camp: Part 7 - Brandon Gotkin & Cal Kiefiuk',date:'July 15, 2026',duration:'13:36',desc:"Associate Head Coach Brandon Gotkin and Assistant Coach Cal Kiefiuk join the camp recap."},
+ {n:'221',title:'2026 Main Camp: Part 6 - Brayden Thompson, Sean Miller & Jesse Orlowsky',date:'July 12, 2026',duration:'20:32',desc:"Camp interviews with Brayden Thompson, Sean Miller and Jesse Orlowsky."}
+];
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
+function playEpisode(){toast("▶ Episode player coming next — this prototype is ready for your podcast feed.");}
+function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+function goHome(el){setActive(el);window.scrollTo({top:0,behavior:'smooth'})}
+function closeSheet(){document.getElementById('modal').classList.remove('show')}
+function openSheet(type){
+ const title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
+ if(type==='episodes'){title.textContent='Episodes';body.innerHTML=`<p style="color:var(--muted)">Latest episodes are sourced from the Dump & Chase Buzzsprout feed.</p><button class="btn secondary" onclick="refreshFeed()">↻ Refresh Feed</button><div id="episodeList">${episodes.map(e=>episodeCard(e)).join('')}</div>`}
+ else if(type==='question'){title.textContent='Ask the Hosts';body.innerHTML=`<p style="color:var(--muted)">Have a question for a future Dump & Chase episode?</p><label>Your name</label><input id="qname" placeholder="Optional"><label>Your question</label><textarea id="qtext" rows="5" placeholder="Ask away…"></textarea><button class="btn primary" onclick="submitQ()">Send Question</button>`}
+ else if(type==='notifications'){title.textContent='Notifications';body.innerHTML=`<p style="color:var(--muted)">Get an alert when a new episode drops or a special Phantoms episode goes live.</p><button class="btn primary" onclick="toast('Notifications enabled');closeSheet()">Enable Notifications</button>`}
+ else if(type==='news'){title.textContent='Phantoms Today';body.innerHTML=`<div class="card"><span class="mini">COMING SOON</span><h3>Live Phantoms news feed</h3><p>This section is ready to connect to your preferred news source or RSS feed.</p></div>`}
+ else if(type==='schedule'){title.textContent='Phantoms Game Center';body.innerHTML=`
+      <div class="grid">
+        <div class="card"><span class="mini">SCHEDULE</span><h3>2026–27</h3><p>Full published regular-season schedule.</p><button class="play" onclick="showScheduleList()">Open Schedule</button></div>
+        <div class="card"><span class="mini">ROSTER</span><h3>Phantoms Roster</h3><p>Current roster and player information from the official team site.</p><button class="play" onclick="window.open('https://youngstownphantoms.com/sports/mhockey/roster/2026-27','_blank')">Open Roster</button></div>
+        <div class="card"><span class="mini">STANDINGS</span><h3>USHL Standings</h3><p>Conference and league standings from the official site.</p><button class="play" onclick="window.open('https://youngstownphantoms.com/ht/','_blank')">Open Standings</button></div>
+      </div>
+      <div id="gameCenterList" style="margin-top:16px">${scheduleMarkup()}</div>`}
+ else if(type==='phantoms'){title.textContent='Phantoms';body.innerHTML=`<div class="grid"><div class="card"><h3>Schedule</h3><p>Upcoming games and results.</p></div><div class="card"><h3>Roster</h3><p>Players, numbers and profiles.</p></div><div class="card"><h3>Standings</h3><p>Current league standings.</p></div></div>`}
+ else {title.textContent='More';body.innerHTML=`<div class="grid"><div class="card"><h3>About</h3><p>Dump & Chase has covered the Youngstown Phantoms since 2019.</p></div><div class="card"><h3>Social</h3><p>Connect with Dump & Chase on your social channels.</p></div><div class="card"><h3>Support</h3><p>Ways fans can support the podcast.</p></div></div>`}
+ document.getElementById('modal').classList.add('show')
+}
+
+function episodeCard(e){
+ const payload=encodeURIComponent(JSON.stringify(e));
+ return `<div class="card" style="margin-top:10px"><span class="mini">EPISODE ${e.n} • ${e.date||''}</span><h3>${escapeHtml(e.title)}</h3><p>${escapeHtml(e.desc||'')}</p><div class="meta">${e.duration||''}</div><button class="play" onclick="startFromCard('${payload}')">▶ Listen in App</button></div>`;
+}
+function startFromCard(payload){try{startAudio(JSON.parse(decodeURIComponent(payload)))}catch(e){toast('Could not load episode.')}}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function openEpisode(link){
+ if(link){window.open(decodeURIComponent(link),'_blank','noopener');}
+ else toast('Audio links will appear when the RSS feed is connected.');
+}
+async function refreshFeed(){
+ const list=document.getElementById('episodeList'); if(!list){return}
+ list.innerHTML='<div class="card" style="margin-top:10px"><p>Refreshing…</p></div>';
+ try{
+   // Public RSS-to-JSON proxy used only for the prototype. Production should use a small server-side feed proxy.
+   const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(RSS_URL));
+   const data=await r.json();
+   if(data.status!=='ok' || !data.items?.length) throw new Error('Feed unavailable');
+   const parsed=data.items.slice(0,25).map((x,i)=>({n:String(225-i),title:x.title,date:new Date(x.pubDate).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}),desc:(x.description||'').replace(/<[^>]+>/g,'').slice(0,220),duration:x.itunes_duration||'',link:x.link}));
+   list.innerHTML=parsed.map(episodeCard).join('');
+   toast('Feed refreshed');
+ }catch(e){
+   list.innerHTML=episodes.map(e=>episodeCard(e)).join('');
+   toast('Using latest saved episodes');
+ }
+}
+
+const phantomsSchedule=[
+ ['SEP 17','Des Moines Buccaneers','Chicago, IL','12:00 PM CT'],
+ ['SEP 18','Waterloo Black Hawks','Chicago, IL','3:30 PM CT'],
+ ['OCT 2','Fargo Force','Youngstown, OH','7:00 PM ET'],
+ ['OCT 3','Fargo Force','Youngstown, OH','6:00 PM ET'],
+ ['OCT 9','Dubuque Fighting Saints','Dubuque, IA','7:05 PM CT'],
+ ['OCT 10','Dubuque Fighting Saints','Dubuque, IA','7:05 PM CT'],
+ ['OCT 13','USA Hockey NTDP','Youngstown, OH','7:00 PM ET'],
+ ['OCT 16','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
+ ['OCT 17','Muskegon Lumberjacks','Muskegon, MI','6:10 PM ET'],
+ ['OCT 23','Chicago Steel','Geneva, IL','7:00 PM CT'],
+ ['OCT 24','Chicago Steel','Geneva, IL','6:00 PM CT'],
+ ['OCT 30','Des Moines Buccaneers','Des Moines, IA','7:05 PM CT'],
+ ['OCT 31','Des Moines Buccaneers','Des Moines, IA','6:05 PM CT'],
+ ['NOV 6','Madison Capitols','Madison, WI','7:00 PM ET'],
+ ['NOV 7','Madison Capitols','Madison, WI','6:00 PM ET'],
+ ['NOV 13','Waterloo Black Hawks','Youngstown, OH','7:00 PM ET'],
+ ['NOV 14','Waterloo Black Hawks','Youngstown, OH','6:00 PM ET'],
+ ['NOV 15','Cedar Rapids RoughRiders','Youngstown, OH','4:00 PM ET'],
+ ['NOV 20','USA Hockey NTDP','Youngstown, OH','7:00 PM ET'],
+ ['NOV 21','USA Hockey NTDP','Youngstown, OH','6:00 PM ET'],
+ ['NOV 25','USA Hockey NTDP','Plymouth, MI','5:00 PM ET'],
+ ['NOV 27','Dubuque Fighting Saints','Dubuque, IA','7:05 PM CT'],
+ ['NOV 28','Dubuque Fighting Saints','Dubuque, IA','7:05 PM CT'],
+ ['DEC 3','Muskegon Lumberjacks','Rochester, NY','7:10 PM ET'],
+ ['DEC 4','Muskegon Lumberjacks','Rochester, NY','7:00 PM ET'],
+ ['DEC 11','Dubuque Fighting Saints','Youngstown, OH','7:00 PM ET'],
+ ['DEC 12','Dubuque Fighting Saints','Youngstown, OH','6:00 PM ET'],
+ ['DEC 18','USA Hockey NTDP','Plymouth, MI','TBD'],
+ ['DEC 19','USA Hockey NTDP','Youngstown, OH','6:00 PM ET'],
+ ['DEC 28','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
+ ['DEC 29','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
+ ['JAN 1','Cedar Rapids RoughRiders','Youngstown, OH','7:00 PM ET'],
+ ['JAN 2','Cedar Rapids RoughRiders','Youngstown, OH','6:00 PM ET'],
+ ['JAN 8','Chicago Steel','Youngstown, OH','7:00 PM ET'],
+ ['JAN 9','Chicago Steel','Youngstown, OH','6:00 PM ET'],
+ ['JAN 16','Omaha Lancers','Omaha, NE','6:05 PM CT'],
+ ['JAN 17','Omaha Lancers','Omaha, NE','5:05 PM CT'],
+ ['JAN 20','USA Hockey NTDP','Youngstown, OH','7:00 PM ET'],
+ ['JAN 22','Green Bay Gamblers','Youngstown, OH','7:00 PM ET'],
+ ['JAN 23','Green Bay Gamblers','Youngstown, OH','6:00 PM ET'],
+ ['JAN 29','Madison Capitols','Middleton, WI','7:05 PM ET'],
+ ['JAN 31','Madison Capitols','Middleton, WI','4:05 PM CT'],
+ ['FEB 5','Sioux City Musketeers','Youngstown, OH','7:00 PM ET'],
+ ['FEB 6','Sioux City Musketeers','Youngstown, OH','6:00 PM ET'],
+ ['FEB 12','Sioux Falls Stampede','Sioux Falls, SD','7:05 PM CT'],
+ ['FEB 13','Sioux Falls Stampede','Sioux Falls, SD','6:05 PM CT'],
+ ['FEB 19','Lincoln Stars','Youngstown, OH','7:00 PM ET'],
+ ['FEB 20','Lincoln Stars','Youngstown, OH','6:00 PM ET'],
+ ['FEB 23','Muskegon Lumberjacks','Youngstown, OH','10:05 AM ET'],
+ ['FEB 26','USA Hockey NTDP','Youngstown, OH','7:00 PM ET'],
+ ['FEB 27','USA Hockey NTDP','Youngstown, OH','6:00 PM ET'],
+ ['MAR 5','Green Bay Gamblers','Green Bay, WI','7:05 PM CT'],
+ ['MAR 6','Green Bay Gamblers','Green Bay, WI','6:05 PM CT'],
+ ['MAR 7','Green Bay Gamblers','Green Bay, WI','3:05 PM CT'],
+ ['MAR 12','Tri-City Storm','Kearney, NE','7:05 PM CT'],
+ ['MAR 13','Tri-City Storm','Kearney, NE','6:05 PM CT'],
+ ['MAR 19','Cedar Rapids RoughRiders','Cedar Rapids, IA','7:05 PM CT'],
+ ['MAR 20','Cedar Rapids RoughRiders','Cedar Rapids, IA','7:05 PM CT'],
+ ['MAR 26','Muskegon Lumberjacks','Youngstown, OH','7:00 PM ET'],
+ ['MAR 27','Muskegon Lumberjacks','Youngstown, OH','6:00 PM ET'],
+ ['APR 2','USA Hockey NTDP','Plymouth, MI','7:00 PM ET'],
+ ['APR 3','USA Hockey NTDP','Plymouth, MI','6:00 PM ET']
+];
+
+function showScheduleList(){const x=document.getElementById('gameCenterList');if(x)x.scrollIntoView({behavior:'smooth'});}
+
+function scheduleMarkup(){
+ return `<div class="schedule-list">${phantomsSchedule.map(g=>{
+   const parts=g[0].split(' ');
+   return `<div class="sched"><div class="datebox"><b>${parts[1]}</b><span>${parts[0]}</span></div><div><div class="opp">${escapeHtml(g[1])}</div><div class="where">${escapeHtml(g[2])}</div></div><div class="time">${g[3]}</div></div>`;
+ }).join('')}</div>`;
+}
+
+function startAudio(item){
+ const audio=document.getElementById('audio');
+ const src=item.enclosure?.link || item.enclosure?.url || item.audio;
+ if(!src){toast('Audio URL was not available from the feed.');return}
+ audio.src=src;
+ document.getElementById('audioTitle').textContent=item.title||'Dump & Chase Podcast';
+ document.getElementById('audioPlayer').classList.add('show');
+ audio.play().then(()=>{document.getElementById('audioPlay').textContent='❚❚'}).catch(()=>toast('Tap play to start audio.'));
+}
+function toggleAudio(){
+ const a=document.getElementById('audio');
+ if(!a.src){toast('Choose an episode first.');return}
+ if(a.paused){a.play();document.getElementById('audioPlay').textContent='❚❚'}
+ else{a.pause();document.getElementById('audioPlay').textContent='▶'}
+}
+function closePlayer(){document.getElementById('audio').pause();document.getElementById('audioPlayer').classList.remove('show')}
+const audioEl=document.getElementById('audio');
+audioEl?.addEventListener('loadedmetadata',()=>document.getElementById('audioDuration').textContent=fmt(audioEl.duration));
+audioEl?.addEventListener('timeupdate',()=>{document.getElementById('audioCurrent').textContent=fmt(audioEl.currentTime);document.getElementById('audioRange').value=audioEl.duration?(audioEl.currentTime/audioEl.duration*100):0});
+audioEl?.addEventListener('ended',()=>document.getElementById('audioPlay').textContent='▶');
+document.getElementById('audioRange')?.addEventListener('input',e=>{if(audioEl.duration)audioEl.currentTime=(e.target.value/100)*audioEl.duration});
+function fmt(s){if(!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`}
+
+function submitQ(){const q=document.getElementById('qtext').value.trim();if(!q){toast('Enter a question first');return}toast('Question saved for the prototype');closeSheet()}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</div>
+</body>
+</html>
