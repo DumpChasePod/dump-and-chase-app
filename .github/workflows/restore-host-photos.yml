@@ -1,0 +1,57 @@
+name: Restore Host Photos
+
+on:
+  workflow_run:
+    workflows: ["Update Podcast Feed"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore-host-photos:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v4
+      - name: Restore uploaded host photos
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          def load_b64(path):
+              return ''.join(Path(path).read_text(encoding='utf-8').split())
+
+          sam=load_b64('hosts/sam-olmstead.jpg.b64')
+          justin=load_b64('hosts/justin-irwin.jpg.b64')
+          dan=load_b64('hosts/dan-conley-uploaded.b64')
+
+          s=s.replace('data:image/jpeg;base64,SAM_IMAGE', 'data:image/jpeg;base64,'+sam)
+          s=s.replace('data:image/jpeg;base64,JUSTIN_IMAGE', 'data:image/jpeg;base64,'+justin)
+          s=s.replace('data:image/jpeg;base64,DAN_IMAGE', 'data:image/jpeg;base64,'+dan)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate host photos
+        run: |
+          test -f index.html
+          grep -q 'Meet the Hosts' index.html
+          grep -q 'Sam Olmstead' index.html
+          grep -q 'Justin Irwin' index.html
+          grep -q 'Dan Conley' index.html
+          ! grep -q 'SAM_IMAGE' index.html
+          ! grep -q 'JUSTIN_IMAGE' index.html
+          ! grep -q 'DAN_IMAGE' index.html
+      - name: Save host photo update
+        run: |
+          git config user.name "Dump & Chase Bot"
+          git config user.email "actions@github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Restore Meet the Hosts photos"
+          git push
