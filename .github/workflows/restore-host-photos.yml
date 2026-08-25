@@ -1,6 +1,8 @@
 name: Restore Host Photos
 
 on:
+  push:
+    branches: [main]
   workflow_run:
     workflows: ["Update Podcast Feed"]
     types: [completed]
@@ -11,16 +13,24 @@ permissions:
 
 jobs:
   restore-host-photos:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Get repository
         uses: actions/checkout@v4
-      - name: Restore uploaded host photos
+      - name: Wait for homepage rebuild and restore uploaded photos
         run: |
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch origin main
+            git reset --hard origin/main
+            if grep -q 'SAM_IMAGE\|JUSTIN_IMAGE\|DAN_IMAGE' index.html; then
+              break
+            fi
+            sleep 10
+          done
+
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
