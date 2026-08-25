@@ -111,17 +111,22 @@
 <body>
 <div class="app">
 <header>
-  <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Youngstown Phantoms Fan Production</span><small class="build-version">App v84</small></div></div>
+  <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Youngstown Phantoms Fan Production</span><small class="build-version">App v86</small></div></div>
   <button class="iconbtn" onclick="openSheet('notifications')">🔔</button>
 </header>
 
 <main id="home">
-  <div class="hero">
-    <div class="eyebrow">Season 9 • 2026–27</div>
-    <h1>All Phantoms.<br>All the time.</h1>
-    <p>The fan-made podcast dedicated to the Youngstown Phantoms — interviews, analysis, game coverage and everything happening around the team.</p>
-    <div class="actions"><button class="btn primary" onclick="openSheet('episodes');setTimeout(refreshFeed,50)">▶ Latest Episode</button><button class="btn secondary" onclick="openSheet('question')">Phan Q&A</button></div>
+  <div class="hero" id="latestPodcastHero">
+  <div class="eyebrow">LATEST DUMP &amp; CHASE PODCAST EPISODE</div>
+  <h1 id="latestEpisodeTitle">Latest Dump &amp; Chase Podcast Episode</h1>
+  <p id="latestEpisodeDescription">Loading the latest episode…</p>
+  <div class="meta" id="latestEpisodeMeta"></div>
+  <div class="actions" style="margin-top:18px">
+    <button class="btn primary" onclick="playLatestPodcast()">▶ PLAY LATEST EPISODE</button>
+    <button class="btn secondary" onclick="openSheet('episodes');setTimeout(refreshFeed,50)">ARCHIVE</button>
+    <button class="btn secondary" onclick="openSheet('question')">PHAN Q&amp;A</button>
   </div>
+</div>
 
 <div class="game-day" id="gameDayPanel" style="display:none">
   <div class="eyebrow" id="gdEyebrow">IT'S GAME DAY</div>
@@ -153,6 +158,12 @@
 
   
 
+  <section id="gameDaySection">
+    <div class="sectionhead"><h2>Game Day</h2></div>
+    <div class="card gameday-card" id="publicGameDayCard">
+      <div class="gameday-loading">Loading game-day status…</div>
+    </div>
+  </section>
 <section id="ushlStandings">
   <div class="sectionhead"><h2>USHL Standings</h2></div>
   <div class="card standings-card">
@@ -170,31 +181,8 @@
   </div>
 </section>
 
-  <section id="gameDaySection">
-    <div class="sectionhead"><h2>Game Day</h2></div>
-    <div class="card gameday-card" id="publicGameDayCard">
-      <div class="gameday-loading">Loading game-day status…</div>
-    </div>
-  </section>
 
-  <section>
-    <div class="sectionhead"><h2>Featured</h2></div>
-    <div class="grid">
-      <div class="card"><span class="mini">INTERVIEW</span><h3>Inside the New Era</h3><p>Long-form conversations with the people shaping Phantoms hockey.</p></div>
-      <div class="card"><span class="mini">CAMP COVERAGE</span><h3>Training Camp</h3><p>Follow interviews and updates from camp as the roster takes shape.</p></div>
-      <div class="card"><span class="mini">ARCHIVE</span><h3>Since 2019</h3><p>Explore years of Dump & Chase episodes and Phantoms memories.</p></div>
-    </div>
-  </section>
 
-  <section>
-    <div class="sectionhead"><h2>Phantoms News</h2></div>
-    <div class="card">
-      <a class="news-item" href="https://youngstownphantoms.com/sports/news" target="_blank" rel="noopener">
-        <div class="news-title">Latest Youngstown Phantoms Stories</div>
-        <div class="news-date">Tap to view the latest news and updates</div>
-      </a>
-    </div>
-  </section>
 
   
 
@@ -1254,6 +1242,10 @@ if(document.readyState==='loading'){
   refreshPublicGameDay();
   setInterval(refreshPublicGameDay,1000);
 }
+
+function renderLatestPodcastHero(){const e=episodes&&episodes[0];if(!e)return;const t=document.getElementById('latestEpisodeTitle'),d=document.getElementById('latestEpisodeDescription'),m=document.getElementById('latestEpisodeMeta');if(t)t.textContent=e.title||'Latest Dump & Chase Podcast Episode';if(d)d.textContent=e.description||e.desc||'';if(m)m.textContent=[e.date,e.duration].filter(Boolean).join(' • ');}
+function playLatestPodcast(){const e=episodes&&episodes[0];if(e&&e.audio&&typeof startAudio==='function'){startAudio(e);return}openSheet('episodes');setTimeout(refreshFeed,50);}
+document.addEventListener('DOMContentLoaded',renderLatestPodcastHero);
 </script>
 </body>
 </html>
