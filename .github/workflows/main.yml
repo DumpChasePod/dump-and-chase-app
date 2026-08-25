@@ -13,55 +13,32 @@ permissions:
 jobs:
   update-feed:
     runs-on: ubuntu-latest
-
     steps:
       - name: Get repository
         uses: actions/checkout@v4
-
       - name: Download Buzzsprout RSS feed
-        run: |
-          curl -L "https://feeds.buzzsprout.com/1840652.rss" -o feed.xml
-
+        run: curl -L "https://feeds.buzzsprout.com/1840652.rss" -o feed.xml
       - name: Create podcast data
         run: |
           python3 - <<'PY'
           import xml.etree.ElementTree as ET
-          import json
-          import re
-          root = ET.parse("feed.xml").getroot()
-          channel = root.find("channel")
-          episodes = []
-          for item in channel.findall("item"):
-              enclosure = item.find("enclosure")
-              description = item.find("description")
-              raw = description.text if description is not None and description.text else ""
-              raw = re.sub(r"<[^>]+>", " ", raw)
-              raw = re.split(r"send us fan mail", raw, flags=re.I)[0]
-              episodes.append({
-                  "title": item.findtext("title", ""),
-                  "date": item.findtext("pubDate", ""),
-                  "description": " ".join(raw.split()),
-                  "link": item.findtext("link", ""),
-                  "audio": enclosure.attrib.get("url", "") if enclosure is not None else "",
-                  "duration": item.findtext("{http://www.itunes.com/dtds/podcast-1.0.dtd}duration", "")
-              })
-          with open("episodes.json", "w", encoding="utf-8") as f:
-              json.dump(episodes, f, indent=2, ensure_ascii=False)
+          import json, re
+          root=ET.parse('feed.xml').getroot(); channel=root.find('channel'); episodes=[]
+          for item in channel.findall('item'):
+              enclosure=item.find('enclosure'); description=item.find('description')
+              raw=description.text if description is not None and description.text else ''
+              raw=re.sub(r'<[^>]+>',' ',raw); raw=re.split(r'send us fan mail',raw,flags=re.I)[0]
+              episodes.append({'title':item.findtext('title',''),'date':item.findtext('pubDate',''),'description':' '.join(raw.split()),'link':item.findtext('link',''),'audio':enclosure.attrib.get('url','') if enclosure is not None else '','duration':item.findtext('{http://www.itunes.com/dtds/podcast-1.0.dtd}duration','')})
+          with open('episodes.json','w',encoding='utf-8') as f: json.dump(episodes,f,indent=2,ensure_ascii=False)
           PY
-
-      - name: Rebuild homepage from stable layout
+      - name: Rebuild homepage
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-
-          # Replace the generic hero with the latest podcast hero.
-          if 'id="latestPodcastHero"' not in s:
-              hs=s.index('  <div class="hero">')
-              he=s.index('\n\n<div class="game-day"', hs)
-              hero='''  <div class="hero" id="latestPodcastHero">
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          hs=s.index('  <div class="hero">'); he=s.index('\n\n<div class="game-day"',hs)
+          hero='''  <div class="hero" id="latestPodcastHero">
             <div class="eyebrow">LATEST DUMP &amp; CHASE PODCAST EPISODE</div>
             <h1 id="latestEpisodeTitle">Latest Dump &amp; Chase Podcast Episode</h1>
             <p id="latestEpisodeDescription">Loading the latest episode…</p>
@@ -72,54 +49,25 @@ jobs:
               <button class="btn secondary" onclick="openSheet('question')">PHAN Q&amp;A</button>
             </div>
           </div>'''
-              s=s[:hs]+hero+s[he:]
-
-          # Keep the USHL standings on the home page, directly after Game Day.
+          s=s[:hs]+hero+s[he:]
           sm=re.search(r'\n<section id="ushlStandings">.*?</section>\n',s,re.S)
           if sm:
-              standings=sm.group(0)
-              s=s[:sm.start()]+s[sm.end():]
+              standings=sm.group(0); s=s[:sm.start()]+s[sm.end():]
               gm=re.search(r'(<section id="gameDaySection">.*?</section>)',s,re.S)
-              if gm:
-                  s=s[:gm.end()]+standings+s[gm.end():]
-
-          # Remove the old lower podcast feature/news blocks.
-          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Featured</h2></div>.*?</section>\n', '\n', s, count=1, flags=re.S)
-          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Phantoms News</h2></div>.*?</section>\n', '\n', s, count=1, flags=re.S)
-
-          js=r'''
-function renderLatestPodcastHero(){
-  const e=(Array.isArray(window.episodes)&&window.episodes[0]) || (typeof episodes!=='undefined'&&episodes[0]);
-  if(!e)return;
-  const title=document.getElementById('latestEpisodeTitle');
-  const desc=document.getElementById('latestEpisodeDescription');
-  const meta=document.getElementById('latestEpisodeMeta');
-  if(title)title.textContent=e.title||'Latest Dump & Chase Podcast Episode';
-  if(desc)desc.textContent=e.desc||e.description||'The latest episode of the Dump & Chase Podcast.';
-  if(meta)meta.textContent=[e.date,e.duration].filter(Boolean).join(' • ');
-}
-function playLatestPodcast(){
-  const e=(Array.isArray(window.episodes)&&window.episodes[0]) || (typeof episodes!=='undefined'&&episodes[0]);
-  if(e&&typeof startAudio==='function'&&e.audio){startAudio(e);return;}
-  openSheet('episodes');setTimeout(refreshFeed,50);
-}
-document.addEventListener('DOMContentLoaded',()=>setTimeout(renderLatestPodcastHero,0));
-'''
-          if 'function renderLatestPodcastHero' not in s:
-              last=s.rfind('</script>')
-              s=s[:last]+js+s[last:]
-
-          s=s.replace('App v84','App v85')
+              if gm: s=s[:gm.end()]+standings+s[gm.end():]
+          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Featured</h2></div>.*?</section>\n','\n',s,count=1,flags=re.S)
+          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Phantoms News</h2></div>.*?</section>\n','\n',s,count=1,flags=re.S)
+          js='''\nfunction renderLatestPodcastHero(){const e=episodes&&episodes[0];if(!e)return;const t=document.getElementById('latestEpisodeTitle'),d=document.getElementById('latestEpisodeDescription'),m=document.getElementById('latestEpisodeMeta');if(t)t.textContent=e.title||'Latest Dump & Chase Podcast Episode';if(d)d.textContent=e.description||e.desc||'';if(m)m.textContent=[e.date,e.duration].filter(Boolean).join(' • ');}\nfunction playLatestPodcast(){const e=episodes&&episodes[0];if(e&&e.audio&&typeof startAudio==='function'){startAudio(e);return}openSheet('episodes');setTimeout(refreshFeed,50);}\ndocument.addEventListener('DOMContentLoaded',renderLatestPodcastHero);\n'''
+          last=s.rfind('</script>'); s=s[:last]+js+s[last:]
+          s=s.replace('App v84','App v86')
           p.write_text(s,encoding='utf-8')
           PY
-
       - name: Validate homepage
         run: |
           test -f index.html
           grep -q 'latestPodcastHero' index.html
           grep -q 'USHL Standings' index.html
           grep -q 'Latest Dump &amp; Chase Podcast Episode' index.html
-
       - name: Save updated app
         run: |
           rm -f feed.xml
