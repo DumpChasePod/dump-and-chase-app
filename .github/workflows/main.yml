@@ -57,10 +57,11 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          # Replace the generic top hero with the latest podcast episode hero.
-          hs=s.index('  <div class="hero">')
-          he=s.index('\n\n<div class="game-day"', hs)
-          hero='''  <div class="hero" id="latestPodcastHero">
+          # Replace the generic hero with the latest podcast hero.
+          if 'id="latestPodcastHero"' not in s:
+              hs=s.index('  <div class="hero">')
+              he=s.index('\n\n<div class="game-day"', hs)
+              hero='''  <div class="hero" id="latestPodcastHero">
             <div class="eyebrow">LATEST DUMP &amp; CHASE PODCAST EPISODE</div>
             <h1 id="latestEpisodeTitle">Latest Dump &amp; Chase Podcast Episode</h1>
             <p id="latestEpisodeDescription">Loading the latest episode…</p>
@@ -71,9 +72,9 @@ jobs:
               <button class="btn secondary" onclick="openSheet('question')">PHAN Q&amp;A</button>
             </div>
           </div>'''
-          s=s[:hs]+hero+s[he:]
+              s=s[:hs]+hero+s[he:]
 
-          # Put USHL standings in the former lower-feature area, immediately after Game Day.
+          # Keep the USHL standings on the home page, directly after Game Day.
           sm=re.search(r'\n<section id="ushlStandings">.*?</section>\n',s,re.S)
           if sm:
               standings=sm.group(0)
@@ -82,11 +83,10 @@ jobs:
               if gm:
                   s=s[:gm.end()]+standings+s[gm.end():]
 
-          # Remove the old podcast-oriented Featured section and home-page Phantoms News section.
+          # Remove the old lower podcast feature/news blocks.
           s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Featured</h2></div>.*?</section>\n', '\n', s, count=1, flags=re.S)
           s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Phantoms News</h2></div>.*?</section>\n', '\n', s, count=1, flags=re.S)
 
-          # Add a direct latest-episode renderer and keep all existing player functions intact.
           js=r'''
 function renderLatestPodcastHero(){
   const e=(Array.isArray(window.episodes)&&window.episodes[0]) || (typeof episodes!=='undefined'&&episodes[0]);
@@ -106,11 +106,19 @@ function playLatestPodcast(){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderLatestPodcastHero,0));
 '''
           if 'function renderLatestPodcastHero' not in s:
-              s=s.rsplit('</script>',1)[0]+js+'</script>'+s.rsplit('</script>',1)[1]
+              last=s.rfind('</script>')
+              s=s[:last]+js+s[last:]
 
           s=s.replace('App v84','App v85')
           p.write_text(s,encoding='utf-8')
           PY
+
+      - name: Validate homepage
+        run: |
+          test -f index.html
+          grep -q 'latestPodcastHero' index.html
+          grep -q 'USHL Standings' index.html
+          grep -q 'Latest Dump &amp; Chase Podcast Episode' index.html
 
       - name: Save updated app
         run: |
