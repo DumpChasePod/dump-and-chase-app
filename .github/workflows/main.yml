@@ -114,7 +114,6 @@ jobs:
           js='''\nfunction renderLatestPodcastHero(){const e=episodes&&episodes[0];if(!e)return;const t=document.getElementById('latestEpisodeTitle'),d=document.getElementById('latestEpisodeDescription'),m=document.getElementById('latestEpisodeMeta');if(t)t.textContent=e.title||'Latest Dump & Chase Podcast Episode';if(d)d.textContent=e.description||e.desc||'';if(m)m.textContent=[e.date,e.duration].filter(Boolean).join(' • ');}\nfunction playLatestPodcast(){const e=episodes&&episodes[0];if(e&&e.audio&&typeof startAudio==='function'){startAudio(e);return}openSheet('episodes');setTimeout(refreshFeed,50);}\ndocument.addEventListener('DOMContentLoaded',renderLatestPodcastHero);\n'''
           last=s.rfind('</script>'); s=s[:last]+js+s[last:]
           s=s.replace('App v84','App v87').replace('App v86','App v87')
-          s=s.replace('SAM_IMAGE','SAM_IMAGE')
           p.write_text(s,encoding='utf-8')
           PY
       - name: Validate homepage
