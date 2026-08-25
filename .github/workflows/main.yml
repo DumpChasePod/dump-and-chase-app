@@ -1,11 +1,7 @@
 name: Update Podcast Feed
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
-  schedule:
-    - cron: "*/30 * * * *"
 
 permissions:
   contents: write
@@ -31,105 +27,11 @@ jobs:
               episodes.append({'title':item.findtext('title',''),'date':item.findtext('pubDate',''),'description':' '.join(raw.split()),'link':item.findtext('link',''),'audio':enclosure.attrib.get('url','') if enclosure is not None else '','duration':item.findtext('{http://www.itunes.com/dtds/podcast-1.0.dtd}duration','')})
           with open('episodes.json','w',encoding='utf-8') as f: json.dump(episodes,f,indent=2,ensure_ascii=False)
           PY
-      - name: Rebuild homepage
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path('index.html'); s=p.read_text(encoding='utf-8')
-          hs=s.index('  <div class="hero">'); he=s.index('\n\n<div class="game-day"',hs)
-          hero='''  <div class="hero" id="latestPodcastHero">
-            <div class="eyebrow">LATEST DUMP &amp; CHASE PODCAST EPISODE</div>
-            <h1 id="latestEpisodeTitle">Latest Dump &amp; Chase Podcast Episode</h1>
-            <p id="latestEpisodeDescription">Loading the latest episode…</p>
-            <div class="meta" id="latestEpisodeMeta"></div>
-            <div class="actions" style="margin-top:18px">
-              <button class="btn primary" onclick="playLatestPodcast()">▶ PLAY LATEST EPISODE</button>
-              <button class="btn secondary" onclick="openSheet('episodes');setTimeout(refreshFeed,50)">ARCHIVE</button>
-              <button class="btn secondary" onclick="openSheet('question')">PHAN Q&amp;A</button>
-            </div>
-          </div>'''
-          s=s[:hs]+hero+s[he:]
-          sm=re.search(r'\n<section id="ushlStandings">.*?</section>\n',s,re.S)
-          if sm:
-              standings=sm.group(0); s=s[:sm.start()]+s[sm.end():]
-              gm=re.search(r'(<section id="gameDaySection">.*?</section>)',s,re.S)
-              if gm: s=s[:gm.end()]+standings+s[gm.end():]
-          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Featured</h2></div>.*?</section>\n','\n',s,count=1,flags=re.S)
-          s=re.sub(r'\n  <section>\s*<div class="sectionhead"><h2>Phantoms News</h2></div>.*?</section>\n','\n',s,count=1,flags=re.S)
-
-          s=re.sub(r'\n<style id="meetHostsStyles">.*?</style>\n','\n',s,flags=re.S)
-          s=re.sub(r'\n<section id="meetHostsSection">.*?</section>\n','\n',s,flags=re.S)
-
-          sam_img="data:image/jpeg;base64,SAM_IMAGE"
-          justin_img="data:image/jpeg;base64,JUSTIN_IMAGE"
-          dan_img="data:image/jpeg;base64,DAN_IMAGE"
-
-          hosts_styles='''<style id="meetHostsStyles">
-          .hosts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-          .host-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-          .host-photo{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#0b111a}
-          .host-body{padding:15px}
-          .host-name{font-size:18px;font-weight:950;margin:0 0 4px}
-          .host-role{font-size:9px;color:#a56cff;font-weight:950;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
-          .host-bio{color:var(--muted);font-size:12px;line-height:1.5;margin:0}
-          @media(max-width:760px){.hosts-grid{grid-template-columns:1fr}.host-card{display:grid;grid-template-columns:130px 1fr}.host-photo{height:100%;min-height:130px;aspect-ratio:auto}}
-          @media(max-width:470px){.host-card{display:block}.host-photo{aspect-ratio:1/1;height:auto}}
-          </style>'''
-
-          hosts_html='''<section id="meetHostsSection">
-            <div class="sectionhead"><h2>Meet the Hosts</h2></div>
-            <div class="hosts-grid">
-              <article class="host-card">
-                <img class="host-photo" src="SAM_IMG" alt="Sam Olmstead">
-                <div class="host-body">
-                  <h3 class="host-name">Sam Olmstead</h3>
-                  <div class="host-role">Host</div>
-                  <p class="host-bio">Born just a stone's throw from the Ohio River, Sam is a 2002 graduate of Beaver Local High School. He graduated from Youngstown College of Massotherapy in 2004 and from the American Broadcasting School in 2012. He attended his first Phantoms game in March 2014 and became a season ticket holder starting with the 2016–17 season.<br><br>Sam has played guitar since he was 16. After 27 years, you'd think he would be better at it. He can also play 3 chords on a ukulele, and although he hasn't touched a trombone in 20 years, he is fairly confident that he could still play the Beaver Local Fight Song if he had access to one.<br><br>Sam resides in Salem, OH with his wife April, and three sons Brennan, Gavin, and Dashiell.</p>
-                </div>
-              </article>
-              <article class="host-card">
-                <img class="host-photo" src="JUSTIN_IMG" alt="Justin Irwin">
-                <div class="host-body">
-                  <h3 class="host-name">Justin Irwin</h3>
-                  <div class="host-role">Host</div>
-                  <p class="host-bio">Justin is a 1994 graduate of LaBrae, and did a brief stint at a business school in Pittsburgh that he doesn't really remember the name of. Already a lifelong hockey fan, after seeing 2 Phantoms games at the end of the 2010–11 seasons and a few more the next season, he went all in as a season ticket holder in 2012–13.<br><br>His hobbies, outside of supporting the Phantoms, include gaming, anime, and IT. The latter is also his profession, which unfortunately sucks the soul out of him. He's also an avid vodka drinker.<br><br>He now lives in Newton Township with his mom, who is also a huge Phantoms fan.</p>
-                </div>
-              </article>
-              <article class="host-card">
-                <img class="host-photo" src="DAN_IMG" alt="Dan Conley">
-                <div class="host-body">
-                  <h3 class="host-name">Dan Conley</h3>
-                  <div class="host-role">Host</div>
-                  <p class="host-bio">Dan is a 2005 graduate of Austintown Fitch High School. He is President of The United SteelWorkers of America Local 2332 and is an overhead craneman at Commercial Metal Forming. He used to play soccer growing up (when he was in shape and not a shape) and was a three year letterman in high school. Dan later became the head coach of his alma mater's boys soccer team and coached there for 7 years.<br><br>Dan is also an avid drummer and people that have been to any of his shows have described his drumming by calling it "Average at best".<br><br>Dan and his family have been attending games for many years but became season ticket holders during the 2021–2022 season. Dan still resides in Austintown with his wife, Heather, and sons Gavin and Owen.</p>
-                </div>
-              </article>
-            </div>
-          </section>'''
-
-          hosts_html=hosts_html.replace('SAM_IMG',sam_img).replace('JUSTIN_IMG',justin_img).replace('DAN_IMG',dan_img)
-          s=s.replace('</head>',hosts_styles+'\n</head>')
-          s=s.replace('<div class="admin-footer">',hosts_html+'\n\n<div class="admin-footer">')
-
-          js='''\nfunction renderLatestPodcastHero(){const e=episodes&&episodes[0];if(!e)return;const t=document.getElementById('latestEpisodeTitle'),d=document.getElementById('latestEpisodeDescription'),m=document.getElementById('latestEpisodeMeta');if(t)t.textContent=e.title||'Latest Dump & Chase Podcast Episode';if(d)d.textContent=e.description||e.desc||'';if(m)m.textContent=[e.date,e.duration].filter(Boolean).join(' • ');}\nfunction playLatestPodcast(){const e=episodes&&episodes[0];if(e&&e.audio&&typeof startAudio==='function'){startAudio(e);return}openSheet('episodes');setTimeout(refreshFeed,50);}\ndocument.addEventListener('DOMContentLoaded',renderLatestPodcastHero);\n'''
-          last=s.rfind('</script>'); s=s[:last]+js+s[last:]
-          s=s.replace('App v84','App v87').replace('App v86','App v87')
-          p.write_text(s,encoding='utf-8')
-          PY
-      - name: Validate homepage
-        run: |
-          test -f index.html
-          grep -q 'latestPodcastHero' index.html
-          grep -q 'USHL Standings' index.html
-          grep -q 'Meet the Hosts' index.html
-          grep -q 'Sam Olmstead' index.html
-          grep -q 'Justin Irwin' index.html
-          grep -q 'Dan Conley' index.html
-      - name: Save updated app
+      - name: Save updated feed
         run: |
           rm -f feed.xml
           git config user.name "Dump & Chase Bot"
           git config user.email "actions@github.com"
-          git add index.html episodes.json
-          git diff --cached --quiet || git commit -m "Restore Meet the Hosts section"
+          git add episodes.json
+          git diff --cached --quiet || git commit -m "Update podcast episodes"
           git push
