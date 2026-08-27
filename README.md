@@ -70,3 +70,21 @@ Version 151: Production-domain migration. Admin magic-link authentication now re
 
 
 Version 152: Mobile-first production polish. Added real PWA/installability files (manifest, service worker, 192/512 icons, Apple touch icon), mobile metadata, favicon, Open Graph/Twitter sharing metadata and OG card, lightweight launch screen, and Home Screen install guidance. Admin received thumb-friendly score +/- steppers, quick status and period buttons, haptic feedback where supported, and a sticky Save & Publish action. Existing backend, authentication, Game Day rollover, Recent Results and podcast behavior unchanged.
+
+
+Version 153: Simplified mobile Admin controls by removing redundant Game Status and Period dropdowns. Quick Status and Quick Period are now the only controls for those fields, with Period moved above the score steppers. Hidden state inputs preserve the existing save/publish logic. All V152 PWA/mobile and backend behavior unchanged.
+
+
+Version 154: Fixed Game Center schedule toggle regression by restoring toggleGCSchedule(). Replaced roster position dropdown with mobile-friendly Forwards / Defensemen / Goaltenders buttons, defaulting to Goaltenders. Roster active state and light haptic feedback added. PWA cache bumped to v154 so installed/mobile clients receive the corrected files.
+
+
+Version 155: Replaced the Game Center schedule month dropdown with mobile-friendly month buttons. The current/default month remains selected initially, active month state is highlighted, and tapping a month immediately refreshes the schedule. PWA cache bumped to v155. All V154 behavior unchanged.
+
+
+Version 156: Mobile-first production polish. Home now prioritizes the live/final Game Day card by hiding the redundant upcoming card while a game is Live or Final, and hides the separate Game Day section during normal Upcoming state. Game-day CTA is more prominent on mobile. Roster intro changed to Youngstown Phantoms Preseason Roster. Added the independent/non-commercial fan-production disclaimer to More. Added small mobile safe-area/focus improvements and removed an obvious duplicate variable declaration. PWA cache bumped to v156.
+
+
+Version 157: Redesigned Meet the Hosts for mobile. Replaced full-width portrait/biography cards with compact stacked profile cards using circular portraits. Host bios are collapsed initially and expand by tapping the full profile header; only one bio can remain open at a time. Existing biography copy and photos are unchanged. PWA cache bumped to v157. All V156 game-day, admin, roster, schedule, backend and disclaimer behavior unchanged.
+
+
+Version 158: Added weekday shorthand (SUN, MON, TUES, WED, THURS, FRI, SAT) to game dates across the schedule, Home/Next Game, Game Center next game, upcoming Game Day date, and Recent Results where an ISO game date is available. No game-day behavior changes. PWA cache bumped to v158.
