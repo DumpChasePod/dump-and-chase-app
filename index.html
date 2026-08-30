@@ -1726,6 +1726,10 @@ body.game-final #gameDaySection .sectionhead{
     column-gap:16px !important;
   }
 }
+
+.admin-size-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.admin-size-row .admin-field{min-width:0}
+.admin-size-row input{width:100%;text-align:center}
 </style>
 
 
@@ -1770,7 +1774,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v223</small>
+<header><small class="build-version build-version-corner">v229</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3108,9 +3112,9 @@ else venue.arena=homeArenaByCity[g[2]]||'';
             <div class="admin-field"><label for="rosterEditPosition">Position</label><select id="rosterEditPosition"><option value="F">Forward</option><option value="D">Defenseman</option><option value="G">Goaltender</option></select></div>
             <div class="admin-field wide"><label for="rosterEditName">Name</label><input id="rosterEditName"></div>
             <div class="admin-field"><label for="rosterEditShot">Shoots / Catches</label><select id="rosterEditShot"><option value="L">Left</option><option value="R">Right</option></select></div>
-            <div class="admin-field"><label for="rosterEditBirthdate">Birthdate</label><input id="rosterEditBirthdate" inputmode="numeric" maxlength="10" placeholder="M/D/YYYY" oninput="formatRosterBirthdate(this)"></div>
+            <div class="admin-field"><label for="rosterEditBirthdate">Birthdate</label><input id="rosterEditBirthdate" inputmode="numeric" maxlength="10" placeholder="MM/DD/YYYY" oninput="formatRosterBirthdate(this)"></div>
             <div class="admin-field wide"><label for="rosterEditHometown">Hometown</label><input id="rosterEditHometown"></div>
-            <div class="admin-field"><label for="rosterEditHeightFeet">Height — Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="6"></div><div class="admin-field"><label for="rosterEditHeightInches">Height — Inches</label><input id="rosterEditHeightInches" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="1"></div><div class="admin-field"><label for="rosterEditWeight">Weight (lbs)</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="185"></div>
+            <div class="admin-size-row wide"><div class="admin-field"><label for="rosterEditHeightFeet">Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="6"></div><div class="admin-field"><label for="rosterEditHeightInches">Inches</label><input id="rosterEditHeightInches" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="1"></div><div class="admin-field"><label for="rosterEditWeight">Weight</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="185"></div></div>
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
           <div class="admin-status" id="adminRosterEditStatus"></div>
@@ -3327,41 +3331,39 @@ function rosterMetaLine(p){
   return [p.position,action+(p.shoots_catches||''),p.hometown||'',rosterSizeLine(p)].filter(Boolean).join(' • ');
 }
 function formatRosterBirthdate(input){
-  var raw=String(input.value||'').replace(/[^0-9/]/g,'').slice(0,10);
-
-  // If the user types slashes manually, respect them exactly.
-  if(raw.indexOf('/')!==-1){
-    var parts=raw.split('/');
-    var month=(parts[0]||'').replace(/\D/g,'').slice(0,2);
-    var day=(parts[1]||'').replace(/\D/g,'').slice(0,2);
-    var year=(parts[2]||'').replace(/\D/g,'').slice(0,4);
-    var out=month;
-    if(parts.length>1)out+='/'+day;
-    if(parts.length>2)out+='/'+year;
-    input.value=out;
-    return;
-  }
-
-  // Digits-only entry: add separators automatically.
+  var raw=String(input.value||'');
   var digits=raw.replace(/\D/g,'').slice(0,8);
-  if(!digits){ input.value=''; return; }
-
-  var out='';
-  if(digits.length<=2){
-    out=digits;
-  }else if(digits.length<=4){
-    out=digits.slice(0,2)+'/'+digits.slice(2);
-  }else{
-    out=digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4,8);
-  }
+  var out=digits.slice(0,2);
+  if(digits.length>2)out+='/'+digits.slice(2,4);
+  if(digits.length>4)out+='/'+digits.slice(4,8);
   input.value=out;
 }
 function normalizedRosterBirthdate(value){
+  var digits=String(value||'').replace(/\D/g,'').slice(0,8);
+  if(digits.length!==8)return '';
+  var mm=parseInt(digits.slice(0,2),10);
+  var dd=parseInt(digits.slice(2,4),10);
+  var yyyy=digits.slice(4,8);
+  if(!(mm>=1&&mm<=12&&dd>=1&&dd<=31))return '';
+  return mm+'/'+dd+'/'+yyyy;
+}
+function rosterBirthdateForEditor(value){
   var raw=String(value||'').trim();
   var parts=raw.split('/');
-  if(parts.length!==3)return '';
-  var m=parseInt(parts[0],10), d=parseInt(parts[1],10), y=String(parts[2]||'').replace(/\D/g,'');
-  if(!(m>=1&&m<=12&&d>=1&&d<=31&&y.length===4))return '';
+  if(parts.length===3){
+    var mm=String(parseInt(parts[0],10)||'').padStart(2,'0');
+    var dd=String(parseInt(parts[1],10)||'').padStart(2,'0');
+    var yyyy=String(parts[2]||'').replace(/\D/g,'').slice(0,4);
+    if(mm.length===2&&dd.length===2&&yyyy.length===4)return mm+'/'+dd+'/'+yyyy;
+  }
+  return raw;
+}
+function rosterBirthdateForDisplay(value){
+  var raw=String(value||'').trim();
+  var parts=raw.split('/');
+  if(parts.length!==3)return raw;
+  var m=parseInt(parts[0],10), d=parseInt(parts[1],10), y=String(parts[2]||'').replace(/\D/g,'').slice(0,4);
+  if(!m||!d||y.length!==4)return raw;
   return m+'/'+d+'/'+y;
 }
 async function fetchRosterData(){
@@ -3379,7 +3381,7 @@ async function loadAdminRoster(){
     var data=await fetchRosterData();adminRosterPlayers=data.players;
     if(st)st.textContent=adminRosterPlayers.length+' players';
     if(list)list.innerHTML=adminRosterPlayers.map(function(p){
-      return '<div class="admin-roster-row"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(p.birthdate||'')+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
+      return '<div class="admin-roster-row"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
     }).join('');
   }catch(e){if(st)st.textContent='Roster could not be loaded.';if(list)list.innerHTML='';}
 }
@@ -3441,7 +3443,7 @@ function publicRosterMarkup(players,meta){
   return order.map(function(group){
     var rows=players.filter(function(p){return p.position_group===group;}).sort(function(a,b){return (a.sort_order||a.number)-(b.sort_order||b.number);});
     return '<div class="roster-group" data-roster-group="'+group+'"><div class="roster-group-title">'+group+'</div><div class="roster-list">'+rows.map(function(p){
-      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(p.birthdate||'')+'</div></div></article>';
+      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div></article>';
     }).join('')+'</div></div>';
   }).join('');
 }
