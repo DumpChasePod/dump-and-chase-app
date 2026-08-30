@@ -1730,6 +1730,12 @@ body.game-final #gameDaySection .sectionhead{
 .admin-size-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .admin-size-row .admin-field{min-width:0}
 .admin-size-row input{width:100%;text-align:center}
+
+.admin-roster-maintenance{margin:12px 0 16px;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}
+.admin-roster-maintenance .admin-field{margin:0}
+.admin-roster-maintenance-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.admin-roster-maintenance-actions .btn{flex:1 1 150px}
+#adminRosterVerified{margin-top:8px}
 </style>
 
 
@@ -1774,7 +1780,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v229</small>
+<header><small class="build-version build-version-corner">v230</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3104,6 +3110,11 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
         <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
+        <div class="admin-roster-maintenance">
+          <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
+          <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
+          <div class="admin-muted" id="adminRosterVerified"></div>
+        </div>
         <div class="admin-roster-list" id="adminRosterList"></div>
         <div class="admin-roster-form" id="adminRosterForm">
           <input type="hidden" id="rosterEditId">
@@ -3379,6 +3390,9 @@ async function loadAdminRoster(){
   if(st)st.textContent='Loading roster…';
   try{
     var data=await fetchRosterData();adminRosterPlayers=data.players;
+    var labelInput=document.getElementById('adminRosterLabel'),verified=document.getElementById('adminRosterVerified');
+    if(labelInput)labelInput.value=(data.meta&&data.meta.roster_label)||'';
+    if(verified)verified.textContent=data.meta&&data.meta.checked_date?'Last verified '+formatRosterCheckedDate(data.meta.checked_date):'';
     if(st)st.textContent=adminRosterPlayers.length+' players';
     if(list)list.innerHTML=adminRosterPlayers.map(function(p){
       return '<div class="admin-roster-row"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
@@ -3427,6 +3441,28 @@ async function deleteRosterPlayer(){
   if(!confirm('Remove '+(p?p.name:'this player')+' from the roster?'))return;
   var r=await dcSupabase.from('roster_players').delete().eq('id',id);if(r.error){if(st)st.textContent='Could not remove player: '+r.error.message;return;}
   await touchRosterDate();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
+}
+async function saveRosterLabel(){
+  var input=document.getElementById('adminRosterLabel'),st=document.getElementById('adminRosterStatus');
+  var label=String(input&&input.value||'').trim();
+  if(!label){if(st)st.textContent='Enter a roster label first.';return;}
+  if(st)st.textContent='Saving roster label…';
+  var r=await dcSupabase.from('roster_meta').update({roster_label:label,updated_at:new Date().toISOString()}).eq('id','current');
+  if(r.error){if(st)st.textContent='Could not save roster label: '+r.error.message;return;}
+  if(st)st.textContent='Roster label saved.';
+  await syncPublicRoster();
+}
+async function verifyRosterToday(){
+  var st=document.getElementById('adminRosterStatus');
+  if(st)st.textContent='Marking roster verified…';
+  try{
+    await touchRosterDate();
+    await loadAdminRoster();
+    await syncPublicRoster();
+    if(st)st.textContent='Roster verified today.';
+  }catch(e){
+    if(st)st.textContent='Could not update verification date.';
+  }
 }
 async function touchRosterDate(){
   var today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
