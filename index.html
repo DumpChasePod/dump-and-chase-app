@@ -1826,7 +1826,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v234</small>
+<header><small class="build-version build-version-corner">v235</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3026,7 +3026,10 @@ function renderSelectedMonth(){
 
     modal.classList.add('show');
     renderNextGame();
-    setTimeout(function(){showRosterGroup('GOALTENDERS');},0);
+    setTimeout(function(){
+      showRosterGroup('GOALTENDERS');
+      if(typeof syncPublicRoster==='function')syncPublicRoster();
+    },0);
     renderSelectedMonth();
 var rr=document.getElementById('recentResultsList');
 if(rr)rr.innerHTML='<div class="result-empty" role="status" aria-live="polite">Loading recent results…</div>';
@@ -3548,6 +3551,10 @@ function formatRosterCheckedDate(value){
   var d=new Date(value+'T12:00:00');
   return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 }
+function rosterPublicMetaLine(p){
+  var action=p.position==='G'?'Catches ':'Shoots ';
+  return [p.position,action+(p.shoots_catches||''),p.hometown||''].filter(Boolean).join(' • ');
+}
 function rosterBirthSizeLine(p){
   var parts=[];
   var birth=rosterBirthdateForDisplay(p&&p.birthdate||'');
@@ -3565,7 +3572,7 @@ function publicRosterMarkup(players,meta){
   return order.map(function(group){
     var rows=players.filter(function(p){return p.position_group===group;}).sort(function(a,b){return (a.sort_order||a.number)-(b.sort_order||b.number);});
     return '<div class="roster-group" data-roster-group="'+group+'"><div class="roster-group-title">'+group+'</div><div class="roster-list">'+rows.map(function(p){
-      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div></article>';
+      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterPublicMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div></article>';
     }).join('')+'</div></div>';
   }).join('');
 }
@@ -3578,7 +3585,8 @@ async function syncPublicRoster(){
       if(groups)groups.innerHTML=publicRosterMarkup(data.players,data.meta);
       if(source&&data.meta&&data.meta.checked_date)source.textContent='Roster data checked '+formatRosterCheckedDate(data.meta.checked_date)+'.';
     });
-    showRosterGroup('GOALTENDERS');
+    var activeBtn=document.querySelector('.gamecenter-roster-card [data-roster-position].active');
+    showRosterGroup(activeBtn?activeBtn.getAttribute('data-roster-position'):'GOALTENDERS');
   }catch(e){console.warn('Using built-in roster fallback.',e);}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncPublicRoster);else syncPublicRoster();
