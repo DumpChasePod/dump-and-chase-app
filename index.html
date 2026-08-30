@@ -1838,7 +1838,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v238</small>
+<header><small class="build-version build-version-corner">v239</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2182,10 +2182,26 @@ function encodeEpisodePayload(item){
 function decodeEpisodePayload(payload){
  return JSON.parse(decodeURIComponent(escape(atob(payload))));
 }
+function formatEpisodeDuration(value){
+  if(value===null||value===undefined)return '';
+  var raw=String(value).trim();
+  if(!raw)return '';
+  if(raw.indexOf(':')!==-1)return raw;
+  if(/^\d+$/.test(raw)){
+    var total=Number(raw);
+    if(!Number.isFinite(total))return raw;
+    var hours=Math.floor(total/3600);
+    var minutes=Math.floor((total%3600)/60);
+    var seconds=Math.floor(total%60);
+    if(hours>0)return hours+':'+String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
+    return minutes+':'+String(seconds).padStart(2,'0');
+  }
+  return raw;
+}
 function episodeCard(e,isLatest){
  const payload=encodeEpisodePayload(e);
  const date=escapeHtml(e.date||'');
- const duration=escapeHtml(e.duration||'');
+ const duration=escapeHtml(formatEpisodeDuration(e.duration));
  const desc=escapeHtml(e.desc||'');
  return `<article class="card episode-card" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
    <div class="episode-card-top">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
@@ -2224,7 +2240,7 @@ function openEpisodeDetail(payload){
    body.innerHTML=`<div class="episode-detail">
      <div class="episode-detail-date">${escapeHtml(item.date||'')}</div>
      <h2>${escapeHtml(item.title||'Dump & Chase Podcast')}</h2>
-     <div class="episode-detail-meta">${escapeHtml(item.duration||'')}</div>
+     <div class="episode-detail-meta">${escapeHtml(formatEpisodeDuration(item.duration))}</div>
      <div class="episode-detail-desc">${escapeHtml(item.desc||'')}</div>
      <div class="episode-detail-actions">
        <button class="btn primary" onclick="listenEpisode('${payload}')">${listenLabel}</button>
@@ -2315,7 +2331,7 @@ async function refreshFeed(){
        pubDateRaw:x.pubDate||'',
        date:x.pubDate?new Date(x.pubDate).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}):'',
        desc:cleanEpisodeDescription(x.description||x.content||''),
-       duration:x.itunes_duration||x.duration||'',
+       duration:formatEpisodeDuration(x.itunes_duration||x.duration||''),
        link:x.link||'',
        audio:audio,
        enclosure:{link:audio}
@@ -3948,7 +3964,7 @@ function populateLatestEpisode(item){
   var heroPlay=document.getElementById('heroLatestEpisodePlay');
   if(heroTitle)heroTitle.textContent=item.title||'Latest Episode';
   if(heroDesc)heroDesc.textContent=item.desc||'';
-  if(heroMeta)heroMeta.textContent=[item.date,item.duration].filter(Boolean).join(' • ');
+  if(heroMeta)heroMeta.textContent=[item.date,formatEpisodeDuration(item.duration)].filter(Boolean).join(' • ');
   if(heroPlay)heroPlay.onclick=function(){
     if(item.audio){startAudio(item);}
     else if(item.link){openEpisode(encodeURIComponent(item.link));}
@@ -3962,7 +3978,7 @@ function populateLatestEpisode(item){
   if(title)title.textContent=item.title||'Dump & Chase Podcast';
   if(date)date.textContent=item.date||'';
   if(desc)desc.textContent=item.desc||'';
-  if(dur)dur.textContent=item.duration||'';
+  if(dur)dur.textContent=formatEpisodeDuration(item.duration);
   if(btn)btn.onclick=function(){
     if(item.audio){startAudio(item);}
     else if(item.link){openEpisode(encodeURIComponent(item.link));}
@@ -3978,7 +3994,7 @@ async function refreshLatestEpisode(){
         title:x.title||'Dump & Chase Podcast',
         date:x.pubDate?new Date(x.pubDate).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}):'',
         desc:cleanEpisodeDescription(x.description||x.content||''),
-        duration:x.itunes_duration||x.duration||'',
+        duration:formatEpisodeDuration(x.itunes_duration||x.duration||''),
         link:x.link||'',audio:enc.link||enc.url||x.audio||''
       };
       populateLatestEpisode(latest);
