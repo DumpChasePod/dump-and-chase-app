@@ -805,6 +805,16 @@ button,a,select,input{touch-action:manipulation}
 .admin-score-stepper button{height:44px;border:1px solid #ffffff1a;border-radius:10px;background:#ffffff0b;font-size:21px;font-weight:950}
 .admin-score-stepper input{margin:0;text-align:center;font-size:24px;font-weight:950;padding:7px 3px;min-width:0}
 .admin-publish-bar{position:sticky;bottom:-1px;margin:18px -20px -20px;padding:10px 20px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#101722 18%,#101722 100%);z-index:5}
+.admin-period-tools{display:flex;gap:7px;margin-top:7px}
+.admin-period-tools .admin-mini-btn{flex:1;min-height:36px}
+.admin-clock-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}
+.admin-clock-presets .admin-mini-btn{min-height:36px;padding:7px 5px;font-size:9px}
+.admin-score-stepper button:last-child{
+  border-color:rgba(139,82,255,.42);
+  background:rgba(139,82,255,.12);
+}
+.admin-score-stepper button:active{transform:scale(.96)}
+
 .admin-publish-bar .btn{width:100%;min-height:50px;font-size:14px}
 .install-card{display:none}
 .install-card.show{display:block}
@@ -1855,7 +1865,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v240</small>
+<header><small class="build-version build-version-corner">v241</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2087,6 +2097,17 @@ function setAdminStatus(value){
  syncAdminQuickControls();markGameDayDirty();
 }
 function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
+function nextAdminPeriod(){
+  var el=document.getElementById('adminPeriod');if(!el)return;
+  var order=['1st','2nd','3rd','OT','SO'];
+  var i=order.indexOf(el.value);
+  setAdminPeriod(order[Math.min(i<0?0:i+1,order.length-1)]);
+}
+function setAdminClock(value){
+  var el=document.getElementById('adminClock');if(!el)return;
+  el.value=value;
+  markGameDayDirty();
+}
 function stepAdminScore(id,delta){
  const el=document.getElementById(id);if(!el)return;
  const n=Math.max(0,Math.min(99,Number(el.value||0)+delta));el.value=String(n);
@@ -3195,12 +3216,12 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="eyebrow" style="margin-top:16px">GAME DAY</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
-      <div class="admin-quick-section"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div></div>
+      <div class="admin-quick-section"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
       <div class="admin-score-card">
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
-      <div class="admin-field"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="numeric" maxlength="5" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
+      <div class="admin-field"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('INT')">INTERMISSION</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
       <div class="eyebrow" style="margin-top:16px">RESULT</div><div class="admin-field"><label for="adminResult">Final Result</label><select id="adminResult">
 <option value="">Not final</option>
 <option value="W">W</option>
@@ -3702,7 +3723,9 @@ async function fetchRemoteGameState(){
 async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});}
 function formatGameClock(input){
   if(!input)return;
-  var digits=String(input.value||'').replace(/\D/g,'').slice(0,4);
+  var raw=String(input.value||'').trim();
+  if(/[A-Za-z]/.test(raw)){input.value=raw.toUpperCase().slice(0,12);return;}
+  var digits=raw.replace(/\D/g,'').slice(0,4);
   if(digits.length<=2){input.value=digits;return;}
   var mins=digits.slice(0,-2),secs=digits.slice(-2);
   var m=parseInt(mins,10)||0,s=parseInt(secs,10)||0;
@@ -3712,7 +3735,7 @@ function formatGameClock(input){
 async function resetAdminGame(){
  if(!confirm('Reset the current game-day information?'))return;
  ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
- await saveAdminUpdates();var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Current game reset and published.';
+ await saveAdminUpdates();var st=document.getElementById('adminSaveStatus');setAdminFeedback(st,'saved','Game reset & published • '+adminTimeStamp());
 }
 function getStoredResults(){return completedResults.slice();}
 function renderAdminRecentResults(){
