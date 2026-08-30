@@ -1541,6 +1541,18 @@ body.game-final #gameDaySection .sectionhead{
 }
 .admin-section-panel[hidden]{display:none!important}
 .admin-section-panel{min-width:0}
+.admin-save-feedback,
+.admin-status.admin-feedback{
+  min-height:16px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.01em;
+}
+.admin-feedback.is-dirty{color:#d8b86b}
+.admin-feedback.is-saving{color:#9ca8b8}
+.admin-feedback.is-saved{color:#8fd4a8}
+.admin-feedback.is-error{color:#ff9c9c}
+
 
 .admin-analytics{
   margin-top:18px;
@@ -1826,7 +1838,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v237</small>
+<header><small class="build-version build-version-corner">v238</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2020,6 +2032,22 @@ function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classL
 function goHome(el){setActive(el);window.scrollTo({top:0,behavior:'smooth'})}
 
 let deferredInstallPrompt=null;
+function adminTimeStamp(){
+  return new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'}).format(new Date());
+}
+function setAdminFeedback(target,state,text){
+  var el=typeof target==='string'?document.getElementById(target):target;
+  if(!el)return;
+  el.classList.remove('is-dirty','is-saving','is-saved','is-error');
+  if(state)el.classList.add('is-'+state);
+  el.textContent=text||'';
+}
+function markGameDayDirty(){
+  setAdminFeedback('adminSaveStatus','dirty','Unsaved changes');
+}
+function markRosterDirty(){
+  setAdminFeedback('adminRosterEditStatus','dirty','Unsaved changes');
+}
 function syncAdminQuickControls(){
  const st=document.getElementById('adminGameStatus')?.value||'';
  document.querySelectorAll('[data-admin-status]').forEach(b=>b.classList.toggle('active',b.dataset.adminStatus===st));
@@ -2039,13 +2067,13 @@ function setAdminStatus(value){
    var period=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock'),result=document.getElementById('adminResult');
    if(period)period.value='';if(clock)clock.value='';if(result)result.value='';
  }
- syncAdminQuickControls();
+ syncAdminQuickControls();markGameDayDirty();
 }
-function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();}}
+function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function stepAdminScore(id,delta){
  const el=document.getElementById(id);if(!el)return;
  const n=Math.max(0,Math.min(99,Number(el.value||0)+delta));el.value=String(n);
- if(navigator.vibrate)navigator.vibrate(8);
+ if(navigator.vibrate)navigator.vibrate(8);markGameDayDirty();
 }
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstallPrompt=e;dcTrack('install_prompt','pwa');});
 function refreshInstallCard(){
@@ -3152,13 +3180,13 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
       
 <div class="admin-actions"><button class="btn secondary" type="button" onclick="resetAdminGame()">Reset Game</button><button class="btn secondary" type="button" onclick="adminLogout()">Lock</button></div><div class="admin-publish-bar">
-  <div class="admin-status admin-publish-status" id="adminSaveStatus"></div>
+  <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
   <button class="btn primary" type="button" onclick="saveAdminUpdates()">SAVE &amp; PUBLISH</button>
 </div>
       <div class="admin-muted" style="margin-top:16px">Changes are published across all devices.</div>
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
-        <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
+        <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div><div class="admin-save-feedback admin-feedback" id="adminRosterFeedback"></div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
         <div class="admin-roster-list" id="adminRosterList"></div>
         <div class="admin-roster-form" id="adminRosterForm">
           <input type="hidden" id="rosterEditId">
@@ -3172,7 +3200,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
             <div class="admin-size-row wide"><div class="admin-field"><label for="rosterEditHeightFeet">Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1"></div><div class="admin-field"><label for="rosterEditHeightInches">Inches</label><input id="rosterEditHeightInches" inputmode="decimal" maxlength="5"></div><div class="admin-field"><label for="rosterEditWeight">Weight</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3"></div></div>
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
-          <div class="admin-status" id="adminRosterEditStatus"></div>
+          <div class="admin-status admin-feedback" id="adminRosterEditStatus"></div>
           <div class="admin-roster-remove-row" id="adminRosterRemoveRow" hidden><button class="admin-mini-btn delete" type="button" onclick="deleteRosterPlayer()">REMOVE PLAYER</button></div>
         </div>
         <div class="admin-roster-maintenance">
@@ -3509,10 +3537,11 @@ async function saveRosterPlayer(){
   if((feet===null)!=(inches===null)){if(st)st.textContent='Enter both feet and inches for height, or leave both blank.';return;}
   if(feet!==null&&(feet<4||feet>8||inches<0||inches>11.75)){if(st)st.textContent='Please check the height values.';return;}
   if(weight!==null&&(weight<100||weight>350)){if(st)st.textContent='Please check the weight value.';return;}
-  if(st)st.textContent='Saving…';
+  setAdminFeedback(st,'saving','Saving…');
   var q=id?dcSupabase.from('roster_players').update(payload).eq('id',id):dcSupabase.from('roster_players').insert(payload);
-  var r=await q;if(r.error){if(st)st.textContent='Could not save: '+r.error.message;return;}
+  var r=await q;if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
   await touchRosterDate();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
+  setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
 }
 async function deleteRosterPlayer(){
   var id=document.getElementById('rosterEditId').value,st=document.getElementById('adminRosterEditStatus');if(!id)return;
@@ -3528,7 +3557,8 @@ async function saveRosterLabel(){
   if(st)st.textContent='Saving roster label…';
   var r=await dcSupabase.from('roster_meta').update({roster_label:label,updated_at:new Date().toISOString()}).eq('id','current');
   if(r.error){if(st)st.textContent='Could not save roster label: '+r.error.message;return;}
-  if(st)st.textContent='Roster label saved.';
+  if(st)st.textContent=adminRosterPlayers.length+' players';
+  setAdminFeedback('adminRosterFeedback','saved','Roster label saved • '+adminTimeStamp());
   await syncPublicRoster();
 }
 async function verifyRosterToday(){
@@ -3538,7 +3568,7 @@ async function verifyRosterToday(){
     await touchRosterDate();
     await loadAdminRoster();
     await syncPublicRoster();
-    if(st)st.textContent='Roster verified today.';
+    if(st)st.textContent=adminRosterPlayers.length+' players';setAdminFeedback('adminRosterFeedback','saved','Verified today • '+adminTimeStamp());
   }catch(e){
     if(st)st.textContent='Could not update verification date.';
   }
@@ -3669,7 +3699,7 @@ async function saveAdminUpdates(){
  }
  var publishBtn=document.querySelector('.admin-publish-bar .btn');
  if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
- if(st)st.textContent='Publishing…';
+ setAdminFeedback(st,'saving','Publishing…');
  try{
   const res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
   const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
@@ -3682,13 +3712,23 @@ if(payload.status==='final'&&payload.result){
   renderRecentResults();
   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
 }
-if(st)st.textContent=payload.status==='final'&&payload.result?'Published. Result added to Recent Results.':'Published securely.';syncAdminQuickControls();
+setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result added • ':'Saved & published • ')+adminTimeStamp());syncAdminQuickControls();
   if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
- }catch(e){if(st)st.textContent='Could not publish: '+e.message;}
+ }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
  finally{
   if(publishBtn){publishBtn.disabled=false;publishBtn.textContent='SAVE & PUBLISH';}
  }
 }
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
+  if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
+  if(e.target&&e.target.id==='adminRosterLabel')setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');
+});
+document.addEventListener('change',function(e){
+  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
+  if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
+  if(e.target&&e.target.id==='adminRosterLabel')setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');
+});
 </script>
 <script>
 function getAdminGameState(){
