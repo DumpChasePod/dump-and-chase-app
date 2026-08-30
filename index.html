@@ -1826,7 +1826,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v236</small>
+<header><small class="build-version build-version-corner">v237</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3382,8 +3382,9 @@ async function loadAdminAnalytics(days){
 let adminRosterPlayers=[];
 function rosterGroupForPosition(pos){return pos==='G'?'GOALTENDERS':pos==='D'?'DEFENSEMEN':'FORWARDS';}
 function rosterSizeLine(p){
-  var hasHeight=Number.isInteger(Number(p.height_feet))&&Number(p.height_feet)>0&&Number.isInteger(Number(p.height_inches))&&Number(p.height_inches)>=0;
-  var height=hasHeight?Number(p.height_feet)+"'"+formatRosterInches(p.height_inches)+'\"':'';
+  var feet=Number(p.height_feet),inches=Number(p.height_inches);
+  var hasHeight=Number.isInteger(feet)&&feet>0&&Number.isFinite(inches)&&inches>=0&&inches<=11.75;
+  var height=hasHeight?feet+"'"+formatRosterInches(inches)+'\"':'';
   var weight=(p.weight_lbs!==null&&p.weight_lbs!==undefined&&p.weight_lbs!=='')?Number(p.weight_lbs)+' lbs':'';
   return [height,weight].filter(Boolean).join(' • ') || p.height_weight || '';
 }
