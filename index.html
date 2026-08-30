@@ -1769,6 +1769,19 @@ body.game-final #gameDaySection .sectionhead{
   margin-bottom:8px;
   border-color:rgba(165,108,255,.78);
 }
+
+/* v233 safer remove-player placement */
+.admin-roster-remove-row{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+  padding-top:9px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.admin-roster-remove-row[hidden]{display:none}
+.admin-roster-remove-row .admin-mini-btn.delete{
+  min-width:112px;
+}
 </style>
 
 
@@ -1813,7 +1826,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v232</small>
+<header><small class="build-version build-version-corner">v233</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3157,6 +3170,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
           <div class="admin-status" id="adminRosterEditStatus"></div>
+          <div class="admin-roster-remove-row" id="adminRosterRemoveRow" hidden><button class="admin-mini-btn delete" type="button" onclick="deleteRosterPlayer()">REMOVE PLAYER</button></div>
         </div>
         <div class="admin-roster-maintenance">
           <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
@@ -3461,13 +3475,15 @@ function openRosterEditor(id){
   }
 
   if(f)f.classList.add('show');
-  var st=document.getElementById('adminRosterEditStatus');
-  if(st)st.innerHTML=p?'<button class="admin-mini-btn delete" type="button" onclick="deleteRosterPlayer()">REMOVE PLAYER</button>':'';
+  var st=document.getElementById('adminRosterEditStatus'),removeRow=document.getElementById('adminRosterRemoveRow');
+  if(st)st.textContent='';
+  if(removeRow)removeRow.hidden=!p;
   if(f)setTimeout(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'});},30);
 }
 function closeRosterEditor(){
-  var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList');
+  var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList'),removeRow=document.getElementById('adminRosterRemoveRow');
   document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
+  if(removeRow)removeRow.hidden=true;
   if(f){
     f.classList.remove('show','inline-add');
     if(list&&list.parentNode)list.insertAdjacentElement('afterend',f);
@@ -3496,7 +3512,7 @@ async function saveRosterPlayer(){
 async function deleteRosterPlayer(){
   var id=document.getElementById('rosterEditId').value,st=document.getElementById('adminRosterEditStatus');if(!id)return;
   var p=adminRosterPlayers.find(function(x){return Number(x.id)===Number(id);});
-  if(!confirm('Remove '+(p?p.name:'this player')+' from the roster?'))return;
+  if(!confirm('Remove '+(p?p.name:'this player')+' from the roster? This cannot be undone.'))return;
   var r=await dcSupabase.from('roster_players').delete().eq('id',id);if(r.error){if(st)st.textContent='Could not remove player: '+r.error.message;return;}
   await touchRosterDate();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
 }
