@@ -758,7 +758,25 @@ button:active:not(:disabled){
 
 .more-intro{margin:4px 0 14px;color:var(--muted);font-size:12px;line-height:1.55}
 .more-stack{display:grid;gap:10px}
-.more-card{padding:15px;border:1px solid #263446;border-radius:16px;background:#101722}
+.more-card{
+  position:relative;
+  overflow:hidden;
+  padding:15px;
+  border:1px solid rgba(139,82,255,.42);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(139,82,255,.13),#101722 58%);
+  box-shadow:inset 3px 0 0 rgba(139,82,255,.72);
+}
+.more-card:nth-child(2){
+  border-color:rgba(255,148,74,.34);
+  background:linear-gradient(135deg,rgba(255,148,74,.10),#101722 58%);
+  box-shadow:inset 3px 0 0 rgba(255,148,74,.68);
+}
+.more-card.install-card{
+  border-color:rgba(139,82,255,.42);
+  background:linear-gradient(135deg,rgba(139,82,255,.13),#101722 58%);
+  box-shadow:inset 3px 0 0 rgba(139,82,255,.72);
+}
 .more-card h3{margin:0 0 5px;font-size:16px}
 .more-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
 .more-actions{display:grid;gap:8px;margin-top:12px}
@@ -1865,7 +1883,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v242</small>
+<header><small class="build-version build-version-corner">v243</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2183,7 +2201,7 @@ function openSheet(type){
    <div class="more-stack">
      
      <div class="more-card"><h3>Phan Q&amp;A</h3><p>Send in a question for a future episode.</p><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://forms.gle/dWPdwvtrWzYfxFNA7','phan_qa')">SUBMIT A QUESTION</button></div></div>
-      <div class="more-card"><h3>Dump &amp; Chase Merch Store</h3><p>Dump &amp; Chase Podcast merch.</p><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://www.dcpodshop.com/','shop')">VISIT THE SHOP</button></div></div>
+      <div class="more-card"><h3>Dump &amp; Chase Merch Store</h3><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://www.dcpodshop.com/','shop')">VISIT THE SHOP</button></div></div>
      
    </div>
    <div class="more-card install-card" id="installAppCard"><h3>Install Dump &amp; Chase</h3><p>Add Dump &amp; Chase to your Home Screen for quick access.</p><div class="more-actions"><button class="btn secondary" id="installAppButton" onclick="installDumpChase()">ADD TO HOME SCREEN</button></div><div class="install-hint" id="installAppHint"></div></div>
