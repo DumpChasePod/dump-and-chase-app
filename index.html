@@ -1593,8 +1593,11 @@ body.game-final #gameDaySection .sectionhead{
 }
 .admin-analytics-grid{
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:8px;
+}
+@media(min-width:560px){
+  .admin-analytics-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 .admin-stat{
   min-width:0;
@@ -1619,6 +1622,20 @@ body.game-final #gameDaySection .sectionhead{
   text-transform:uppercase;
   font-weight:850;
 }
+.admin-stat small{
+  display:block;
+  margin-top:4px;
+  color:#667384;
+  font-size:8px;
+  line-height:1.25;
+}
+.admin-analytics-note{
+  margin-top:10px;
+  color:#667384;
+  font-size:9px;
+  line-height:1.45;
+}
+
 .admin-analytics-contexts{
   margin-top:12px;
 }
@@ -1838,7 +1855,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v239</small>
+<header><small class="build-version build-version-corner">v240</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3242,10 +3259,12 @@ else venue.arena=homeArenaByCity[g[2]]||'';
   <div class="admin-analytics-grid" id="adminAnalyticsGrid">
     <div class="admin-stat"><b>—</b><span>Visits</span></div>
     <div class="admin-stat"><b>—</b><span>Visitors</span></div>
+    <div class="admin-stat"><b>—</b><span>Sessions</span></div>
     <div class="admin-stat"><b>—</b><span>Episode Listens</span></div>
-    <div class="admin-stat"><b>—</b><span>Phantoms Hub</span></div>
-    <div class="admin-stat"><b>—</b><span>Install Clicks</span></div>
+    <div class="admin-stat"><b>—</b><span>Hub Opens</span></div>
     <div class="admin-stat"><b>—</b><span>Installs</span></div>
+    <div class="admin-stat"><b>—</b><span>Visits / Visitor</span></div>
+    <div class="admin-stat"><b>—</b><span>Listen Rate</span></div>
   </div>
   <div class="admin-analytics-contexts" id="adminAnalyticsContexts"></div>
 </div>
@@ -3380,23 +3399,43 @@ async function loadAdminAnalytics(days){
     if(!res.ok||body.ok===false)throw new Error(body.error||('HTTP '+res.status));
 
     var counts=body.counts||{};
+    var visits=Number(counts.app_view||0);
+    var visitors=Number(body.unique_visitors||0);
+    var sessions=Number(body.sessions||0);
+    var listens=Number(counts.episode_listen||0);
+    var installs=Number(counts.app_installed||0);
+    var installClicks=Number(counts.install_click||0);
     var hubCount=0;
-    (body.top_contexts||[]).forEach(function(x){if(x.context==='phantoms_hub')hubCount=x.count||0;});
+    (body.top_contexts||[]).forEach(function(x){if(x.context==='phantoms_hub')hubCount=Number(x.count||0);});
+
+    var visitsPerVisitor=visitors>0?(visits/visitors).toFixed(visits/visitors>=10?0:1):'—';
+    var listenRate=visitors>0?Math.round((listens/visitors)*100)+'%':'—';
+
     var stats=[
-      [counts.app_view||0,'Visits'],
-      [body.unique_visitors||0,'Visitors'],
-      [counts.episode_listen||0,'Episode Listens'],
-      [hubCount,'Phantoms Hub'],
-      [counts.install_click||0,'Install Clicks'],
-      [counts.app_installed||0,'Installs']
+      [visits,'Visits','App opens'],
+      [visitors,'Visitors','Unique devices'],
+      [sessions,'Sessions','Browsing sessions'],
+      [listens,'Episode Listens','Listen taps'],
+      [hubCount,'Hub Opens','Phantoms Hub'],
+      [installs,'Installs',installClicks+' install click'+(installClicks===1?'':'s')],
+      [visitsPerVisitor,'Visits / Visitor','Average'],
+      [listenRate,'Listen Rate','Listens ÷ visitors']
     ];
 
     if(grid){
       grid.innerHTML=stats.map(function(item){
-        return '<div class="admin-stat"><b>'+item[0]+'</b><span>'+item[1]+'</span></div>';
+        return '<div class="admin-stat"><b>'+item[0]+'</b><span>'+item[1]+'</span><small>'+escapeHtml(item[2])+'</small></div>';
       }).join('');
     }
 
+    var prettyLabels={
+      phan_qa:'Phan Q&A',
+      shop:'Merch Store',
+      standings:'Standings',
+      episode:'Episode Listens',
+      episode_page:'Episode Page',
+      pwa:'App Install'
+    };
     var contextRows=(body.top_contexts||[]).filter(function(x){
       return x.context!=='home'&&x.context!=='phantoms_hub';
     }).slice(0,6);
@@ -3405,14 +3444,17 @@ async function loadAdminAnalytics(days){
       contexts.innerHTML=contextRows.length
         ? '<div class="admin-analytics-subhead">TOP ACTIVITY</div>'+
           contextRows.map(function(x){
-            var label=String(x.context||'').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-            return '<div class="admin-context-row"><span>'+escapeHtml(label)+'</span><b>'+x.count+'</b></div>';
-          }).join('')
-        : '';
+            var raw=String(x.context||'');
+            var label=prettyLabels[raw]||raw.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+            return '<div class="admin-context-row"><span>'+escapeHtml(label)+'</span><b>'+Number(x.count||0)+'</b></div>';
+          }).join('')+
+          '<div class="admin-analytics-note">Listen Rate is episode listen taps divided by unique visitors. Visits / Visitor is total app opens divided by unique visitors.</div>'
+        : '<div class="admin-analytics-note">No additional activity was recorded in this range.</div>';
     }
 
     if(st){
-      st.textContent=(days===1?'Today':days+' days')+' • '+(body.sessions||0)+' session'+((body.sessions||0)===1?'':'s');
+      var rangeLabel=days===1?'Today':days===7?'Last 7 days':'Last 30 days';
+      st.textContent=rangeLabel+' • Updated '+adminTimeStamp();
     }
   }catch(err){
     console.error('Analytics load failed:',err);
