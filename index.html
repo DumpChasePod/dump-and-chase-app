@@ -1736,6 +1736,39 @@ body.game-final #gameDaySection .sectionhead{
 .admin-roster-maintenance-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
 .admin-roster-maintenance-actions .btn{flex:1 1 150px}
 #adminRosterVerified{margin-top:8px}
+
+.admin-roster-row.selected{border-color:#a56cff;box-shadow:0 0 0 1px rgba(165,108,255,.28);background:#151d2b}
+.admin-roster-row.selected .admin-roster-name{color:#f4f7fb}
+.admin-roster-row + .admin-roster-form.show{margin-top:6px;margin-bottom:10px;border-color:#a56cff66}
+.admin-roster-form.inline-add{margin:10px 0 12px}
+
+/* v232 compact inline roster editor */
+.admin-roster-form{
+  margin-top:7px;
+  padding:9px;
+  border:1px solid rgba(165,108,255,.72);
+  border-radius:10px;
+  background:rgba(139,82,255,.09);
+  box-shadow:inset 0 0 0 1px rgba(165,108,255,.08);
+}
+.admin-roster-form.show{display:block}
+.admin-roster-form .admin-roster-grid{gap:6px}
+.admin-roster-form .admin-field label{margin-bottom:3px;font-size:8px}
+.admin-roster-form .admin-field input,
+.admin-roster-form .admin-field select{min-height:36px;padding:7px 9px}
+.admin-roster-form .admin-actions{margin-top:8px;gap:7px}
+.admin-roster-form .admin-actions .btn{min-height:36px;padding:7px 10px}
+.admin-roster-form .admin-status{margin-top:7px}
+.admin-roster-row.selected{
+  border-color:rgba(165,108,255,.9);
+  background:rgba(139,82,255,.12);
+  box-shadow:0 0 0 1px rgba(165,108,255,.18);
+}
+.admin-roster-row + .admin-roster-form.show{
+  margin-top:5px;
+  margin-bottom:8px;
+  border-color:rgba(165,108,255,.78);
+}
 </style>
 
 
@@ -1780,7 +1813,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v230</small>
+<header><small class="build-version build-version-corner">v232</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3110,11 +3143,6 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
         <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
-        <div class="admin-roster-maintenance">
-          <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
-          <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
-          <div class="admin-muted" id="adminRosterVerified"></div>
-        </div>
         <div class="admin-roster-list" id="adminRosterList"></div>
         <div class="admin-roster-form" id="adminRosterForm">
           <input type="hidden" id="rosterEditId">
@@ -3129,6 +3157,11 @@ else venue.arena=homeArenaByCity[g[2]]||'';
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
           <div class="admin-status" id="adminRosterEditStatus"></div>
+        </div>
+        <div class="admin-roster-maintenance">
+          <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
+          <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
+          <div class="admin-muted" id="adminRosterVerified"></div>
         </div>
       </div>
       <div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
@@ -3395,26 +3428,51 @@ async function loadAdminRoster(){
     if(verified)verified.textContent=data.meta&&data.meta.checked_date?'Last verified '+formatRosterCheckedDate(data.meta.checked_date):'';
     if(st)st.textContent=adminRosterPlayers.length+' players';
     if(list)list.innerHTML=adminRosterPlayers.map(function(p){
-      return '<div class="admin-roster-row"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
+      return '<div class="admin-roster-row" data-player-id="'+p.id+'"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
     }).join('');
   }catch(e){if(st)st.textContent='Roster could not be loaded.';if(list)list.innerHTML='';}
 }
 function openRosterEditor(id){
   var p=id?adminRosterPlayers.find(function(x){return Number(x.id)===Number(id);}):null;
+  var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList');
+  document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
+  if(f)f.classList.remove('inline-add');
+
   document.getElementById('rosterEditId').value=p?p.id:'';
   document.getElementById('rosterEditNumber').value=p?p.number:'';
   document.getElementById('rosterEditName').value=p?p.name:'';
   document.getElementById('rosterEditPosition').value=p?p.position:'F';
   document.getElementById('rosterEditShot').value=p?p.shoots_catches:'L';
-  document.getElementById('rosterEditBirthdate').value=p?normalizedRosterBirthdate(p.birthdate):'';
+  document.getElementById('rosterEditBirthdate').value=p?rosterBirthdateForEditor(p.birthdate):'';
   document.getElementById('rosterEditHometown').value=p?p.hometown:'';
   document.getElementById('rosterEditHeightFeet').value=p&&p.height_feet!==null?p.height_feet:'';
   document.getElementById('rosterEditHeightInches').value=p&&p.height_inches!==null?p.height_inches:'';
   document.getElementById('rosterEditWeight').value=p&&p.weight_lbs!==null?p.weight_lbs:'';
-  var f=document.getElementById('adminRosterForm');if(f)f.classList.add('show');
-  var st=document.getElementById('adminRosterEditStatus');if(st)st.innerHTML=p?'<button class="admin-mini-btn delete" type="button" onclick="deleteRosterPlayer()">REMOVE PLAYER</button>':'';
+
+  if(p){
+    var row=document.querySelector('.admin-roster-row[data-player-id="'+p.id+'"]');
+    if(row){
+      row.classList.add('selected');
+      row.insertAdjacentElement('afterend',f);
+    }
+  }else if(list&&f){
+    list.parentNode.insertBefore(f,list);
+    f.classList.add('inline-add');
+  }
+
+  if(f)f.classList.add('show');
+  var st=document.getElementById('adminRosterEditStatus');
+  if(st)st.innerHTML=p?'<button class="admin-mini-btn delete" type="button" onclick="deleteRosterPlayer()">REMOVE PLAYER</button>':'';
+  if(f)setTimeout(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'});},30);
 }
-function closeRosterEditor(){var f=document.getElementById('adminRosterForm');if(f)f.classList.remove('show');}
+function closeRosterEditor(){
+  var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList');
+  document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
+  if(f){
+    f.classList.remove('show','inline-add');
+    if(list&&list.parentNode)list.insertAdjacentElement('afterend',f);
+  }
+}
 async function saveRosterPlayer(){
   var session=await dcGetSession(),st=document.getElementById('adminRosterEditStatus');
   if(!session||String(session.user?.email||'').toLowerCase()!==DC_ADMIN_EMAIL){if(st)st.textContent='Admin session expired.';return;}
