@@ -1826,7 +1826,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v233</small>
+<header><small class="build-version build-version-corner">v234</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3548,12 +3548,24 @@ function formatRosterCheckedDate(value){
   var d=new Date(value+'T12:00:00');
   return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 }
+function rosterBirthSizeLine(p){
+  var parts=[];
+  var birth=rosterBirthdateForDisplay(p&&p.birthdate||'');
+  if(birth)parts.push(birth);
+  if(p&&p.height_feet!==null&&p.height_feet!==undefined&&p.height_inches!==null&&p.height_inches!==undefined){
+    parts.push(String(p.height_feet)+"'"+String(p.height_inches)+'"');
+  }
+  if(p&&p.weight_lbs!==null&&p.weight_lbs!==undefined&&String(p.weight_lbs)!==''){
+    parts.push(String(p.weight_lbs)+' lbs');
+  }
+  return parts.join(' • ');
+}
 function publicRosterMarkup(players,meta){
   var order=['GOALTENDERS','DEFENSEMEN','FORWARDS'];
   return order.map(function(group){
     var rows=players.filter(function(p){return p.position_group===group;}).sort(function(a,b){return (a.sort_order||a.number)-(b.sort_order||b.number);});
     return '<div class="roster-group" data-roster-group="'+group+'"><div class="roster-group-title">'+group+'</div><div class="roster-list">'+rows.map(function(p){
-      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div></article>';
+      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div></article>';
     }).join('')+'</div></div>';
   }).join('');
 }
