@@ -1826,7 +1826,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v235</small>
+<header><small class="build-version build-version-corner">v236</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3169,7 +3169,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
             <div class="admin-field"><label for="rosterEditShot">Shoots / Catches</label><select id="rosterEditShot"><option value="L">Left</option><option value="R">Right</option></select></div>
             <div class="admin-field"><label for="rosterEditBirthdate">Birthdate</label><input id="rosterEditBirthdate" inputmode="numeric" maxlength="10" placeholder="MM/DD/YYYY" oninput="formatRosterBirthdate(this)"></div>
             <div class="admin-field wide"><label for="rosterEditHometown">Hometown</label><input id="rosterEditHometown"></div>
-            <div class="admin-size-row wide"><div class="admin-field"><label for="rosterEditHeightFeet">Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="6"></div><div class="admin-field"><label for="rosterEditHeightInches">Inches</label><input id="rosterEditHeightInches" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="1"></div><div class="admin-field"><label for="rosterEditWeight">Weight</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="185"></div></div>
+            <div class="admin-size-row wide"><div class="admin-field"><label for="rosterEditHeightFeet">Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1"></div><div class="admin-field"><label for="rosterEditHeightInches">Inches</label><input id="rosterEditHeightInches" inputmode="decimal" maxlength="5"></div><div class="admin-field"><label for="rosterEditWeight">Weight</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3"></div></div>
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
           <div class="admin-status" id="adminRosterEditStatus"></div>
@@ -3383,7 +3383,7 @@ let adminRosterPlayers=[];
 function rosterGroupForPosition(pos){return pos==='G'?'GOALTENDERS':pos==='D'?'DEFENSEMEN':'FORWARDS';}
 function rosterSizeLine(p){
   var hasHeight=Number.isInteger(Number(p.height_feet))&&Number(p.height_feet)>0&&Number.isInteger(Number(p.height_inches))&&Number(p.height_inches)>=0;
-  var height=hasHeight?Number(p.height_feet)+"'"+Number(p.height_inches)+'\"':'';
+  var height=hasHeight?Number(p.height_feet)+"'"+formatRosterInches(p.height_inches)+'\"':'';
   var weight=(p.weight_lbs!==null&&p.weight_lbs!==undefined&&p.weight_lbs!=='')?Number(p.weight_lbs)+' lbs':'';
   return [height,weight].filter(Boolean).join(' • ') || p.height_weight || '';
 }
@@ -3463,7 +3463,7 @@ function openRosterEditor(id){
   document.getElementById('rosterEditBirthdate').value=p?rosterBirthdateForEditor(p.birthdate):'';
   document.getElementById('rosterEditHometown').value=p?p.hometown:'';
   document.getElementById('rosterEditHeightFeet').value=p&&p.height_feet!==null?p.height_feet:'';
-  document.getElementById('rosterEditHeightInches').value=p&&p.height_inches!==null?p.height_inches:'';
+  document.getElementById('rosterEditHeightInches').value=p&&p.height_inches!==null?formatRosterInches(p.height_inches):'';
   document.getElementById('rosterEditWeight').value=p&&p.weight_lbs!==null?p.weight_lbs:'';
 
   if(p){
@@ -3503,9 +3503,10 @@ async function saveRosterPlayer(){
   var feet=feetRaw===''?null:Number(feetRaw), inches=inchesRaw===''?null:Number(inchesRaw), weight=weightRaw===''?null:Number(weightRaw);
   var payload={number:num,name:document.getElementById('rosterEditName').value.trim(),position:pos,position_group:rosterGroupForPosition(pos),shoots_catches:document.getElementById('rosterEditShot').value,hometown:document.getElementById('rosterEditHometown').value.trim(),birthdate:birthdate,height_feet:feet,height_inches:inches,weight_lbs:weight,height_weight:'',sort_order:num,updated_at:new Date().toISOString()};
   if(!Number.isInteger(num)||num<0||num>99||!payload.name||!birthdate){if(st)st.textContent='Number, name and a complete MM/DD/YYYY birthdate are required.';return;}
-  if((feet!==null&&!Number.isInteger(feet))||(inches!==null&&!Number.isInteger(inches))||(weight!==null&&!Number.isInteger(weight))){if(st)st.textContent='Height and weight must use whole numbers.';return;}
+  if((feet!==null&&!Number.isInteger(feet))||(weight!==null&&!Number.isInteger(weight))){if(st)st.textContent='Feet and weight must use whole numbers.';return;}
+  if(inches!==null&&(!Number.isFinite(inches)||Math.abs(inches*4-Math.round(inches*4))>0.000001)){if(st)st.textContent='Inches can use quarter-inch values: .25, .5 or .75.';return;}
   if((feet===null)!=(inches===null)){if(st)st.textContent='Enter both feet and inches for height, or leave both blank.';return;}
-  if(feet!==null&&(feet<4||feet>8||inches<0||inches>11)){if(st)st.textContent='Please check the height values.';return;}
+  if(feet!==null&&(feet<4||feet>8||inches<0||inches>11.75)){if(st)st.textContent='Please check the height values.';return;}
   if(weight!==null&&(weight<100||weight>350)){if(st)st.textContent='Please check the weight value.';return;}
   if(st)st.textContent='Saving…';
   var q=id?dcSupabase.from('roster_players').update(payload).eq('id',id):dcSupabase.from('roster_players').insert(payload);
@@ -3551,6 +3552,12 @@ function formatRosterCheckedDate(value){
   var d=new Date(value+'T12:00:00');
   return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 }
+function formatRosterInches(value){
+  if(value===null||value===undefined||String(value).trim()==='')return '';
+  var n=Number(value);
+  if(!Number.isFinite(n))return String(value);
+  return String(Math.round(n*100)/100);
+}
 function rosterPublicMetaLine(p){
   var action=p.position==='G'?'Catches ':'Shoots ';
   return [p.position,action+(p.shoots_catches||''),p.hometown||''].filter(Boolean).join(' • ');
@@ -3560,7 +3567,7 @@ function rosterBirthSizeLine(p){
   var birth=rosterBirthdateForDisplay(p&&p.birthdate||'');
   if(birth)parts.push(birth);
   if(p&&p.height_feet!==null&&p.height_feet!==undefined&&p.height_inches!==null&&p.height_inches!==undefined){
-    parts.push(String(p.height_feet)+"'"+String(p.height_inches)+'"');
+    parts.push(String(p.height_feet)+"'"+formatRosterInches(p.height_inches)+'"');
   }
   if(p&&p.weight_lbs!==null&&p.weight_lbs!==undefined&&String(p.weight_lbs)!==''){
     parts.push(String(p.weight_lbs)+' lbs');
