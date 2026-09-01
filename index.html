@@ -1542,18 +1542,18 @@ body.game-final #gameDaySection .sectionhead{
 
 
 .admin-section-tabs{
-  display:flex;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:7px;
-  overflow-x:auto;
+  overflow:visible;
   margin-top:16px;
   padding:1px 1px 8px;
-  scrollbar-width:thin;
-  -webkit-overflow-scrolling:touch;
 }
 .admin-section-tab{
-  flex:1 0 auto;
+  width:100%;
+  min-width:0;
   min-height:40px;
-  padding:9px 14px;
+  padding:9px 8px;
   border:1px solid #28374a;
   border-radius:11px;
   background:#101722;
@@ -1984,12 +1984,28 @@ body.game-final #gameDaySection .sectionhead{
 .home-headline-badge.breaking{background:rgba(220,65,65,.14);color:#ff9b9b;border-color:rgba(220,65,65,.35)}.home-headline-badge.podcast{background:rgba(255,148,74,.13);color:#ffb47d;border-color:rgba(255,148,74,.34)}.home-headline-badge.update{background:rgba(125,145,170,.13);color:#b8c4d3;border-color:rgba(125,145,170,.3)}
 .home-headline-copy{min-width:0;font-size:11px;font-weight:800;line-height:1.32;color:#eef1f5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:opacity .35s ease}.home-headline-copy.fade{opacity:0}.home-headline-link{cursor:pointer}.home-headline-link:hover{text-decoration:underline}
 .admin-news-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.admin-news-list{display:grid;gap:9px;margin-top:12px}.admin-news-item{padding:11px;border:1px solid #28374a;border-radius:12px;background:#101722}.admin-news-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-news-item-category{font-size:9px;font-weight:900;color:#c9a9ff;letter-spacing:.06em}.admin-news-item p{margin:7px 0 0;font-size:11px;line-height:1.4;color:#e5e9ef}.admin-news-item-actions{display:flex;gap:6px;margin-top:9px}.admin-news-form{display:none;margin-top:12px;padding:12px;border:1px solid rgba(139,82,255,.42);border-radius:12px;background:rgba(139,82,255,.07)}.admin-news-form.show{display:block}.admin-news-count{text-align:right;margin-top:4px;font-size:9px;font-weight:800;color:#748196}.admin-news-count.warn{color:#d8b86b}.admin-news-count.max{color:#ff9c9c}.admin-news-category-buttons{display:flex;gap:7px;flex-wrap:wrap}.admin-news-category-btn{appearance:none;border:1px solid #34465d;background:#101722;color:#aeb8c6;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:900;letter-spacing:.04em;cursor:pointer}.admin-news-category-btn.active{border-color:#8b52ff;background:rgba(139,82,255,.16);color:#e2d5ff}.admin-news-category-btn[data-category="BREAKING"].active{border-color:rgba(220,65,65,.6);background:rgba(220,65,65,.14);color:#ff9b9b}.admin-news-category-btn[data-category="PODCAST"].active{border-color:rgba(255,148,74,.55);background:rgba(255,148,74,.13);color:#ffb47d}.admin-news-category-btn[data-category="UPDATE"].active{border-color:rgba(125,145,170,.55);background:rgba(125,145,170,.13);color:#c8d2de}
+
+/* v252 Admin mobile polish */
+.admin-news-category-btn{flex:1 1 calc(50% - 4px);min-height:38px;text-align:center}
+.admin-record-grid .admin-score-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:6px;align-items:center}
+.admin-record-grid .admin-score-stepper button{width:42px;min-width:42px;padding:0}
+.admin-record-grid .admin-score-stepper input{width:100%;min-width:0;text-align:center}
+@media(max-width:420px){
+  .admin-section-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-section-tab{font-size:9.5px;padding-left:6px;padding-right:6px}
+  .admin-record-grid{gap:8px}
+  .admin-record-field{padding:9px 8px}
+  .admin-record-grid .admin-score-stepper{grid-template-columns:38px minmax(0,1fr) 38px;gap:4px}
+  .admin-record-grid .admin-score-stepper button{width:38px;min-width:38px;min-height:40px}
+  .admin-news-category-buttons{gap:6px}
+  .admin-news-category-btn{padding:8px 6px}
+}
 </style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v251</small>
+<header><small class="build-version build-version-corner">v252</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
