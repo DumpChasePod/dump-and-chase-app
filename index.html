@@ -1879,13 +1879,24 @@ body.game-final #gameDaySection .sectionhead{
 
 
 
+
+<style>
+/* v245 Home Headlines */
+.home-headlines{display:none;margin:10px 14px 2px;padding:9px 12px;border:1px solid #28374a;border-radius:12px;background:#101722;min-height:42px;align-items:center;gap:9px;overflow:hidden}
+.home-headlines.show{display:flex}.home-headline-badge{flex:0 0 auto;padding:4px 7px;border-radius:7px;font-size:8px;font-weight:900;letter-spacing:.07em;line-height:1;background:rgba(139,82,255,.16);color:#c9a9ff;border:1px solid rgba(139,82,255,.35)}
+.home-headline-badge.breaking{background:rgba(220,65,65,.14);color:#ff9b9b;border-color:rgba(220,65,65,.35)}.home-headline-badge.podcast{background:rgba(255,148,74,.13);color:#ffb47d;border-color:rgba(255,148,74,.34)}.home-headline-badge.update{background:rgba(125,145,170,.13);color:#b8c4d3;border-color:rgba(125,145,170,.3)}
+.home-headline-copy{min-width:0;font-size:11px;font-weight:800;line-height:1.32;color:#eef1f5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:opacity .35s ease}.home-headline-copy.fade{opacity:0}.home-headline-link{cursor:pointer}.home-headline-link:hover{text-decoration:underline}
+.admin-news-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.admin-news-list{display:grid;gap:9px;margin-top:12px}.admin-news-item{padding:11px;border:1px solid #28374a;border-radius:12px;background:#101722}.admin-news-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-news-item-category{font-size:9px;font-weight:900;color:#c9a9ff;letter-spacing:.06em}.admin-news-item p{margin:7px 0 0;font-size:11px;line-height:1.4;color:#e5e9ef}.admin-news-item-actions{display:flex;gap:6px;margin-top:9px}.admin-news-form{display:none;margin-top:12px;padding:12px;border:1px solid rgba(139,82,255,.42);border-radius:12px;background:rgba(139,82,255,.07)}.admin-news-form.show{display:block}.admin-news-count{text-align:right;margin-top:4px;font-size:9px;font-weight:800;color:#748196}.admin-news-count.warn{color:#d8b86b}.admin-news-count.max{color:#ff9c9c}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v244</small>
+<header><small class="build-version build-version-corner">v245</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
+
+<div class="home-headlines" id="homeHeadlines" aria-live="polite"><span class="home-headline-badge" id="homeHeadlineBadge">NEWS</span><div class="home-headline-copy" id="homeHeadlineCopy"></div></div>
 
 <main id="home">
 
@@ -3229,6 +3240,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
         <button type="button" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME DAY</button>
         <button type="button" class="admin-section-tab" id="adminTabRoster" role="tab" aria-selected="false" aria-controls="adminRosterPanel" onclick="selectAdminTab('roster')">ROSTER</button>
+        <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
@@ -3280,6 +3292,18 @@ else venue.arena=homeArenaByCity[g[2]]||'';
           <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
           <div class="admin-muted" id="adminRosterVerified"></div>
         </div>
+      </div>
+      <div class="admin-section-panel" id="adminNewsPanel" role="tabpanel" aria-labelledby="adminTabNews" hidden>
+        <div class="admin-news-toolbar"><div><div class="eyebrow">HOME HEADLINES</div><div class="admin-muted" id="adminNewsStatus">Loading headlines…</div></div><button class="btn primary" type="button" onclick="openNewsEditor()">+ ADD NEWS</button></div>
+        <div class="admin-news-form" id="adminNewsForm">
+          <input type="hidden" id="adminNewsId">
+          <div class="admin-field"><label for="adminNewsCategory">Category</label><select id="adminNewsCategory"><option>NEWS</option><option>UPDATE</option><option>BREAKING</option><option>PODCAST</option></select></div>
+          <div class="admin-field"><label for="adminNewsHeadline">Headline</label><textarea id="adminNewsHeadline" maxlength="150" rows="3" oninput="updateNewsCount()"></textarea><div class="admin-news-count" id="adminNewsCount">0 / 150</div></div>
+          <div class="admin-field"><label for="adminNewsLink">Optional Link</label><input id="adminNewsLink" type="url" placeholder="https://"></div>
+          <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeNewsEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveNewsItem()">SAVE HEADLINE</button></div>
+          <div class="admin-status admin-feedback" id="adminNewsEditStatus"></div>
+        </div>
+        <div class="admin-news-list" id="adminNewsList"></div>
       </div>
       <div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
 <div class="admin-analytics">
@@ -3397,8 +3421,8 @@ async function openAdmin(){
 
 
 function selectAdminTab(tab){
-  tab=['game-day','roster','analytics'].includes(tab)?tab:'game-day';
-  ['game-day','roster','analytics'].forEach(function(name){
+  tab=['game-day','roster','news','analytics'].includes(tab)?tab:'game-day';
+  ['game-day','roster','news','analytics'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':name.charAt(0).toUpperCase()+name.slice(1);
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
@@ -3408,6 +3432,7 @@ function selectAdminTab(tab){
   });
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
+  if(tab==='news')loadAdminNews();
 }
 
 async function loadAdminAnalytics(days){
@@ -4099,6 +4124,30 @@ document.addEventListener('DOMContentLoaded',function(){
   }
   setTimeout(refreshLatestEpisode,100);
 });
+</script>
+
+
+<script>
+/* v245 Home Headlines */
+let dcHomeNewsItems=[],dcHomeNewsIndex=0,dcHomeNewsTimer=null,adminNewsItems=[];
+function newsBadgeClass(category){return String(category||'NEWS').toLowerCase();}
+function renderHomeHeadline(index){
+  if(!dcHomeNewsItems.length)return; dcHomeNewsIndex=index%dcHomeNewsItems.length;
+  var item=dcHomeNewsItems[dcHomeNewsIndex],badge=document.getElementById('homeHeadlineBadge'),copy=document.getElementById('homeHeadlineCopy');
+  if(!badge||!copy)return; copy.classList.add('fade');
+  setTimeout(function(){badge.textContent=item.category;badge.className='home-headline-badge '+newsBadgeClass(item.category);copy.textContent=item.headline;copy.className='home-headline-copy'+(item.link_url?' home-headline-link':'');copy.onclick=item.link_url?function(){window.open(item.link_url,'_blank','noopener');}:null;requestAnimationFrame(function(){copy.classList.remove('fade');});},330);
+}
+async function loadHomeNews(){
+  try{var r=await dcSupabase.from('home_news_items').select('id,category,headline,link_url,created_at').order('created_at',{ascending:false});if(r.error)throw r.error;dcHomeNewsItems=r.data||[];var box=document.getElementById('homeHeadlines');if(!box)return;if(!dcHomeNewsItems.length){box.classList.remove('show');return;}box.classList.add('show');renderHomeHeadline(0);if(dcHomeNewsTimer)clearInterval(dcHomeNewsTimer);if(dcHomeNewsItems.length>1)dcHomeNewsTimer=setInterval(function(){renderHomeHeadline(dcHomeNewsIndex+1);},7000);}catch(e){console.warn('Headlines unavailable',e);}
+}
+function updateNewsCount(){var el=document.getElementById('adminNewsHeadline'),count=document.getElementById('adminNewsCount'),n=(el&&el.value||'').length;if(!count)return;count.textContent=n+' / 150';count.className='admin-news-count'+(n>=150?' max':n>=135?' warn':'');}
+function openNewsEditor(id){var item=id?adminNewsItems.find(function(x){return Number(x.id)===Number(id);}):null;document.getElementById('adminNewsId').value=item?item.id:'';document.getElementById('adminNewsCategory').value=item?item.category:'NEWS';document.getElementById('adminNewsHeadline').value=item?item.headline:'';document.getElementById('adminNewsLink').value=item&&item.link_url?item.link_url:'';document.getElementById('adminNewsForm').classList.add('show');setAdminFeedback('adminNewsEditStatus','','');updateNewsCount();document.getElementById('adminNewsHeadline').focus();}
+function closeNewsEditor(){document.getElementById('adminNewsForm').classList.remove('show');document.getElementById('adminNewsId').value='';}
+function escapeNewsText(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+async function loadAdminNews(){var st=document.getElementById('adminNewsStatus'),list=document.getElementById('adminNewsList');if(st)st.textContent='Loading headlines…';try{var r=await dcSupabase.from('home_news_items').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;adminNewsItems=r.data||[];if(st)st.textContent=adminNewsItems.length+(adminNewsItems.length===1?' active headline':' active headlines');if(list)list.innerHTML=adminNewsItems.length?adminNewsItems.map(function(x){return '<div class="admin-news-item"><div class="admin-news-item-head"><span class="admin-news-item-category">'+escapeNewsText(x.category)+'</span></div><p>'+escapeNewsText(x.headline)+'</p><div class="admin-news-item-actions"><button class="admin-mini-btn" type="button" onclick="openNewsEditor('+x.id+')">EDIT</button><button class="admin-mini-btn delete" type="button" onclick="deleteNewsItem('+x.id+')">REMOVE</button></div></div>';}).join(''):'<div class="admin-muted">No active headlines. The Home ticker is hidden.</div>';}catch(e){if(st)st.textContent='Could not load headlines.';}}
+async function saveNewsItem(){var id=document.getElementById('adminNewsId').value,category=document.getElementById('adminNewsCategory').value,headline=document.getElementById('adminNewsHeadline').value.trim(),link=document.getElementById('adminNewsLink').value.trim();if(!headline){setAdminFeedback('adminNewsEditStatus','error','Enter a headline.');return;}if(headline.length>150){setAdminFeedback('adminNewsEditStatus','error','Headline is over 150 characters.');return;}setAdminFeedback('adminNewsEditStatus','saving','Saving…');var payload={category:category,headline:headline,link_url:link||null,updated_at:new Date().toISOString()};var r=id?await dcSupabase.from('home_news_items').update(payload).eq('id',id):await dcSupabase.from('home_news_items').insert(payload);if(r.error){setAdminFeedback('adminNewsEditStatus','error','Could not save headline.');return;}setAdminFeedback('adminNewsEditStatus','saved','Saved • '+adminTimeStamp());setTimeout(closeNewsEditor,450);await loadAdminNews();await loadHomeNews();}
+async function deleteNewsItem(id){var item=adminNewsItems.find(function(x){return Number(x.id)===Number(id);});if(!item||!confirm('Remove this '+item.category+' headline?'))return;var r=await dcSupabase.from('home_news_items').delete().eq('id',id);if(r.error){setAdminFeedback('adminNewsStatus','error','Could not remove headline.');return;}await loadAdminNews();await loadHomeNews();}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,180);});
 </script>
 
 <script>
