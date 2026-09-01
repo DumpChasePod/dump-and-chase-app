@@ -1572,6 +1572,100 @@ body.game-final #gameDaySection .sectionhead{
 }
 .admin-section-panel[hidden]{display:none!important}
 .admin-section-panel{min-width:0}
+
+/* v251 Phantoms record */
+.phantoms-record-summary{
+  margin-bottom:12px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.phantoms-record-title{
+  margin:0 0 9px;
+  color:#f1f3f7;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.phantoms-record-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:5px;
+}
+.phantoms-record-stat{
+  min-width:0;
+  padding:7px 3px;
+  border:1px solid #28374a;
+  border-radius:9px;
+  background:#101722;
+  text-align:center;
+}
+.phantoms-record-stat span{
+  display:block;
+  color:#8994a4;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.phantoms-record-stat b{
+  display:block;
+  margin-top:3px;
+  color:#f1f3f7;
+  font-size:13px;
+  font-weight:950;
+  line-height:1;
+}
+@media(max-width:420px){
+  .phantoms-record-grid{gap:3px}
+  .phantoms-record-stat{padding:7px 1px}
+  .phantoms-record-stat span{font-size:6.5px}
+  .phantoms-record-stat b{font-size:12px}
+}
+.admin-record-intro{margin:16px 0 12px}
+.admin-record-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.admin-record-field{
+  padding:10px;
+  border:1px solid #28374a;
+  border-radius:12px;
+  background:#101722;
+}
+.admin-record-field label{
+  display:block;
+  margin-bottom:7px;
+  color:#aeb8c5;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.admin-record-pct{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid rgba(139,82,255,.28);
+  border-radius:12px;
+  background:rgba(139,82,255,.10);
+  text-align:center;
+}
+.admin-record-pct span{
+  display:block;
+  color:#bda6f5;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.admin-record-pct b{
+  display:block;
+  margin-top:4px;
+  color:#fff;
+  font-size:24px;
+  font-weight:950;
+}
 .admin-save-feedback,
 .admin-status.admin-feedback{
   min-height:16px;
@@ -1895,7 +1989,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v250</small>
+<header><small class="build-version build-version-corner">v251</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3120,11 +3214,25 @@ function renderSelectedMonth(){
       '<div class="section-title gc-hub-section-title">RECENT RESULTS</div>'+
       '<div class="card"><div class="results-list" id="recentResultsList"><div class="result-empty">No completed games yet. Results will appear here after each game.</div></div></div>'+
       '<div class="section-title gc-hub-section-title">STANDINGS</div>'+
-      `<section class="phan-qa-card">
-  <a class="btn secondary phan-qa-button" href="https://ushl.com/ht/#/team-stats" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','standings',{url:'https://ushl.com/ht/#/team-stats'})">CHECK<br>STANDINGS</a>
-  <div class="phan-qa-copy">
-    <h3>Official USHL Standings</h3>
-    <p>View the current league standings on the USHL website.</p>
+      `<section class="phan-qa-card" style="display:block">
+  <div class="phantoms-record-summary">
+    <div class="phantoms-record-title">Youngstown Phantoms Record</div>
+    <div class="phantoms-record-grid">
+      <div class="phantoms-record-stat"><span>GP</span><b id="recordGp">0</b></div>
+      <div class="phantoms-record-stat"><span>W</span><b id="recordW">0</b></div>
+      <div class="phantoms-record-stat"><span>L</span><b id="recordL">0</b></div>
+      <div class="phantoms-record-stat"><span>OTL</span><b id="recordOtl">0</b></div>
+      <div class="phantoms-record-stat"><span>SOL</span><b id="recordSol">0</b></div>
+      <div class="phantoms-record-stat"><span>PTS</span><b id="recordPts">0</b></div>
+      <div class="phantoms-record-stat"><span>PCT</span><b id="recordPct">.000</b></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div class="phan-qa-copy">
+      <h3>Official USHL Standings</h3>
+      <p>View the current league standings on the USHL website.</p>
+    </div>
+    <a class="btn secondary phan-qa-button" href="https://ushl.com/ht/#/team-stats" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','standings',{url:'https://ushl.com/ht/#/team-stats'})">CHECK<br>STANDINGS</a>
   </div>
 </section>`+
 
@@ -3152,6 +3260,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   if(box)box.innerHTML='<div class="result-empty" role="status" aria-live="polite">Recent results could not be loaded.<br><small>'+escapeHtml((e&&e.message)?e.message:String(e||'Unknown error'))+'</small></div>';
 });
 
+    loadPhantomsRecord();
     var st=document.getElementById('gcStandingsBtn');
     if(st)st.onclick=function(){window.open('https://ushl.com/ht/#/team-stats','_blank','noopener');};
     return false;
@@ -3243,6 +3352,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
         <button type="button" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME DAY</button>
         <button type="button" class="admin-section-tab" id="adminTabRoster" role="tab" aria-selected="false" aria-controls="adminRosterPanel" onclick="selectAdminTab('roster')">ROSTER</button>
+        <button type="button" class="admin-section-tab" id="adminTabRecord" role="tab" aria-selected="false" aria-controls="adminRecordPanel" onclick="selectAdminTab('record')">RECORD</button>
         <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
@@ -3294,6 +3404,26 @@ else venue.arena=homeArenaByCity[g[2]]||'';
           <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
           <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
           <div class="admin-muted" id="adminRosterVerified"></div>
+        </div>
+      </div>
+
+      <div class="admin-section-panel" id="adminRecordPanel" role="tabpanel" aria-labelledby="adminTabRecord" hidden>
+        <div class="admin-record-intro">
+          <div class="eyebrow">PHANTOMS RECORD</div>
+          <div class="admin-muted">Use the − / + buttons to update the season record.</div>
+        </div>
+        <div class="admin-record-grid">
+          <div class="admin-record-field"><label for="adminRecordGp">Games Played</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordGp',-1)">−</button><input id="adminRecordGp" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordGp',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordW">Wins</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordW',-1)">−</button><input id="adminRecordW" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordW',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordL">Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordL',-1)">−</button><input id="adminRecordL" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordL',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordOtl">OT Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordOtl',-1)">−</button><input id="adminRecordOtl" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordOtl',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordSol">SO Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordSol',-1)">−</button><input id="adminRecordSol" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordSol',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordPts">Points</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordPts',-1)">−</button><input id="adminRecordPts" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordPts',1)">+</button></div></div>
+        </div>
+        <div class="admin-record-pct"><span>Win %</span><b id="adminRecordPct">.000</b></div>
+        <div class="admin-publish-bar">
+          <div class="admin-status admin-feedback" id="adminRecordStatus"></div>
+          <button class="btn primary" type="button" onclick="saveAdminRecord()">SAVE RECORD</button>
         </div>
       </div>
       <div class="admin-section-panel" id="adminNewsPanel" role="tabpanel" aria-labelledby="adminTabNews" hidden>
@@ -3424,8 +3554,8 @@ async function openAdmin(){
 
 
 function selectAdminTab(tab){
-  tab=['game-day','roster','news','analytics'].includes(tab)?tab:'game-day';
-  ['game-day','roster','news','analytics'].forEach(function(name){
+  tab=['game-day','roster','record','news','analytics'].includes(tab)?tab:'game-day';
+  ['game-day','roster','record','news','analytics'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':name.charAt(0).toUpperCase()+name.slice(1);
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
@@ -3435,7 +3565,99 @@ function selectAdminTab(tab){
   });
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
+  if(tab==='record')loadAdminRecord();
   if(tab==='news')loadAdminNews();
+}
+
+
+function formatPhantomsPct(record){
+  var gp=Math.max(0,parseInt(record&&record.gp,10)||0);
+  var pts=Math.max(0,parseInt(record&&record.pts,10)||0);
+  if(!gp)return '.000';
+  var pct=pts/(gp*2);
+  var formatted=pct.toFixed(3);
+  return pct<1?formatted.replace(/^0/,''):formatted;
+}
+function renderPhantomsRecord(record){
+  record=record||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  var map={recordGp:'gp',recordW:'w',recordL:'l',recordOtl:'otl',recordSol:'sol',recordPts:'pts'};
+  Object.keys(map).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.textContent=String(Math.max(0,parseInt(record[map[id]],10)||0));
+  });
+  var pct=document.getElementById('recordPct');
+  if(pct)pct.textContent=formatPhantomsPct(record);
+}
+async function loadPhantomsRecord(){
+  try{
+    var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+    if(r.error)throw r.error;
+    renderPhantomsRecord(r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0});
+  }catch(e){
+    console.warn('Phantoms record unavailable',e);
+    renderPhantomsRecord({gp:0,w:0,l:0,otl:0,sol:0,pts:0});
+  }
+}
+function adminRecordValues(){
+  function n(id){
+    var el=document.getElementById(id);
+    var v=Math.max(0,parseInt(el&&el.value,10)||0);
+    if(el)el.value=String(v);
+    return v;
+  }
+  return {
+    gp:n('adminRecordGp'),
+    w:n('adminRecordW'),
+    l:n('adminRecordL'),
+    otl:n('adminRecordOtl'),
+    sol:n('adminRecordSol'),
+    pts:n('adminRecordPts')
+  };
+}
+function updateAdminRecordPct(){
+  var pct=document.getElementById('adminRecordPct');
+  if(pct)pct.textContent=formatPhantomsPct(adminRecordValues());
+}
+function stepAdminRecord(id,delta){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var value=Math.max(0,(parseInt(el.value,10)||0)+Number(delta||0));
+  el.value=String(value);
+  updateAdminRecordPct();
+}
+async function loadAdminRecord(){
+  var status=document.getElementById('adminRecordStatus');
+  if(status){status.className='admin-status admin-feedback';status.textContent='Loading record…';}
+  try{
+    var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+    if(r.error)throw r.error;
+    var d=r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+    [['adminRecordGp','gp'],['adminRecordW','w'],['adminRecordL','l'],['adminRecordOtl','otl'],['adminRecordSol','sol'],['adminRecordPts','pts']].forEach(function(pair){
+      var el=document.getElementById(pair[0]);if(el)el.value=String(Math.max(0,parseInt(d[pair[1]],10)||0));
+    });
+    updateAdminRecordPct();
+    if(status)status.textContent='';
+  }catch(e){
+    console.error('Record load failed:',e);
+    if(status){status.className='admin-status admin-feedback is-error';status.textContent='Record could not be loaded.';}
+  }
+}
+async function saveAdminRecord(){
+  var status=document.getElementById('adminRecordStatus');
+  var d=adminRecordValues();
+  if(status){status.className='admin-status admin-feedback is-saving';status.textContent='Saving…';}
+  try{
+    var r=await dcSupabase.from('phantoms_record').upsert({
+      id:1,gp:d.gp,w:d.w,l:d.l,otl:d.otl,sol:d.sol,pts:d.pts,updated_at:new Date().toISOString()
+    },{onConflict:'id'});
+    if(r.error)throw r.error;
+    updateAdminRecordPct();
+    renderPhantomsRecord(d);
+    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Record saved.';}
+  }catch(e){
+    console.error('Record save failed:',e);
+    if(status){status.className='admin-status admin-feedback is-error';status.textContent='Record could not be saved.';}
+  }
 }
 
 async function loadAdminAnalytics(days){
