@@ -1718,10 +1718,10 @@ body.game-final #gameDaySection .sectionhead{
   margin-bottom:3px;
 }
 .episode-year-btn{
-  flex:0 0 auto;
-  min-width:64px;
+  flex:0 0 calc((100% - 14px)/3);
+  min-width:0;
   min-height:38px;
-  padding:8px 12px;
+  padding:8px 10px;
   border:1px solid #28374a;
   border-radius:11px;
   background:#101722;
@@ -1881,7 +1881,7 @@ body.game-final #gameDaySection .sectionhead{
 
 
 <style>
-/* v247 Home Headlines */
+/* v248 Home Headlines */
 .home-headlines{display:none;margin:10px 14px 2px;padding:8px 12px;border:1px solid #28374a;border-radius:12px;background:#101722;height:54px;box-sizing:border-box;align-items:center;gap:9px;overflow:hidden}
 .home-headlines.show{display:flex}.home-headline-badge{flex:0 0 auto;padding:4px 7px;border-radius:7px;font-size:8px;font-weight:900;letter-spacing:.07em;line-height:1;background:rgba(139,82,255,.16);color:#c9a9ff;border:1px solid rgba(139,82,255,.35)}
 .home-headline-badge.breaking{background:rgba(220,65,65,.14);color:#ff9b9b;border-color:rgba(220,65,65,.35)}.home-headline-badge.podcast{background:rgba(255,148,74,.13);color:#ffb47d;border-color:rgba(255,148,74,.34)}.home-headline-badge.update{background:rgba(125,145,170,.13);color:#b8c4d3;border-color:rgba(125,145,170,.3)}
@@ -1892,7 +1892,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v247</small>
+<header><small class="build-version build-version-corner">v248</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4128,7 +4128,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 <script>
-/* v247 Home Headlines */
+/* v248 Home Headlines */
 let dcHomeNewsItems=[],dcHomeNewsIndex=0,dcHomeNewsTimer=null,adminNewsItems=[];
 function newsBadgeClass(category){return String(category||'NEWS').toLowerCase();}
 function renderHomeHeadline(index){
