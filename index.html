@@ -2225,6 +2225,44 @@ body::after{
   background:rgba(139,82,255,.16);
   box-shadow:inset 0 0 0 1px rgba(139,82,255,.22);
 }
+
+/* v281 Admin scroll-leak fixes */
+.admin-dashboard-head{
+  background:#101722;
+}
+.admin-dashboard-head::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-6px;
+  height:7px;
+  background:#101722;
+  pointer-events:none;
+}
+.admin-section-tabs{
+  top:52px;
+  margin-top:-2px;
+  background:#101722;
+  box-shadow:0 9px 20px rgba(0,0,0,.16);
+}
+
+/* Keep scrolling Admin content completely hidden behind Save & Publish. */
+.admin-publish-bar{
+  background:#101722;
+  border-top:1px solid rgba(139,82,255,.16);
+  box-shadow:0 -10px 24px rgba(0,0,0,.24);
+}
+.admin-publish-bar::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-7px;
+  height:8px;
+  background:#101722;
+  pointer-events:none;
+}
 </style>
 
 
@@ -2356,7 +2394,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v280</small>
+<header><small class="build-version build-version-corner">v281</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
