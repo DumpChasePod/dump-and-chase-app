@@ -1990,6 +1990,7 @@ body.game-final #gameDaySection .sectionhead{
 
 /* v255 Schedule weekday date-only fix */
 /* v256 Automated Game Day window: 3 hours before puck drop through 6:00 AM Eastern next day */
+/* v257 Automated Phantoms record from completed regular-season results, with persistent manual adjustments */
 .admin-news-category-btn{flex:1 1 calc(50% - 4px);min-height:38px;text-align:center}
 .admin-record-grid .admin-score-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:6px;align-items:center}
 .admin-record-grid .admin-score-stepper button{width:42px;min-width:42px;padding:0}
@@ -2026,7 +2027,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v256</small>
+<header><small class="build-version build-version-corner">v257</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2833,7 +2834,8 @@ async function upsertCompletedResult(result){
  if(!result || !['W','L','OTL','SOL'].includes(result.result))return false;
  await callResultsAdmin('upsert',result);
  await syncCompletedResultToSchedule(result);
- await syncCompletedResults();
+ var syncedResults=await syncCompletedResults(true);
+ await recalculatePhantomsRecord(syncedResults);
  return true;
 }
 
@@ -3791,6 +3793,70 @@ async function syncFinalToSchedule(raw){
   if(r.error)throw r.error;
   await loadSupabaseSchedule();
 }
+function completedResultsRecordBase(results){
+  var base={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  (Array.isArray(results)?results:[]).forEach(function(result){
+    var key=String(result&&result.date||'').trim().toUpperCase();
+    var opp=String(result&&result.opponent||'').trim();
+    var scheduleRow=dcScheduleRows.find(function(row){
+      return dcScheduleKeyFromRow(row)===key&&String(row.opponent||'').trim()===opp;
+    });
+    if(scheduleRow&&String(scheduleRow.event_label||'').trim().toUpperCase()==='PRESEASON')return;
+    var outcome=String(result&&result.result||'').trim().toUpperCase();
+    if(!['W','L','OTL','SOL'].includes(outcome))return;
+    base.gp+=1;
+    if(outcome==='W')base.w+=1;
+    else if(outcome==='L')base.l+=1;
+    else if(outcome==='OTL')base.otl+=1;
+    else if(outcome==='SOL')base.sol+=1;
+  });
+  base.pts=(base.w*2)+base.otl+base.sol;
+  return base;
+}
+function recordWithAdjustments(base,row){
+  base=base||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  row=row||{};
+  function v(field){return parseInt(row['adj_'+field],10)||0;}
+  return {
+    gp:Math.max(0,base.gp+v('gp')),
+    w:Math.max(0,base.w+v('w')),
+    l:Math.max(0,base.l+v('l')),
+    otl:Math.max(0,base.otl+v('otl')),
+    sol:Math.max(0,base.sol+v('sol')),
+    pts:Math.max(0,base.pts+v('pts'))
+  };
+}
+function renderAdminRecordControls(record){
+  if(!document.getElementById('adminRecordGp'))return;
+  record=record||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  [['adminRecordGp','gp'],['adminRecordW','w'],['adminRecordL','l'],['adminRecordOtl','otl'],['adminRecordSol','sol'],['adminRecordPts','pts']].forEach(function(pair){
+    var el=document.getElementById(pair[0]);
+    if(el)el.value=String(Math.max(0,parseInt(record[pair[1]],10)||0));
+  });
+  updateAdminRecordPct();
+}
+async function recalculatePhantomsRecord(results){
+  if(!dcScheduleRows.length)await loadSupabaseSchedule();
+  var base=completedResultsRecordBase(results);
+  var current=await dcSupabase.from('phantoms_record').select('adj_gp,adj_w,adj_l,adj_otl,adj_sol,adj_pts').eq('id',1).maybeSingle();
+  if(current.error)throw current.error;
+  var adjustments=current.data||{};
+  var record=recordWithAdjustments(base,adjustments);
+  var saved=await dcSupabase.from('phantoms_record').upsert({
+    id:1,gp:record.gp,w:record.w,l:record.l,otl:record.otl,sol:record.sol,pts:record.pts,
+    adj_gp:parseInt(adjustments.adj_gp,10)||0,
+    adj_w:parseInt(adjustments.adj_w,10)||0,
+    adj_l:parseInt(adjustments.adj_l,10)||0,
+    adj_otl:parseInt(adjustments.adj_otl,10)||0,
+    adj_sol:parseInt(adjustments.adj_sol,10)||0,
+    adj_pts:parseInt(adjustments.adj_pts,10)||0,
+    updated_at:new Date().toISOString()
+  },{onConflict:'id'});
+  if(saved.error)throw saved.error;
+  renderPhantomsRecord(record);
+  renderAdminRecordControls(record);
+  return record;
+}
 function formatPhantomsPct(record){
   var gp=Math.max(0,parseInt(record&&record.gp,10)||0);
   var pts=Math.max(0,parseInt(record&&record.pts,10)||0);
@@ -3853,10 +3919,7 @@ async function loadAdminRecord(){
     var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
     if(r.error)throw r.error;
     var d=r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
-    [['adminRecordGp','gp'],['adminRecordW','w'],['adminRecordL','l'],['adminRecordOtl','otl'],['adminRecordSol','sol'],['adminRecordPts','pts']].forEach(function(pair){
-      var el=document.getElementById(pair[0]);if(el)el.value=String(Math.max(0,parseInt(d[pair[1]],10)||0));
-    });
-    updateAdminRecordPct();
+    renderAdminRecordControls(d);
     if(status)status.textContent='';
   }catch(e){
     console.error('Record load failed:',e);
@@ -3868,13 +3931,27 @@ async function saveAdminRecord(){
   var d=adminRecordValues();
   if(status){status.className='admin-status admin-feedback is-saving';status.textContent='Saving…';}
   try{
+    var results=await syncCompletedResults(true);
+    if(!dcScheduleRows.length)await loadSupabaseSchedule();
+    var base=completedResultsRecordBase(results);
+    var adjustments={
+      adj_gp:d.gp-base.gp,
+      adj_w:d.w-base.w,
+      adj_l:d.l-base.l,
+      adj_otl:d.otl-base.otl,
+      adj_sol:d.sol-base.sol,
+      adj_pts:d.pts-base.pts
+    };
     var r=await dcSupabase.from('phantoms_record').upsert({
-      id:1,gp:d.gp,w:d.w,l:d.l,otl:d.otl,sol:d.sol,pts:d.pts,updated_at:new Date().toISOString()
+      id:1,gp:d.gp,w:d.w,l:d.l,otl:d.otl,sol:d.sol,pts:d.pts,
+      adj_gp:adjustments.adj_gp,adj_w:adjustments.adj_w,adj_l:adjustments.adj_l,
+      adj_otl:adjustments.adj_otl,adj_sol:adjustments.adj_sol,adj_pts:adjustments.adj_pts,
+      updated_at:new Date().toISOString()
     },{onConflict:'id'});
     if(r.error)throw r.error;
-    updateAdminRecordPct();
+    renderAdminRecordControls(d);
     renderPhantomsRecord(d);
-    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Record saved.';}
+    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Record saved. Manual adjustment will carry forward.';}
   }catch(e){
     console.error('Record save failed:',e);
     if(status){status.className='admin-status admin-feedback is-error';status.textContent='Record could not be saved.';}
@@ -4253,7 +4330,7 @@ async function editAdminResult(index){
 async function deleteAdminResult(index){
  var results=getStoredResults(),r=results[index];if(!r||!r.id)return;
  if(!confirm('Delete '+(r.opponent||'this result')+' from Recent Results?'))return;
- try{await callResultsAdmin('delete',r.id);await syncCompletedResults();var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Result deleted.';}
+ try{await callResultsAdmin('delete',r.id);var syncedResults=await syncCompletedResults(true);await recalculatePhantomsRecord(syncedResults);var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Result deleted. Record recalculated.';}
  catch(e){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Could not delete result: '+e.message;}
 }
 async function saveAdminUpdates(){
