@@ -2079,6 +2079,64 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
   top:42px;
   padding-top:20px;
 }
+
+/* v276 safe UI cleanup */
+.close,
+.admin-close{
+  min-width:44px;
+  min-height:44px;
+  display:inline-grid;
+  place-items:center;
+}
+
+.admin-dashboard-head{
+  position:sticky;
+  top:-20px;
+  z-index:14;
+  margin:0 -20px;
+  padding:20px 54px 10px 20px;
+  background:#101722;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.admin-section-tabs{
+  position:sticky;
+  top:54px;
+  z-index:13;
+  margin:0 -20px;
+  padding:10px 20px 8px;
+  background:#101722;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.sheethead{
+  position:sticky;
+  top:-20px;
+  z-index:14;
+  margin:0 -20px;
+  padding:20px 20px 12px;
+  background:#111925;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.episode-year-bar{
+  position:sticky;
+  top:44px;
+  z-index:13;
+  margin:0 -20px 3px;
+  padding:18px 20px 9px;
+  background:#111925;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.admin-score-stepper button,
+.admin-mini-btn{
+  min-height:40px;
+}
+
+@media(max-width:620px){
+  .admin-section-tab{min-height:42px}
+}
 </style>
 
 
@@ -2210,7 +2268,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v275</small>
+<header><small class="build-version build-version-corner">v276</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2387,7 +2445,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <div class="toast" id="toast"></div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Dump and Chase" onclick="if(event.target===this)closeSheet()"><div class="sheet">
-  <div class="sheethead"><h2 id="sheetTitle">Dump & Chase</h2><button class="close" onclick="closeSheet()">✕</button></div>
+  <div class="sheethead"><h2 id="sheetTitle">Dump & Chase</h2><button class="close" type="button" aria-label="Close panel" onclick="closeSheet()">✕</button></div>
   <div id="sheetBody"></div>
 </div></div>
 
@@ -2522,7 +2580,18 @@ function toggleHostBio(slug){
     if(btn)btn.setAttribute('aria-expanded','true');
     if(navigator.vibrate)navigator.vibrate(6);
   }
+  document.querySelectorAll('.navitem').forEach(function(x){x.classList.remove('active');});
+  var home=document.querySelector('.navitem');
+  if(home)home.classList.add('active');
 }
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  var admin=document.getElementById('adminOverlay');
+  var modal=document.getElementById('modal');
+  if(admin&&admin.classList.contains('show')){closeAdmin();return;}
+  if(modal&&modal.classList.contains('show')){closeSheet();}
+});
+
 function openSheet(type){
  dcTrack('section_open',type==='episodes'?'episodes':'more');
  const title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
@@ -3592,7 +3661,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
 
 <div class="admin-overlay" id="adminOverlay" role="dialog" aria-modal="true" aria-label="Admin" aria-hidden="true">
   <div class="admin-panel">
-    <button class="admin-close" type="button" onclick="closeAdmin()">×</button>
+    <button class="admin-close" type="button" aria-label="Close admin" onclick="closeAdmin()">×</button>
     <div id="adminLogin">
       <div class="eyebrow">PRIVATE AREA</div>
       <h2>Admin / Updates</h2>
@@ -3620,8 +3689,8 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
       <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
       <div class="admin-score-card admin-status-group admin-live-controls">
-        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
-        <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
+        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
+        <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
       <div class="admin-field admin-status-group admin-live-controls"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
       <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><label for="adminResult">Final Result</label><select id="adminResult">
