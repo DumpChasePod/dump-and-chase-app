@@ -2423,6 +2423,7 @@ body::after{
 .admin-qna-question{margin-top:10px;color:#e7ebf1;font-size:11px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 .admin-qna-actions{display:flex;gap:7px;margin-top:11px}
 .admin-qna-actions .admin-mini-btn{min-height:36px}
+.phan-qa-field-note{margin-top:6px;color:#8994a4;font-size:9px;line-height:1.45}
 </style>
 
 
@@ -2554,7 +2555,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v284</small>
+<header><small class="build-version build-version-corner">v285</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2898,6 +2899,11 @@ function openPhanQaForm(){
         <input id="phanQaName" autocomplete="name" placeholder="Your name">
       </div>
       <div class="admin-field">
+        <label for="phanQaEmail">Email <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input id="phanQaEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+        <div class="phan-qa-field-note">Have a question you'd rather have answered privately? Leave your email and we'll get back to you directly.</div>
+      </div>
+      <div class="admin-field">
         <label for="phanQaQuestion">Question</label>
         <textarea id="phanQaQuestion" required placeholder="What would you like us to answer?"></textarea>
       </div>
@@ -2915,11 +2921,13 @@ function openPhanQaForm(){
 async function submitPhanQa(event){
   event.preventDefault();
   var nameEl=document.getElementById('phanQaName');
+  var emailEl=document.getElementById('phanQaEmail');
   var questionEl=document.getElementById('phanQaQuestion');
   var hp=document.getElementById('phanQaWebsite');
   var status=document.getElementById('phanQaStatus');
   var button=document.getElementById('phanQaSubmit');
   var name=String(nameEl&&nameEl.value||'').trim();
+  var email=String(emailEl&&emailEl.value||'').trim();
   var question=String(questionEl&&questionEl.value||'').trim();
   if(hp&&hp.value)return;
   if(!question){
@@ -2930,7 +2938,7 @@ async function submitPhanQa(event){
   if(button)button.disabled=true;
   if(status){status.className='admin-status admin-feedback is-saving';status.textContent='Sending…';}
   try{
-    var r=await dcSupabase.from('phan_qa_submissions').insert({name:name||null,question:question,status:'new'});
+    var r=await dcSupabase.from('phan_qa_submissions').insert({name:name||null,email:email||null,question:question,status:'new'});
     if(r.error)throw r.error;
     dcTrack('phan_qa_submit','phan_qa',{named:!!name});
     var body=document.getElementById('sheetBody');
@@ -4394,7 +4402,7 @@ function renderAdminQna(){
     var isNew=x.status==='new';
     return '<div class="admin-qna-item '+(isNew?'new':'used')+'">'+
       '<div class="admin-qna-item-head"><div><div class="admin-qna-name">'+escapeHtml(x.name||'Anonymous')+'</div>'+
-      '<div class="admin-qna-meta">'+escapeHtml(formatQnaDate(x.created_at))+'</div></div>'+
+      '<div class="admin-qna-meta">'+escapeHtml(formatQnaDate(x.created_at))+(x.email?' · '+escapeHtml(x.email):'')+'</div></div>'+
       (isNew?'<span class="admin-qna-badge">NEW</span>':'')+'</div>'+
       '<div class="admin-qna-question">'+escapeHtml(x.question||'')+'</div>'+
       '<div class="admin-qna-actions">'+
@@ -4412,7 +4420,7 @@ async function loadAdminQna(){
   var list=document.getElementById('adminQnaList');
   if(status)status.textContent='Loading questions…';
   try{
-    var r=await dcSupabase.from('phan_qa_submissions').select('id,name,question,status,created_at,used_at').order('created_at',{ascending:false});
+    var r=await dcSupabase.from('phan_qa_submissions').select('id,name,email,question,status,created_at,used_at').order('created_at',{ascending:false});
     if(r.error)throw r.error;
     dcAdminQnaItems=r.data||[];
     renderAdminQna();
