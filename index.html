@@ -2028,6 +2028,48 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 #adminDashboard.admin-is-final .admin-final-controls{
   opacity:1;
 }
+
+/* Sticky headers for Admin and modal sections */
+.admin-close{
+  position:sticky;
+  top:0;
+  z-index:15;
+}
+.admin-dashboard-head{
+  position:sticky;
+  top:-20px;
+  z-index:12;
+  margin:0 -20px;
+  padding:20px 54px 10px 20px;
+  background:#101722;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.admin-section-tabs{
+  top:50px;
+  margin:0 -20px;
+  padding:10px 20px 8px;
+  background:#101722;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.sheethead{
+  position:sticky;
+  top:-20px;
+  z-index:12;
+  margin:0 -20px;
+  padding:20px 20px 12px;
+  background:#111925;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.episode-year-bar{
+  position:sticky;
+  top:58px;
+  z-index:11;
+  margin:0 -20px 3px;
+  padding:10px 20px 9px;
+  background:#111925;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
 </style>
 
 
@@ -2159,7 +2201,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v273</small>
+<header><small class="build-version build-version-corner">v274</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
