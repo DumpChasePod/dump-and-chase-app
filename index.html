@@ -1989,6 +1989,18 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);gap:7px}body.game-live #publicGameDayCard .gameday-score{font-size:30px}}
 
 
+
+.admin-dashboard-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-right:34px}
+.admin-dashboard-head h2{margin:0}
+.admin-lock-btn{border:1px solid #34445a;border-radius:9px;background:#151e2a;color:#aeb8c6;padding:8px 11px;font-size:9px;font-weight:950;letter-spacing:.06em;cursor:pointer}
+.admin-lock-btn:active{transform:scale(.97)}
+.admin-group-title{margin:18px 0 9px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);color:#8994a4;font-size:9px;font-weight:950;letter-spacing:.08em}
+.admin-section-panel>.admin-group-title:first-child{margin-top:13px;padding-top:0;border-top:0}
+.admin-quick-section-first{margin-top:0}
+.admin-final-result-field{margin-top:0}
+.admin-reset-row{margin-top:14px}
+.admin-reset-row .btn{width:100%;min-height:40px}
+.admin-publish-bar{box-shadow:0 -10px 22px rgba(7,11,17,.18)}
 </style>
 
 
@@ -2120,7 +2132,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v271</small>
+<header><small class="build-version build-version-corner">v272</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3506,8 +3518,10 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-status" id="adminLoginStatus"></div>
     </div>
     <div id="adminDashboard" style="display:none">
-      <div class="eyebrow">PRIVATE AREA</div>
-      <h2>Admin / Updates</h2>
+      <div class="admin-dashboard-head">
+        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2></div>
+        <button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button>
+      </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
         <button type="button" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME DAY</button>
         <button type="button" class="admin-section-tab" id="adminTabRoster" role="tab" aria-selected="false" aria-controls="adminRosterPanel" onclick="selectAdminTab('roster')">ROSTER</button>
@@ -3517,15 +3531,16 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
-      <div class="eyebrow" style="margin-top:16px">GAME DAY</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
+      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
-      <div class="admin-quick-section"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
+      <div class="admin-group-title">GAME CONTROLS</div>
+      <div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
       <div class="admin-score-card">
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
       <div class="admin-field"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
-      <div class="eyebrow" style="margin-top:16px">RESULT</div><div class="admin-field"><label for="adminResult">Final Result</label><select id="adminResult">
+      <div class="admin-group-title">FINAL RESULT</div><div class="admin-field admin-final-result-field"><label for="adminResult">Final Result</label><select id="adminResult">
 <option value="">Not final</option>
 <option value="W">W</option>
 <option value="W_OT">W — Final (OT)</option>
@@ -3533,14 +3548,13 @@ else venue.arena=homeArenaByCity[g[2]]||'';
 <option value="L">L</option>
 <option value="L_OT">L — Final (OT)</option>
 <option value="L_SO">L — Final (SO)</option>
-</select></div><div class="eyebrow" style="margin-top:18px">RECENT RESULTS MANAGEMENT</div>
+</select></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
       
-<div class="admin-actions"><button class="btn secondary" type="button" onclick="resetAdminGame()">Reset Game</button><button class="btn secondary" type="button" onclick="adminLogout()">Lock</button></div><div class="admin-publish-bar">
+<div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div><div class="admin-publish-bar">
   <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
   <button class="btn primary" type="button" onclick="saveAdminUpdates()">SAVE &amp; PUBLISH</button>
 </div>
-      <div class="admin-muted" style="margin-top:16px">Changes are published across all devices.</div>
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
         <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div><div class="admin-save-feedback admin-feedback" id="adminRosterFeedback"></div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
@@ -3786,6 +3800,7 @@ async function openAdmin(){
  const o=document.getElementById('adminOverlay');if(!o)return;o.classList.add('show');o.setAttribute('aria-hidden','false');
  const unlocked=await dcIsAdmin();document.getElementById('adminLogin').style.display=unlocked?'none':'block';document.getElementById('adminDashboard').style.display=unlocked?'block':'none';
  if(unlocked){
+  dcAdminLoadedTabs.clear();
   await loadAdminUpdates();
   syncAdminQuickControls();await syncCompletedResults();renderAdminRecentResults();
   selectAdminTab('game-day');
@@ -3801,6 +3816,7 @@ async function openAdmin(){
 
 
 
+let dcAdminLoadedTabs=new Set();
 function selectAdminTab(tab){
   tab=['game-day','roster','record','schedule','news','analytics'].includes(tab)?tab:'game-day';
   ['game-day','roster','record','schedule','news','analytics'].forEach(function(name){
@@ -3811,6 +3827,8 @@ function selectAdminTab(tab){
     if(panel)panel.hidden=!active;
     if(btn){btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
   });
+  if(tab==='game-day'||dcAdminLoadedTabs.has(tab))return;
+  dcAdminLoadedTabs.add(tab);
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
   if(tab==='record'){loadAdminRecord();loadAdminOpponentRecord();}
