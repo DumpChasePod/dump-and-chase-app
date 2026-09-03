@@ -1997,7 +1997,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);gap:7px}body.game-live #publicGameDayCard .gameday-score{font-size:30px}}
 
 
-/* v263 private Road Game Chat V1 */
+/* v264 private Road Game Chat V1 */
 .admin-chat-test{max-width:620px}
 .admin-chat-identity{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .admin-chat-identity .btn{grid-column:1/-1}
@@ -2014,6 +2014,18 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 .admin-chat-compose textarea{width:100%;box-sizing:border-box;resize:none;border:1px solid #2a3a4d;border-radius:12px;background:#0b1421;color:#f4f7fb;padding:10px;font:inherit}
 .admin-chat-compose-row{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
 @media(max-width:520px){.admin-chat-identity{grid-template-columns:1fr}.admin-chat-messages{height:300px}}
+
+
+/* v264 Chat V1 bubbles + verified host badges */
+.admin-chat-msg{padding:7px 0 8px;border-bottom:0}
+.admin-chat-msg-head{padding:0 5px 4px}
+.admin-chat-msg-text{margin-top:0;padding:9px 11px;border:1px solid #263648;border-radius:12px;background:#111b28;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)}
+.admin-chat-host-badge{display:inline-flex;margin-left:5px;padding:2px 5px;border-radius:999px;background:rgba(139,82,255,.17);border:1px solid rgba(139,82,255,.38);color:#c9a9ff;font-size:7px;font-weight:950;letter-spacing:.07em;vertical-align:1px}
+.admin-chat-hosts{margin-top:18px;padding-top:14px;border-top:1px solid #28374a}
+.admin-chat-host-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.admin-chat-host-person{min-width:0}
+.admin-chat-host-person b{display:block;font-size:10px}
+.admin-chat-host-person span{display:block;margin-top:2px;font-size:8px;color:#778599}
 
 </style>
 
@@ -3705,6 +3717,11 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-chat-compose-row"><span class="admin-muted" id="adminChatCount">0/250</span><button class="btn primary" type="button" onclick="sendAdminChatMessage()">SEND</button></div>
     </div>
     <div class="admin-status admin-feedback" id="adminChatStatus"></div>
+    <div class="admin-chat-hosts">
+      <div class="eyebrow">CHAT HOSTS</div>
+      <div class="admin-muted">Assign HOST to a device that has posted in this test room.</div>
+      <div id="adminChatHostList"></div>
+    </div>
   </div>
 </div>
 </div>
@@ -3872,12 +3889,42 @@ function dcChatStoredName(){
 function dcChatTime(v){
   try{return new Date(v).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(_){return '';}
 }
+let dcChatHosts=[];
+function dcChatHostFor(deviceId){return dcChatHosts.find(function(h){return h.device_id===deviceId;})||null;}
 function renderAdminChatMessages(rows){
   const box=document.getElementById('adminChatMessages');if(!box)return;
   box.innerHTML=(rows||[]).map(function(m){
-    return '<div class="admin-chat-msg"><div class="admin-chat-msg-head"><span class="admin-chat-msg-name">'+escapeHtml(m.first_name+' '+m.last_name)+'</span><span><span class="admin-chat-msg-time">'+escapeHtml(dcChatTime(m.created_at))+'</span><button class="admin-chat-delete" type="button" onclick="deleteAdminChatMessage('+Number(m.id)+')">DELETE</button></span></div><div class="admin-chat-msg-text">'+escapeHtml(m.message)+'</div></div>';
+    const host=dcChatHostFor(m.device_id);
+    return '<div class="admin-chat-msg"><div class="admin-chat-msg-head"><span class="admin-chat-msg-name">'+escapeHtml(m.first_name+' '+m.last_name)+(host?'<span class="admin-chat-host-badge">HOST</span>':'')+'</span><span><span class="admin-chat-msg-time">'+escapeHtml(dcChatTime(m.created_at))+'</span><button class="admin-chat-delete" type="button" onclick="deleteAdminChatMessage('+Number(m.id)+')">DELETE</button></span></div><div class="admin-chat-msg-text">'+escapeHtml(m.message)+'</div></div>';
   }).join('');
   box.scrollTop=box.scrollHeight;
+}
+function renderAdminChatHosts(rows){
+  const box=document.getElementById('adminChatHostList');if(!box)return;
+  const seen=new Map();
+  (rows||[]).forEach(function(m){if(!seen.has(m.device_id))seen.set(m.device_id,m);});
+  box.innerHTML=Array.from(seen.values()).map(function(m){
+    const host=dcChatHostFor(m.device_id);
+    return '<div class="admin-chat-host-row"><div class="admin-chat-host-person"><b>'+escapeHtml(m.first_name+' '+m.last_name)+(host?' <span class="admin-chat-host-badge">HOST</span>':'')+'</b><span>Device '+escapeHtml(String(m.device_id).slice(0,8))+'…</span></div><button type="button" class="admin-mini-btn" onclick="'+(host?'removeAdminChatHost':'makeAdminChatHost')+'('+JSON.stringify(m.device_id)+','+JSON.stringify(m.first_name)+','+JSON.stringify(m.last_name)+')">'+(host?'REMOVE HOST':'MAKE HOST')+'</button></div>';
+  }).join('')||'<div class="admin-muted" style="margin-top:8px">No participants yet.</div>';
+}
+async function loadAdminChatHosts(){
+  const q=await dcSupabase.from('road_chat_hosts').select('*').order('created_at',{ascending:true});
+  dcChatHosts=q.error?[]:(q.data||[]);
+}
+async function makeAdminChatHost(deviceId,first,last){
+  const st=document.getElementById('adminChatStatus');
+  const q=await dcSupabase.from('road_chat_hosts').upsert({device_id:deviceId,first_name:first,last_name:last});
+  if(q.error){if(st)st.textContent='Could not assign HOST.';return;}
+  if(st)st.textContent=first+' '+last+' is now a HOST.';
+  await loadAdminChatHosts();await refreshAdminChat();
+}
+async function removeAdminChatHost(deviceId){
+  const st=document.getElementById('adminChatStatus');
+  const q=await dcSupabase.from('road_chat_hosts').delete().eq('device_id',deviceId);
+  if(q.error){if(st)st.textContent='Could not remove HOST.';return;}
+  if(st)st.textContent='HOST removed.';
+  await loadAdminChatHosts();await refreshAdminChat();
 }
 async function loadAdminChat(){
   const st=document.getElementById('adminChatStatus');
@@ -3909,8 +3956,9 @@ async function joinAdminChat(){
 }
 async function refreshAdminChat(){
   if(!dcChatSettings)return;
+  await loadAdminChatHosts();
   const q=await dcSupabase.from('road_chat_messages').select('*').eq('session_key',dcChatSettings.session_key).order('created_at',{ascending:true}).limit(200);
-  if(!q.error)renderAdminChatMessages(q.data||[]);
+  if(!q.error){renderAdminChatMessages(q.data||[]);renderAdminChatHosts(q.data||[]);}
 }
 function updateChatCount(){
   const el=document.getElementById('adminChatMessage'),c=document.getElementById('adminChatCount');if(c)c.textContent=String((el?.value||'').length)+'/250';
