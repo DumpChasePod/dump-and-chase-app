@@ -1997,7 +1997,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);gap:7px}body.game-live #publicGameDayCard .gameday-score{font-size:30px}}
 
 
-/* v264 private Road Game Chat V1 */
+/* v265 private Road Game Chat V1 */
 .admin-chat-test{max-width:620px}
 .admin-chat-identity{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .admin-chat-identity .btn{grid-column:1/-1}
@@ -2016,7 +2016,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 @media(max-width:520px){.admin-chat-identity{grid-template-columns:1fr}.admin-chat-messages{height:300px}}
 
 
-/* v264 Chat V1 bubbles + verified host badges */
+/* v265 Chat V1 bubbles + verified host badges */
 .admin-chat-msg{padding:7px 0 8px;border-bottom:0}
 .admin-chat-msg-head{padding:0 5px 4px}
 .admin-chat-msg-text{margin-top:0;padding:9px 11px;border:1px solid #263648;border-radius:12px;background:#111b28;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)}
@@ -2026,6 +2026,13 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 .admin-chat-host-person{min-width:0}
 .admin-chat-host-person b{display:block;font-size:10px}
 .admin-chat-host-person span{display:block;margin-top:2px;font-size:8px;color:#778599}
+
+
+/* v265 chat readability + host button repair */
+.admin-chat-msg-name{font-size:12px}
+.admin-chat-msg-text{font-size:14px;line-height:1.45}
+.admin-chat-msg-time{font-size:9px}
+.admin-chat-host-person b{font-size:11px}
 
 </style>
 
@@ -3905,8 +3912,18 @@ function renderAdminChatHosts(rows){
   (rows||[]).forEach(function(m){if(!seen.has(m.device_id))seen.set(m.device_id,m);});
   box.innerHTML=Array.from(seen.values()).map(function(m){
     const host=dcChatHostFor(m.device_id);
-    return '<div class="admin-chat-host-row"><div class="admin-chat-host-person"><b>'+escapeHtml(m.first_name+' '+m.last_name)+(host?' <span class="admin-chat-host-badge">HOST</span>':'')+'</b><span>Device '+escapeHtml(String(m.device_id).slice(0,8))+'…</span></div><button type="button" class="admin-mini-btn" onclick="'+(host?'removeAdminChatHost':'makeAdminChatHost')+'('+JSON.stringify(m.device_id)+','+JSON.stringify(m.first_name)+','+JSON.stringify(m.last_name)+')">'+(host?'REMOVE HOST':'MAKE HOST')+'</button></div>';
+    return '<div class="admin-chat-host-row"><div class="admin-chat-host-person"><b>'+escapeHtml(m.first_name+' '+m.last_name)+(host?' <span class="admin-chat-host-badge">HOST</span>':'')+'</b><span>Device '+escapeHtml(String(m.device_id).slice(0,8))+'…</span></div><button type="button" class="admin-mini-btn admin-chat-host-action" data-device="'+escapeHtml(m.device_id)+'" data-first="'+escapeHtml(m.first_name)+'" data-last="'+escapeHtml(m.last_name)+'" data-host="'+(host?'1':'0')+'">'+(host?'REMOVE HOST':'MAKE HOST')+'</button></div>';
   }).join('')||'<div class="admin-muted" style="margin-top:8px">No participants yet.</div>';
+  box.querySelectorAll('.admin-chat-host-action').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const device=this.getAttribute('data-device')||'';
+      const first=this.getAttribute('data-first')||'';
+      const last=this.getAttribute('data-last')||'';
+      const isHost=this.getAttribute('data-host')==='1';
+      if(isHost)removeAdminChatHost(device);
+      else makeAdminChatHost(device,first,last);
+    });
+  });
 }
 async function loadAdminChatHosts(){
   const q=await dcSupabase.from('road_chat_hosts').select('*').order('created_at',{ascending:true});
@@ -3914,15 +3931,17 @@ async function loadAdminChatHosts(){
 }
 async function makeAdminChatHost(deviceId,first,last){
   const st=document.getElementById('adminChatStatus');
-  const q=await dcSupabase.from('road_chat_hosts').upsert({device_id:deviceId,first_name:first,last_name:last});
-  if(q.error){if(st)st.textContent='Could not assign HOST.';return;}
+  if(st)st.textContent='Assigning HOST…';
+  const q=await dcSupabase.from('road_chat_hosts').upsert({device_id:deviceId,first_name:first,last_name:last},{onConflict:'device_id'});
+  if(q.error){console.error('HOST assign failed',q.error);if(st)st.textContent='Could not assign HOST.';return;}
   if(st)st.textContent=first+' '+last+' is now a HOST.';
   await loadAdminChatHosts();await refreshAdminChat();
 }
 async function removeAdminChatHost(deviceId){
   const st=document.getElementById('adminChatStatus');
+  if(st)st.textContent='Removing HOST…';
   const q=await dcSupabase.from('road_chat_hosts').delete().eq('device_id',deviceId);
-  if(q.error){if(st)st.textContent='Could not remove HOST.';return;}
+  if(q.error){console.error('HOST remove failed',q.error);if(st)st.textContent='Could not remove HOST.';return;}
   if(st)st.textContent='HOST removed.';
   await loadAdminChatHosts();await refreshAdminChat();
 }
