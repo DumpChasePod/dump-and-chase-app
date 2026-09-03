@@ -2263,6 +2263,111 @@ body::after{
   background:#101722;
   pointer-events:none;
 }
+
+/* v282 structural Admin sticky-chrome fix */
+.admin-panel{
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* The close control now lives inside the full-width sticky header instead of
+   floating independently over scrolling content. */
+.admin-dashboard-head{
+  position:sticky;
+  top:-20px;
+  z-index:30;
+  margin:0 -20px;
+  padding:20px 20px 10px;
+  background:#101722;
+  border-bottom:0;
+  box-shadow:none;
+}
+.admin-dashboard-head::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-2px;
+  height:3px;
+  background:#101722;
+  pointer-events:none;
+}
+.admin-dashboard-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.admin-dashboard-head .admin-close{
+  position:static;
+  float:none;
+  z-index:auto;
+  flex:0 0 44px;
+}
+.admin-dashboard-head .admin-lock-btn{
+  min-height:44px;
+}
+
+/* Tabs overlap the title/header by a few pixels so there is no transparent seam. */
+.admin-section-tabs{
+  position:sticky;
+  top:54px;
+  z-index:29;
+  margin:-3px -20px 0;
+  padding:13px 20px 9px;
+  background:#101722;
+  border-bottom:1px solid rgba(139,82,255,.14);
+  box-shadow:0 9px 20px rgba(0,0,0,.18);
+}
+
+/* Login also gets a real full-width top bar rather than a floating X. */
+.admin-login-head{
+  position:sticky;
+  top:-20px;
+  z-index:30;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:-20px -20px 10px;
+  padding:20px 20px 8px;
+  background:#101722;
+}
+.admin-login-head .admin-close{
+  position:static;
+  float:none;
+}
+
+/* Game Day's Save & Publish shelf is now a completely solid mask, including
+   the area beneath it to the bottom edge of the scrolling Admin panel. */
+#adminGameDayPanel .admin-publish-bar{
+  position:sticky;
+  bottom:-20px;
+  z-index:28;
+  margin:18px -20px -20px;
+  padding:15px 20px calc(20px + env(safe-area-inset-bottom));
+  background:#101722;
+  border-top:1px solid rgba(139,82,255,.18);
+  box-shadow:0 -10px 24px rgba(0,0,0,.24);
+}
+#adminGameDayPanel .admin-publish-bar::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-4px;
+  height:5px;
+  background:#101722;
+  pointer-events:none;
+}
+#adminGameDayPanel .admin-publish-bar::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-28px;
+  height:29px;
+  background:#101722;
+  pointer-events:none;
+}
 </style>
 
 
@@ -2394,7 +2499,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v281</small>
+<header><small class="build-version build-version-corner">v282</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3792,8 +3897,8 @@ else venue.arena=homeArenaByCity[g[2]]||'';
 
 <div class="admin-overlay" id="adminOverlay" role="dialog" aria-modal="true" aria-label="Admin" aria-hidden="true">
   <div class="admin-panel">
-    <button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button>
     <div id="adminLogin">
+      <div class="admin-login-head"><div></div><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       <div class="eyebrow">PRIVATE AREA</div>
       <h2>Admin / Updates</h2>
       <p class="admin-muted">Secure admin access is limited to samolmsteadradio@gmail.com. Request a sign-in link below.</p>
@@ -3804,7 +3909,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
         <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2></div>
-        <button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button>
+        <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
         <button type="button" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME DAY</button>
