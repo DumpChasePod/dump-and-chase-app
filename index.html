@@ -855,9 +855,10 @@ button,a,select,input{touch-action:manipulation}
 
 
 .more-disclaimer{margin:18px 0 0;padding:14px 4px 2px;border-top:1px solid #243142;color:#758194;font-size:9px;line-height:1.55;text-align:center}
+body.game-pregame #nextGameHero{display:none}
 body.game-live #nextGameHero{display:none}
 body.game-final #nextGameHero{display:none}
-body.game-live #gameDaySection,body.game-final #gameDaySection{margin-top:14px}
+body.game-pregame #gameDaySection,body.game-live #gameDaySection,body.game-final #gameDaySection{margin-top:14px}
 body.game-live #gameDaySection .sectionhead h2{color:#ff6b6b}
 body.game-live #publicGameDayCard{border-color:#ff6b6b55;box-shadow:0 0 0 1px #ff6b6b22,0 16px 42px #0006}
 body.game-final #publicGameDayCard{border-color:#8b4dff55}
@@ -1244,11 +1245,13 @@ header{position:relative}
   #publicGameDayCard .gameday-score{font-size:25px}
 }
 
+body.game-pregame #gameDaySection,
 body.game-live #gameDaySection,
 body.game-final #gameDaySection{
   margin-top:0;
   margin-bottom:14px;
 }
+body.game-pregame #gameDaySection .sectionhead,
 body.game-live #gameDaySection .sectionhead,
 body.game-final #gameDaySection .sectionhead{
   margin-top:0;
@@ -1986,6 +1989,7 @@ body.game-final #gameDaySection .sectionhead{
 .admin-news-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.admin-news-list{display:grid;gap:9px;margin-top:12px}.admin-news-item{padding:11px;border:1px solid #28374a;border-radius:12px;background:#101722}.admin-news-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-news-item-category{font-size:9px;font-weight:900;color:#c9a9ff;letter-spacing:.06em}.admin-news-item p{margin:7px 0 0;font-size:11px;line-height:1.4;color:#e5e9ef}.admin-news-item-actions{display:flex;gap:6px;margin-top:9px}.admin-news-form{display:none;margin-top:12px;padding:12px;border:1px solid rgba(139,82,255,.42);border-radius:12px;background:rgba(139,82,255,.07)}.admin-news-form.show{display:block}.admin-news-count{text-align:right;margin-top:4px;font-size:9px;font-weight:800;color:#748196}.admin-news-count.warn{color:#d8b86b}.admin-news-count.max{color:#ff9c9c}.admin-news-category-buttons{display:flex;gap:7px;flex-wrap:wrap}.admin-news-category-btn{appearance:none;border:1px solid #34465d;background:#101722;color:#aeb8c6;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:900;letter-spacing:.04em;cursor:pointer}.admin-news-category-btn.active{border-color:#8b52ff;background:rgba(139,82,255,.16);color:#e2d5ff}.admin-news-category-btn[data-category="BREAKING"].active{border-color:rgba(220,65,65,.6);background:rgba(220,65,65,.14);color:#ff9b9b}.admin-news-category-btn[data-category="PODCAST"].active{border-color:rgba(255,148,74,.55);background:rgba(255,148,74,.13);color:#ffb47d}.admin-news-category-btn[data-category="UPDATE"].active{border-color:rgba(125,145,170,.55);background:rgba(125,145,170,.13);color:#c8d2de}
 
 /* v255 Schedule weekday date-only fix */
+/* v256 Automated Game Day window: 3 hours before puck drop through 6:00 AM Eastern next day */
 .admin-news-category-btn{flex:1 1 calc(50% - 4px);min-height:38px;text-align:center}
 .admin-record-grid .admin-score-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:6px;align-items:center}
 .admin-record-grid .admin-score-stepper button{width:42px;min-width:42px;padding:0}
@@ -2022,7 +2026,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v255</small>
+<header><small class="build-version build-version-corner">v256</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2887,23 +2891,12 @@ function updateNextGame(){
 updateNextGame();setInterval(updateNextGame,1000);
 
 function updateGameDayMode(){
- const panel=document.getElementById('gameDayPanel'); if(!panel)return;
- const now=new Date();
- const upcoming=phantomsSchedule.map(g=>({g,date:gameTimes[g[0]]?new Date(gameTimes[g[0]]):null})).find(x=>x.date&&x.date>now);
- if(!upcoming){panel.style.display='none';return}
- const g=upcoming.g,d=upcoming.date;
- const diff=d-now;
- // Game Day mode appears on the calendar date of the game, with countdown until puck drop.
- const sameDay=now.toDateString()===d.toDateString();
- panel.style.display=sameDay?'block':'none';
- if(!sameDay)return;
- document.getElementById('gdTitle').textContent='YOUNGSTOWN PHANTOMS';
- document.getElementById('gdMatch').textContent=`VS ${g[1].toUpperCase()} • ${g[3]} ET`;
- const vals=[Math.floor(Math.max(0,diff)/86400000),Math.floor(Math.max(0,diff)/3600000)%24,Math.floor(Math.max(0,diff)/60000)%60,Math.floor(Math.max(0,diff)/1000)%60].map(x=>String(x).padStart(2,'0'));
- ['gdDays','gdHours','gdMinutes','gdSeconds'].forEach((id,i)=>document.getElementById(id).textContent=vals[i]);
- const dv=scheduleVenue(g); document.getElementById('gdSub').textContent=`${dv.arena} — ${dv.city} • ${g[3]}`;
+ // The unified Game Day card below now owns the automated pregame/live/final window.
+ // Keep the older standalone panel hidden so two Game Day cards never appear at once.
+ const panel=document.getElementById('gameDayPanel');
+ if(panel)panel.style.display='none';
 }
-updateGameDayMode();setInterval(updateGameDayMode,1000);
+updateGameDayMode();
 
 
 
@@ -4311,27 +4304,79 @@ document.addEventListener('change',function(e){
 function getAdminGameState(){
   try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}');}catch(e){return {};}
 }
-function getNextGameForGameDay(){
-  if(typeof phantomsSchedule==='undefined'||typeof gameTimes==='undefined')return null;
-  var now=new Date(),state=getAdminGameState(),status=state.adminGameStatus||'upcoming';
-  var next=null,recent=null,recentAge=Infinity;
-  for(var i=0;i<phantomsSchedule.length;i++){
-    var g=phantomsSchedule[i],iso=gameTimes[g[0]];
-    var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
-    if(sr&&['POSTPONED','CANCELLED'].includes(sr.status))continue;
-    if(!iso)continue;
-    var d=new Date(iso),diff=d-now;
-    if(diff>0&&!next)next={g:g,d:d};
-    if(diff<=0){
-      var age=Math.abs(diff);
-      if(age<recentAge){recentAge=age;recent={g:g,d:d};}
+function easternWallTimeDate(dateStr,timeStr){
+  var dm=String(dateStr||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  var tm=String(timeStr||'00:00:00').match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(!dm||!tm)return null;
+  var y=Number(dm[1]),mo=Number(dm[2]),da=Number(dm[3]),h=Number(tm[1]),mi=Number(tm[2]),se=Number(tm[3]||0);
+  var desired=Date.UTC(y,mo-1,da,h,mi,se),guess=new Date(desired);
+  var fmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
+  var parts={};
+  fmt.formatToParts(guess).forEach(function(p){if(p.type!=='literal')parts[p.type]=Number(p.value);});
+  var shown=Date.UTC(parts.year,parts.month-1,parts.day,parts.hour,parts.minute,parts.second);
+  return new Date(desired-(shown-desired));
+}
+function easternScheduleDateForGame(g){
+  var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+  if(sr&&sr.game_date){
+    var t=sr.game_time?String(sr.game_time).slice(0,8):'';
+    if(!t){
+      var label=String(sr.time_label||g[3]||''),m=label.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if(m){var hh=Number(m[1])%12+(m[3].toUpperCase()==='PM'?12:0);t=String(hh).padStart(2,'0')+':'+m[2]+':00';}
     }
+    return easternWallTimeDate(String(sr.game_date),t||'00:00:00');
   }
-  // Once a game is marked LIVE or FINAL, keep using the most recently started
-  // scheduled game for up to 18 hours. This prevents the app from jumping to
-  // tomorrow's game as soon as tonight's puck drop passes.
-  if((status==='live'||status==='final')&&recent&&recentAge<=18*60*60*1000)return recent;
+  var key=String(g&&g[0]||''),kp=key.match(/^([A-Z]{3})\s+(\d{1,2})$/),label=String(g&&g[3]||''),mt=label.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if(!kp||!mt)return null;
+  var mon=(typeof monthNumbers!=='undefined'?monthNumbers[kp[1]]:null);if(mon===null||mon===undefined)return null;
+  var year=mon>=8?2026:2027,hh=Number(mt[1])%12+(mt[3].toUpperCase()==='PM'?12:0);
+  return easternWallTimeDate(year+'-'+String(mon+1).padStart(2,'0')+'-'+String(Number(kp[2])).padStart(2,'0'),String(hh).padStart(2,'0')+':'+mt[2]+':00');
+}
+function easternScheduleDateStringForGame(g){
+  var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+  if(sr&&sr.game_date)return String(sr.game_date);
+  var key=String(g&&g[0]||''),kp=key.match(/^([A-Z]{3})\s+(\d{1,2})$/);if(!kp)return '';
+  var mon=(typeof monthNumbers!=='undefined'?monthNumbers[kp[1]]:null);if(mon===null||mon===undefined)return '';
+  var year=mon>=8?2026:2027;
+  return year+'-'+String(mon+1).padStart(2,'0')+'-'+String(Number(kp[2])).padStart(2,'0');
+}
+function addCalendarDays(dateStr,days){
+  var m=String(dateStr||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return '';
+  var d=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3])+Number(days||0)));
+  return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');
+}
+function gameDayAutomationWindow(nowValue){
+  if(typeof phantomsSchedule==='undefined')return null;
+  var now=nowValue instanceof Date?nowValue:new Date(nowValue||Date.now());
+  for(var i=0;i<phantomsSchedule.length;i++){
+    var g=phantomsSchedule[i],sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+    if(sr&&['POSTPONED','CANCELLED'].includes(String(sr.status||'').toUpperCase()))continue;
+    var d=easternScheduleDateForGame(g);if(!d)continue;
+    var dateStr=easternScheduleDateStringForGame(g);if(!dateStr)continue;
+    var start=new Date(d.getTime()-3*60*60*1000);
+    var end=easternWallTimeDate(addCalendarDays(dateStr,1),'06:00:00');
+    if(end&&now>=start&&now<end)return {g:g,d:d,start:start,end:end,row:sr||null};
+  }
+  return null;
+}
+function getNextGameForGameDay(){
+  if(typeof phantomsSchedule==='undefined')return null;
+  var now=new Date(),active=gameDayAutomationWindow(now);
+  if(active)return {g:active.g,d:active.d,window:active};
+  var next=null;
+  for(var i=0;i<phantomsSchedule.length;i++){
+    var g=phantomsSchedule[i],sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+    if(sr&&['POSTPONED','CANCELLED'].includes(String(sr.status||'').toUpperCase()))continue;
+    var d=easternScheduleDateForGame(g);if(!d||d<=now)continue;
+    if(!next||d<next.d)next={g:g,d:d};
+  }
   return next;
+}
+function resultMatchesScheduleGame(result,g){
+  if(!result||!g)return false;
+  var expected=String(g[0]||'')+'|'+String(g[1]||'');
+  if(result.gameKey&&String(result.gameKey)===expected)return true;
+  return String(result.date||'')===String(g[0]||'')&&String(result.opponent||'')===String(g[1]||'');
 }
 function easternDateParts(value){
  var d=value instanceof Date?value:new Date(value);
@@ -4364,7 +4409,7 @@ function syncGameDayHomePriority(){
  var home=document.getElementById('home');
  var hero=document.getElementById('nextGameHero');
  if(!section||!home)return;
- var priority=document.body.classList.contains('game-live')||document.body.classList.contains('game-final');
+ var priority=document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live')||document.body.classList.contains('game-final');
  if(priority){
    var firstContent=home.querySelector('.hero, #nextGameHero, section');
    if(firstContent&&firstContent!==section)home.insertBefore(section,firstContent);
@@ -4376,11 +4421,26 @@ function syncGameDayHomePriority(){
 function renderPublicGameDay(){
  var box=document.getElementById('publicGameDayCard');if(!box)return;
  var st=getAdminGameState(),status=st.adminGameStatus||'upcoming';
- document.body.classList.remove('game-live','game-final','game-upcoming');
- var keepFinal=status==='final'&&!finalHoldExpired(st.updatedAt);
+ var active=gameDayAutomationWindow(new Date());
+ document.body.classList.remove('game-pregame','game-live','game-final','game-upcoming');
+
+ // Outside the automated window, always restore the normal Home page.
+ if(!active){
+  document.body.classList.add('game-upcoming');
+  syncGameDayHomePriority();
+  return;
+ }
+
+ var next={g:active.g,d:active.d,window:active};
+ var g=next.g;
+ var finalResult=latestCompletedResult();
+ var keepFinal=status==='final'&&resultMatchesScheduleGame(finalResult,g);
+ // A Final left in game_day_state from the previous game must not bleed into
+ // the next game's 3-hour pregame window.
+ if(status==='final'&&!keepFinal)status='upcoming';
+ if(status==='upcoming')document.body.classList.add('game-pregame');
+ if(status==='live')document.body.classList.add('game-live');
  if(keepFinal)document.body.classList.add('game-final');
- var finalResult=keepFinal?latestCompletedResult():null;
- var next=getNextGameForGameDay();
 
  if(keepFinal&&finalResult){
   var finalOpp=String(finalResult.opponent||'Opponent').toUpperCase();
@@ -4389,30 +4449,20 @@ function renderPublicGameDay(){
   var finalHomeAway=String(finalResult.homeAway||'').toUpperCase();
   var finalPhRole=finalHomeAway==='HOME'?'HOME':finalHomeAway==='AWAY'?'AWAY':'';
   var finalOppRole=finalPhRole==='HOME'?'AWAY':finalPhRole==='AWAY'?'HOME':'';
-  box.innerHTML='<div class="gameday-status gameday-final">FINAL</div>'+
+  box.innerHTML='<div class="gameday-status gameday-final">FINAL</div>'+ 
    '<div class="gameday-matchup gameday-matchup-visual">'+
     gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',finalPhRole)+
-    '<div class="gameday-scorebox"><div class="gameday-score">'+finalScore+'</div>'+
-     '<div class="gameday-period">FINAL'+escapeHtml(finalResult.resultDetail||'')+'</div></div>'+
+    '<div class="gameday-scorebox"><div class="gameday-score">'+finalScore+'</div>'+ 
+     '<div class="gameday-period">FINAL'+escapeHtml(finalResult.resultDetail||'')+'</div></div>'+ 
     gameDayTeam(finalResult.opponent||'',finalOpp,finalOppRole)+
-   '</div>'+
-   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>'+
+   '</div>'+ 
+   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>'+ 
    '<button class="btn primary gameday-btn" type="button" onclick="openGameCenter()">PHANTOMS HUB →</button>';
   syncGameDayHomePriority();
   return;
  }
 
- // After the overnight Final hold expires, treat the public card as Upcoming.
- if(status==='final'&&finalHoldExpired(st.updatedAt))status='upcoming';
- if(status==='upcoming')document.body.classList.add('game-upcoming');
- if(status==='live')document.body.classList.add('game-live');
-
- if(!next){
-  box.innerHTML='<div class="gameday-status">GAME DAY</div><p class="gameday-meta">No upcoming game found.</p>';
-  syncGameDayHomePriority();
-  return;
- }
- var g=next.g,opp=String(g[1]).toUpperCase();
+ var opp=String(g[1]).toUpperCase();
  var ph=st.adminPhantomsScore!==undefined&&st.adminPhantomsScore!==''?st.adminPhantomsScore:'—';
  var os=st.adminOpponentScore!==undefined&&st.adminOpponentScore!==''?st.adminOpponentScore:'—';
  var score=ph+' – '+os;
@@ -4426,24 +4476,24 @@ function renderPublicGameDay(){
  }
  var isHome=g[2]==='Youngstown, OH';
  var phRole=isHome?'HOME':'AWAY',oppRole=isHome?'AWAY':'HOME';
- var statusLabel=status==='live'?'LIVE':(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON':'NEXT GAME');
+ var statusLabel=status==='live'?'LIVE':(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON':'GAME DAY');
  var cls=status==='live'?'gameday-live':'gameday-upcoming';
  var middle=status==='upcoming'
   ? '<div class="gameday-matchup gameday-matchup-visual">'+
       gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole)+
-      '<div class="gameday-scorebox gameday-vsbox"><div class="gameday-vs">VS</div></div>'+
+      '<div class="gameday-scorebox gameday-vsbox"><div class="gameday-vs">VS</div></div>'+ 
       gameDayTeam(g[1],opp,oppRole)+
-    '</div>'+
-    '<div class="gameday-meta gameday-date">'+weekdayShort(new Date(gameTimes[g[0]]))+' • '+new Date(gameTimes[g[0]]).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})+' • '+g[3]+'</div>'
+    '</div>'+ 
+    '<div class="gameday-meta gameday-date">'+weekdayShort(easternScheduleDateStringForGame(g))+' • '+next.d.toLocaleDateString('en-US',{timeZone:'America/New_York',month:'long',day:'numeric',year:'numeric'})+' • '+g[3]+'</div>'
   : '<div class="gameday-matchup gameday-matchup-visual">'+
       gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole)+
-      '<div class="gameday-scorebox"><div class="gameday-score">'+score+'</div>'+
-       '<div class="gameday-period">'+(st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+(st.adminClock||'')+'</div></div>'+
+      '<div class="gameday-scorebox"><div class="gameday-score">'+score+'</div>'+ 
+       '<div class="gameday-period">'+(st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+(st.adminClock||'')+'</div></div>'+ 
       gameDayTeam(g[1],opp,oppRole)+
     '</div>';
- box.innerHTML='<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+
+ box.innerHTML='<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
   middle+
-  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+
+  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+ 
   '<button class="btn primary gameday-btn" type="button" onclick="openGameCenter()">PHANTOMS HUB →</button>';
  syncGameDayHomePriority();
 }
