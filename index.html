@@ -1990,7 +1990,7 @@ body.game-final #gameDaySection .sectionhead{
 
 /* v255 Schedule weekday date-only fix */
 /* v256 Automated Game Day window: 3 hours before puck drop through 6:00 AM Eastern next day */
-/* v257 Automated Phantoms record from completed regular-season results, with persistent manual adjustments */
+/* v258 Team record pills, stacked matchup names, and next-opponent record admin */
 .admin-news-category-btn{flex:1 1 calc(50% - 4px);min-height:38px;text-align:center}
 .admin-record-grid .admin-score-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:6px;align-items:center}
 .admin-record-grid .admin-score-stepper button{width:42px;min-width:42px;padding:0}
@@ -2027,7 +2027,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v257</small>
+<header><small class="build-version build-version-corner">v258</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2093,7 +2093,7 @@ body.game-final #gameDaySection .sectionhead{
   <div class="gamehero gc-next-card" id="nextGameHero">
     <div class="gc-next-kicker" id="gameHeroLabel">NEXT PHANTOMS GAME</div>
     <div class="gc-next-date" id="gameHeroDate">September 17, 2026</div>
-    <div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroPhantomsLogo"></div><b>YOUNGSTOWN PHANTOMS</b><div class="homeaway" id="heroPhantomsHomeAway">HOME</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroOpponentLogo"></div><b id="heroOpponent">DES MOINES</b><div class="homeaway" id="heroOpponentHomeAway">AWAY</div></div></div>
+    <div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroPhantomsLogo"></div><div id="heroPhantomsName" class="matchup-name-stack"><span class="matchup-name-city">YOUNGSTOWN</span><span class="matchup-name-team">PHANTOMS</span></div><div class="team-record-pill" id="heroPhantomsRecord">0-0-0-0 0pts</div><div class="homeaway" id="heroPhantomsHomeAway">HOME</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroOpponentLogo"></div><div id="heroOpponent" class="matchup-name-stack"><span class="matchup-name-city">DES MOINES</span><span class="matchup-name-team">BUCCANEERS</span></div><div class="team-record-pill" id="heroOpponentRecord" hidden></div><div class="homeaway" id="heroOpponentHomeAway">AWAY</div></div></div>
     <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameRole">HOME</span><span class="gc-detail-pill" id="homeGameEvent">REGULAR SEASON</span><span class="gc-detail-pill" id="homeGameTime">1:00 PM ET</span></div>
     <div class="countdown"><div class="countbox"><b id="cdDays">00</b><span>Days</span></div><div class="countbox"><b id="cdHours">00</b><span>Hours</span></div><div class="countbox"><b id="cdMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="cdSeconds">00</b><span>Seconds</span></div></div>
     <div class="gc-venue home-location" id="gameHeroLocation">Chicago, IL</div>
@@ -2881,7 +2881,8 @@ function updateNextGame(){
 
  const vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60].map(x=>String(x).padStart(2,'0'));
  const homeIds=['cdDays','cdHours','cdMinutes','cdSeconds'], gcIds=['gcDays','gcHours','gcMinutes','gcSeconds'];
- document.getElementById('heroOpponent').textContent=opp;
+ var heroOppEl=document.getElementById('heroOpponent');if(heroOppEl)heroOppEl.innerHTML=teamNameStack(g[1]);
+ renderMatchupRecords();
  document.getElementById('gameHeroDate').textContent=(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON • ':'')+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
  const hv=scheduleVenue(g); document.getElementById('gameHeroLocation').textContent=hv.arena+(hv.arena&&hv.city?' — ':'')+hv.city;
  homeIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
@@ -3245,7 +3246,7 @@ function renderSelectedMonth(){
     box.classList.add('gc-next-card');
     box.innerHTML='<div class="gc-next-kicker">'+(pre?'PRESEASON':'NEXT PHANTOMS GAME')+'</div>'+
       '<div class="gc-next-date">'+weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})+'</div>'+
-      '<div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcPhantomsLogo"></div><b>YOUNGSTOWN PHANTOMS</b><div class="homeaway">'+(isHome?'HOME':'AWAY')+'</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcOpponentLogo"></div><b>'+escapeHtml(opp)+'</b><div class="homeaway">'+(isHome?'AWAY':'HOME')+'</div></div></div>'+
+      '<div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcPhantomsLogo"></div><div class="matchup-name-stack">'+teamNameStack('Youngstown Phantoms')+'</div><div class="team-record-pill">'+formatRecordPill(dcPhantomsRecord)+'</div><div class="homeaway">'+(isHome?'HOME':'AWAY')+'</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcOpponentLogo"></div><div class="matchup-name-stack">'+teamNameStack(g[1])+'</div>'+(opponentRecordFor(g[1])?'<div class="team-record-pill">'+formatRecordPill(opponentRecordFor(g[1]))+'</div>':'')+'<div class="homeaway">'+(isHome?'AWAY':'HOME')+'</div></div></div>'+
       '<div class="gc-next-details"><span class="gc-detail-pill">'+(isHome?'HOME':'AWAY')+'</span><span class="gc-detail-pill">'+escapeHtml(eventLabel)+'</span><span class="gc-detail-pill">'+escapeHtml(g[3])+'</span></div>'+
       '<div class="countdown"><div class="countbox"><b id="gcDays">00</b><span>Days</span></div><div class="countbox"><b id="gcHours">00</b><span>Hours</span></div><div class="countbox"><b id="gcMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="gcSeconds">00</b><span>Seconds</span></div></div>'+
       '<div class="gc-venue">'+escapeHtml(venue.arena)+(venue.arena&&venue.city?' — ':'')+escapeHtml(venue.city)+'</div>';
@@ -3332,6 +3333,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 });
 
     loadPhantomsRecord();
+    loadOpponentRecord();
     var st=document.getElementById('gcStandingsBtn');
     if(st)st.onclick=function(){window.open('https://ushl.com/ht/#/team-stats','_blank','noopener');};
     return false;
@@ -3374,7 +3376,9 @@ else venue.arena=homeArenaByCity[g[2]]||'';
     var eventLabel='';try{if(typeof scheduleEventLabel==='function')eventLabel=scheduleEventLabel(g)||'';}catch(e){}
     if(!eventLabel)eventLabel=pre?'PRESEASON':'REGULAR SEASON';
     setText('gameHeroLabel',pre?'PRESEASON':'NEXT PHANTOMS GAME');
-    setText('heroOpponent',opp);
+    var heroOppName=document.getElementById('heroOpponent');if(heroOppName)heroOppName.innerHTML=teamNameStack(g[1]);
+    var heroPhName=document.getElementById('heroPhantomsName');if(heroPhName)heroPhName.innerHTML=teamNameStack('Youngstown Phantoms');
+    renderMatchupRecords();
     setText('gameHeroDate',weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'}));
     setText('gameHeroLocation',venue.arena+(venue.arena&&venue.city?' — ':'')+venue.city);
     setText('homeGameRole',isHome?'HOME':'AWAY');
@@ -3498,6 +3502,20 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <div class="admin-publish-bar">
           <div class="admin-status admin-feedback" id="adminRecordStatus"></div>
           <button class="btn primary" type="button" onclick="saveAdminRecord()">SAVE RECORD</button>
+        </div>
+        <div class="admin-opponent-record">
+          <div class="admin-opponent-record-title"><div><div class="eyebrow">NEXT OPPONENT RECORD</div><div class="admin-muted">Only the next opponent is stored.</div></div><div class="admin-opponent-record-name" id="adminOpponentRecordName">NEXT OPPONENT</div></div>
+          <div class="admin-record-grid">
+            <div class="admin-record-field"><label for="adminOppW">W</label><div class="admin-score-stepper"><button type="button" onclick="stepOpponentRecord('adminOppW',-1)">−</button><input id="adminOppW" inputmode="numeric" pattern="[0-9]*" value="0"><button type="button" onclick="stepOpponentRecord('adminOppW',1)">+</button></div></div>
+            <div class="admin-record-field"><label for="adminOppL">L</label><div class="admin-score-stepper"><button type="button" onclick="stepOpponentRecord('adminOppL',-1)">−</button><input id="adminOppL" inputmode="numeric" pattern="[0-9]*" value="0"><button type="button" onclick="stepOpponentRecord('adminOppL',1)">+</button></div></div>
+            <div class="admin-record-field"><label for="adminOppOtl">OTL</label><div class="admin-score-stepper"><button type="button" onclick="stepOpponentRecord('adminOppOtl',-1)">−</button><input id="adminOppOtl" inputmode="numeric" pattern="[0-9]*" value="0"><button type="button" onclick="stepOpponentRecord('adminOppOtl',1)">+</button></div></div>
+            <div class="admin-record-field"><label for="adminOppSol">SOL</label><div class="admin-score-stepper"><button type="button" onclick="stepOpponentRecord('adminOppSol',-1)">−</button><input id="adminOppSol" inputmode="numeric" pattern="[0-9]*" value="0"><button type="button" onclick="stepOpponentRecord('adminOppSol',1)">+</button></div></div>
+            <div class="admin-record-field"><label for="adminOppPts">Pts</label><div class="admin-score-stepper"><button type="button" onclick="stepOpponentRecord('adminOppPts',-1)">−</button><input id="adminOppPts" inputmode="numeric" pattern="[0-9]*" value="0"><button type="button" onclick="stepOpponentRecord('adminOppPts',1)">+</button></div></div>
+          </div>
+          <div class="admin-publish-bar">
+            <div class="admin-status admin-feedback" id="adminOpponentRecordStatus"></div>
+            <button class="btn primary" type="button" onclick="saveOpponentRecord()">SAVE OPPONENT RECORD</button>
+          </div>
         </div>
       </div>
       <div class="admin-section-panel" id="adminSchedulePanel" role="tabpanel" aria-labelledby="adminTabSchedule" hidden>
@@ -3637,6 +3655,8 @@ const DC_SUPABASE_KEY='sb_publishable_mDdTovsQOCm2WAZoh28Gxw_ISMEXfAJ';
 const DC_ADMIN_EMAIL='samolmsteadradio@gmail.com';
 const dcSupabase=window.supabase.createClient(DC_SUPABASE_URL,DC_SUPABASE_KEY);
 let dcScheduleRows=[];
+let dcPhantomsRecord={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+let dcOpponentRecord=null;
 function dcScheduleKeyFromRow(r){
   var d=new Date(String(r.game_date)+'T12:00:00');
   return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]+' '+d.getDate();
@@ -3703,7 +3723,7 @@ function selectAdminTab(tab){
   });
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
-  if(tab==='record')loadAdminRecord();
+  if(tab==='record'){loadAdminRecord();loadAdminOpponentRecord();}
   if(tab==='schedule')loadAdminSchedule();
   if(tab==='news')loadAdminNews();
 }
@@ -3857,6 +3877,107 @@ async function recalculatePhantomsRecord(results){
   renderAdminRecordControls(record);
   return record;
 }
+
+function teamNameParts(team){
+  var raw=String(team||'').trim();
+  var map={
+    'Youngstown Phantoms':['YOUNGSTOWN','PHANTOMS'],
+    'Muskegon Lumberjacks':['MUSKEGON','LUMBERJACKS'],
+    'Des Moines Buccaneers':['DES MOINES','BUCCANEERS'],
+    'Waterloo Black Hawks':['WATERLOO','BLACK HAWKS'],
+    'Fargo Force':['FARGO','FORCE'],
+    'Dubuque Fighting Saints':['DUBUQUE','FIGHTING SAINTS'],
+    'Chicago Steel':['CHICAGO','STEEL'],
+    'Madison Capitols':['MADISON','CAPITOLS'],
+    'Cedar Rapids RoughRiders':['CEDAR RAPIDS','ROUGHRIDERS'],
+    'Green Bay Gamblers':['GREEN BAY','GAMBLERS'],
+    'Lincoln Stars':['LINCOLN','STARS'],
+    'Omaha Lancers':['OMAHA','LANCERS'],
+    'Sioux City Musketeers':['SIOUX CITY','MUSKETEERS'],
+    'Sioux Falls Stampede':['SIOUX FALLS','STAMPEDE'],
+    'Tri-City Storm':['TRI-CITY','STORM'],
+    'NTDP U17':['TEAM USA','U17'],
+    'NTDP U18':['TEAM USA','U18']
+  };
+  if(map[raw])return map[raw];
+  var words=raw.split(/\s+/);
+  if(words.length<=1)return [raw.toUpperCase(),''];
+  return [words.slice(0,-1).join(' ').toUpperCase(),words[words.length-1].toUpperCase()];
+}
+function teamNameStack(team){
+  var p=teamNameParts(team);
+  return '<span class="matchup-name-city">'+escapeHtml(p[0])+'</span><span class="matchup-name-team">'+escapeHtml(p[1])+'</span>';
+}
+function formatRecordPill(record){
+  record=record||{};
+  function n(k){return Math.max(0,parseInt(record[k],10)||0);}
+  return n('w')+'-'+n('l')+'-'+n('otl')+'-'+n('sol')+' '+n('pts')+'pts';
+}
+function currentNextOpponent(){
+  try{var next=getNextGame();return next&&next.g?String(next.g[1]||''):'';}catch(e){return '';}
+}
+function opponentRecordFor(team){
+  if(!dcOpponentRecord)return null;
+  return String(dcOpponentRecord.opponent||'').trim()===String(team||'').trim()?dcOpponentRecord:null;
+}
+function setRecordPill(id,record){
+  var el=document.getElementById(id);if(!el)return;
+  if(!record){el.hidden=true;el.textContent='';return;}
+  el.hidden=false;el.textContent=formatRecordPill(record);
+}
+function renderMatchupRecords(){
+  setRecordPill('heroPhantomsRecord',dcPhantomsRecord);
+  var opp=currentNextOpponent();
+  setRecordPill('heroOpponentRecord',opponentRecordFor(opp));
+}
+async function loadOpponentRecord(){
+  try{
+    var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+    if(r.error)throw r.error;
+    dcOpponentRecord=r.data||null;
+  }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+  renderMatchupRecords();
+  if(typeof renderPublicGameDay==='function')renderPublicGameDay();
+}
+function opponentRecordValues(){
+  function n(id){var el=document.getElementById(id),v=Math.max(0,parseInt(el&&el.value,10)||0);if(el)el.value=String(v);return v;}
+  return {w:n('adminOppW'),l:n('adminOppL'),otl:n('adminOppOtl'),sol:n('adminOppSol'),pts:n('adminOppPts')};
+}
+function stepOpponentRecord(id,delta){
+  var el=document.getElementById(id);if(!el)return;
+  el.value=String(Math.max(0,(parseInt(el.value,10)||0)+Number(delta||0)));
+}
+async function loadAdminOpponentRecord(){
+  var name=document.getElementById('adminOpponentRecordName'),status=document.getElementById('adminOpponentRecordStatus');
+  var opp=currentNextOpponent();
+  if(name)name.textContent=opp?teamNameParts(opp).join(' '):'NO UPCOMING GAME';
+  if(status)status.textContent='';
+  if(!dcOpponentRecord)await loadOpponentRecord();
+  var r=opponentRecordFor(opp)||{w:0,l:0,otl:0,sol:0,pts:0};
+  [['adminOppW','w'],['adminOppL','l'],['adminOppOtl','otl'],['adminOppSol','sol'],['adminOppPts','pts']].forEach(function(pair){
+    var el=document.getElementById(pair[0]);if(el)el.value=String(Math.max(0,parseInt(r[pair[1]],10)||0));
+  });
+  if(status&&opp&&dcOpponentRecord&&String(dcOpponentRecord.opponent||'')!==opp)status.textContent='Ready for '+opp+'. Previous opponent record will be replaced when saved.';
+}
+async function saveOpponentRecord(){
+  var status=document.getElementById('adminOpponentRecordStatus'),opp=currentNextOpponent();
+  if(!opp){if(status)status.textContent='No upcoming opponent found.';return;}
+  var session=await dcGetSession();if(!session){if(status)status.textContent='Admin session expired.';return;}
+  var d=opponentRecordValues();
+  if(status){status.className='admin-status admin-feedback is-saving';status.textContent='Saving…';}
+  try{
+    var r=await dcSupabase.from('next_opponent_record').upsert({id:1,opponent:opp,w:d.w,l:d.l,otl:d.otl,sol:d.sol,pts:d.pts,updated_at:new Date().toISOString()},{onConflict:'id'}).select().single();
+    if(r.error)throw r.error;
+    dcOpponentRecord=r.data;
+    renderMatchupRecords();
+    if(typeof renderPublicGameDay==='function')renderPublicGameDay();
+    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Opponent record saved • '+formatRecordPill(d);}
+  }catch(e){
+    console.error('Opponent record save failed',e);
+    if(status){status.className='admin-status admin-feedback is-error';status.textContent='Opponent record could not be saved.';}
+  }
+}
+
 function formatPhantomsPct(record){
   var gp=Math.max(0,parseInt(record&&record.gp,10)||0);
   var pts=Math.max(0,parseInt(record&&record.pts,10)||0);
@@ -3867,6 +3988,8 @@ function formatPhantomsPct(record){
 }
 function renderPhantomsRecord(record){
   record=record||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  dcPhantomsRecord=record;
+  renderMatchupRecords();
   var map={recordGp:'gp',recordW:'w',recordL:'l',recordOtl:'otl',recordSol:'sol',recordPts:'pts'};
   Object.keys(map).forEach(function(id){
     var el=document.getElementById(id);
@@ -4474,9 +4597,11 @@ function latestCompletedResult(){
  return completedResults&&completedResults.length?completedResults[0]:null;
 }
 function gameDayTeam(team,label,homeAway){
+ var record=String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team);
  return '<div class="gameday-team">'+
    '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
-   '<div class="gameday-team-name">'+escapeHtml(label)+'</div>'+
+   '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
+   (record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+
    (homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+
   '</div>';
 }
@@ -4533,8 +4658,7 @@ function renderPublicGameDay(){
      '<div class="gameday-period">FINAL'+escapeHtml(finalResult.resultDetail||'')+'</div></div>'+ 
     gameDayTeam(finalResult.opponent||'',finalOpp,finalOppRole)+
    '</div>'+ 
-   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>'+ 
-   '<button class="btn primary gameday-btn" type="button" onclick="openGameCenter()">PHANTOMS HUB →</button>';
+   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>';
   syncGameDayHomePriority();
   return;
  }
@@ -4570,8 +4694,7 @@ function renderPublicGameDay(){
     '</div>';
  box.innerHTML='<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
   middle+
-  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+ 
-  '<button class="btn primary gameday-btn" type="button" onclick="openGameCenter()">PHANTOMS HUB →</button>';
+  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>';
  syncGameDayHomePriority();
 }
 function normalizeAdminResult(value){
