@@ -1985,13 +1985,13 @@ body.game-final #gameDaySection .sectionhead{
 .home-headline-copy{min-width:0;font-size:11px;font-weight:800;line-height:1.32;color:#eef1f5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:opacity .35s ease}.home-headline-copy.fade{opacity:0}.home-headline-link{cursor:pointer}.home-headline-link:hover{text-decoration:underline}
 .admin-news-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.admin-news-list{display:grid;gap:9px;margin-top:12px}.admin-news-item{padding:11px;border:1px solid #28374a;border-radius:12px;background:#101722}.admin-news-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-news-item-category{font-size:9px;font-weight:900;color:#c9a9ff;letter-spacing:.06em}.admin-news-item p{margin:7px 0 0;font-size:11px;line-height:1.4;color:#e5e9ef}.admin-news-item-actions{display:flex;gap:6px;margin-top:9px}.admin-news-form{display:none;margin-top:12px;padding:12px;border:1px solid rgba(139,82,255,.42);border-radius:12px;background:rgba(139,82,255,.07)}.admin-news-form.show{display:block}.admin-news-count{text-align:right;margin-top:4px;font-size:9px;font-weight:800;color:#748196}.admin-news-count.warn{color:#d8b86b}.admin-news-count.max{color:#ff9c9c}.admin-news-category-buttons{display:flex;gap:7px;flex-wrap:wrap}.admin-news-category-btn{appearance:none;border:1px solid #34465d;background:#101722;color:#aeb8c6;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:900;letter-spacing:.04em;cursor:pointer}.admin-news-category-btn.active{border-color:#8b52ff;background:rgba(139,82,255,.16);color:#e2d5ff}.admin-news-category-btn[data-category="BREAKING"].active{border-color:rgba(220,65,65,.6);background:rgba(220,65,65,.14);color:#ff9b9b}.admin-news-category-btn[data-category="PODCAST"].active{border-color:rgba(255,148,74,.55);background:rgba(255,148,74,.13);color:#ffb47d}.admin-news-category-btn[data-category="UPDATE"].active{border-color:rgba(125,145,170,.55);background:rgba(125,145,170,.13);color:#c8d2de}
 
-/* v252 Admin mobile polish */
+/* v253 Admin mobile polish */
 .admin-news-category-btn{flex:1 1 calc(50% - 4px);min-height:38px;text-align:center}
 .admin-record-grid .admin-score-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:6px;align-items:center}
 .admin-record-grid .admin-score-stepper button{width:42px;min-width:42px;padding:0}
 .admin-record-grid .admin-score-stepper input{width:100%;min-width:0;text-align:center}
 @media(max-width:420px){
-  .admin-section-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-section-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
   .admin-section-tab{font-size:9.5px;padding-left:6px;padding-right:6px}
   .admin-record-grid{gap:8px}
   .admin-record-field{padding:9px 8px}
@@ -2001,11 +2001,28 @@ body.game-final #gameDaySection .sectionhead{
   .admin-news-category-btn{padding:8px 6px}
 }
 </style>
+<style id="v253-schedule-admin-styles">
+#gameCenterMonthList .sched-main{gap:2px!important}
+#gameCenterMonthList .sched-main .opp{margin-bottom:0!important}
+#gameCenterMonthList .sched-main .sched-event{margin:1px 0!important}
+#gameCenterMonthList .sched-main .where{gap:1px!important}
+.admin-schedule-list{display:grid;gap:7px;margin:12px 0}
+.admin-schedule-game{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025);text-align:left;width:100%;color:inherit}
+.admin-schedule-game b{display:block;font-size:12px}.admin-schedule-game span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.admin-schedule-game.active{border-color:var(--purple);background:rgba(139,92,246,.10)}
+.admin-schedule-form{display:none;margin-top:12px}.admin-schedule-form.show{display:block}
+.admin-schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-schedule-grid .wide{grid-column:1/-1}
+.admin-schedule-statuses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.admin-schedule-statuses button{min-width:0;padding:8px 4px;font-size:9px}
+@media(max-width:420px){.admin-schedule-grid{grid-template-columns:1fr}.admin-schedule-grid .wide{grid-column:auto}}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v252</small>
+<header><small class="build-version build-version-corner">v253</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2928,6 +2945,7 @@ function scheduleVenue(g){
 }
 
 function scheduleEventLabel(g){
+  try{var sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;if(sr)return sr.event_label||'';}catch(_){}
   if(g[0]==='SEP 5' || g[0]==='SEP 6') return 'PRESEASON';
   if(g[0]==='SEP 17' || g[0]==='SEP 18') return 'FALL CLASSIC';
   if(g[0]==='DEC 3' || g[0]==='DEC 4') return 'AMERICAN CUP';
@@ -3046,6 +3064,8 @@ window.DCAddResult=function(event){
     var now=new Date();
     for(var i=0;i<phantomsSchedule.length;i++){
       var g=phantomsSchedule[i],iso=typeof gameTimes!=='undefined'?gameTimes[g[0]]:null;
+      var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+      if(sr&&['POSTPONED','CANCELLED'].includes(sr.status))continue;
       if(!iso)continue;
       var d=new Date(iso);
       if(d.getTime()>now.getTime())return {g:g,d:d};
@@ -3098,8 +3118,14 @@ function scheduleHTML(monthIndex){
       var parts=g[0].split(' '),isHome=g[2]==='Youngstown, OH';
       var role=isHome?'HOME':'AWAY';
       var venue=resolveGCVenue(g);
-      var eventLabel=typeof scheduleEventLabel==='function'?scheduleEventLabel(g):'';
-      var wd=weekdayShort(gameTimes[g[0]]||'');
+      var db=scheduleRowForGame(g);
+      if(db){role=db.home_away||role;venue={arena:db.arena||'Arena TBA',city:db.location||g[2]};}
+      var eventLabel=db?(db.event_label||''):(typeof scheduleEventLabel==='function'?scheduleEventLabel(g):'');
+      var wd=weekdayShort((db?db.game_date:gameTimes[g[0]])||'');
+      var status=db?(db.status||'SCHEDULED'):'SCHEDULED';
+      var finalish=['FINAL','FINAL-OT','FINAL-SO'].includes(status);
+      var statusLine=finalish?status:(status==='POSTPONED'?'POSTPONED':(status==='CANCELLED'?'CANCELLED':escapeHtml(g[3])));
+      var scoreLine=finalish&&db.phantoms_score!=null&&db.opponent_score!=null?'YNG '+db.phantoms_score+' · '+teamScheduleAbbr(g[1])+' '+db.opponent_score:'';
       return '<div class="sched">'+
         '<div class="datebox"><small>'+wd+'</small><b>'+parts[1]+'</b><span>'+parts[0]+'</span></div>'+
         '<div class="sched-main">'+
@@ -3108,12 +3134,16 @@ function scheduleHTML(monthIndex){
           '<div class="where"><span class="schedule-arena">'+escapeHtml(venue.arena||'Arena TBA')+'</span><span class="schedule-city">'+escapeHtml(venue.city||g[2]||'')+'</span></div>'+
         '</div>'+
         '<div class="sched-right">'+
-          '<div class="sched-role">'+role+'</div>'+
-          '<div class="time">'+escapeHtml(g[3])+'</div>'+
+          '<div class="sched-role">'+role+(finalish?' · '+status:'')+'</div>'+
+          '<div class="time">'+(scoreLine||statusLine)+'</div>'+
         '</div>'+
       '</div>';
     }).join('')+'</div>';
   }
+function teamScheduleAbbr(team){
+  var map={'Dubuque Fighting Saints':'DBQ','Muskegon Lumberjacks':'MUS','Des Moines Buccaneers':'DSM','Waterloo Black Hawks':'WAT','Madison Capitols':'MAD','Cedar Rapids RoughRiders':'CRR','NTDP U17':'USA','NTDP U18':'USA','Omaha Lancers':'OMA','Green Bay Gamblers':'GB','Sioux City Musketeers':'SC','Sioux Falls Stampede':'SF','Lincoln Stars':'LIN','Tri-City Storm':'TC','Fargo Force':'FAR','Chicago Steel':'CHI'};
+  return map[team]||String(team||'OPP').slice(0,3).toUpperCase();
+}
 
   window.toggleGCSchedule=function(){
     var body=document.getElementById('gcScheduleBody'),btn=document.getElementById('gcScheduleToggle');
@@ -3310,7 +3340,9 @@ var homeArenaByCity={
  'Geneva, IL':'USG Arena',
  'Chicago, IL':'USG Arena'
 };
-if(g[0]==='SEP 17'||g[0]==='SEP 18')venue={arena:'USG Arena',city:'Chicago, IL'};
+var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+if(sr)venue={arena:sr.arena||'',city:sr.location||g[2]};
+else if(g[0]==='SEP 17'||g[0]==='SEP 18')venue={arena:'USG Arena',city:'Chicago, IL'};
 else if(g[0]==='DEC 3'||g[0]==='DEC 4')venue={arena:'Rochester Ice Center',city:'Rochester, NY'};
 else venue.arena=homeArenaByCity[g[2]]||'';
     var pre=(g[0]==='SEP 5'||g[0]==='SEP 6');
@@ -3369,6 +3401,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <button type="button" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME DAY</button>
         <button type="button" class="admin-section-tab" id="adminTabRoster" role="tab" aria-selected="false" aria-controls="adminRosterPanel" onclick="selectAdminTab('roster')">ROSTER</button>
         <button type="button" class="admin-section-tab" id="adminTabRecord" role="tab" aria-selected="false" aria-controls="adminRecordPanel" onclick="selectAdminTab('record')">RECORD</button>
+        <button type="button" class="admin-section-tab" id="adminTabSchedule" role="tab" aria-selected="false" aria-controls="adminSchedulePanel" onclick="selectAdminTab('schedule')">SCHEDULE</button>
         <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
@@ -3440,6 +3473,35 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <div class="admin-publish-bar">
           <div class="admin-status admin-feedback" id="adminRecordStatus"></div>
           <button class="btn primary" type="button" onclick="saveAdminRecord()">SAVE RECORD</button>
+        </div>
+      </div>
+      <div class="admin-section-panel" id="adminSchedulePanel" role="tabpanel" aria-labelledby="adminTabSchedule" hidden>
+        <div class="admin-roster-toolbar"><div><div class="eyebrow">SCHEDULE</div><div class="admin-muted" id="adminScheduleStatus">Select a game to edit.</div></div></div>
+        <div class="admin-schedule-list" id="adminScheduleList"></div>
+        <div class="admin-schedule-form" id="adminScheduleForm">
+          <input type="hidden" id="adminScheduleId">
+          <div class="admin-schedule-grid">
+            <div class="admin-field"><label for="adminScheduleDate">Date</label><input id="adminScheduleDate" type="date"></div>
+            <div class="admin-field"><label for="adminScheduleTime">Time</label><input id="adminScheduleTime" type="time"></div>
+            <div class="admin-field wide"><label for="adminScheduleOpponent">Opponent</label><input id="adminScheduleOpponent"></div>
+            <div class="admin-field"><label for="adminScheduleRole">Home / Away</label><input id="adminScheduleRole" type="hidden"><div class="admin-chip-row"><button type="button" class="admin-chip" data-schedule-role="HOME" onclick="setScheduleRole('HOME')">HOME</button><button type="button" class="admin-chip" data-schedule-role="AWAY" onclick="setScheduleRole('AWAY')">AWAY</button></div></div>
+            <div class="admin-field"><label for="adminScheduleEvent">Event Label</label><input id="adminScheduleEvent" placeholder="Optional"></div>
+            <div class="admin-field wide"><label for="adminScheduleArena">Arena</label><input id="adminScheduleArena"></div>
+            <div class="admin-field wide"><label for="adminScheduleLocation">Location</label><input id="adminScheduleLocation"></div>
+            <div class="admin-field wide"><label>Status</label><input id="adminScheduleGameStatus" type="hidden"><div class="admin-schedule-statuses">
+              <button type="button" class="admin-chip" data-schedule-status="SCHEDULED" onclick="setScheduleStatus('SCHEDULED')">SCHEDULED</button>
+              <button type="button" class="admin-chip" data-schedule-status="POSTPONED" onclick="setScheduleStatus('POSTPONED')">POSTPONED</button>
+              <button type="button" class="admin-chip" data-schedule-status="CANCELLED" onclick="setScheduleStatus('CANCELLED')">CANCELLED</button>
+              <button type="button" class="admin-chip" data-schedule-status="LIVE" onclick="setScheduleStatus('LIVE')">LIVE</button>
+              <button type="button" class="admin-chip" data-schedule-status="FINAL" onclick="setScheduleStatus('FINAL')">FINAL</button>
+              <button type="button" class="admin-chip" data-schedule-status="FINAL-OT" onclick="setScheduleStatus('FINAL-OT')">FINAL-OT</button>
+              <button type="button" class="admin-chip" data-schedule-status="FINAL-SO" onclick="setScheduleStatus('FINAL-SO')">FINAL-SO</button>
+            </div></div>
+            <div class="admin-field"><label for="adminSchedulePhScore">Youngstown Score</label><input id="adminSchedulePhScore" inputmode="numeric" pattern="[0-9]*"></div>
+            <div class="admin-field"><label for="adminScheduleOppScore">Opponent Score</label><input id="adminScheduleOppScore" inputmode="numeric" pattern="[0-9]*"></div>
+          </div>
+          <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeScheduleEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveScheduleGame()">SAVE GAME</button></div>
+          <div class="admin-status admin-feedback" id="adminScheduleEditStatus"></div>
         </div>
       </div>
       <div class="admin-section-panel" id="adminNewsPanel" role="tabpanel" aria-labelledby="adminTabNews" hidden>
@@ -3549,6 +3611,41 @@ else dcTrackInitialView();
 const DC_SUPABASE_KEY='sb_publishable_mDdTovsQOCm2WAZoh28Gxw_ISMEXfAJ';
 const DC_ADMIN_EMAIL='samolmsteadradio@gmail.com';
 const dcSupabase=window.supabase.createClient(DC_SUPABASE_URL,DC_SUPABASE_KEY);
+let dcScheduleRows=[];
+function dcScheduleKeyFromRow(r){
+  var d=new Date(String(r.game_date)+'T12:00:00');
+  return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]+' '+d.getDate();
+}
+function rebuildScheduleFromSupabase(rows){
+  dcScheduleRows=(rows||[]).slice().sort(function(a,b){return String(a.game_date).localeCompare(String(b.game_date))||(String(a.game_time||'').localeCompare(String(b.game_time||'')));});
+  phantomsSchedule.splice(0,phantomsSchedule.length);
+  Object.keys(gameTimes).forEach(function(k){delete gameTimes[k];});
+  dcScheduleRows.forEach(function(r){
+    var key=dcScheduleKeyFromRow(r);
+    var label=r.time_label||'TBD';
+    phantomsSchedule.push([key,r.opponent,r.location,label]);
+    if(r.game_time){
+      gameTimes[key]=String(r.game_date)+'T'+String(r.game_time).slice(0,8);
+    }
+  });
+}
+async function loadSupabaseSchedule(){
+  try{
+    var q=await dcSupabase.from('phantoms_schedule').select('*').order('game_date',{ascending:true}).order('game_time',{ascending:true});
+    if(q.error)throw q.error;
+    if(q.data&&q.data.length){
+      rebuildScheduleFromSupabase(q.data);
+      try{renderSelectedMonth();}catch(_){}
+      try{renderNextGame();}catch(_){}
+    }
+  }catch(e){console.warn('Supabase schedule unavailable; using bundled schedule.',e);}
+}
+function scheduleRowForGame(g){
+  if(!g)return null;
+  return dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===g[0]&&r.opponent===g[1];})||null;
+}
+
+loadSupabaseSchedule();
 async function dcGetSession(){const r=await dcSupabase.auth.getSession();return r.data.session||null;}
 async function dcIsAdmin(){const x=await dcGetSession();return !!(x&&String(x.user?.email||'').toLowerCase()===DC_ADMIN_EMAIL);}
 async function openAdmin(){
@@ -3570,8 +3667,8 @@ async function openAdmin(){
 
 
 function selectAdminTab(tab){
-  tab=['game-day','roster','record','news','analytics'].includes(tab)?tab:'game-day';
-  ['game-day','roster','record','news','analytics'].forEach(function(name){
+  tab=['game-day','roster','record','schedule','news','analytics'].includes(tab)?tab:'game-day';
+  ['game-day','roster','record','schedule','news','analytics'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':name.charAt(0).toUpperCase()+name.slice(1);
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
@@ -3582,10 +3679,84 @@ function selectAdminTab(tab){
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
   if(tab==='record')loadAdminRecord();
+  if(tab==='schedule')loadAdminSchedule();
   if(tab==='news')loadAdminNews();
 }
 
 
+
+function scheduleDateLabel(r){
+  var d=new Date(String(r.game_date)+'T12:00:00');
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+}
+async function loadAdminSchedule(){
+  var box=document.getElementById('adminScheduleList'),st=document.getElementById('adminScheduleStatus');
+  if(st)st.textContent='Loading schedule…';
+  try{
+    await loadSupabaseSchedule();
+    if(!box)return;
+    box.innerHTML=dcScheduleRows.map(function(r){
+      return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
+    }).join('');
+    if(st)st.textContent=dcScheduleRows.length+' games · changes publish immediately.';
+  }catch(e){if(st)st.textContent='Could not load schedule.';}
+}
+function editScheduleGame(id){
+  var r=dcScheduleRows.find(function(x){return Number(x.id)===Number(id);});if(!r)return;
+  document.getElementById('adminScheduleId').value=r.id;
+  document.getElementById('adminScheduleDate').value=r.game_date||'';
+  document.getElementById('adminScheduleTime').value=r.game_time?String(r.game_time).slice(0,5):'';
+  document.getElementById('adminScheduleOpponent').value=r.opponent||'';
+  document.getElementById('adminScheduleArena').value=r.arena||'';
+  document.getElementById('adminScheduleLocation').value=r.location||'';
+  document.getElementById('adminScheduleEvent').value=r.event_label||'';
+  document.getElementById('adminSchedulePhScore').value=r.phantoms_score==null?'':r.phantoms_score;
+  document.getElementById('adminScheduleOppScore').value=r.opponent_score==null?'':r.opponent_score;
+  setScheduleRole(r.home_away||'AWAY');setScheduleStatus(r.status||'SCHEDULED');
+  document.getElementById('adminScheduleForm').classList.add('show');
+  document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.toggle('active',Number(b.dataset.scheduleId)===Number(id));});
+}
+function closeScheduleEditor(){document.getElementById('adminScheduleForm')?.classList.remove('show');}
+function setScheduleRole(v){document.getElementById('adminScheduleRole').value=v;document.querySelectorAll('[data-schedule-role]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleRole===v);});}
+function setScheduleStatus(v){document.getElementById('adminScheduleGameStatus').value=v;document.querySelectorAll('[data-schedule-status]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleStatus===v);});}
+function formatScheduleTimeLabel(v){
+  if(!v)return 'TBD';var p=v.split(':'),h=Number(p[0]),m=p[1],ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ap+' ET';
+}
+async function saveScheduleGame(){
+  var st=document.getElementById('adminScheduleEditStatus'),id=Number(document.getElementById('adminScheduleId').value||0);
+  var session=await dcGetSession();if(!session||!id){setAdminFeedback(st,'error','Admin session expired or no game selected.');return;}
+  var time=document.getElementById('adminScheduleTime').value||'';
+  var status=document.getElementById('adminScheduleGameStatus').value||'SCHEDULED';
+  var ph=document.getElementById('adminSchedulePhScore').value,op=document.getElementById('adminScheduleOppScore').value;
+  if(['FINAL','FINAL-OT','FINAL-SO'].includes(status)&&(ph===''||op==='')){setAdminFeedback(st,'error','Enter both scores for a final game.');return;}
+  var update={
+    game_date:document.getElementById('adminScheduleDate').value,
+    game_time:time||null,time_label:formatScheduleTimeLabel(time),
+    opponent:document.getElementById('adminScheduleOpponent').value.trim(),
+    home_away:document.getElementById('adminScheduleRole').value||'AWAY',
+    event_label:document.getElementById('adminScheduleEvent').value.trim(),
+    arena:document.getElementById('adminScheduleArena').value.trim(),
+    location:document.getElementById('adminScheduleLocation').value.trim(),
+    status:status,phantoms_score:ph===''?null:Number(ph),opponent_score:op===''?null:Number(op),
+    updated_at:new Date().toISOString()
+  };
+  setAdminFeedback(st,'saving','Saving…');
+  var r=await dcSupabase.from('phantoms_schedule').update(update).eq('id',id).select().single();
+  if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
+  await loadAdminSchedule();editScheduleGame(id);
+  var monthEl=document.getElementById('gcMonthSelect');if(monthEl&&typeof window.selectGCMonth==='function')window.selectGCMonth(Number(monthEl.value));
+  setAdminFeedback(st,'saved','Schedule updated • '+adminTimeStamp());
+}
+async function syncFinalToSchedule(raw){
+  var next=getNextGameForGameDay();if(!next)return;
+  var row=scheduleRowForGame(next.g);if(!row)return;
+  var result=String(raw.result||'');
+  var status=result.endsWith('_OT')?'FINAL-OT':(result.endsWith('_SO')?'FINAL-SO':'FINAL');
+  var u={status:status,phantoms_score:Number(raw.phantoms_score),opponent_score:Number(raw.opponent_score),updated_at:new Date().toISOString()};
+  var r=await dcSupabase.from('phantoms_schedule').update(u).eq('id',row.id);
+  if(r.error)throw r.error;
+  await loadSupabaseSchedule();
+}
 function formatPhantomsPct(record){
   var gp=Math.max(0,parseInt(record&&record.gp,10)||0);
   var pts=Math.max(0,parseInt(record&&record.pts,10)||0);
@@ -4070,7 +4241,7 @@ async function saveAdminUpdates(){
   const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
   localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapRemoteState(body.data)));
   if(payload.status==='final'&&payload.result){
-   try{await publishFinalResultFromCurrentState(payload);}catch(resultError){if(st)st.textContent='Game published, but result sync failed: '+resultError.message;return;}
+   try{await publishFinalResultFromCurrentState(payload);await syncFinalToSchedule(payload);}catch(resultError){if(st)st.textContent='Game published, but result/schedule sync failed: '+resultError.message;return;}
   }
 if(payload.status==='final'&&payload.result){
   await syncCompletedResults(true);
@@ -4105,6 +4276,8 @@ function getNextGameForGameDay(){
   var next=null,recent=null,recentAge=Infinity;
   for(var i=0;i<phantomsSchedule.length;i++){
     var g=phantomsSchedule[i],iso=gameTimes[g[0]];
+    var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+    if(sr&&['POSTPONED','CANCELLED'].includes(sr.status))continue;
     if(!iso)continue;
     var d=new Date(iso),diff=d-now;
     if(diff>0&&!next)next={g:g,d:d};
@@ -4414,3 +4587,4 @@ window.addEventListener('load',function(){
 
 </body>
 </html>
+
