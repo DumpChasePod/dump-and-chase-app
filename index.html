@@ -2368,6 +2368,34 @@ body::after{
   background:#101722;
   pointer-events:none;
 }
+
+/* v283 Record tab cleanup
+   Only Game Day needs a sticky publish shelf. Record save controls stay inline. */
+#adminRecordPanel .admin-publish-bar{
+  position:static;
+  bottom:auto;
+  z-index:auto;
+  margin:12px 0 18px;
+  padding:0;
+  background:transparent;
+  border-top:0;
+  box-shadow:none;
+}
+#adminRecordPanel .admin-publish-bar::before,
+#adminRecordPanel .admin-publish-bar::after{
+  content:none;
+  display:none;
+}
+#adminRecordPanel .admin-publish-bar .btn{
+  min-height:44px;
+  font-size:12px;
+}
+#adminRecordPanel .admin-opponent-record .admin-publish-bar{
+  margin:10px 0 0;
+}
+#adminRecordPanel .admin-opponent-record{
+  padding-bottom:4px;
+}
 </style>
 
 
@@ -2499,7 +2527,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v282</small>
+<header><small class="build-version build-version-corner">v283</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
