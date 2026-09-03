@@ -2464,6 +2464,18 @@ body::after{
   background:linear-gradient(135deg,rgba(255,148,74,.10),#101722 58%);
   box-shadow:inset 3px 0 0 rgba(255,148,74,.68);
 }
+
+/* v288 make Home Phan Q&A stand out a little more */
+#home .phan-qa-card{
+  border-color:rgba(255,148,74,.48);
+  background:linear-gradient(135deg,rgba(255,148,74,.17),var(--panel) 62%);
+  box-shadow:
+    inset 4px 0 0 rgba(255,148,74,.82),
+    0 0 18px rgba(255,148,74,.045);
+}
+#home .phan-qa-card .mini{
+  color:#ffad70;
+}
 </style>
 
 
@@ -2595,7 +2607,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v287</small>
+<header><small class="build-version build-version-corner">v288</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
