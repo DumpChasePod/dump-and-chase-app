@@ -2047,24 +2047,27 @@ body.game-final #gameDaySection .sectionhead{
 .gameday-team-name .matchup-name-city{font-size:9px;}
 .gameday-team-name .matchup-name-team{font-size:10px;}
 
+
 .admin-opponent-record{margin-top:14px;padding-top:13px;border-top:1px solid #28374a;}
-.admin-opponent-record-title{display:block;margin-bottom:9px;}
-.admin-opponent-record-title .eyebrow{margin:0 0 3px;font-size:11px;line-height:1.2;}
+.admin-opponent-record-title{display:block;margin-bottom:10px;}
+.admin-opponent-record-title .eyebrow{margin:0 0 4px;font-size:11px;line-height:1.2;}
+.admin-opponent-record-name{margin:0 0 3px;font-size:13px;font-weight:950;line-height:1.2;color:#eef2f7;text-align:left;}
 .admin-opponent-record-title .admin-muted{margin:0;font-size:10px;line-height:1.3;}
-.admin-opponent-record-name{margin-top:6px;font-size:13px;font-weight:950;line-height:1.2;color:#eef2f7;text-align:left;}
-.admin-opponent-record .admin-record-grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important;margin-top:8px;}
-.admin-opponent-record .admin-record-field{min-width:0;padding:6px 4px;border:1px solid #243449;border-radius:10px;background:#0c1522;}
-.admin-opponent-record .admin-record-field label{display:block;margin:0 0 5px;text-align:center;font-size:9px;line-height:1;font-weight:900;color:#aeb8c7;}
-.admin-opponent-record .admin-score-stepper{display:grid!important;grid-template-columns:24px minmax(0,1fr) 24px!important;gap:2px!important;align-items:center;}
-.admin-opponent-record .admin-score-stepper button{width:24px!important;min-width:24px!important;height:30px!important;min-height:30px!important;padding:0!important;border-radius:7px!important;font-size:17px!important;line-height:1!important;}
-.admin-opponent-record .admin-score-stepper input{width:100%!important;min-width:0!important;height:30px!important;margin:0!important;padding:2px 0!important;border-radius:7px!important;font-size:17px!important;text-align:center!important;}
+.admin-opponent-record .admin-record-grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;margin-top:9px;}
+.admin-opponent-record .admin-record-field{min-width:0;padding:5px 2px 6px;border:1px solid #243449;border-radius:9px;background:#0c1522;overflow:hidden;}
+.admin-opponent-record .admin-record-field label{display:block;margin:0 0 4px;text-align:center;font-size:8px;line-height:1;font-weight:900;color:#aeb8c7;}
+.admin-opponent-record .admin-score-stepper{display:flex!important;align-items:center;justify-content:center;gap:2px!important;width:100%;}
+.admin-opponent-record .admin-score-stepper button{flex:0 0 17px!important;width:17px!important;min-width:17px!important;height:26px!important;min-height:26px!important;padding:0!important;border-radius:6px!important;font-size:15px!important;line-height:1!important;}
+.admin-opponent-record .admin-score-stepper input{display:block!important;flex:0 0 20px!important;width:20px!important;min-width:20px!important;max-width:20px!important;height:26px!important;margin:0!important;padding:0!important;border:1px solid #26384d!important;border-radius:6px!important;background:#08111d!important;color:#f7f9fc!important;font-size:14px!important;font-weight:950!important;line-height:26px!important;text-align:center!important;box-sizing:border-box!important;opacity:1!important;}
 .admin-opponent-record .admin-publish-bar{margin-top:9px;}
-.admin-opponent-record .admin-publish-bar .btn{min-height:42px;padding:9px 12px;font-size:11px;}
+.admin-opponent-record .admin-publish-bar .btn{min-height:40px;padding:8px 12px;font-size:10.5px;}
+.admin-opponent-record #adminOpponentRecordStatus{font-size:9px;line-height:1.25;margin-bottom:5px;}
 @media(max-width:380px){
-  .admin-opponent-record .admin-record-grid{gap:4px!important;}
-  .admin-opponent-record .admin-record-field{padding:5px 2px;}
-  .admin-opponent-record .admin-score-stepper{grid-template-columns:21px minmax(0,1fr) 21px!important;}
-  .admin-opponent-record .admin-score-stepper button{width:21px!important;min-width:21px!important;}
+  .admin-opponent-record .admin-record-grid{gap:3px!important;}
+  .admin-opponent-record .admin-record-field{padding:5px 1px 6px;}
+  .admin-opponent-record .admin-score-stepper{gap:1px!important;}
+  .admin-opponent-record .admin-score-stepper button{flex-basis:16px!important;width:16px!important;min-width:16px!important;}
+  .admin-opponent-record .admin-score-stepper input{flex-basis:18px!important;width:18px!important;min-width:18px!important;max-width:18px!important;font-size:13px!important;}
   .team-record-pill{font-size:7.5px!important;padding:3px 6px;}
 }
 </style>
@@ -2072,7 +2075,7 @@ body.game-final #gameDaySection .sectionhead{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v259</small>
+<header><small class="build-version build-version-corner">v260</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
