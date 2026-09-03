@@ -2536,6 +2536,32 @@ body::after{
   letter-spacing:.12em;
   text-transform:uppercase;
 }
+
+/* v293 give Meet the Hosts cards stronger hierarchy without adding clutter */
+#meetHosts .host-compact-name{
+  font-size:17px;
+  line-height:1.15;
+  font-weight:900;
+}
+#meetHosts .host-about-label{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  gap:4px;
+  margin-top:5px;
+  padding:4px 8px;
+  border:1px solid rgba(139,82,255,.32);
+  border-radius:999px;
+  background:rgba(139,82,255,.10);
+  color:#b995ff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.08em;
+  line-height:1;
+}
+#meetHosts .host-chevron{
+  line-height:1;
+}
 </style>
 
 
@@ -2667,7 +2693,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v292</small>
+<header><small class="build-version build-version-corner">v293</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
