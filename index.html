@@ -1996,6 +1996,25 @@ body.game-live #publicGameDayCard .gameday-score{white-space:nowrap;font-size:34
 body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;letter-spacing:.05em;color:#aab4c3}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);gap:7px}body.game-live #publicGameDayCard .gameday-score{font-size:30px}}
 
+
+/* v263 private Road Game Chat V1 */
+.admin-chat-test{max-width:620px}
+.admin-chat-identity{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.admin-chat-identity .btn{grid-column:1/-1}
+.admin-chat-bar{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;font-size:11px;font-weight:900}
+.admin-chat-messages{height:330px;overflow-y:auto;border:1px solid #28374a;border-radius:14px;background:#0b121c;padding:10px}
+.admin-chat-msg{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.admin-chat-msg:last-child{border-bottom:0}
+.admin-chat-msg-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.admin-chat-msg-name{font-size:10px;font-weight:950;color:#c9a9ff}
+.admin-chat-msg-time{font-size:8px;color:#778599}
+.admin-chat-msg-text{margin-top:4px;font-size:12px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.admin-chat-delete{border:0;background:none;color:#ff7b7b;font-size:8px;font-weight:900;padding:0 0 0 6px}
+.admin-chat-compose{margin-top:10px}
+.admin-chat-compose textarea{width:100%;box-sizing:border-box;resize:none;border:1px solid #2a3a4d;border-radius:12px;background:#0b1421;color:#f4f7fb;padding:10px;font:inherit}
+.admin-chat-compose-row{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+@media(max-width:520px){.admin-chat-identity{grid-template-columns:1fr}.admin-chat-messages{height:300px}}
+
 </style>
 
 
@@ -3541,7 +3560,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <button type="button" class="admin-section-tab" id="adminTabRecord" role="tab" aria-selected="false" aria-controls="adminRecordPanel" onclick="selectAdminTab('record')">RECORD</button>
         <button type="button" class="admin-section-tab" id="adminTabSchedule" role="tab" aria-selected="false" aria-controls="adminSchedulePanel" onclick="selectAdminTab('schedule')">SCHEDULE</button>
         <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
-        <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
+        <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button><button type="button" class="admin-section-tab" id="adminTabChat" role="tab" aria-selected="false" aria-controls="adminChatPanel" onclick="selectAdminTab('chat')">CHAT TEST</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="eyebrow" style="margin-top:16px">GAME DAY</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
@@ -3668,7 +3687,28 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         </div>
         <div class="admin-news-list" id="adminNewsList"></div>
       </div>
-      <div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
+      <div class="admin-section-panel" id="adminChatPanel" role="tabpanel" aria-labelledby="adminTabChat" hidden>
+<div class="admin-chat-test">
+  <div class="eyebrow">ROAD GAME CHAT · PRIVATE TEST</div>
+  <h3 style="margin:5px 0 4px">Chat V1</h3>
+  <div class="admin-muted">Admin-only test room. Nothing from this chat appears in the public app.</div>
+  <div class="admin-chat-identity" id="adminChatIdentity">
+    <div class="admin-field"><label for="chatFirstName">First Name</label><input id="chatFirstName" maxlength="40" autocomplete="given-name"></div>
+    <div class="admin-field"><label for="chatLastName">Last Name</label><input id="chatLastName" maxlength="60" autocomplete="family-name"></div>
+    <button class="btn primary" type="button" onclick="joinAdminChat()">JOIN TEST CHAT</button>
+  </div>
+  <div id="adminChatRoom" hidden>
+    <div class="admin-chat-bar"><span id="adminChatName"></span><span class="home-headline-badge">TEST</span></div>
+    <div class="admin-chat-messages" id="adminChatMessages"></div>
+    <div class="admin-chat-compose">
+      <textarea id="adminChatMessage" maxlength="250" rows="2" placeholder="Message…" oninput="updateChatCount()"></textarea>
+      <div class="admin-chat-compose-row"><span class="admin-muted" id="adminChatCount">0/250</span><button class="btn primary" type="button" onclick="sendAdminChatMessage()">SEND</button></div>
+    </div>
+    <div class="admin-status admin-feedback" id="adminChatStatus"></div>
+  </div>
+</div>
+</div>
+<div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
 <div class="admin-analytics">
   <div class="admin-analytics-head">
     <div>
@@ -3820,9 +3860,80 @@ async function openAdmin(){
 }
 
 
+
+let dcChatChannel=null;
+let dcChatSettings=null;
+function dcChatDeviceId(){
+  try{let v=localStorage.getItem('dc_chat_device_v1');if(!v){v=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random());localStorage.setItem('dc_chat_device_v1',v);}return v;}catch(_){return String(Date.now());}
+}
+function dcChatStoredName(){
+  try{return JSON.parse(localStorage.getItem('dc_chat_name_v1')||'null');}catch(_){return null;}
+}
+function dcChatTime(v){
+  try{return new Date(v).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(_){return '';}
+}
+function renderAdminChatMessages(rows){
+  const box=document.getElementById('adminChatMessages');if(!box)return;
+  box.innerHTML=(rows||[]).map(function(m){
+    return '<div class="admin-chat-msg"><div class="admin-chat-msg-head"><span class="admin-chat-msg-name">'+escapeHtml(m.first_name+' '+m.last_name)+'</span><span><span class="admin-chat-msg-time">'+escapeHtml(dcChatTime(m.created_at))+'</span><button class="admin-chat-delete" type="button" onclick="deleteAdminChatMessage('+Number(m.id)+')">DELETE</button></span></div><div class="admin-chat-msg-text">'+escapeHtml(m.message)+'</div></div>';
+  }).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function loadAdminChat(){
+  const st=document.getElementById('adminChatStatus');
+  try{
+    const q=await dcSupabase.from('road_chat_settings').select('*').eq('id',1).single();
+    if(q.error)throw q.error;dcChatSettings=q.data;
+    const saved=dcChatStoredName();
+    if(saved&&saved.first_name&&saved.last_name){
+      document.getElementById('chatFirstName').value=saved.first_name;
+      document.getElementById('chatLastName').value=saved.last_name;
+      joinAdminChat();
+    }
+    if(st)st.textContent='Private TEST room.';
+  }catch(e){if(st)st.textContent='Could not load chat test.';}
+}
+async function joinAdminChat(){
+  const first=(document.getElementById('chatFirstName')?.value||'').trim();
+  const last=(document.getElementById('chatLastName')?.value||'').trim();
+  const st=document.getElementById('adminChatStatus');
+  if(!first||!last){if(st)st.textContent='First and last name are required.';return;}
+  try{localStorage.setItem('dc_chat_name_v1',JSON.stringify({first_name:first,last_name:last}));}catch(_){}
+  document.getElementById('adminChatIdentity').hidden=true;
+  document.getElementById('adminChatRoom').hidden=false;
+  document.getElementById('adminChatName').textContent=first+' '+last;
+  if(!dcChatSettings){const q=await dcSupabase.from('road_chat_settings').select('*').eq('id',1).single();if(q.error)throw q.error;dcChatSettings=q.data;}
+  await refreshAdminChat();
+  if(dcChatChannel)dcSupabase.removeChannel(dcChatChannel);
+  dcChatChannel=dcSupabase.channel('road-chat-'+dcChatSettings.session_key).on('postgres_changes',{event:'*',schema:'public',table:'road_chat_messages',filter:'session_key=eq.'+dcChatSettings.session_key},function(){refreshAdminChat();}).subscribe();
+}
+async function refreshAdminChat(){
+  if(!dcChatSettings)return;
+  const q=await dcSupabase.from('road_chat_messages').select('*').eq('session_key',dcChatSettings.session_key).order('created_at',{ascending:true}).limit(200);
+  if(!q.error)renderAdminChatMessages(q.data||[]);
+}
+function updateChatCount(){
+  const el=document.getElementById('adminChatMessage'),c=document.getElementById('adminChatCount');if(c)c.textContent=String((el?.value||'').length)+'/250';
+}
+async function sendAdminChatMessage(){
+  const name=dcChatStoredName(),el=document.getElementById('adminChatMessage'),st=document.getElementById('adminChatStatus');
+  const message=(el?.value||'').trim();
+  if(!name||!name.first_name||!name.last_name||!message||!dcChatSettings)return;
+  if(message.length>250){if(st)st.textContent='Messages are limited to 250 characters.';return;}
+  const q=await dcSupabase.from('road_chat_messages').insert({session_key:dcChatSettings.session_key,device_id:dcChatDeviceId(),first_name:name.first_name,last_name:name.last_name,message:message});
+  if(q.error){if(st)st.textContent='Message could not be sent.';return;}
+  el.value='';updateChatCount();if(st)st.textContent='';await refreshAdminChat();
+}
+async function deleteAdminChatMessage(id){
+  const q=await dcSupabase.from('road_chat_messages').delete().eq('id',Number(id));
+  const st=document.getElementById('adminChatStatus');
+  if(q.error){if(st)st.textContent='Could not delete message.';return;}
+  await refreshAdminChat();
+}
+
 function selectAdminTab(tab){
-  tab=['game-day','roster','record','schedule','news','analytics'].includes(tab)?tab:'game-day';
-  ['game-day','roster','record','schedule','news','analytics'].forEach(function(name){
+  tab=['game-day','roster','record','schedule','news','analytics','chat'].includes(tab)?tab:'game-day';
+  ['game-day','roster','record','schedule','news','analytics','chat'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':name.charAt(0).toUpperCase()+name.slice(1);
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
@@ -3835,6 +3946,7 @@ function selectAdminTab(tab){
   if(tab==='record'){loadAdminRecord();loadAdminOpponentRecord();}
   if(tab==='schedule')loadAdminSchedule();
   if(tab==='news')loadAdminNews();
+  if(tab==='chat')loadAdminChat();
 }
 
 
