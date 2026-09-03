@@ -2034,6 +2034,14 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 .admin-chat-msg-time{font-size:9px}
 .admin-chat-host-person b{font-size:11px}
 
+
+/* v267 chat controls + moderation */
+.admin-chat-mode-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 7px}
+.admin-chat-mode-buttons .admin-mini-btn.active{border-color:#a56cff;background:rgba(139,82,255,.2);color:#fff}
+.admin-chat-participant-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.admin-chat-block-btn{border-color:rgba(255,110,110,.4)!important}
+.admin-chat-block-btn.is-blocked{background:rgba(255,110,110,.12)!important}
+
 </style>
 
 
@@ -2170,7 +2178,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v266</small>
+<header><small class="build-version build-version-corner">v267</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3725,8 +3733,19 @@ else venue.arena=homeArenaByCity[g[2]]||'';
     </div>
     <div class="admin-status admin-feedback" id="adminChatStatus"></div>
     <div class="admin-chat-hosts">
-      <div class="eyebrow">CHAT HOSTS</div>
-      <div class="admin-muted">Assign HOST to a device that has posted in this test room.</div>
+      <div class="eyebrow">CHAT CONTROL</div>
+      <div class="admin-muted">Choose who can use Road Game Chat.</div>
+      <div class="admin-chat-mode-buttons">
+        <button type="button" class="admin-mini-btn" data-chat-mode="OFF" onclick="setAdminChatMode('OFF')">OFF</button>
+        <button type="button" class="admin-mini-btn" data-chat-mode="TEST" onclick="setAdminChatMode('TEST')">TEST</button>
+        <button type="button" class="admin-mini-btn" data-chat-mode="LIVE" onclick="setAdminChatMode('LIVE')">LIVE</button>
+        <button type="button" class="admin-mini-btn" data-chat-mode="CLOSED" onclick="setAdminChatMode('CLOSED')">CLOSED</button>
+      </div>
+      <div class="admin-muted" id="adminChatModeHelp"></div>
+    </div>
+    <div class="admin-chat-hosts">
+      <div class="eyebrow">PARTICIPANTS</div>
+      <div class="admin-muted">HOST marks a trusted device. BLOCK prevents that device from posting.</div>
       <div id="adminChatHostList"></div>
     </div>
   </div>
@@ -3903,8 +3922,16 @@ function dcChatStoredName(){
 function dcChatTime(v){
   try{return new Date(v).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(_){return '';}
 }
-let dcChatHosts=[];
+let dcChatHosts=[],dcChatBlocks=[];
 function dcChatHostFor(deviceId){return dcChatHosts.find(function(h){return h.device_id===deviceId;})||null;}
+function dcChatBlocked(deviceId){return dcChatBlocks.some(function(b){return b.device_id===deviceId;});}
+function renderAdminChatMode(){
+  var mode=String(dcChatSettings&&dcChatSettings.mode||'OFF').toUpperCase();
+  document.querySelectorAll('[data-chat-mode]').forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-chat-mode')===mode);});
+  var help=document.getElementById('adminChatModeHelp');
+  if(help)help.textContent=mode==='OFF'?'Chat is off.':mode==='TEST'?'Private Admin testing only.':mode==='LIVE'?'Chat is open for the public.': 'Chat is closed to new messages.';
+  var badge=document.getElementById('adminChatModeBadge');if(badge)badge.textContent=mode;
+}
 function renderAdminChatMessages(rows){
   const box=document.getElementById('adminChatMessages');if(!box)return;
   box.innerHTML=(rows||[]).map(function(m){
@@ -3918,23 +3945,55 @@ function renderAdminChatHosts(rows){
   const seen=new Map();
   (rows||[]).forEach(function(m){if(!seen.has(m.device_id))seen.set(m.device_id,m);});
   box.innerHTML=Array.from(seen.values()).map(function(m){
-    const host=dcChatHostFor(m.device_id);
-    return '<div class="admin-chat-host-row"><div class="admin-chat-host-person"><b>'+escapeHtml(m.first_name+' '+m.last_name)+(host?' <span class="admin-chat-host-badge">HOST</span>':'')+'</b><span>Device '+escapeHtml(String(m.device_id).slice(0,8))+'…</span></div><button type="button" class="admin-mini-btn admin-chat-host-action" data-device="'+escapeHtml(m.device_id)+'" data-first="'+escapeHtml(m.first_name)+'" data-last="'+escapeHtml(m.last_name)+'" data-host="'+(host?'1':'0')+'">'+(host?'REMOVE HOST':'MAKE HOST')+'</button></div>';
+    const host=dcChatHostFor(m.device_id),blocked=dcChatBlocked(m.device_id);
+    return '<div class="admin-chat-host-row"><div class="admin-chat-host-person"><b>'+escapeHtml(m.first_name+' '+m.last_name)+(host?' <span class="admin-chat-host-badge">HOST</span>':'')+(blocked?' <span class="admin-chat-host-badge">BLOCKED</span>':'')+'</b><span>Device '+escapeHtml(String(m.device_id).slice(0,8))+'…</span></div><div class="admin-chat-participant-actions"><button type="button" class="admin-mini-btn admin-chat-host-action" data-device="'+escapeHtml(m.device_id)+'" data-first="'+escapeHtml(m.first_name)+'" data-last="'+escapeHtml(m.last_name)+'" data-host="'+(host?'1':'0')+'">'+(host?'REMOVE HOST':'MAKE HOST')+'</button><button type="button" class="admin-mini-btn admin-chat-block-action admin-chat-block-btn'+(blocked?' is-blocked':'')+'" data-device="'+escapeHtml(m.device_id)+'" data-blocked="'+(blocked?'1':'0')+'">'+(blocked?'UNBLOCK':'BLOCK')+'</button></div></div>';
   }).join('')||'<div class="admin-muted" style="margin-top:8px">No participants yet.</div>';
   box.querySelectorAll('.admin-chat-host-action').forEach(function(btn){
     btn.addEventListener('click',function(){
+      const device=this.getAttribute('data-device')||'',first=this.getAttribute('data-first')||'',last=this.getAttribute('data-last')||'';
+      if(this.getAttribute('data-host')==='1')removeAdminChatHost(device);else makeAdminChatHost(device,first,last);
+    });
+  });
+  box.querySelectorAll('.admin-chat-block-action').forEach(function(btn){
+    btn.addEventListener('click',function(){
       const device=this.getAttribute('data-device')||'';
-      const first=this.getAttribute('data-first')||'';
-      const last=this.getAttribute('data-last')||'';
-      const isHost=this.getAttribute('data-host')==='1';
-      if(isHost)removeAdminChatHost(device);
-      else makeAdminChatHost(device,first,last);
+      if(this.getAttribute('data-blocked')==='1')unblockAdminChatDevice(device);else blockAdminChatDevice(device);
     });
   });
 }
 async function loadAdminChatHosts(){
   const q=await dcSupabase.from('road_chat_hosts').select('*').order('created_at',{ascending:true});
   dcChatHosts=q.error?[]:(q.data||[]);
+  const b=await dcSupabase.from('road_chat_blocks').select('device_id,created_at').order('created_at',{ascending:true});
+  dcChatBlocks=b.error?[]:(b.data||[]);
+}
+async function setAdminChatMode(mode){
+  mode=String(mode||'OFF').toUpperCase();
+  if(!['OFF','TEST','LIVE','CLOSED'].includes(mode))return;
+  const st=document.getElementById('adminChatStatus');
+  if(st)st.textContent='Changing chat to '+mode+'…';
+  const q=await dcSupabase.from('road_chat_settings').update({mode:mode,updated_at:new Date().toISOString()}).eq('id',1).select().single();
+  if(q.error){console.error('Chat mode update failed',q.error);if(st)st.textContent='Could not change chat mode.';return;}
+  dcChatSettings=q.data;renderAdminChatMode();
+  if(st)st.textContent='Chat mode: '+mode+'.';
+}
+async function blockAdminChatDevice(deviceId){
+  if(!deviceId)return;
+  const st=document.getElementById('adminChatStatus');
+  if(st)st.textContent='Blocking device…';
+  const q=await dcSupabase.from('road_chat_blocks').upsert({device_id:deviceId},{onConflict:'device_id'});
+  if(q.error){console.error('Chat block failed',q.error);if(st)st.textContent='Could not block device.';return;}
+  if(st)st.textContent='Device blocked from posting.';
+  await loadAdminChatHosts();await refreshAdminChat();
+}
+async function unblockAdminChatDevice(deviceId){
+  if(!deviceId)return;
+  const st=document.getElementById('adminChatStatus');
+  if(st)st.textContent='Unblocking device…';
+  const q=await dcSupabase.from('road_chat_blocks').delete().eq('device_id',deviceId);
+  if(q.error){console.error('Chat unblock failed',q.error);if(st)st.textContent='Could not unblock device.';return;}
+  if(st)st.textContent='Device can post again.';
+  await loadAdminChatHosts();await refreshAdminChat();
 }
 async function makeAdminChatHost(deviceId,first,last){
   const st=document.getElementById('adminChatStatus');
