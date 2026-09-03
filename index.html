@@ -2476,6 +2476,15 @@ body::after{
 #home .phan-qa-card .mini{
   color:#ffad70;
 }
+
+/* v289 compact Admin tabs + optional USHL box score links */
+.admin-section-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding-bottom:6px}
+.admin-section-tab{min-height:32px;padding:6px 4px;border-radius:9px;font-size:8.5px;letter-spacing:.025em}
+.admin-qna-tab{gap:3px}
+@media(max-width:370px){.admin-section-tab{font-size:8px;padding-left:2px;padding-right:2px}}
+.schedule-box-score,.result-box-score{display:inline-block;margin-top:5px;color:#c9a9ff;font-size:8px;font-weight:950;letter-spacing:.04em;text-decoration:none}
+.schedule-box-score:hover,.result-box-score:hover{text-decoration:underline}
+.box-score-btn.gameday-box-score{display:block;width:100%;margin-top:12px;text-align:center;text-decoration:none}
 </style>
 
 
@@ -2607,7 +2616,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v288</small>
+<header><small class="build-version build-version-corner">v289</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2674,7 +2683,7 @@ body::after{
     <div class="gc-next-kicker" id="gameHeroLabel">NEXT PHANTOMS GAME</div>
     <div class="gc-next-date" id="gameHeroDate">September 17, 2026</div>
     <div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroPhantomsLogo"></div><div id="heroPhantomsName" class="matchup-name-stack"><span class="matchup-name-city">YOUNGSTOWN</span><span class="matchup-name-team">PHANTOMS</span></div><div class="team-record-pill" id="heroPhantomsRecord">0-0-0-0 0pts</div><div class="homeaway" id="heroPhantomsHomeAway">HOME</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroOpponentLogo"></div><div id="heroOpponent" class="matchup-name-stack"><span class="matchup-name-city">DES MOINES</span><span class="matchup-name-team">BUCCANEERS</span></div><div class="team-record-pill" id="heroOpponentRecord" hidden></div><div class="homeaway" id="heroOpponentHomeAway">AWAY</div></div></div>
-    <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameRole">HOME</span><span class="gc-detail-pill" id="homeGameEvent">REGULAR SEASON</span><span class="gc-detail-pill" id="homeGameTime">1:00 PM ET</span></div>
+    <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameEvent">REGULAR SEASON</span><span class="gc-detail-pill" id="homeGameTime">1:00 PM ET</span></div>
     <div class="countdown"><div class="countbox"><b id="cdDays">00</b><span>Days</span></div><div class="countbox"><b id="cdHours">00</b><span>Hours</span></div><div class="countbox"><b id="cdMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="cdSeconds">00</b><span>Seconds</span></div></div>
     <div class="gc-venue home-location" id="gameHeroLocation">Chicago, IL</div>
     <button class="btn primary game-action-wide" onclick="window.openGameCenter()">OPEN PHANTOMS HUB</button>
@@ -3365,6 +3374,8 @@ function renderRecentResults(){
         const venue=[g.arena,g.city].filter(Boolean).map(escapeHtml).join(' — ');
         const role=g.homeAway?`<span class="result-role">${escapeHtml(g.homeAway)}</span>`:'';
         const score=`${g.phantoms}–${g.opponentScore}`;
+        const scheduleMatch=dcScheduleRows.find(r=>dcScheduleKeyFromRow(r)===String(g.date||'').trim().toUpperCase()&&String(r.opponent||'').trim()===String(g.opponent||'').trim());
+        const boxUrl=scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'';
         return `<div class="result-row result-row-compact">
           <div class="result-date compact-date">
             ${wd?`<small>${wd}</small>`:''}
@@ -3378,6 +3389,7 @@ function renderRecentResults(){
           <div class="result-score compact-score">
             <span class="result-outcome-pill ${resultClass(g.result)}">${resultLabel(g.result)}${escapeHtml(g.resultDetail||'')}</span>
             <span class="result-score-value">${score}</span>
+            ${boxUrl?`<a class="result-box-score" href="${escapeHtml(boxUrl)}" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','ushl_box_score')">BOX SCORE</a>`:''}
           </div>
         </div>`;
       }).join('');
@@ -3819,6 +3831,7 @@ function scheduleHTML(monthIndex){
         '<div class="sched-right">'+
           '<div class="sched-role">'+role+(finalish?' · '+status:'')+'</div>'+
           '<div class="time">'+(scoreLine||statusLine)+'</div>'+
+          (db&&db.box_score_url?'<a class="schedule-box-score" href="'+escapeHtml(db.box_score_url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+
         '</div>'+
       '</div>';
     }).join('')+'</div>';
@@ -4038,7 +4051,6 @@ else venue.arena=homeArenaByCity[g[2]]||'';
     renderMatchupRecords();
     setText('gameHeroDate',weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'}));
     setText('gameHeroLocation',venue.arena+(venue.arena&&venue.city?' — ':'')+venue.city);
-    setText('homeGameRole',isHome?'HOME':'AWAY');
     setText('homeGameEvent',eventLabel);
     setText('homeGameTime',g[3]);
     var vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60];
@@ -4190,7 +4202,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
             <div class="admin-field"><label for="adminScheduleRole">Home / Away</label><input id="adminScheduleRole" type="hidden"><div class="admin-chip-row"><button type="button" class="admin-chip" data-schedule-role="HOME" onclick="setScheduleRole('HOME')">HOME</button><button type="button" class="admin-chip" data-schedule-role="AWAY" onclick="setScheduleRole('AWAY')">AWAY</button></div></div>
             <div class="admin-field"><label for="adminScheduleEvent">Event Label</label><input id="adminScheduleEvent" placeholder="Optional"></div>
             <div class="admin-field wide"><label for="adminScheduleArena">Arena</label><input id="adminScheduleArena"></div>
-            <div class="admin-field wide"><label for="adminScheduleLocation">Location</label><input id="adminScheduleLocation"></div>
+            <div class="admin-field wide"><label for="adminScheduleLocation">Location</label><input id="adminScheduleLocation"></div><div class="admin-field wide"><label for="adminScheduleBoxScore">USHL Box Score URL</label><input id="adminScheduleBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Optional — add when available"></div>
             <div class="admin-field wide"><label>Status</label><input id="adminScheduleGameStatus" type="hidden"><div class="admin-schedule-statuses">
               <button type="button" class="admin-chip" data-schedule-status="SCHEDULED" onclick="setScheduleStatus('SCHEDULED')">SCHEDULED</button>
               <button type="button" class="admin-chip" data-schedule-status="POSTPONED" onclick="setScheduleStatus('POSTPONED')">POSTPONED</button>
@@ -4355,6 +4367,15 @@ async function loadSupabaseSchedule(){
 function scheduleRowForGame(g){
   if(!g)return null;
   return dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===g[0]&&r.opponent===g[1];})||null;
+}
+function boxScoreUrlForGame(g){
+  var r=scheduleRowForGame(g);
+  return r&&String(r.box_score_url||'').trim()?String(r.box_score_url).trim():'';
+}
+function boxScoreButton(url,extraClass){
+  url=String(url||'').trim();
+  if(!/^https?:\/\//i.test(url))return '';
+  return '<a class="btn secondary box-score-btn '+(extraClass||'')+'" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">VIEW BOX SCORE</a>';
 }
 
 (async function dcBootSharedGameData(){
@@ -4536,6 +4557,7 @@ function editScheduleGame(id){
   document.getElementById('adminScheduleOpponent').value=r.opponent||'';
   document.getElementById('adminScheduleArena').value=r.arena||'';
   document.getElementById('adminScheduleLocation').value=r.location||'';
+  document.getElementById('adminScheduleBoxScore').value=r.box_score_url||'';
   document.getElementById('adminScheduleEvent').value=r.event_label||'';
   document.getElementById('adminSchedulePhScore').value=r.phantoms_score==null?'':r.phantoms_score;
   document.getElementById('adminScheduleOppScore').value=r.opponent_score==null?'':r.opponent_score;
@@ -4570,6 +4592,7 @@ async function saveScheduleGame(){
     event_label:document.getElementById('adminScheduleEvent').value.trim(),
     arena:document.getElementById('adminScheduleArena').value.trim(),
     location:document.getElementById('adminScheduleLocation').value.trim(),
+    box_score_url:document.getElementById('adminScheduleBoxScore').value.trim()||null,
     status:status,phantoms_score:ph===''?null:Number(ph),opponent_score:op===''?null:Number(op),
     updated_at:new Date().toISOString()
   };
@@ -5433,7 +5456,8 @@ function renderPublicGameDay(){
      '<div class="gameday-period">FINAL'+escapeHtml(finalResult.resultDetail||'')+'</div></div>'+ 
     gameDayTeam(finalResult.opponent||'',finalOpp,finalOppRole)+
    '</div>'+ 
-   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>';
+   '<div class="gameday-meta gameday-venue">'+escapeHtml(finalVenue)+'</div>'+
+   boxScoreButton(boxScoreUrlForGame(g),'gameday-box-score');
   syncGameDayHomePriority();
   return;
  }
@@ -5469,7 +5493,8 @@ function renderPublicGameDay(){
     '</div>';
  box.innerHTML='<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
   middle+
-  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>';
+  '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+
+  boxScoreButton(boxScoreUrlForGame(g),'gameday-box-score');
  syncGameDayHomePriority();
 }
 function normalizeAdminResult(value){
