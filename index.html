@@ -2001,6 +2001,33 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 .admin-reset-row{margin-top:14px}
 .admin-reset-row .btn{width:100%;min-height:40px}
 .admin-publish-bar{box-shadow:0 -10px 22px rgba(7,11,17,.18)}
+
+.admin-section-tabs{
+  position:sticky;
+  top:-20px;
+  z-index:8;
+  background:#101722;
+  padding-top:10px;
+}
+.admin-section-tab.active{
+  box-shadow:0 0 0 1px rgba(139,82,255,.12) inset,0 5px 16px rgba(0,0,0,.14);
+}
+.admin-status-group{
+  transition:opacity .18s ease,border-color .18s ease;
+}
+#adminDashboard.admin-is-upcoming .admin-live-controls,
+#adminDashboard.admin-is-final .admin-live-controls{
+  opacity:.46;
+}
+#adminDashboard.admin-is-live .admin-live-controls{
+  opacity:1;
+}
+#adminDashboard:not(.admin-is-final) .admin-final-controls{
+  opacity:.46;
+}
+#adminDashboard.admin-is-final .admin-final-controls{
+  opacity:1;
+}
 </style>
 
 
@@ -2132,7 +2159,7 @@ body.game-live #publicGameDayCard .gameday-period{margin-top:7px;font-size:9px;l
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v272</small>
+<header><small class="build-version build-version-corner">v273</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2339,7 +2366,7 @@ function setAdminFeedback(target,state,text){
   el.textContent=text||'';
 }
 function markGameDayDirty(){
-  setAdminFeedback('adminSaveStatus','dirty','Unsaved changes');
+  setAdminFeedback('adminSaveStatus','dirty','Unsaved changes — tap Save & Publish');
 }
 function markRosterDirty(){
   setAdminFeedback('adminRosterEditStatus','dirty','Unsaved changes');
@@ -2364,6 +2391,12 @@ function setAdminStatus(value){
    if(period)period.value='';if(clock)clock.value='';if(result)result.value='';
  }
  syncAdminQuickControls();markGameDayDirty();
+ if(value==='final'){
+   setTimeout(function(){
+     var el=document.getElementById('adminFinalResultControls');
+     if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+   },80);
+ }
 }
 function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function nextAdminPeriod(){
@@ -3533,14 +3566,14 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
-      <div class="admin-group-title">GAME CONTROLS</div>
-      <div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
-      <div class="admin-score-card">
+      <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
+      <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
+      <div class="admin-score-card admin-status-group admin-live-controls">
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
-      <div class="admin-field"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
-      <div class="admin-group-title">FINAL RESULT</div><div class="admin-field admin-final-result-field"><label for="adminResult">Final Result</label><select id="adminResult">
+      <div class="admin-field admin-status-group admin-live-controls"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
+      <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><label for="adminResult">Final Result</label><select id="adminResult">
 <option value="">Not final</option>
 <option value="W">W</option>
 <option value="W_OT">W — Final (OT)</option>
@@ -4588,7 +4621,7 @@ if(payload.status==='final'&&payload.result){
   renderRecentResults();
   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
 }
-setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated • ':'Saved & published • ')+adminTimeStamp());syncAdminQuickControls();
+setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated • ':'Published • ')+adminTimeStamp());syncAdminQuickControls();
   if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
  finally{
