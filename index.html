@@ -746,7 +746,6 @@ button:active:not(:disabled){
 }
 
 
-.more-intro{margin:4px 0 14px;color:var(--muted);font-size:12px;line-height:1.55}
 .more-stack{display:grid;gap:10px}
 .more-card{
   position:relative;
@@ -1093,9 +1092,7 @@ header{position:relative}
 
 #sheetBody .more-stack{gap:11px}
 #sheetBody .more-stack + .more-card{margin-top:11px}
-#sheetBody .more-intro{margin:0 0 12px}
-
-#sheetBody .result-empty,
+#sheetBody #sheetBody .result-empty,
 #sheetBody .news-loading,
 #sheetBody .news-error,
 #sheetBody .feed-state-card p{
@@ -2201,6 +2198,33 @@ textarea:focus-visible{
 #sheetBody .gc-hub-section-title:first-child{
   margin-top:2px;
 }
+
+/* v280 bottom navigation fixes */
+body::after{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:98px;
+  pointer-events:none;
+  z-index:19;
+  background:linear-gradient(to bottom,rgba(7,11,17,0),#070b11 46%,#070b11 100%);
+}
+
+.bottomnav.nav-v200{
+  background:#101722;
+  border:1px solid rgba(139,82,255,.30);
+  box-shadow:
+    0 -10px 28px rgba(0,0,0,.22),
+    0 0 0 1px rgba(255,148,74,.035) inset;
+  backdrop-filter:none;
+}
+
+.bottomnav.nav-v200 .navitem.active{
+  background:rgba(139,82,255,.16);
+  box-shadow:inset 0 0 0 1px rgba(139,82,255,.22);
+}
 </style>
 
 
@@ -2332,7 +2356,7 @@ textarea:focus-visible{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v278</small>
+<header><small class="build-version build-version-corner">v280</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2624,7 +2648,15 @@ async function installDumpChase(){
  toast('Use your browser menu and choose Install app or Add to Home Screen.');
 }
 window.addEventListener('appinstalled',function(){deferredInstallPrompt=null;dcTrack('app_installed','pwa');toast('Dump & Chase installed.');});
-function closeSheet(){document.getElementById('modal').classList.remove('show')}
+function resetNavHome(){
+  document.querySelectorAll('.navitem').forEach(function(x){x.classList.remove('active');});
+  var home=document.querySelector('.navitem');
+  if(home)home.classList.add('active');
+}
+function closeSheet(){
+  document.getElementById('modal').classList.remove('show');
+  resetNavHome();
+}
 function toggleHostBio(slug){
   var target=document.getElementById('host-'+slug);
   if(!target)return;
@@ -2644,9 +2676,6 @@ function toggleHostBio(slug){
     if(btn)btn.setAttribute('aria-expanded','true');
     if(navigator.vibrate)navigator.vibrate(6);
   }
-  document.querySelectorAll('.navitem').forEach(function(x){x.classList.remove('active');});
-  var home=document.querySelector('.navitem');
-  if(home)home.classList.add('active');
 }
 document.addEventListener('keydown',function(e){
   if(e.key!=='Escape')return;
@@ -2669,7 +2698,7 @@ function openSheet(type){
    setTimeout(refreshFeed,50);
  }else{
    title.textContent='More';
-   body.innerHTML=`<p class="more-intro">More from Dump &amp; Chase.</p>
+   body.innerHTML=`
    <div class="more-stack">
      
      <div class="more-card"><h3>Phan Q&amp;A</h3><p>Send in a question for a future episode.</p><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://forms.gle/dWPdwvtrWzYfxFNA7','phan_qa')">SUBMIT A QUESTION</button></div></div>
