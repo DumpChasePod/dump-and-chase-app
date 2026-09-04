@@ -2732,7 +2732,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v296</small>
+<header><small class="build-version build-version-corner">v297</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2791,7 +2791,7 @@ body::after{
   <div class="result-sub" id="gdSub">Puck drop shown in Eastern Time</div>
   <div class="coverage-grid">
     <button class="btn primary" onclick="openSheet('episodes')">LATEST EPISODE</button>
-    <button class="btn secondary" onclick="openGameCenter()">PHANTOMS HUB</button>
+    <button class="btn secondary" onclick="openGameCenter()">PHANTOMS HQ</button>
   </div>
 </div>
 
@@ -2802,7 +2802,7 @@ body::after{
     <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameEvent">REGULAR SEASON</span><span class="gc-detail-pill" id="homeGameTime">1:00 PM ET</span></div>
     <div class="countdown"><div class="countbox"><b id="cdDays">00</b><span>Days</span></div><div class="countbox"><b id="cdHours">00</b><span>Hours</span></div><div class="countbox"><b id="cdMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="cdSeconds">00</b><span>Seconds</span></div></div>
     <div class="gc-venue home-location" id="gameHeroLocation">Chicago, IL</div>
-    <button class="btn secondary game-action-wide next-game-hub-btn" onclick="window.openGameCenter()">OPEN PHANTOMS HUB</button>
+    <button class="btn secondary game-action-wide next-game-hub-btn" onclick="window.openGameCenter()">OPEN PHANTOMS HQ</button>
   </div>
 
   <section id="gameDaySection">
@@ -2903,7 +2903,7 @@ body::after{
 <nav class="bottomnav nav-v200">
   <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
-  <button class="navitem" aria-label="Phantoms Hub" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 5 10 14"/><path d="m17 5-10 14"/><path d="M4.5 18.5h5"/><path d="M14.5 18.5h5"/><path d="M5 20.5h4"/><path d="M15 20.5h4"/></svg></span>Phantoms Hub</button>
+  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.2"/><circle cx="7" cy="9" r="1.2"/><circle cx="17" cy="9" r="1.2"/><circle cx="7" cy="15" r="1.2"/><circle cx="17" cy="15" r="1.2"/></svg></span>Phantoms HQ</button>
   <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span>More</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -4054,7 +4054,7 @@ function renderSelectedMonth(){
     dcTrack('section_open','phantoms_hub');
     var modal=document.getElementById('modal'),title=document.getElementById('sheetTitle'),body=document.getElementById('sheetBody');
     if(!modal||!title||!body)return false;
-    title.textContent='Phantoms Hub';
+    title.textContent='Phantoms HQ';
     var now=new Date(),defaultMonth=now.getMonth();
     var next=getNextGame();
     if(next)defaultMonth=next.d.getMonth();
@@ -5039,7 +5039,7 @@ async function loadAdminAnalytics(days){
       [visitors,'Visitors','Unique devices'],
       [sessions,'Sessions','Browsing sessions'],
       [listens,'Episode Listens','Listen taps'],
-      [hubCount,'Hub Opens','Phantoms Hub'],
+      [hubCount,'HQ Opens','Phantoms HQ'],
       [installs,'Installs',installClicks+' install click'+(installClicks===1?'':'s')],
       [visitsPerVisitor,'Visits / Visitor','Average'],
       [listenRate,'Listen Rate','Listens ÷ visitors']
