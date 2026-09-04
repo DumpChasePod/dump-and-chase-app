@@ -2659,6 +2659,16 @@ body::after{
   background:rgba(255,255,255,.05);
   color:#9aa7b8;
 }
+
+/* v303 align special-event pill beside HOME/AWAY */
+.gc-series-role-line{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:2px;
+}
+.gc-series-role-line b{display:inline-block}
+.gc-series-role-line .gc-series-event-pill{margin-top:0}
 </style>
 
 
@@ -2790,7 +2800,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v302</small>
+<header><small class="build-version build-version-corner">v303</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4130,7 +4140,7 @@ function renderSelectedMonth(){
       try{tag=typeof scheduleEventLabel==='function'?scheduleEventLabel(row)||'':'';}catch(_){}
       var dateHtml=dt&&!isNaN(dt)?'<small>'+weekdayShort(dt)+'</small>'+dt.toLocaleDateString(undefined,{month:'short',day:'numeric'}):escapeHtml(row[0]);
       var tagHtml=tag?'<span class="gc-series-event-pill '+(String(tag).toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(tag)+'</span>':'';
-      var place='<b>'+(isHome?'HOME':'AWAY')+'</b>'+escapeHtml(venue.arena||venue.city||row[2]||'')+tagHtml;
+      var place='<div class="gc-series-role-line"><b>'+(isHome?'HOME':'AWAY')+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||row[2]||'');
       var status=result
         ?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span><span>'+escapeHtml(String(result.phantoms)+'–'+String(result.opponentScore))+'</span>'
         :(dt&&dt.getTime()>now?'<span class="gc-series-upcoming">'+escapeHtml(row[3]||'UPCOMING')+'</span>':'<span class="gc-series-upcoming">SCHEDULED</span>');
