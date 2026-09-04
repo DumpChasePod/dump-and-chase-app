@@ -2745,7 +2745,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v298</small>
+<header><small class="build-version build-version-corner">v299</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2916,7 +2916,7 @@ body::after{
 <nav class="bottomnav nav-v200">
   <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
-  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v6.2c0 4.4-2.9 7.8-7 9.8-4.1-2-7-5.4-7-9.8V4.5Z"/><text x="12" y="13.1" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
+  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 7 4h10l3 1.5v5.2c0 4.5-2.8 7.9-8 10.3-5.2-2.4-8-5.8-8-10.3V5.5Z"/><path d="M7 4v2h10V4"/><text x="12" y="13.2" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
   <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span>More</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -4042,11 +4042,10 @@ function renderSelectedMonth(){
     var pre=(g[0]==='SEP 5'||g[0]==='SEP 6');
     var eventLabel='';try{if(typeof scheduleEventLabel==='function')eventLabel=scheduleEventLabel(g)||'';}catch(e){}
     if(!eventLabel)eventLabel=pre?'PRESEASON':'REGULAR SEASON';
-    box.classList.add('gc-next-card');
     box.innerHTML='<div class="gc-next-kicker">'+(pre?'PRESEASON':'NEXT PHANTOMS GAME')+'</div>'+
       '<div class="gc-next-date">'+weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})+'</div>'+
       '<div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcPhantomsLogo"></div><div class="matchup-name-stack">'+teamNameStack('Youngstown Phantoms')+'</div><div class="team-record-pill">'+formatRecordPill(dcPhantomsRecord)+'</div><div class="homeaway">'+(isHome?'HOME':'AWAY')+'</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcOpponentLogo"></div><div class="matchup-name-stack">'+teamNameStack(g[1])+'</div>'+(opponentRecordFor(g[1])?'<div class="team-record-pill">'+formatRecordPill(opponentRecordFor(g[1]))+'</div>':'')+'<div class="homeaway">'+(isHome?'AWAY':'HOME')+'</div></div></div>'+
-      '<div class="gc-next-details"><span class="gc-detail-pill">'+(isHome?'HOME':'AWAY')+'</span><span class="gc-detail-pill">'+escapeHtml(eventLabel)+'</span><span class="gc-detail-pill">'+escapeHtml(g[3])+'</span></div>'+
+      '<div class="gc-next-details"><span class="gc-detail-pill">'+escapeHtml(eventLabel)+'</span><span class="gc-detail-pill">'+escapeHtml(g[3])+'</span></div>'+
       '<div class="countdown"><div class="countbox"><b id="gcDays">00</b><span>Days</span></div><div class="countbox"><b id="gcHours">00</b><span>Hours</span></div><div class="countbox"><b id="gcMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="gcSeconds">00</b><span>Seconds</span></div></div>'+
       '<div class="gc-venue">'+escapeHtml(venue.arena)+(venue.arena&&venue.city?' — ':'')+escapeHtml(venue.city)+'</div>';
     if(typeof matchupLogo==='function'){
@@ -4081,7 +4080,7 @@ function renderSelectedMonth(){
 
     body.innerHTML=
       '<div class="section-title gc-hub-section-title">NEXT GAME</div>'+
-      '<div class="card" id="gcNextGameContent">Loading next game…</div>'+
+      '<div class="gamehero gc-next-card" id="gcNextGameContent">Loading next game…</div>'+
       '<div class="section-title gc-hub-section-title">RECENT RESULTS</div>'+
       '<div class="card"><div class="results-list" id="recentResultsList"><div class="result-empty">No completed games yet. Results will appear here after each game.</div></div></div>'+
       '<div class="section-title gc-hub-section-title">STANDINGS</div>'+
