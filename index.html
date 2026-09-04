@@ -2614,6 +2614,25 @@ body::after{
 .admin-footer{
   padding:22px 12px calc(58px + env(safe-area-inset-bottom, 0px));
 }
+
+/* v300 experimental HQ opponent season-series card */
+.gc-series-card{overflow:hidden;padding:18px 16px;border:1px solid #3b2b59;border-radius:16px;background:linear-gradient(135deg,#171320,#101722 62%,#1c1428)}
+.gc-series-head{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center}
+.gc-series-logo{width:56px;height:56px;display:flex;align-items:center;justify-content:center}
+.gc-series-logo .matchup-logo{width:54px;height:54px}.gc-series-logo .matchup-logo-fallback{width:48px;height:48px;font-size:18px}
+.gc-series-kicker{color:#a56cff;font-size:9px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+.gc-series-opponent{margin-top:2px;font-size:18px;line-height:1.15;font-weight:950}
+.gc-series-next{margin-top:5px;color:#aab4c3;font-size:10px;line-height:1.45}
+.gc-series-summary{margin:14px 0 8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.09);color:#8994a4;font-size:9px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}
+.gc-series-list{display:grid;gap:7px}
+.gc-series-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:48px;padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.025)}
+.gc-series-row.is-next{border-color:rgba(139,82,255,.46);background:rgba(139,82,255,.10)}
+.gc-series-date{text-align:center;font-size:9px;font-weight:900;color:#d7deea;line-height:1.25;text-transform:uppercase}
+.gc-series-date small{display:block;color:#7f8b9c;font-size:7px;letter-spacing:.07em}
+.gc-series-place{min-width:0;font-size:10px;color:#aab4c3;line-height:1.35}.gc-series-place b{display:block;color:#edf2f8;font-size:11px}
+.gc-series-status{text-align:right;font-size:10px;font-weight:950;white-space:nowrap}.gc-series-status .result-outcome-pill{margin-right:4px}
+.gc-series-upcoming{color:#cbb8f7;font-size:9px;letter-spacing:.04em}
+@media(max-width:390px){.gc-series-card{padding:15px 12px}.gc-series-head{grid-template-columns:50px minmax(0,1fr);gap:10px}.gc-series-logo{width:50px;height:50px}.gc-series-logo .matchup-logo{width:48px;height:48px}.gc-series-row{grid-template-columns:52px minmax(0,1fr) auto;padding:7px}.gc-series-opponent{font-size:16px}}
 </style>
 
 
@@ -2745,7 +2764,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v299</small>
+<header><small class="build-version build-version-corner">v300</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4032,28 +4051,42 @@ function renderSelectedMonth(){
     }
   }
 
+  function seriesResultForGame(g){
+    if(typeof completedResults==='undefined'||!Array.isArray(completedResults))return null;
+    var key=String(g[0]||'').trim().toUpperCase(),opp=String(g[1]||'').trim().toLowerCase();
+    return completedResults.find(function(r){
+      var sameOpp=String(r.opponent||'').trim().toLowerCase()===opp;
+      var sameKey=String(r.gameKey||'').toUpperCase().indexOf(key)>=0;
+      var sameDate=String(r.date||'').trim().toUpperCase()===key;
+      if(!sameDate&&r.iso&&typeof gameTimes!=='undefined'&&gameTimes[g[0]]){
+        try{var a=new Date(r.iso),b=new Date(gameTimes[g[0]]);sameDate=a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}catch(_){}
+      }
+      return sameOpp&&(sameKey||sameDate);
+    })||null;
+  }
+  function seriesRecordText(opponent){
+    if(typeof completedResults==='undefined'||!Array.isArray(completedResults))return 'Season series';
+    var rows=completedResults.filter(function(r){return String(r.opponent||'').trim().toLowerCase()===String(opponent||'').trim().toLowerCase();});
+    if(!rows.length)return 'First meeting this season';
+    var w=0,l=0;rows.forEach(function(r){if(r.result==='W')w++;else if(['L','OTL','SOL'].indexOf(r.result)>=0)l++;});
+    if(w===l)return 'Season series tied '+w+'–'+l;
+    return w>l?'Youngstown leads series '+w+'–'+l:String(opponent).split(' ').slice(-1)[0]+' lead series '+l+'–'+w;
+  }
   function renderNextGame(){
     var box=document.getElementById('gcNextGameContent');if(!box)return;
-    var next=getNextGame();
-    if(!next){box.innerHTML='<p>No upcoming games.</p>';return;}
-    var g=next.g,d=next.d,isHome=g[2]==='Youngstown, OH';
-    var opp=String(g[1]).toUpperCase();
-    var venue=resolveGCVenue(g);
-    var pre=(g[0]==='SEP 5'||g[0]==='SEP 6');
-    var eventLabel='';try{if(typeof scheduleEventLabel==='function')eventLabel=scheduleEventLabel(g)||'';}catch(e){}
-    if(!eventLabel)eventLabel=pre?'PRESEASON':'REGULAR SEASON';
-    box.innerHTML='<div class="gc-next-kicker">'+(pre?'PRESEASON':'NEXT PHANTOMS GAME')+'</div>'+
-      '<div class="gc-next-date">'+weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})+'</div>'+
-      '<div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcPhantomsLogo"></div><div class="matchup-name-stack">'+teamNameStack('Youngstown Phantoms')+'</div><div class="team-record-pill">'+formatRecordPill(dcPhantomsRecord)+'</div><div class="homeaway">'+(isHome?'HOME':'AWAY')+'</div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="gcOpponentLogo"></div><div class="matchup-name-stack">'+teamNameStack(g[1])+'</div>'+(opponentRecordFor(g[1])?'<div class="team-record-pill">'+formatRecordPill(opponentRecordFor(g[1]))+'</div>':'')+'<div class="homeaway">'+(isHome?'AWAY':'HOME')+'</div></div></div>'+
-      '<div class="gc-next-details"><span class="gc-detail-pill">'+escapeHtml(eventLabel)+'</span><span class="gc-detail-pill">'+escapeHtml(g[3])+'</span></div>'+
-      '<div class="countdown"><div class="countbox"><b id="gcDays">00</b><span>Days</span></div><div class="countbox"><b id="gcHours">00</b><span>Hours</span></div><div class="countbox"><b id="gcMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="gcSeconds">00</b><span>Seconds</span></div></div>'+
-      '<div class="gc-venue">'+escapeHtml(venue.arena)+(venue.arena&&venue.city?' — ':'')+escapeHtml(venue.city)+'</div>';
-    if(typeof matchupLogo==='function'){
-      var pl=document.getElementById('gcPhantomsLogo'),ol=document.getElementById('gcOpponentLogo');
-      if(pl)pl.innerHTML=matchupLogo('Youngstown Phantoms');
-      if(ol)ol.innerHTML=matchupLogo(g[1]);
-    }
-    updateGCCountdown(d);
+    var next=getNextGame();if(!next){box.innerHTML='<p>No upcoming games.</p>';return;}
+    var g=next.g,d=next.d,opponent=g[1],now=Date.now();
+    var meetings=(typeof phantomsSchedule!=='undefined'?phantomsSchedule:[]).filter(function(row){return String(row[1]||'').trim().toLowerCase()===String(opponent||'').trim().toLowerCase();});
+    var rows=meetings.map(function(row){
+      var iso=typeof gameTimes!=='undefined'?gameTimes[row[0]]:null,dt=iso?new Date(iso):null,result=seriesResultForGame(row),isNext=row===g,isHome=row[2]==='Youngstown, OH',venue=resolveGCVenue(row);
+      var dateHtml=dt&&!isNaN(dt)?'<small>'+weekdayShort(dt)+'</small>'+dt.toLocaleDateString(undefined,{month:'short',day:'numeric'}):escapeHtml(row[0]);
+      var place='<b>'+(isHome?'HOME':'AWAY')+'</b>'+escapeHtml(venue.arena||venue.city||row[2]||'');
+      var status=result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span><span>'+escapeHtml(String(result.phantoms)+'–'+String(result.opponentScore))+'</span>':(dt&&dt.getTime()>now?'<span class="gc-series-upcoming">'+escapeHtml(row[3]||'UPCOMING')+'</span>':'<span class="gc-series-upcoming">SCHEDULED</span>');
+      return '<div class="gc-series-row'+(isNext?' is-next':'')+'"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place">'+place+'</div><div class="gc-series-status">'+status+'</div></div>';
+    }).join('');
+    var nextVenue=resolveGCVenue(g);box.className='gc-series-card';
+    box.innerHTML='<div class="gc-series-head"><div class="gc-series-logo" id="gcOpponentLogo"></div><div><div class="gc-series-kicker">NEXT OPPONENT</div><div class="gc-series-opponent">'+escapeHtml(opponent)+'</div><div class="gc-series-next">'+weekdayShort(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric'})+' • '+escapeHtml(g[3])+'<br>'+escapeHtml(nextVenue.arena)+(nextVenue.arena&&nextVenue.city?' — ':'')+escapeHtml(nextVenue.city)+'</div></div></div><div class="gc-series-summary">'+escapeHtml(seriesRecordText(opponent))+'</div><div class="gc-series-list">'+rows+'</div>';
+    if(typeof matchupLogo==='function'){var ol=document.getElementById('gcOpponentLogo');if(ol)ol.innerHTML=matchupLogo(opponent);}
   }
 
   function updateGCCountdown(target){
@@ -4079,8 +4112,8 @@ function renderSelectedMonth(){
     });
 
     body.innerHTML=
-      '<div class="section-title gc-hub-section-title">NEXT GAME</div>'+
-      '<div class="gamehero gc-next-card" id="gcNextGameContent">Loading next game…</div>'+
+      '<div class="section-title gc-hub-section-title">SEASON SERIES</div>'+
+      '<div class="gc-series-card" id="gcNextGameContent">Loading opponent series…</div>'+
       '<div class="section-title gc-hub-section-title">RECENT RESULTS</div>'+
       '<div class="card"><div class="results-list" id="recentResultsList"><div class="result-empty">No completed games yet. Results will appear here after each game.</div></div></div>'+
       '<div class="section-title gc-hub-section-title">STANDINGS</div>'+
