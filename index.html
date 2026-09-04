@@ -2562,6 +2562,32 @@ body::after{
 #meetHosts .host-chevron{
   line-height:1;
 }
+
+/* v294 visual consistency pass — spacing, typography, pills, and Admin density */
+#home .home-section-title{margin:0 0 10px;color:#a56cff;font-size:10px;line-height:1.2;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+#gameDaySection,#meetHosts{margin-top:24px}
+#home .homeaway,#home .team-record-pill,#home .gc-detail-pill,#meetHosts .host-about-label{border-radius:999px;font-weight:900}
+#home .homeaway{padding:3px 8px;font-size:10px;line-height:1.15}
+#home .team-record-pill{padding-top:4px;padding-bottom:4px}
+#home .gc-detail-pill{padding:5px 8px;font-size:9px;line-height:1.1}
+#meetHosts .hosts-compact{gap:9px}
+#meetHosts .host-compact-header{padding-top:11px;padding-bottom:11px}
+#meetHosts .host-compact-copy{gap:0}
+#meetHosts .host-about-label{margin-top:5px}
+.admin-section-panel > .admin-group-title:first-child,
+.admin-section-panel .admin-roster-toolbar .eyebrow,
+.admin-section-panel .admin-record-intro .eyebrow,
+.admin-section-panel .admin-news-toolbar .eyebrow,
+.admin-section-panel .admin-qna-head .eyebrow,
+.admin-section-panel .admin-analytics-head .eyebrow{font-size:10px;line-height:1.2;font-weight:950;letter-spacing:.1em}
+.admin-roster-toolbar,.admin-news-toolbar,.admin-qna-head{margin-bottom:10px}
+.admin-record-intro{margin-bottom:10px}
+.admin-roster-toolbar .btn,.admin-news-toolbar .btn{min-height:38px;padding:8px 11px;font-size:10px}
+.admin-actions{gap:8px;margin-top:10px}
+.admin-actions .btn,.admin-publish-bar .btn{min-height:40px;padding:9px 12px;font-size:10.5px}
+.admin-muted,.admin-feedback,.admin-save-feedback,.admin-analytics-status{line-height:1.35}
+.admin-feedback,.admin-save-feedback{margin-top:5px}
+.admin-analytics-head{align-items:center;margin-bottom:9px}
 </style>
 
 
@@ -2693,7 +2719,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v293</small>
+<header><small class="build-version build-version-corner">v294</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2767,7 +2793,7 @@ body::after{
   </div>
 
   <section id="gameDaySection">
-    <div class="sectionhead"><h2>Game Day</h2></div>
+    <div class="section-title home-section-title home-section-title-gameday">GAME DAY</div>
     <div class="card gameday-card" id="publicGameDayCard">
       <div class="gameday-loading">Loading game-day status…</div>
     </div>
@@ -4237,7 +4263,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-section-panel" id="adminRecordPanel" role="tabpanel" aria-labelledby="adminTabRecord" hidden>
         <div class="admin-record-intro">
           <div class="eyebrow">PHANTOMS RECORD</div>
-          <div class="admin-muted">Use the − / + buttons to update the season record.</div>
+          
         </div>
         <div class="admin-record-grid">
           <div class="admin-record-field"><label for="adminRecordGp">Games Played</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordGp',-1)">−</button><input id="adminRecordGp" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordGp',1)">+</button></div></div>
@@ -4321,7 +4347,6 @@ else venue.arena=homeArenaByCity[g[2]]||'';
   <div class="admin-analytics-head">
     <div>
       <div class="eyebrow">APP ANALYTICS</div>
-      <h3>Usage Overview</h3>
     </div>
     <div class="admin-analytics-range" role="group" aria-label="Analytics range">
       <button type="button" class="admin-mini-btn active" data-analytics-days="1" onclick="loadAdminAnalytics(1)">TODAY</button>
