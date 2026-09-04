@@ -2601,6 +2601,19 @@ body::after{
   background:rgba(139,82,255,.10);
   border-color:rgba(139,82,255,.42);
 }
+
+/* v298 Phantoms HQ crest icon + tighter page footer */
+.navicon .nav-crest-text{
+  fill:currentColor;
+  stroke:none;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:6.6px;
+  font-weight:900;
+  letter-spacing:-.2px;
+}
+.admin-footer{
+  padding:22px 12px calc(58px + env(safe-area-inset-bottom, 0px));
+}
 </style>
 
 
@@ -2732,7 +2745,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v297</small>
+<header><small class="build-version build-version-corner">v298</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2903,7 +2916,7 @@ body::after{
 <nav class="bottomnav nav-v200">
   <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
-  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.2"/><circle cx="7" cy="9" r="1.2"/><circle cx="17" cy="9" r="1.2"/><circle cx="7" cy="15" r="1.2"/><circle cx="17" cy="15" r="1.2"/></svg></span>Phantoms HQ</button>
+  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v6.2c0 4.4-2.9 7.8-7 9.8-4.1-2-7-5.4-7-9.8V4.5Z"/><text x="12" y="13.1" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
   <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span>More</button>
 </nav>
 <div class="toast" id="toast"></div>
