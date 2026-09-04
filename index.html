@@ -2790,7 +2790,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v301</small>
+<header><small class="build-version build-version-corner">v302</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4096,7 +4096,7 @@ function renderSelectedMonth(){
       return String(tag).toUpperCase()!=='PRESEASON';
     });
     var results=counted.map(function(row){return seriesResultForGame(row);}).filter(Boolean);
-    if(!results.length)return 'First regular-season meeting';
+    if(!results.length)return 'Regular-season series: 0–0';
     var w=0,l=0;
     results.forEach(function(r){if(r.result==='W')w++;else if(['L','OTL','SOL'].indexOf(r.result)>=0)l++;});
     if(w===l)return 'Season series tied '+w+'–'+l;
