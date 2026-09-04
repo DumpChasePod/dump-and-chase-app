@@ -2800,7 +2800,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v303</small>
+<header><small class="build-version build-version-corner">v304</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3946,6 +3946,23 @@ window.DCAddResult=function(event){
     return null;
   }
 
+  function getHQNextGame(){
+    var status='';
+    try{
+      var state=typeof getAdminGameState==='function'?getAdminGameState():{};
+      status=String(state&&state.adminGameStatus||'').toLowerCase();
+    }catch(_){}
+    // During the pregame/live window, HQ stays on the current matchup.
+    // As soon as Admin publishes FINAL, HQ advances to the next scheduled game.
+    if(status!=='final'&&typeof gameDayAutomationWindow==='function'){
+      try{
+        var active=gameDayAutomationWindow(new Date());
+        if(active)return {g:active.g,d:active.d,window:active};
+      }catch(_){}
+    }
+    return getNextGame();
+  }
+
   function scheduleForMonth(monthIndex){
     if(typeof phantomsSchedule==='undefined')return [];
     return phantomsSchedule.filter(function(g){
@@ -4124,7 +4141,7 @@ function renderSelectedMonth(){
 
   function renderNextGame(){
     var box=document.getElementById('gcNextGameContent');if(!box)return;
-    var next=getNextGame();if(!next){box.innerHTML='<p>No upcoming games.</p>';return;}
+    var next=getHQNextGame();if(!next){box.innerHTML='<p>No upcoming games.</p>';return;}
     var g=next.g,d=next.d,opponent=g[1],now=Date.now();
     var meetings=(typeof phantomsSchedule!=='undefined'?phantomsSchedule:[]).filter(function(row){
       return String(row[1]||'').trim().toLowerCase()===String(opponent||'').trim().toLowerCase();
@@ -4168,7 +4185,7 @@ function renderSelectedMonth(){
     if(!modal||!title||!body)return false;
     title.textContent='Phantoms HQ';
     var now=new Date(),defaultMonth=now.getMonth();
-    var next=getNextGame();
+    var next=getHQNextGame();
     if(next)defaultMonth=next.d.getMonth();
 
     var months=[];
