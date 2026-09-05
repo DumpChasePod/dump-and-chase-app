@@ -3023,12 +3023,22 @@ body.game-live #publicGameDayCard .gameday-status{
 #adminDashboard:not(.admin-is-final) #adminGameDayPanel .admin-final-controls{display:none!important}
 #adminDashboard.admin-is-final #adminGameDayPanel .admin-final-controls{display:block!important;opacity:1}
 #adminDashboard.admin-is-final #adminGameDayPanel #adminFinalResultControls{display:block!important}
+/* v330: compact operator preview immediately above Publish. */
+#adminGameDayPanel .admin-live-preview{margin:7px 0 5px;padding:7px 9px;border:1px solid rgba(165,108,255,.22);border-radius:10px;background:rgba(165,108,255,.055);text-align:center}
+#adminGameDayPanel .admin-live-preview-label{font-size:7.5px;font-weight:950;letter-spacing:.14em;color:#aab5c5;text-transform:uppercase;margin-bottom:4px}
+#adminGameDayPanel .admin-live-preview-score{display:flex;align-items:baseline;justify-content:center;gap:6px;min-width:0;font-size:12px;font-weight:950;color:#eef2f7;line-height:1.15}
+#adminGameDayPanel .admin-live-preview-team{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:38%}
+#adminGameDayPanel .admin-live-preview-num{font-size:17px;color:#fff}
+#adminGameDayPanel .admin-live-preview-sep{color:#738095;font-size:10px}
+#adminGameDayPanel .admin-live-preview-state{margin-top:3px;font-size:9px;font-weight:900;color:#cbb1ff;letter-spacing:.045em;text-transform:uppercase}
+#adminGameDayPanel .admin-live-preview.is-final .admin-live-preview-state{color:#8fe0aa}
+#adminGameDayPanel .admin-live-preview.is-upcoming .admin-live-preview-state{color:#aab5c5}
 </style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v329</small>
+<header><small class="build-version build-version-corner">v330</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3303,6 +3313,30 @@ function markRosterDirty(){
   markAdminDirty('Roster changes');
   setAdminFeedback('adminRosterEditStatus','dirty','Unsaved changes');
 }
+function updateAdminGameDayPreview(){
+  var box=document.getElementById('adminGameDayPreview');if(!box)return;
+  var st=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
+  var period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
+  var clock=String(document.getElementById('adminClock')?.value||'');
+  var ph=Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0);
+  var op=Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0);
+  var row=null;try{if(typeof adminActiveScheduleRow==='function')row=adminActiveScheduleRow();}catch(_){}
+  var opponent=String(row&&row.opponent||'Opponent').trim()||'Opponent';
+  var role=String(row&&row.home_away||'').toUpperCase();
+  var phHome=role==='HOME';
+  var leftTeam=phHome?opponent:'Youngstown', rightTeam=phHome?'Youngstown':opponent;
+  var leftScore=phHome?op:ph, rightScore=phHome?ph:op;
+  var lt=document.getElementById('adminPreviewLeftTeam'),rt=document.getElementById('adminPreviewRightTeam');
+  var ls=document.getElementById('adminPreviewLeftScore'),rs=document.getElementById('adminPreviewRightScore');
+  if(lt)lt.textContent=leftTeam;if(rt)rt.textContent=rightTeam;if(ls)ls.textContent=String(leftScore);if(rs)rs.textContent=String(rightScore);
+  var state='UPCOMING';
+  if(st==='live'){
+    if(clock==='INT')state=(period==='2ND'?'2ND INT':'1ST INT');
+    else{var displayClock=clock;var m=/^(\d{1,2}):(\d{2})$/.exec(clock);if(m)displayClock=String(Number(m[1]))+':'+m[2];state=(period?period+' • ':'')+(displayClock||'LIVE');}
+  }else if(st==='final'){state='FINAL'+(period? ' • '+period:'');}
+  var stateEl=document.getElementById('adminPreviewState');if(stateEl)stateEl.textContent=state;
+  box.classList.toggle('is-final',st==='final');box.classList.toggle('is-upcoming',st==='upcoming');
+}
 function syncAdminQuickControls(){
  const st=document.getElementById('adminGameStatus')?.value||'';
  document.querySelectorAll('[data-admin-status]').forEach(b=>b.classList.toggle('active',b.dataset.adminStatus===st));
@@ -3314,6 +3348,7 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-intermission]').forEach(b=>b.classList.toggle('active',ck==='INT'&&b.dataset.adminIntermission===pd));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
+ updateAdminGameDayPreview();
 }
 function setAdminStatus(value){
  const el=document.getElementById('adminGameStatus');if(!el)return;
@@ -4561,6 +4596,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
       
 <div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div><div class="admin-publish-bar">
+  <div class="admin-live-preview" id="adminGameDayPreview" aria-live="polite">
+    <div class="admin-live-preview-label">LIVE PREVIEW</div>
+    <div class="admin-live-preview-score"><span class="admin-live-preview-team" id="adminPreviewLeftTeam">Opponent</span><span class="admin-live-preview-num" id="adminPreviewLeftScore">0</span><span class="admin-live-preview-sep">–</span><span class="admin-live-preview-num" id="adminPreviewRightScore">0</span><span class="admin-live-preview-team" id="adminPreviewRightTeam">Youngstown</span></div>
+    <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div>
+  </div>
   <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
   <button class="btn primary" type="button" onclick="saveAdminUpdates()">SAVE &amp; PUBLISH</button>
 </div>
@@ -5705,7 +5745,7 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
 function formatGameClock(input){
   if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
 }
@@ -5851,7 +5891,7 @@ if(publishBtn){publishBtn.textContent='✓ PUBLISHED';setTimeout(function(){if(p
  }
 }
 document.addEventListener('input',function(e){
-  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
+  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel')){markGameDayDirty();updateAdminGameDayPreview();}
   if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
   if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
   if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
@@ -5859,7 +5899,7 @@ document.addEventListener('input',function(e){
   if(e.target&&e.target.id==='adminRosterLabel'){markAdminDirty('Roster label');setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');}
 });
 document.addEventListener('change',function(e){
-  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
+  if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel')){markGameDayDirty();updateAdminGameDayPreview();}
   if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
   if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
   if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
