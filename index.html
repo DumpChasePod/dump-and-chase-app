@@ -2937,11 +2937,33 @@ body::after{
   text-transform:uppercase;
 }
 </style>
+
+<style>
+/* v322: stronger Game Day title treatment + card-only home/away role handling for neutral-site showcase games. */
+.home-section-title-gameday{
+  gap:12px!important;
+  font-size:14px!important;
+  letter-spacing:.2em!important;
+  text-shadow:
+    0 0 5px rgba(201,156,255,.55),
+    0 0 12px rgba(165,108,255,.5),
+    0 0 20px rgba(120,67,210,.28)!important;
+}
+.home-section-title-gameday:before,
+.home-section-title-gameday:after{
+  flex:1 1 auto;
+  width:auto!important;
+  min-width:0;
+  height:1px;
+}
+.home-section-title-gameday:before{background:linear-gradient(90deg,rgba(165,108,255,.08),rgba(165,108,255,.78))!important;}
+.home-section-title-gameday:after{background:linear-gradient(90deg,rgba(165,108,255,.08),rgba(165,108,255,.78))!important;transform:scaleX(-1)}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v321</small>
+<header><small class="build-version build-version-corner">v322</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3856,7 +3878,7 @@ function updateNextGame(){
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
  const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
  if(heroPhantomsLogo) heroPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
- const isHome = g[2]==='Youngstown, OH';
+ const isHome = homeAwayForHomeCards(g)==='HOME';
  const phHomeAway=document.getElementById('heroPhantomsHomeAway');
  const oppHomeAway=document.getElementById('heroOpponentHomeAway');
  if(phHomeAway)phHomeAway.textContent=isHome?'HOME':'AWAY';
@@ -4086,6 +4108,21 @@ function weekdayFull(dateLike){
   }
   if(!(d instanceof Date)||isNaN(d))return '';
   return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+}
+function homeAwayForHomeCards(g){
+  var row=null;
+  try{row=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+  var date=String(row&&row.game_date||'');
+  var neutralRoleOverrides={
+    '2026-09-17':'AWAY',
+    '2026-09-18':'HOME',
+    '2026-12-03':'AWAY',
+    '2026-12-04':'HOME'
+  };
+  if(neutralRoleOverrides[date])return neutralRoleOverrides[date];
+  var role=String(row&&row.home_away||'').toUpperCase();
+  if(role==='HOME'||role==='AWAY')return role;
+  return String(g&&g[2]||'')==='Youngstown, OH'?'HOME':'AWAY';
 }
 function resolveGCVenue(g){
     return scheduleVenue(g);
@@ -5893,7 +5930,7 @@ function renderPublicGameDay(){
   var finalOpp=String(finalResult.opponent||'Opponent').toUpperCase();
   var finalScore=(finalResult.phantoms??'—')+' – '+(finalResult.opponentScore??'—');
   var finalVenue=(finalResult.arena?finalResult.arena+' — ':'')+(finalResult.city||'');
-  var finalHomeAway=String(finalResult.homeAway||'').toUpperCase();
+  var finalHomeAway=homeAwayForHomeCards(g);
   var finalPhRole=finalHomeAway==='HOME'?'HOME':finalHomeAway==='AWAY'?'AWAY':'';
   var finalOppRole=finalPhRole==='HOME'?'AWAY':finalPhRole==='AWAY'?'HOME':'';
   box.innerHTML='<div class="gameday-status gameday-final">FINAL</div>'+ 
@@ -5916,8 +5953,8 @@ function renderPublicGameDay(){
  var venue={arena:'',city:g[2]};
  try{if(typeof scheduleVenue==='function')venue=scheduleVenue(g);}catch(e){}
  var arena=venue.arena||'Arena TBA',city=venue.city||g[2]||'';
- var isHome=g[2]==='Youngstown, OH';
- var phRole=isHome?'HOME':'AWAY',oppRole=isHome?'AWAY':'HOME';
+ var phRole=homeAwayForHomeCards(g);
+ var isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME';
  var statusLabel=status==='live'?'LIVE':(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON':'GAME DAY');
  var cls=status==='live'?'gameday-live':'gameday-upcoming';
  var middle=status==='upcoming'
