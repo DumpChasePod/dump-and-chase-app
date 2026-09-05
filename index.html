@@ -2891,11 +2891,57 @@ body::after{
   #publicGameDayCard .gameday-team .team-record-pill{font-size:9px!important;}
 }
 </style>
+
+<style>
+/* v321: tighter record pills + featured Game Day heading + pregame puck-drop countdown. */
+#nextGameHero .upcoming-team .team-record-pill,
+#publicGameDayCard .gameday-team .team-record-pill{
+  width:max-content!important;
+  min-width:0!important;
+  max-width:max-content!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+.home-section-title-gameday{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  text-align:center!important;
+  color:#c99cff!important;
+  font-size:12px!important;
+  letter-spacing:.18em!important;
+  text-shadow:0 0 12px rgba(165,108,255,.42);
+}
+.home-section-title-gameday:before,
+.home-section-title-gameday:after{
+  content:"";
+  width:34px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(165,108,255,.8));
+}
+.home-section-title-gameday:after{transform:scaleX(-1)}
+#publicGameDayCard .gameday-countdown-mini{
+  display:table;
+  margin:0 auto 7px;
+  padding:4px 9px;
+  border-radius:999px;
+  border:1px solid rgba(165,108,255,.28);
+  background:rgba(165,108,255,.08);
+  color:#d6c0ff;
+  font-size:8.5px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v320</small>
+<header><small class="build-version build-version-corner">v321</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5807,6 +5853,18 @@ function syncGameDayHomePriority(){
    if(hero&&hero.nextElementSibling!==section)hero.insertAdjacentElement('afterend',section);
  }
 }
+function gameDayCountdownText(gameDate){
+ var ms=(gameDate instanceof Date?gameDate.getTime():new Date(gameDate).getTime())-Date.now();
+ if(!Number.isFinite(ms)||ms<=0)return 'Puck drop soon';
+ var totalMinutes=Math.max(1,Math.ceil(ms/60000));
+ var hours=Math.floor(totalMinutes/60),minutes=totalMinutes%60;
+ if(hours>=24){
+  var days=Math.floor(hours/24),remHours=hours%24;
+  return days+'d '+remHours+'h to puck drop';
+ }
+ if(hours>0)return hours+'h '+minutes+'m to puck drop';
+ return minutes+'m to puck drop';
+}
 function renderPublicGameDay(){
  var box=document.getElementById('publicGameDayCard');if(!box)return;
  var st=getAdminGameState(),status=st.adminGameStatus||'upcoming';
@@ -5875,7 +5933,8 @@ function renderPublicGameDay(){
        '<div class="gameday-period">'+((st.adminClock||'')==='INT'?((st.adminPeriod||'')+' INT').trim():((st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+(st.adminClock||'')))+'</div></div>'+ 
       (isHome?gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole):gameDayTeam(g[1],opp,oppRole))+
     '</div>';
- box.innerHTML='<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
+ box.innerHTML=(status==='upcoming'?'<div class="gameday-countdown-mini">'+escapeHtml(gameDayCountdownText(next.d))+'</div>':'')+
+  '<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
   middle+
   '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+
   boxScoreButton(boxScoreUrlForGame(g),'gameday-box-score');
