@@ -2678,6 +2678,27 @@ body::after{
 /* v319: Schedule hierarchy refinement; Season Series untouched */
 .admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
 .admin-secret-trigger:hover{opacity:.72}
+
+/* v327: compact Game Day box-score action + four-digit clock controls */
+#publicGameDayCard .box-score-btn.gameday-box-score{
+  display:flex!important;width:max-content!important;max-width:calc(100% - 24px);min-height:38px;
+  margin:14px auto 2px!important;padding:9px 15px!important;align-items:center;justify-content:center;
+  border:1px solid rgba(165,108,255,.42)!important;border-radius:999px!important;
+  background:rgba(165,108,255,.10)!important;color:#eee8ff!important;box-shadow:none!important;
+  font-size:10px!important;font-weight:950!important;letter-spacing:.08em!important;text-decoration:none!important;
+}
+#publicGameDayCard .box-score-btn.gameday-box-score:active{transform:scale(.98)}
+.admin-clock-digits{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
+.admin-clock-digit{display:grid;grid-template-rows:30px 42px 30px;width:48px;border:1px solid #263446;border-radius:12px;overflow:hidden;background:#0d141e}
+.admin-clock-digit button{border:0;background:#ffffff08;color:#dfe6f1;font-size:18px;font-weight:950;line-height:1;cursor:pointer}
+.admin-clock-digit button:active{background:rgba(139,82,255,.18)}
+.admin-clock-digit output{display:grid;place-items:center;border-top:1px solid #ffffff0d;border-bottom:1px solid #ffffff0d;font-size:24px;font-weight:950;color:#fff}
+.admin-clock-colon{font-size:25px;font-weight:950;color:#8e99a8;margin:0 -1px}
+.admin-clock-hidden{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.admin-clock-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.admin-clock-tools .admin-mini-btn{min-height:36px;padding:7px 5px;font-size:9px}
+@media(max-width:380px){.admin-clock-digits{gap:4px}.admin-clock-digit{width:43px}}
+
 </style>
 
 
@@ -2964,7 +2985,7 @@ body.game-live #publicGameDayCard .gameday-status{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v326</small>
+<header><small class="build-version build-version-corner">v327</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3203,7 +3224,7 @@ function startAdminGame(){
   var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
   if(ps&&!String(ps.value).trim())ps.value='0';if(os&&!String(os.value).trim())os.value='0';
   var pd=document.getElementById('adminPeriod');if(pd)pd.value='1st';
-  var cl=document.getElementById('adminClock');if(cl&&!String(cl.value).trim())cl.value='20:00';
+  var cl=document.getElementById('adminClock');if(cl&&!String(cl.value).trim())cl.value='20:00';syncAdminClockDigits(cl&&cl.value?cl.value:'20:00');
   setAdminStatus('live');syncAdminQuickControls();markAdminDirty('Game Day changes');
 }
 function finalizeAdminGame(){
@@ -3276,14 +3297,40 @@ function nextAdminPeriod(){
   var i=order.indexOf(el.value);
   setAdminPeriod(order[Math.min(i<0?0:i+1,order.length-1)]);
 }
+function normalizeGameClockValue(value){
+  var raw=String(value||'').trim().toUpperCase();
+  if(raw==='INT')return 'INT';
+  var m=0,s=0;
+  if(/^\d{1,2}:\d{1,2}$/.test(raw)){var parts=raw.split(':');m=parseInt(parts[0],10)||0;s=parseInt(parts[1],10)||0;}
+  else{var digits=raw.replace(/\D/g,'').slice(0,4);if(digits.length>2){m=parseInt(digits.slice(0,-2),10)||0;s=parseInt(digits.slice(-2),10)||0;}else if(digits){m=parseInt(digits,10)||0;}}
+  m=Math.max(0,Math.min(20,m));s=Math.max(0,Math.min(59,s));if(m===20)s=0;
+  return String(m)+':'+String(s).padStart(2,'0');
+}
+function adminClockDigitsFromValue(value){
+  var v=normalizeGameClockValue(value);if(v==='INT')return null;
+  var parts=v.split(':'),m=String(parseInt(parts[0],10)||0).padStart(2,'0'),sec=String(parseInt(parts[1],10)||0).padStart(2,'0');
+  return [Number(m[0]),Number(m[1]),Number(sec[0]),Number(sec[1])];
+}
+function syncAdminClockDigits(value){
+  var d=adminClockDigitsFromValue(value);if(!d)return;for(var i=0;i<4;i++){var out=document.getElementById('adminClockDigit'+i);if(out)out.textContent=String(d[i]);}
+}
+function adminClockValueFromDigits(){
+  var d=[];for(var i=0;i<4;i++){var out=document.getElementById('adminClockDigit'+i);d.push(Number(out&&out.textContent||0));}
+  var mins=d[0]*10+d[1],secs=d[2]*10+d[3];if(mins>=20){mins=20;secs=0;d=[2,0,0,0];for(var j=0;j<4;j++){var o=document.getElementById('adminClockDigit'+j);if(o)o.textContent=String(d[j]);}}
+  return String(mins)+':'+String(secs).padStart(2,'0');
+}
+function stepAdminClockDigit(index,delta){
+  index=Number(index);delta=delta<0?-1:1;var out=document.getElementById('adminClockDigit'+index);if(!out)return;
+  var max=index===0?2:(index===2?5:9),cur=Number(out.textContent||0);cur=(cur+delta+(max+1))%(max+1);out.textContent=String(cur);
+  if(index===0&&cur===2){var ones=document.getElementById('adminClockDigit1');if(ones)ones.textContent='0';var st=document.getElementById('adminClockDigit2');if(st)st.textContent='0';var so=document.getElementById('adminClockDigit3');if(so)so.textContent='0';}
+  if(index===1&&Number(document.getElementById('adminClockDigit0')?.textContent||0)===2)out.textContent='0';
+  var el=document.getElementById('adminClock');if(el)el.value=adminClockValueFromDigits();markGameDayDirty();
+}
 function setAdminClock(value){
-  var el=document.getElementById('adminClock');if(!el)return;
-  el.value=value;
-  markGameDayDirty();
+  var el=document.getElementById('adminClock');if(!el)return;el.value=normalizeGameClockValue(value);syncAdminClockDigits(el.value);markGameDayDirty();
 }
 function setAdminIntermission(period){
-  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');
-  if(p)p.value=period;if(c)c.value='INT';markGameDayDirty();
+  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');if(p)p.value=period;if(c)c.value='INT';markGameDayDirty();
 }
 function stepAdminScore(id,delta){
  const el=document.getElementById(id);if(!el)return;
@@ -4463,7 +4510,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
-      <div class="admin-field admin-status-group admin-live-controls"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
+      <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-clock-tools"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button></div><small class="admin-muted">Use +/− to set the four clock digits. The first digit only allows 0, 1 or 2.</small></div>
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">USHL Box Score URL</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><small class="admin-muted">Saved to this game and reused on Game Day, Schedule and Recent Results.</small></div>
       <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
@@ -4722,10 +4769,11 @@ function boxScoreUrlForGame(g){
   var r=scheduleRowForGame(g);
   return r&&String(r.box_score_url||'').trim()?String(r.box_score_url).trim():'';
 }
+function displayGameClock(value){var v=String(value||'').trim();if(!v)return '';if(v==='INT')return v;var m=v.match(/^0?(\d{1,2}):(\d{2})$/);return m?String(parseInt(m[1],10)||0)+':'+m[2]:v;}
 function boxScoreButton(url,extraClass){
   url=String(url||'').trim();
   if(!/^https?:\/\//i.test(url))return '';
-  return '<a class="btn secondary box-score-btn '+(extraClass||'')+'" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">VIEW BOX SCORE</a>';
+  return '<a class="btn secondary box-score-btn '+(extraClass||'')+'" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>';
 }
 
 (async function dcBootSharedGameData(){
@@ -5612,18 +5660,11 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();}
 function formatGameClock(input){
-  if(!input)return;
-  var raw=String(input.value||'').trim();
-  if(/[A-Za-z]/.test(raw)){input.value=raw.toUpperCase().slice(0,12);return;}
-  var digits=raw.replace(/\D/g,'').slice(0,4);
-  if(digits.length<=2){input.value=digits;return;}
-  var mins=digits.slice(0,-2),secs=digits.slice(-2);
-  var m=parseInt(mins,10)||0,s=parseInt(secs,10)||0;
-  if(s>59){s=59;}
-  input.value=String(m)+':'+String(s).padStart(2,'0');
+  if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
 }
+
 function adminActiveScheduleRow(){
   try{
     var active=typeof gameDayAutomationWindow==='function'?gameDayAutomationWindow(new Date()):null;
@@ -5993,7 +6034,7 @@ function renderPublicGameDay(){
   : '<div class="gameday-matchup gameday-matchup-visual">'+
       (isHome?gameDayTeam(g[1],opp,oppRole):gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole))+
       '<div class="gameday-scorebox"><div class="gameday-score">'+score+'</div>'+ 
-       '<div class="gameday-period">'+((st.adminClock||'')==='INT'?((st.adminPeriod||'')+' INT').trim():((st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+(st.adminClock||'')))+'</div></div>'+ 
+       '<div class="gameday-period">'+((st.adminClock||'')==='INT'?((st.adminPeriod||'')+' INT').trim():((st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+displayGameClock(st.adminClock||'')))+'</div></div>'+ 
       (isHome?gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole):gameDayTeam(g[1],opp,oppRole))+
     '</div>';
  box.innerHTML=(status==='upcoming'?featuredGameCountdownHtml(next.d):'')+'<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
