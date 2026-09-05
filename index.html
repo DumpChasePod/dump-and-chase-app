@@ -2795,12 +2795,26 @@ body::after{
   .admin-opponent-record .admin-score-stepper input{flex-basis:18px!important;width:18px!important;min-width:18px!important;max-width:18px!important;font-size:13px!important;}
   .team-record-pill{font-size:7.5px!important;padding:3px 6px;}
 }
+
+/* v306: button-based Final Result + unified compact game rows */
+.admin-final-result-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;width:100%}
+.admin-final-result-buttons .admin-chip{width:100%;min-height:38px;margin:0}
+.v306-game-list{gap:7px}
+.v306-game-row{grid-template-columns:58px minmax(0,1fr) auto}
+.v306-game-opponent{color:#edf2f8;font-size:11px;font-weight:950;line-height:1.2;margin-bottom:4px}
+.v306-game-row .gc-series-place{min-width:0}
+.v306-game-row .gc-series-status{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.v306-box-link{margin-top:1px}
+.gc-series-status-pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 6px;border-radius:999px;border:1px solid rgba(139,82,255,.30);background:rgba(139,82,255,.10);color:#cbb8f7;font-size:7px;font-weight:950;letter-spacing:.06em;line-height:1;text-transform:uppercase}
+.gc-series-status-pill.live{border-color:rgba(255,148,74,.38);background:rgba(255,148,74,.12);color:#ffad70}
+.gc-series-status-pill.muted{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#9aa7b8}
+@media(max-width:390px){.v306-game-row{grid-template-columns:52px minmax(0,1fr) auto}.v306-game-opponent{font-size:10px}.admin-final-result-buttons{gap:5px}}
 </style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v305</small>
+<header><small class="build-version build-version-corner">v306</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3017,6 +3031,8 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-status]').forEach(b=>b.classList.toggle('active',b.dataset.adminStatus===st));
  const pd=document.getElementById('adminPeriod')?.value||'';
  document.querySelectorAll('[data-admin-period]').forEach(b=>b.classList.toggle('active',b.dataset.adminPeriod===pd));
+ const rs=document.getElementById('adminResult')?.value||'';
+ document.querySelectorAll('[data-admin-result]').forEach(b=>b.classList.toggle('active',b.dataset.adminResult===rs));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
 }
@@ -3039,6 +3055,7 @@ function setAdminStatus(value){
    },80);
  }
 }
+function setAdminResult(value){const el=document.getElementById('adminResult');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function nextAdminPeriod(){
   var el=document.getElementById('adminPeriod');if(!el)return;
@@ -3552,32 +3569,22 @@ function renderRecentResults(){
   if(!boxes.length)return;
   const html=!completedResults.length
     ? '<div class="result-empty">No completed games yet. Results will appear here after each game.</div>'
-    : completedResults.slice(0,5).map(g=>{
-        const parts=(g.date||'').split(' ');
-        const wd=g.iso?['SUN','MON','TUES','WED','THURS','FRI','SAT'][new Date(g.iso).getDay()]||'':'';
-        const venue=[g.arena,g.city].filter(Boolean).map(escapeHtml).join(' — ');
-        const role=g.homeAway?`<span class="result-role">${escapeHtml(g.homeAway)}</span>`:'';
-        const score=`${g.phantoms}–${g.opponentScore}`;
-        const scheduleMatch=dcScheduleRows.find(r=>dcScheduleKeyFromRow(r)===String(g.date||'').trim().toUpperCase()&&String(r.opponent||'').trim()===String(g.opponent||'').trim());
+    : '<div class="gc-series-list v306-game-list">'+completedResults.slice(0,5).map(function(g){
+        const parts=String(g.date||'').trim().toUpperCase().split(/\s+/);
+        const dt=g.iso?new Date(g.iso):null;
+        const wd=dt&&!isNaN(dt)?weekdayShort(dt):'';
+        const dateHtml=wd?'<small>'+escapeHtml(wd)+'</small><span>'+escapeHtml((parts[0]||'')+' '+(parts[1]||''))+'</span>':escapeHtml(g.date||'');
+        const scheduleMatch=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===String(g.date||'').trim().toUpperCase()&&String(r.opponent||'').trim()===String(g.opponent||'').trim();});
+        const role=String((scheduleMatch&&scheduleMatch.home_away)||g.homeAway||'').toUpperCase();
+        const eventLabel=String((scheduleMatch&&scheduleMatch.event_label)||'').trim();
+        const tagHtml=eventLabel?'<span class="gc-series-event-pill '+(eventLabel.toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(eventLabel)+'</span>':'';
+        const arena=(scheduleMatch&&scheduleMatch.arena)||g.arena||'';
+        const city=(scheduleMatch&&scheduleMatch.location)||g.city||'';
+        const venue=[arena,city].filter(Boolean).join(' — ');
         const boxUrl=scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'';
-        return `<div class="result-row result-row-compact">
-          <div class="result-date compact-date">
-            ${wd?`<small>${wd}</small>`:''}
-            <b>${parts[1]||''}</b>
-            <span>${parts[0]||''}</span>
-          </div>
-          <div class="result-main">
-            <div class="result-opp">${escapeHtml(g.opponent)}</div>
-            <div class="result-meta">${role}${venue?`<span class="result-venue">${venue}</span>`:''}</div>
-          </div>
-          <div class="result-score compact-score">
-            <span class="result-outcome-pill ${resultClass(g.result)}">${resultLabel(g.result)}${escapeHtml(g.resultDetail||'')}</span>
-            <span class="result-score-value">${score}</span>
-            ${boxUrl?`<a class="result-box-score" href="${escapeHtml(boxUrl)}" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','ushl_box_score')">BOX SCORE</a>`:''}
-          </div>
-        </div>`;
-      }).join('');
-  boxes.forEach(box=>box.innerHTML=html);
+        return '<div class="gc-series-row v306-game-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+tagHtml+'</div>'+escapeHtml(venue)+'</div><div class="gc-series-status"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span>'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span>'+(boxUrl?'<a class="result-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
+      }).join('')+'</div>';
+  boxes.forEach(function(box){box.innerHTML=html;});
 }
 
 function cacheCompletedResults(results){
@@ -4010,33 +4017,36 @@ function resolveGCVenue(g){
 function scheduleHTML(monthIndex){
     var rows=scheduleForMonth(monthIndex);
     if(!rows.length)return '<div class="card"><p>No games scheduled for this month.</p></div>';
-    return '<div class="schedule-list">'+rows.map(function(g){
-      var parts=g[0].split(' '),isHome=g[2]==='Youngstown, OH';
+    return '<div class="gc-series-list v306-game-list">'+rows.map(function(g){
+      var isHome=g[2]==='Youngstown, OH';
       var role=isHome?'HOME':'AWAY';
       var venue=resolveGCVenue(g);
       var db=scheduleRowForGame(g);
       if(db){role=db.home_away||role;venue={arena:db.arena||'Arena TBA',city:db.location||g[2]};}
       var eventLabel=db?(db.event_label||''):(typeof scheduleEventLabel==='function'?scheduleEventLabel(g):'');
-      var wd=weekdayShort((db?db.game_date:gameTimes[g[0]])||'');
-      var status=db?(db.status||'SCHEDULED'):'SCHEDULED';
+      var tagHtml=eventLabel?'<span class="gc-series-event-pill '+(String(eventLabel).toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(eventLabel)+'</span>':'';
+      var iso=(db&&db.game_date&&db.game_time)?String(db.game_date)+'T'+String(db.game_time).slice(0,8):(typeof gameTimes!=='undefined'?gameTimes[g[0]]:null);
+      var dt=iso?new Date(iso):null;
+      var dateHtml=dt&&!isNaN(dt)?'<small>'+weekdayShort(dt)+'</small>'+dt.toLocaleDateString(undefined,{month:'short',day:'numeric'}):escapeHtml(g[0]);
+      var status=String(db?(db.status||'SCHEDULED'):'SCHEDULED').toUpperCase();
       var finalish=['FINAL','FINAL-OT','FINAL-SO'].includes(status);
-      var statusLine=finalish?status:(status==='POSTPONED'?'POSTPONED':(status==='CANCELLED'?'CANCELLED':escapeHtml(g[3])));
-      var scoreLine=finalish&&db.phantoms_score!=null&&db.opponent_score!=null?'YNG '+db.phantoms_score+' · '+teamScheduleAbbr(g[1])+' '+db.opponent_score:'';
-      return '<div class="sched">'+
-        '<div class="datebox"><small>'+wd+'</small><b>'+parts[1]+'</b><span>'+parts[0]+'</span></div>'+
-        '<div class="sched-main">'+
-          '<div class="opp">'+escapeHtml(g[1])+'</div>'+
-          (eventLabel?'<div class="sched-event">'+escapeHtml(eventLabel)+'</div>':'')+
-          '<div class="where"><span class="schedule-arena">'+escapeHtml(venue.arena||'Arena TBA')+'</span><span class="schedule-city">'+escapeHtml(venue.city||g[2]||'')+'</span></div>'+
-        '</div>'+
-        '<div class="sched-right">'+
-          '<div class="sched-role">'+role+(finalish?' · '+status:'')+'</div>'+
-          '<div class="time">'+(scoreLine||statusLine)+'</div>'+
-          (db&&db.box_score_url?'<a class="schedule-box-score" href="'+escapeHtml(db.box_score_url)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+
-        '</div>'+
-      '</div>';
+      var result=typeof seriesResultForGame==='function'?seriesResultForGame(g):null;
+      var score=(db&&db.phantoms_score!=null&&db.opponent_score!=null)?String(db.phantoms_score)+'–'+String(db.opponent_score):(result?String(result.phantoms)+'–'+String(result.opponentScore):'');
+      var statusHtml='';
+      if(finalish){
+        statusHtml=(result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span>':'<span class="gc-series-status-pill">'+escapeHtml(status.replace('FINAL-','FINAL '))+'</span>')+(score?'<span>'+escapeHtml(score)+'</span>':'');
+      }else if(status==='LIVE'){
+        statusHtml='<span class="gc-series-status-pill live">LIVE</span>'+(score?'<span>'+escapeHtml(score)+'</span>':'');
+      }else if(status==='POSTPONED'||status==='CANCELLED'){
+        statusHtml='<span class="gc-series-status-pill muted">'+escapeHtml(status)+'</span>';
+      }else{
+        statusHtml='<span class="gc-series-upcoming">'+escapeHtml((db&&db.time_label)||g[3]||'UPCOMING')+'</span>';
+      }
+      var boxUrl=db&&db.box_score_url?String(db.box_score_url).trim():'';
+      return '<div class="gc-series-row v306-game-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+statusHtml+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
     }).join('')+'</div>';
   }
+
 function teamScheduleAbbr(team){
   var map={'Dubuque Fighting Saints':'DBQ','Muskegon Lumberjacks':'MUS','Des Moines Buccaneers':'DSM','Waterloo Black Hawks':'WAT','Madison Capitols':'MAD','Cedar Rapids RoughRiders':'CRR','NTDP U17':'USA','NTDP U18':'USA','Omaha Lancers':'OMA','Green Bay Gamblers':'GB','Sioux City Musketeers':'SC','Sioux Falls Stampede':'SF','Lincoln Stars':'LIN','Tri-City Storm':'TC','Fargo Force':'FAR','Chicago Steel':'CHI'};
   return map[team]||String(team||'OPP').slice(0,3).toUpperCase();
@@ -4361,15 +4371,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
       <div class="admin-field admin-status-group admin-live-controls"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
-      <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><select id="adminResult" aria-label="Final Result">
-<option value="">Not final</option>
-<option value="W">W</option>
-<option value="W_OT">W — Final (OT)</option>
-<option value="W_SO">W — Final (SO)</option>
-<option value="L">L</option>
-<option value="L_OT">L — Final (OT)</option>
-<option value="L_SO">L — Final (SO)</option>
-</select></div><div class="admin-group-title">RECENT RESULTS</div>
+      <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
       
 <div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div><div class="admin-publish-bar">
@@ -5451,7 +5453,7 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminQuickControls();}
 function formatGameClock(input){
   if(!input)return;
   var raw=String(input.value||'').trim();
