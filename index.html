@@ -2675,7 +2675,7 @@ body::after{
 .admin-game-shortcuts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 .admin-game-shortcuts .admin-mini-btn{flex:1;min-width:110px}
 
-/* v312: server-side admin email gate */
+/* v313: Supabase schedule is the single source of truth; local cache only */
 .admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
 .admin-secret-trigger:hover{opacity:.72}
 </style>
@@ -2841,7 +2841,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v312</small>
+<header><small class="build-version build-version-corner">v313</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3551,88 +3551,35 @@ async function getFeed(){
  }
 }
 
-const phantomsSchedule=[
- ['SEP 5','Muskegon Lumberjacks','Muskegon, MI','6:10 PM ET'],
- ['SEP 6','Muskegon Lumberjacks','Muskegon, MI','3:10 PM ET'],
- ['SEP 17','Des Moines Buccaneers','Chicago, IL','1:00 PM ET'],
- ['SEP 18','Waterloo Black Hawks','Chicago, IL','4:30 PM ET'],
- ['OCT 2','Fargo Force','Youngstown, OH','7:00 PM ET'],
- ['OCT 3','Fargo Force','Youngstown, OH','6:00 PM ET'],
- ['OCT 9','Dubuque Fighting Saints','Dubuque, IA','8:05 PM ET'],
- ['OCT 10','Dubuque Fighting Saints','Dubuque, IA','8:05 PM ET'],
- ['OCT 13','NTDP U17','Youngstown, OH','7:00 PM ET'],
- ['OCT 16','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
- ['OCT 17','Muskegon Lumberjacks','Muskegon, MI','6:10 PM ET'],
- ['OCT 23','Chicago Steel','Geneva, IL','8:00 PM ET'],
- ['OCT 24','Chicago Steel','Geneva, IL','7:00 PM ET'],
- ['OCT 30','Des Moines Buccaneers','Des Moines, IA','8:05 PM ET'],
- ['OCT 31','Des Moines Buccaneers','Des Moines, IA','7:05 PM ET'],
- ['NOV 6','Madison Capitols','Madison, WI','7:00 PM ET'],
- ['NOV 7','Madison Capitols','Madison, WI','6:00 PM ET'],
- ['NOV 13','Waterloo Black Hawks','Youngstown, OH','7:00 PM ET'],
- ['NOV 14','Waterloo Black Hawks','Youngstown, OH','6:00 PM ET'],
- ['NOV 15','Cedar Rapids RoughRiders','Youngstown, OH','4:00 PM ET'],
- ['NOV 20','NTDP U17','Youngstown, OH','7:00 PM ET'],
- ['NOV 21','NTDP U17','Youngstown, OH','6:00 PM ET'],
- ['NOV 25','NTDP U18','Plymouth, MI','5:00 PM ET'],
- ['NOV 27','Dubuque Fighting Saints','Dubuque, IA','8:05 PM ET'],
- ['NOV 28','Dubuque Fighting Saints','Dubuque, IA','8:05 PM ET'],
- ['DEC 3','Muskegon Lumberjacks','Rochester, NY','7:10 PM ET'],
- ['DEC 4','Muskegon Lumberjacks','Rochester, NY','7:00 PM ET'],
- ['DEC 11','Dubuque Fighting Saints','Youngstown, OH','7:00 PM ET'],
- ['DEC 12','Dubuque Fighting Saints','Youngstown, OH','6:00 PM ET'],
- ['DEC 18','NTDP U17','Plymouth, MI','TBD'],
- ['DEC 19','NTDP U18','Youngstown, OH','6:00 PM ET'],
- ['DEC 28','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
- ['DEC 29','Muskegon Lumberjacks','Muskegon, MI','7:10 PM ET'],
- ['JAN 1','Cedar Rapids RoughRiders','Youngstown, OH','7:00 PM ET'],
- ['JAN 2','Cedar Rapids RoughRiders','Youngstown, OH','6:00 PM ET'],
- ['JAN 8','Chicago Steel','Youngstown, OH','7:00 PM ET'],
- ['JAN 9','Chicago Steel','Youngstown, OH','6:00 PM ET'],
- ['JAN 16','Omaha Lancers','Omaha, NE','7:05 PM ET'],
- ['JAN 17','Omaha Lancers','Omaha, NE','6:05 PM ET'],
- ['JAN 20','NTDP U18','Youngstown, OH','7:00 PM ET'],
- ['JAN 22','Green Bay Gamblers','Youngstown, OH','7:00 PM ET'],
- ['JAN 23','Green Bay Gamblers','Youngstown, OH','6:00 PM ET'],
- ['JAN 29','Madison Capitols','Middleton, WI','7:05 PM ET'],
- ['JAN 31','Madison Capitols','Middleton, WI','5:05 PM ET'],
- ['FEB 5','Sioux City Musketeers','Youngstown, OH','7:00 PM ET'],
- ['FEB 6','Sioux City Musketeers','Youngstown, OH','6:00 PM ET'],
- ['FEB 12','Sioux Falls Stampede','Sioux Falls, SD','8:05 PM ET'],
- ['FEB 13','Sioux Falls Stampede','Sioux Falls, SD','7:05 PM ET'],
- ['FEB 19','Lincoln Stars','Youngstown, OH','7:00 PM ET'],
- ['FEB 20','Lincoln Stars','Youngstown, OH','6:00 PM ET'],
- ['FEB 23','Muskegon Lumberjacks','Youngstown, OH','10:05 AM ET'],
- ['FEB 26','NTDP U17','Youngstown, OH','7:00 PM ET'],
- ['FEB 27','NTDP U17','Youngstown, OH','6:00 PM ET'],
- ['MAR 5','Green Bay Gamblers','Green Bay, WI','8:05 PM ET'],
- ['MAR 6','Green Bay Gamblers','Green Bay, WI','7:05 PM ET'],
- ['MAR 7','Green Bay Gamblers','Green Bay, WI','4:05 PM ET'],
- ['MAR 12','Tri-City Storm','Kearney, NE','8:05 PM ET'],
- ['MAR 13','Tri-City Storm','Kearney, NE','7:05 PM ET'],
- ['MAR 19','Cedar Rapids RoughRiders','Cedar Rapids, IA','8:05 PM ET'],
- ['MAR 20','Cedar Rapids RoughRiders','Cedar Rapids, IA','8:05 PM ET'],
- ['MAR 26','Muskegon Lumberjacks','Youngstown, OH','7:00 PM ET'],
- ['MAR 27','Muskegon Lumberjacks','Youngstown, OH','6:00 PM ET'],
- ['APR 2','NTDP U18','Plymouth, MI','7:00 PM ET'],
- ['APR 3','NTDP U18','Plymouth, MI','6:00 PM ET']
-];
-
+const phantomsSchedule=[];
 const gameTimes={};
+let dcScheduleRows=[];
+const DC_SCHEDULE_CACHE_KEY='dc_schedule_cache_v1';
 const monthNumbers={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
 const defaultHours={};
-phantomsSchedule.forEach(g=>{
-  const m=g[0].split(' ')[0], day=Number(g[0].split(' ')[1]);
-  if(g[3]==='TBD') return;
-  const tm=g[3].match(/(\d+):(\d+)\s*(AM|PM)/i);
-  if(!tm) return;
-  let hour=Number(tm[1]), minute=Number(tm[2]);
-  if(tm[3].toUpperCase()==='PM' && hour!==12) hour+=12;
-  if(tm[3].toUpperCase()==='AM' && hour===12) hour=0;
-  const year=monthNumbers[m]>=8?2026:2027;
-  const mm=String(monthNumbers[m]+1).padStart(2,'0'), dd=String(day).padStart(2,'0');
-  gameTimes[g[0]]=`${year}-${mm}-${dd}T${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}:00-04:00`;
-});
+function dcScheduleKeyFromRow(r){
+  var d=new Date(String(r.game_date)+'T12:00:00');
+  return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]+' '+d.getDate();
+}
+function rebuildScheduleFromSupabase(rows){
+  dcScheduleRows=(rows||[]).slice().sort(function(a,b){return String(a.game_date).localeCompare(String(b.game_date))||(String(a.game_time||'').localeCompare(String(b.game_time||'')));});
+  phantomsSchedule.splice(0,phantomsSchedule.length);
+  Object.keys(gameTimes).forEach(function(k){delete gameTimes[k];});
+  dcScheduleRows.forEach(function(r){
+    var key=dcScheduleKeyFromRow(r);
+    var label=r.time_label||'TBD';
+    phantomsSchedule.push([key,r.opponent,r.location,label]);
+    if(r.game_time){
+      gameTimes[key]=String(r.game_date)+'T'+String(r.game_time).slice(0,8);
+    }
+  });
+}
+(function hydrateCachedSchedule(){
+  try{
+    var cached=JSON.parse(localStorage.getItem(DC_SCHEDULE_CACHE_KEY)||'[]');
+    if(Array.isArray(cached)&&cached.length)rebuildScheduleFromSupabase(cached);
+  }catch(e){console.warn('Cached schedule could not be loaded.',e);}
+})();
 
 const localLogoMap={"Youngstown Phantoms": "Youngstown-phantoms.png", "Des Moines Buccaneers": "Des Moines.png", "Sioux City Musketeers": "Sioux City.png", "Chicago Steel": "Chicago-Steel.png", "Cedar Rapids RoughRiders": "cedar-rapids-rough-riders.png", "Madison Capitols": "Madison-Capitols.png", "Dubuque Fighting Saints": "Dubuque-Fighting-Saints.png", "Waterloo Black Hawks": "Waterloo-Black-hawks.png", "Omaha Lancers": "Omaha.png", "Muskegon Lumberjacks": "Muskegon-Lumberjacks.png", "Sioux Falls Stampede": "Sioux Falls.png", "Tri-City Storm": "Tri-City Storm.png", "NTDP U17": "NTDP.png", "NTDP U18": "NTDP.png", "Lincoln Stars": "Lincoln Stars.png", "Fargo Force": "Fargo Force.png", "Green Bay Gamblers": "Green-Bay-Gamblers.png"};
 function localLogoPath(team){
@@ -4698,36 +4645,19 @@ else dcTrackInitialView();
 const DC_SUPABASE_KEY='sb_publishable_mDdTovsQOCm2WAZoh28Gxw_ISMEXfAJ';
 const DC_ADMIN_UID='2c951474-1dcd-4f90-b622-92f5b163584d';
 const dcSupabase=window.supabase.createClient(DC_SUPABASE_URL,DC_SUPABASE_KEY);
-let dcScheduleRows=[];
 let dcPhantomsRecord={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
 let dcOpponentRecord=null;
-function dcScheduleKeyFromRow(r){
-  var d=new Date(String(r.game_date)+'T12:00:00');
-  return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]+' '+d.getDate();
-}
-function rebuildScheduleFromSupabase(rows){
-  dcScheduleRows=(rows||[]).slice().sort(function(a,b){return String(a.game_date).localeCompare(String(b.game_date))||(String(a.game_time||'').localeCompare(String(b.game_time||'')));});
-  phantomsSchedule.splice(0,phantomsSchedule.length);
-  Object.keys(gameTimes).forEach(function(k){delete gameTimes[k];});
-  dcScheduleRows.forEach(function(r){
-    var key=dcScheduleKeyFromRow(r);
-    var label=r.time_label||'TBD';
-    phantomsSchedule.push([key,r.opponent,r.location,label]);
-    if(r.game_time){
-      gameTimes[key]=String(r.game_date)+'T'+String(r.game_time).slice(0,8);
-    }
-  });
-}
 async function loadSupabaseSchedule(){
   try{
     var q=await dcSupabase.from('phantoms_schedule').select('*').order('game_date',{ascending:true}).order('game_time',{ascending:true});
     if(q.error)throw q.error;
     if(q.data&&q.data.length){
       rebuildScheduleFromSupabase(q.data);
+      try{localStorage.setItem(DC_SCHEDULE_CACHE_KEY,JSON.stringify(q.data));}catch(_){}
       try{renderSelectedMonth();}catch(_){}
       try{renderNextGame();}catch(_){}
     }
-  }catch(e){console.warn('Supabase schedule unavailable; using bundled schedule.',e);}
+  }catch(e){console.warn('Supabase schedule unavailable; using cached schedule when available.',e);}
 }
 function scheduleRowForGame(g){
   if(!g)return null;
