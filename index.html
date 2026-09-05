@@ -1235,7 +1235,7 @@ header{position:relative}
 body.game-pregame #gameDaySection,
 body.game-live #gameDaySection,
 body.game-final #gameDaySection{
-  margin-top:0;
+  margin-top:12px;
   margin-bottom:14px;
 }
 body.game-pregame #gameDaySection .sectionhead,
@@ -2675,7 +2675,7 @@ body::after{
 .admin-game-shortcuts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 .admin-game-shortcuts .admin-mini-btn{flex:1;min-width:110px}
 
-/* v315: admin authorization is verified server-side; no admin identity is stored in public code */
+/* v316: remove stale hard-coded episode fallback; add a little breathing room above priority Game Day */
 .admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
 .admin-secret-trigger:hover{opacity:.72}
 </style>
@@ -2841,7 +2841,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v315</small>
+<header><small class="build-version build-version-corner">v316</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3023,15 +3023,7 @@ body::after{
 </div></div>
 
 <script>
-const RSS_URL='https://feeds.buzzsprout.com/1840652.rss';
 const PODCAST_FEED_ENDPOINT='https://halnzstinpginidcefts.supabase.co/functions/v1/get-podcast-feed';
-const episodes=[
- {n:'225',title:'A New Era: Head Coach Nathan Paetsch',date:'August 14, 2026',duration:'32:00',desc:"We welcome the new head coach of the Phantoms, Nathan Paetsch."},
- {n:'224',title:'Ryan Ward: The Exit Interview',date:'July 30, 2026',duration:'41:12',desc:"Ryan, Jessica, Ollie & Teddy Ward join us to talk about Youngstown and Ryan's move to Providence."},
- {n:'223',title:'2026 Main Camp: Part 8 - Jackson Adams & Kevyn Adams',date:'July 18, 2026',duration:'18:09',desc:"The final installment of the 2026 Main Camp recap."},
- {n:'222',title:'2026 Main Camp: Part 7 - Brandon Gotkin & Cal Kiefiuk',date:'July 15, 2026',duration:'13:36',desc:"Associate Head Coach Brandon Gotkin and Assistant Coach Cal Kiefiuk join the camp recap."},
- {n:'221',title:'2026 Main Camp: Part 6 - Brayden Thompson, Sean Miller & Jesse Orlowsky',date:'July 12, 2026',duration:'20:32',desc:"Camp interviews with Brayden Thompson, Sean Miller and Jesse Orlowsky."}
-];
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
 function goHome(el){setActive(el);window.scrollTo({top:0,behavior:'smooth'})}
@@ -3507,7 +3499,7 @@ async function refreshFeed(){
      if(!Array.isArray(saved))saved=[];
    }catch(cacheError){saved=[];}
 
-   dcEpisodeArchive=saved.length?saved:(typeof episodes!=='undefined'&&Array.isArray(episodes)?episodes:[]);
+   dcEpisodeArchive=saved;
    if(dcEpisodeArchive.length){
      renderEpisodeArchive();
      var note=document.createElement('div');
@@ -5915,12 +5907,10 @@ async function refreshLatestEpisode(){
   }
 }
 document.addEventListener('DOMContentLoaded',function(){
-  if(typeof episodes!=='undefined'&&episodes.length){
-    populateLatestEpisode({
-      title:episodes[0].title,date:episodes[0].date,desc:episodes[0].desc,
-      duration:episodes[0].duration,link:episodes[0].link||'',audio:episodes[0].audio||''
-    });
-  }
+  try{
+    var cachedLatest=JSON.parse(localStorage.getItem('dc_latest_episode_v1')||'null');
+    if(cachedLatest)populateLatestEpisode(cachedLatest);
+  }catch(cacheError){}
   setTimeout(refreshLatestEpisode,100);
 });
 </script>
