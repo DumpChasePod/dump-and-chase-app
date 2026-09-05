@@ -3018,6 +3018,8 @@ body.game-live #publicGameDayCard .gameday-status{
 #adminGameDayPanel .admin-reset-row .btn{min-height:32px;padding:6px 9px;font-size:9px}
 #adminGameDayPanel .admin-publish-bar{padding-top:7px;padding-bottom:7px}
 #adminGameDayPanel .admin-publish-bar .btn{min-height:36px;padding:7px 10px;font-size:10px}
+#adminGameDayPanel .admin-publish-bar .admin-leave-unpublished{margin-top:6px;min-height:30px;padding:5px 9px;font-size:9px;opacity:.82}
+
 #adminGameDayPanel .admin-publish-status{font-size:9px;line-height:1.2}
 /* Final-only controls take up no space until FINAL is selected. */
 #adminDashboard:not(.admin-is-final) #adminGameDayPanel .admin-final-controls{display:none!important}
@@ -3076,7 +3078,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center}body.game-live #publicGameDayCard .gameday-pp{width:100%;padding:4px 3px;border-radius:7px;background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-pp{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v334</small>
+<header><small class="build-version build-version-corner">v335</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3347,6 +3349,10 @@ function markGameDayDirty(){
   markAdminDirty('Game Day changes');
   setAdminFeedback('adminSaveStatus','dirty','Unsaved changes — tap Save & Publish');
 }
+function leaveGameDayChangesUnpublished(){
+  clearAdminDirty();
+  setAdminFeedback('adminSaveStatus','','Changes left unpublished.');
+}
 function markRosterDirty(){
   markAdminDirty('Roster changes');
   setAdminFeedback('adminRosterEditStatus','dirty','Unsaved changes');
@@ -3423,7 +3429,17 @@ function setAdminStatus(value){
 }
 function setAdminResult(value){const el=document.getElementById('adminResult');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function setAdminPowerPlay(value){const el=document.getElementById('adminPowerPlay');if(!el)return;el.value=(el.value===value?'':value);syncAdminQuickControls();markGameDayDirty();}
-function setAdminPeriod(value){const el=document.getElementById('adminPeriod');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
+function setAdminPeriod(value){
+  const el=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock');if(!el)return;
+  el.value=value;
+  if(clock){
+    if(value==='1st'||value==='2nd'||value==='3rd')clock.value='20:00';
+    else if(value==='OT')clock.value='5:00';
+    else if(value==='SO')clock.value='0:00';
+    syncAdminClockDigits(clock.value);
+  }
+  syncAdminQuickControls();markGameDayDirty();
+}
 function nextAdminPeriod(){
   var el=document.getElementById('adminPeriod');if(!el)return;
   var order=['1st','2nd','3rd','OT','SO'];
@@ -3463,7 +3479,11 @@ function setAdminClock(value){
   var el=document.getElementById('adminClock');if(!el)return;el.value=normalizeGameClockValue(value);syncAdminClockDigits(el.value);syncAdminQuickControls();markGameDayDirty();
 }
 function setAdminIntermission(period){
-  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');if(p)p.value=period;if(c)c.value='INT';syncAdminQuickControls();markGameDayDirty();
+  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');
+  if(p)p.value=period;
+  if(c)c.value='INT';
+  syncAdminClockDigits('0:00');
+  syncAdminQuickControls();markGameDayDirty();
 }
 function stepAdminScore(id,delta){
  const el=document.getElementById(id);if(!el)return;
@@ -4657,6 +4677,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
   <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
   <button class="btn primary" type="button" onclick="saveAdminUpdates()">SAVE &amp; PUBLISH</button>
+  <button class="btn secondary admin-leave-unpublished" type="button" onclick="leaveGameDayChangesUnpublished()">DON’T PUBLISH CHANGES</button>
 </div>
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
