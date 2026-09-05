@@ -2809,12 +2809,30 @@ body::after{
 .gc-series-status-pill.live{border-color:rgba(255,148,74,.38);background:rgba(255,148,74,.12);color:#ffad70}
 .gc-series-status-pill.muted{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#9aa7b8}
 @media(max-width:390px){.v306-game-row{grid-template-columns:52px minmax(0,1fr) auto}.v306-game-opponent{font-size:10px}.admin-final-result-buttons{gap:5px}}
+
+
+/* v307: social links, game-night box-score shortcut, schedule density, safer result cleanup */
+.v307-schedule-row .v306-game-opponent{margin-bottom:1px;line-height:1.12}
+.v307-schedule-row .gc-series-role-line{margin-bottom:1px;gap:6px;line-height:1.05}
+.v307-schedule-row .gc-series-place{line-height:1.15}
+
+.social-follow-card .more-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.social-brand-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:9px 11px}
+.social-brand-btn svg{width:22px;height:22px;flex:0 0 22px;display:block}
+.social-brand-btn.facebook{border-color:rgba(24,119,242,.48);background:rgba(24,119,242,.09);color:#e9f2ff}
+.social-brand-btn.instagram{border-color:rgba(225,48,108,.46);background:rgba(225,48,108,.07);color:#fff0f5}
+@media(max-width:370px){.social-follow-card .more-actions{grid-template-columns:1fr}.social-brand-btn{min-height:44px}}
+
+.admin-box-score-controls{display:none}
+#adminDashboard.admin-is-live .admin-box-score-controls,
+#adminDashboard.admin-is-final .admin-box-score-controls{display:block}
+.admin-box-score-controls small{display:block;margin-top:5px}
 </style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v306</small>
+<header><small class="build-version build-version-corner">v307</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3047,7 +3065,7 @@ function setAdminStatus(value){
    var period=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock'),result=document.getElementById('adminResult');
    if(period)period.value='';if(clock)clock.value='';if(result)result.value='';
  }
- syncAdminQuickControls();markGameDayDirty();
+ syncAdminQuickControls();loadAdminGameDayBoxScore();markGameDayDirty();
  if(value==='final'){
    setTimeout(function(){
      var el=document.getElementById('adminFinalResultControls');
@@ -3230,6 +3248,10 @@ function openSheet(type){
      
      <div class="more-card"><h3>Phan Q&amp;A</h3><p>Send in a question for a future episode.</p><div class="more-actions"><button type="button" class="btn secondary" onclick="openPhanQaForm()">SUBMIT A QUESTION</button></div></div>
       <div class="more-card"><h3>Dump &amp; Chase Merch Store</h3><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://www.dcpodshop.com/','shop')">VISIT THE SHOP</button></div></div>
+     <div class="more-card social-follow-card"><h3>Follow the Podcast</h3><div class="more-actions">
+       <button type="button" class="btn secondary social-brand-btn facebook" onclick="dcTrackedOpen('https://www.facebook.com/dumpandchasepodcast','facebook')" aria-label="Follow Dump &amp; Chase Podcast on Facebook"><svg viewBox="0 0 320 512" aria-hidden="true"><path fill="#1877F2" d="M279.14 288l14.22-92.66h-88.91V135.2c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H143V288h81.45v224h100.17V288z"/></svg><span>FACEBOOK</span></button>
+       <button type="button" class="btn secondary social-brand-btn instagram" onclick="dcTrackedOpen('https://www.instagram.com/dumpchasepodcast/','instagram')" aria-label="Follow Dump &amp; Chase Podcast on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradient307" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FEDA75"/><stop offset=".28" stop-color="#FA7E1E"/><stop offset=".52" stop-color="#D62976"/><stop offset=".76" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="none" stroke="url(#igGradient307)" stroke-width="2.7"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="url(#igGradient307)" stroke-width="2.5"/><circle cx="17.7" cy="6.4" r="1.25" fill="#D62976"/></svg><span>INSTAGRAM</span></button>
+     </div></div>
      
    </div>
    <div class="more-card install-card" id="installAppCard"><h3>Install Dump &amp; Chase</h3><p>Add Dump &amp; Chase to your Home Screen for quick access.</p><div class="more-actions"><button class="btn secondary" id="installAppButton" onclick="installDumpChase()">ADD TO HOME SCREEN</button></div><div class="install-hint" id="installAppHint"></div></div>
@@ -4043,7 +4065,7 @@ function scheduleHTML(monthIndex){
         statusHtml='<span class="gc-series-upcoming">'+escapeHtml((db&&db.time_label)||g[3]||'UPCOMING')+'</span>';
       }
       var boxUrl=db&&db.box_score_url?String(db.box_score_url).trim():'';
-      return '<div class="gc-series-row v306-game-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+statusHtml+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
+      return '<div class="gc-series-row v306-game-row v307-schedule-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+statusHtml+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
     }).join('')+'</div>';
   }
 
@@ -4371,6 +4393,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
       <div class="admin-field admin-status-group admin-live-controls"><label for="adminClock">Time Remaining</label><input id="adminClock" inputmode="text" maxlength="12" placeholder="500" autocomplete="off" oninput="formatGameClock(this)"><div class="admin-clock-presets"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-mini-btn" onclick="setAdminClock('')">CLEAR</button></div><small class="admin-muted">Enter 500 for 5:00 or 1230 for 12:30.</small></div>
+      <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">USHL Box Score URL</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><small class="admin-muted">Saved to this game and reused on Game Day, Schedule and Recent Results.</small></div>
       <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
       
@@ -5453,7 +5476,7 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminQuickControls();}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();}
 function formatGameClock(input){
   if(!input)return;
   var raw=String(input.value||'').trim();
@@ -5465,6 +5488,37 @@ function formatGameClock(input){
   if(s>59){s=59;}
   input.value=String(m)+':'+String(s).padStart(2,'0');
 }
+function adminActiveScheduleRow(){
+  try{
+    var active=typeof gameDayAutomationWindow==='function'?gameDayAutomationWindow(new Date()):null;
+    if(active&&active.row)return active.row;
+    if(active&&active.g&&typeof scheduleRowForGame==='function')return scheduleRowForGame(active.g);
+  }catch(_){}
+  return null;
+}
+function loadAdminGameDayBoxScore(){
+  var input=document.getElementById('adminGameDayBoxScore');if(!input)return;
+  var row=adminActiveScheduleRow();
+  if(!row){input.dataset.scheduleId='';input.value='';return;}
+  var nextId=String(row.id||'');
+  if(input.dataset.scheduleId!==nextId){input.dataset.scheduleId=nextId;input.value=String(row.box_score_url||'');}
+}
+async function persistAdminGameDayBoxScore(){
+  var input=document.getElementById('adminGameDayBoxScore');if(!input)return false;
+  var status=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
+  if(status!=='live'&&status!=='final')return false;
+  var row=adminActiveScheduleRow(),url=String(input.value||'').trim();
+  if(url&&!/^https?:\/\//i.test(url))throw new Error('Box Score URL must start with http:// or https://');
+  if(!row){if(url)throw new Error('Could not match the box score link to the active Schedule game.');return false;}
+  var current=String(row.box_score_url||'').trim();
+  if(current===url)return false;
+  var q=await dcSupabase.from('phantoms_schedule').update({box_score_url:url||null,updated_at:new Date().toISOString()}).eq('id',row.id).select().single();
+  if(q.error)throw q.error;
+  row.box_score_url=url||null;
+  input.dataset.scheduleId=String(row.id||'');
+  return true;
+}
+
 async function resetAdminGame(){
  if(!confirm('Reset the current game-day information?'))return;
  ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
@@ -5494,10 +5548,33 @@ async function editAdminResult(index){
  try{await upsertCompletedResult(r);var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Result updated and published.';}
  catch(e){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Could not update result: '+e.message;}
 }
+async function resetScheduleForDeletedResult(result){
+  if(!result)return false;
+  if(!dcScheduleRows.length)await loadSupabaseSchedule();
+  var key=String(result.date||'').trim().toUpperCase(),opp=String(result.opponent||'').trim();
+  var row=dcScheduleRows.find(function(x){return dcScheduleKeyFromRow(x)===key&&String(x.opponent||'').trim()===opp;});
+  if(!row)return false;
+  var q=await dcSupabase.from('phantoms_schedule').update({status:'SCHEDULED',phantoms_score:null,opponent_score:null,updated_at:new Date().toISOString()}).eq('id',row.id);
+  if(q.error)throw q.error;
+  await loadSupabaseSchedule();
+  return true;
+}
+
 async function deleteAdminResult(index){
  var results=getStoredResults(),r=results[index];if(!r||!r.id)return;
  if(!confirm('Delete '+(r.opponent||'this result')+' from Recent Results?'))return;
- try{await callResultsAdmin('delete',r.id);var syncedResults=await syncCompletedResults(true);await recalculatePhantomsRecord(syncedResults);var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Result deleted. Record recalculated.';}
+ var resetSchedule=confirm('Also reset the matching Schedule game to SCHEDULED and clear its final score?\n\nOK = delete result + reset Schedule\nCancel = delete result only');
+ try{
+   await callResultsAdmin('delete',r.id);
+   var scheduleReset=false;
+   if(resetSchedule)scheduleReset=await resetScheduleForDeletedResult(r);
+   var syncedResults=await syncCompletedResults(true);
+   await recalculatePhantomsRecord(syncedResults);
+   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
+   try{renderRecentResults();}catch(_){}
+   var st=document.getElementById('adminSaveStatus');
+   if(st)st.textContent=resetSchedule?(scheduleReset?'Result deleted. Schedule reset. Record recalculated.':'Result deleted. No matching Schedule game found. Record recalculated.'):'Result deleted. Record recalculated.';
+ }
  catch(e){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Could not delete result: '+e.message;}
 }
 async function saveAdminUpdates(){
@@ -5518,6 +5595,8 @@ async function saveAdminUpdates(){
   const res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
   const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
   localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapRemoteState(body.data)));
+  var boxScoreChanged=false;
+  try{boxScoreChanged=await persistAdminGameDayBoxScore();}catch(boxError){if(st)st.textContent='Game published, but box score link failed: '+boxError.message;return;}
   if(payload.status==='final'&&payload.result){
    try{await publishFinalResultFromCurrentState(payload);}catch(resultError){if(st)st.textContent='Game published, but result/schedule sync failed: '+resultError.message;return;}
   }
@@ -5526,7 +5605,7 @@ if(payload.status==='final'&&payload.result){
   renderRecentResults();
   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
 }
-setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated • ':'Published • ')+adminTimeStamp());syncAdminQuickControls();
+setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated'+(boxScoreChanged?' + box score':'')+' • ':'Published'+(boxScoreChanged?' • Box score updated':'')+' • ')+adminTimeStamp());syncAdminQuickControls();
   if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
  finally{
