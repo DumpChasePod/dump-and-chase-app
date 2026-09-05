@@ -2669,6 +2669,11 @@ body::after{
 }
 .gc-series-role-line b{display:inline-block}
 .gc-series-role-line .gc-series-event-pill{margin-top:0}
+
+/* v310: admin QoL */
+.admin-last-saved{margin-top:3px;color:#738095;font-size:9px;font-weight:800;letter-spacing:.02em}
+.admin-game-shortcuts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.admin-game-shortcuts .admin-mini-btn{flex:1;min-width:110px}
 </style>
 
 
@@ -2832,7 +2837,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v309</small>
+<header><small class="build-version build-version-corner">v310</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3031,17 +3036,76 @@ let deferredInstallPrompt=null;
 function adminTimeStamp(){
   return new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'}).format(new Date());
 }
+
+const DC_ADMIN_DIRTY_KEY='dcAdminDirtyStateV1';
+let dcAdminDirty=false;
+let dcAdminDirtyContext='';
+function noteAdminSaved(){
+  var stamp=adminTimeStamp();
+  try{localStorage.setItem('dcAdminLastSavedAt',stamp);}catch(_){}
+  var el=document.getElementById('adminLastSaved');if(el)el.textContent='Last saved '+stamp;
+  dcAdminDirty=false;dcAdminDirtyContext='';
+}
+function restoreAdminSavedLabel(){
+  var stamp='';try{stamp=localStorage.getItem('dcAdminLastSavedAt')||'';}catch(_){}
+  var el=document.getElementById('adminLastSaved');if(el)el.textContent=stamp?'Last saved '+stamp:'No saves this session';
+}
+function markAdminDirty(context){dcAdminDirty=true;dcAdminDirtyContext=context||'changes';}
+function clearAdminDirty(){dcAdminDirty=false;dcAdminDirtyContext='';}
+function confirmDiscardAdminChanges(){
+  if(!dcAdminDirty)return true;
+  if(confirm('You have unsaved '+(dcAdminDirtyContext||'changes')+'. Leave without saving?')){clearAdminDirty();return true;}
+  return false;
+}
+function rememberAdminScroll(){
+  var panel=document.querySelector('#adminOverlay .admin-panel');if(!panel)return;
+  try{localStorage.setItem('dcAdminScrollTop',String(panel.scrollTop||0));}catch(_){}
+}
+function restoreAdminScroll(){
+  var panel=document.querySelector('#adminOverlay .admin-panel');if(!panel)return;
+  var y=0;try{y=Number(localStorage.getItem('dcAdminScrollTop')||0)||0;}catch(_){}
+  setTimeout(function(){panel.scrollTop=y;},80);
+}
+function rememberAdminSelection(kind,id){try{localStorage.setItem('dcAdminSelected_'+kind,String(id||''));}catch(_){}}
+function recalledAdminSelection(kind){try{return localStorage.getItem('dcAdminSelected_'+kind)||'';}catch(_){return '';}}
+function startAdminGame(){
+  var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
+  if(ps&&!String(ps.value).trim())ps.value='0';if(os&&!String(os.value).trim())os.value='0';
+  var pd=document.getElementById('adminPeriod');if(pd)pd.value='1st';
+  var cl=document.getElementById('adminClock');if(cl&&!String(cl.value).trim())cl.value='20:00';
+  setAdminStatus('live');syncAdminQuickControls();markAdminDirty('Game Day changes');
+}
+function finalizeAdminGame(){
+  var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
+  if(!ps||!os||String(ps.value).trim()===''||String(os.value).trim()===''){setAdminFeedback('adminSaveStatus','error','Enter both scores before going FINAL.');return;}
+  setAdminStatus('final');syncAdminQuickControls();markAdminDirty('Game Day changes');
+}
+function saveNewsDraft(){
+  var form=document.getElementById('adminNewsForm');if(!form||!form.classList.contains('show'))return;
+  var draft={id:document.getElementById('adminNewsId')?.value||'',category:document.getElementById('adminNewsCategory')?.value||'NEWS',headline:document.getElementById('adminNewsHeadline')?.value||'',link:document.getElementById('adminNewsLink')?.value||''};
+  try{localStorage.setItem('dcAdminNewsDraftV1',JSON.stringify(draft));}catch(_){}
+}
+function clearNewsDraft(){try{localStorage.removeItem('dcAdminNewsDraftV1');}catch(_){}}
+function restoreNewsDraft(){
+  var raw='';try{raw=localStorage.getItem('dcAdminNewsDraftV1')||'';}catch(_){}
+  if(!raw)return false;
+  try{var d=JSON.parse(raw);if(!d||(!d.headline&&!d.link))return false;openNewsEditor(d.id||undefined,true);setNewsCategory(d.category||'NEWS');document.getElementById('adminNewsHeadline').value=d.headline||'';document.getElementById('adminNewsLink').value=d.link||'';updateNewsCount();return true;}catch(_){return false;}
+}
+window.addEventListener('beforeunload',function(e){if(dcAdminDirty){e.preventDefault();e.returnValue='';}});
 function setAdminFeedback(target,state,text){
   var el=typeof target==='string'?document.getElementById(target):target;
   if(!el)return;
   el.classList.remove('is-dirty','is-saving','is-saved','is-error');
   if(state)el.classList.add('is-'+state);
   el.textContent=text||'';
+  if(state==='saved')noteAdminSaved();
 }
 function markGameDayDirty(){
+  markAdminDirty('Game Day changes');
   setAdminFeedback('adminSaveStatus','dirty','Unsaved changes — tap Save & Publish');
 }
 function markRosterDirty(){
+  markAdminDirty('Roster changes');
   setAdminFeedback('adminRosterEditStatus','dirty','Unsaved changes');
 }
 function syncAdminQuickControls(){
@@ -4371,7 +4435,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2></div>
+        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -4384,7 +4448,7 @@ else venue.arena=homeArenaByCity[g[2]]||'';
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
-      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div></div>
+      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Status</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div><div class="admin-game-shortcuts"><button type="button" class="admin-mini-btn" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-mini-btn" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
       <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div><div class="admin-period-tools"><button type="button" class="admin-mini-btn" onclick="nextAdminPeriod()">NEXT PERIOD</button></div></div>
@@ -4696,7 +4760,9 @@ async function openAdmin(){
   syncAdminQuickControls();await syncCompletedResults();renderAdminRecentResults();
   var lastAdminTab='game-day';
   try{lastAdminTab=localStorage.getItem('dcAdminLastTab')||'game-day';}catch(_){}
-  selectAdminTab(lastAdminTab);
+  selectAdminTab(lastAdminTab,true);
+  restoreAdminSavedLabel();
+  restoreAdminScroll();
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
@@ -4710,7 +4776,9 @@ async function openAdmin(){
 
 
 let dcAdminLoadedTabs=new Set();
-function selectAdminTab(tab){
+function selectAdminTab(tab,skipDirtyCheck){
+  if(!skipDirtyCheck&&!confirmDiscardAdminChanges())return;
+  rememberAdminScroll();
   tab=['game-day','roster','record','schedule','news','qna','analytics'].includes(tab)?tab:'game-day';
   try{localStorage.setItem('dcAdminLastTab',tab);}catch(_){}
   ['game-day','roster','record','schedule','news','qna','analytics'].forEach(function(name){
@@ -4847,10 +4915,13 @@ async function loadAdminSchedule(){
       return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
     }).join('');
     if(st)st.textContent=dcScheduleRows.length+' games · changes publish immediately.';
+    var remembered=recalledAdminSelection('schedule');if(remembered&&dcScheduleRows.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){editScheduleGame(remembered,true);},40);
   }catch(e){if(st)st.textContent='Could not load schedule.';}
 }
-function editScheduleGame(id){
+function editScheduleGame(id,restoring){
+  if(!restoring&&!confirmDiscardAdminChanges())return;
   var r=dcScheduleRows.find(function(x){return Number(x.id)===Number(id);});if(!r)return;
+  rememberAdminSelection('schedule',r.id);
   document.getElementById('adminScheduleId').value=r.id;
   document.getElementById('adminScheduleDate').value=r.game_date||'';
   document.getElementById('adminScheduleTime').value=r.game_time?String(r.game_time).slice(0,5):'';
@@ -4861,19 +4932,21 @@ function editScheduleGame(id){
   document.getElementById('adminScheduleEvent').value=r.event_label||'';
   document.getElementById('adminSchedulePhScore').value=r.phantoms_score==null?'':r.phantoms_score;
   document.getElementById('adminScheduleOppScore').value=r.opponent_score==null?'':r.opponent_score;
-  setScheduleRole(r.home_away||'AWAY');setScheduleStatus(r.status||'SCHEDULED');
+  setScheduleRole(r.home_away||'AWAY',true);setScheduleStatus(r.status||'SCHEDULED',true);
   var form=document.getElementById('adminScheduleForm'),button=document.querySelector('.admin-schedule-game[data-schedule-id="'+id+'"]');
   if(form&&button){button.insertAdjacentElement('afterend',form);form.classList.add('show');}
   document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.toggle('active',Number(b.dataset.scheduleId)===Number(id));});
   if(form)form.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 function closeScheduleEditor(){
+  if(!confirmDiscardAdminChanges())return;
+  rememberAdminSelection('schedule','');
   var form=document.getElementById('adminScheduleForm');if(form)form.classList.remove('show');
   document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.remove('active');});
   parkScheduleEditor();
 }
-function setScheduleRole(v){document.getElementById('adminScheduleRole').value=v;document.querySelectorAll('[data-schedule-role]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleRole===v);});}
-function setScheduleStatus(v){document.getElementById('adminScheduleGameStatus').value=v;document.querySelectorAll('[data-schedule-status]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleStatus===v);});}
+function setScheduleRole(v,silent){document.getElementById('adminScheduleRole').value=v;document.querySelectorAll('[data-schedule-role]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleRole===v);});if(!silent)markAdminDirty('Schedule changes');}
+function setScheduleStatus(v,silent){document.getElementById('adminScheduleGameStatus').value=v;document.querySelectorAll('[data-schedule-status]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleStatus===v);});if(!silent)markAdminDirty('Schedule changes');}
 function formatScheduleTimeLabel(v){
   if(!v)return 'TBD';var p=v.split(':'),h=Number(p[0]),m=p[1],ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ap+' ET';
 }
@@ -4899,9 +4972,10 @@ async function saveScheduleGame(){
   setAdminFeedback(st,'saving','Saving…');
   var r=await dcSupabase.from('phantoms_schedule').update(update).eq('id',id).select().single();
   if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
-  await loadAdminSchedule();editScheduleGame(id);
+  clearAdminDirty();
+  await loadAdminSchedule();editScheduleGame(id,true);
   var monthEl=document.getElementById('gcMonthSelect');if(monthEl&&typeof window.selectGCMonth==='function')window.selectGCMonth(Number(monthEl.value));
-  setAdminFeedback(st,'saved','Schedule updated • '+adminTimeStamp());
+  clearAdminDirty();setAdminFeedback(st,'saved','Schedule updated • '+adminTimeStamp());
 }
 function completedResultsRecordBase(results){
   var base={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
@@ -5069,7 +5143,7 @@ async function saveOpponentRecord(){
     dcOpponentRecord=r.data;
     renderMatchupRecords();
     if(typeof renderPublicGameDay==='function')renderPublicGameDay();
-    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Opponent record saved • '+formatRecordPill(d);}
+    setAdminFeedback(status,'saved','Opponent record saved • '+formatRecordPill(d));
   }catch(e){
     console.error('Opponent record save failed',e);
     if(status){status.className='admin-status admin-feedback is-error';status.textContent='Opponent record could not be saved.';}
@@ -5132,6 +5206,7 @@ function stepAdminRecord(id,delta){
   var value=Math.max(0,(parseInt(el.value,10)||0)+Number(delta||0));
   el.value=String(value);
   updateAdminRecordPct();
+  markAdminDirty('Record changes');
 }
 async function loadAdminRecord(){
   var status=document.getElementById('adminRecordStatus');
@@ -5172,7 +5247,7 @@ async function saveAdminRecord(){
     if(r.error)throw r.error;
     renderAdminRecordControls(d);
     renderPhantomsRecord(d);
-    if(status){status.className='admin-status admin-feedback is-saved';status.textContent='Record saved. Manual adjustment will carry forward.';}
+    setAdminFeedback(status,'saved','Record saved. Manual adjustment will carry forward.');
   }catch(e){
     console.error('Record save failed:',e);
     if(status){status.className='admin-status admin-feedback is-error';status.textContent='Record could not be saved.';}
@@ -5342,10 +5417,13 @@ async function loadAdminRoster(){
     if(list)list.innerHTML=adminRosterPlayers.map(function(p){
       return '<div class="admin-roster-row" data-player-id="'+p.id+'"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
     }).join('');
+    var remembered=recalledAdminSelection('roster');if(remembered&&adminRosterPlayers.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){openRosterEditor(remembered,true);},40);
   }catch(e){if(st)st.textContent='Roster could not be loaded.';if(list)list.innerHTML='';}
 }
-function openRosterEditor(id){
+function openRosterEditor(id,restoring){
+  if(!restoring&&!confirmDiscardAdminChanges())return;
   var p=id?adminRosterPlayers.find(function(x){return Number(x.id)===Number(id);}):null;
+  if(id)rememberAdminSelection('roster',id);
   var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList');
   document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
   if(f)f.classList.remove('inline-add');
@@ -5379,6 +5457,8 @@ function openRosterEditor(id){
   if(f)setTimeout(function(){f.scrollIntoView({behavior:'smooth',block:'nearest'});},30);
 }
 function closeRosterEditor(){
+  if(!confirmDiscardAdminChanges())return;
+  rememberAdminSelection('roster','');
   var f=document.getElementById('adminRosterForm'),list=document.getElementById('adminRosterList'),removeRow=document.getElementById('adminRosterRemoveRow');
   document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
   if(removeRow)removeRow.hidden=true;
@@ -5406,8 +5486,8 @@ async function saveRosterPlayer(){
   setAdminFeedback(st,'saving','Saving…');
   var q=id?dcSupabase.from('roster_players').update(payload).eq('id',id):dcSupabase.from('roster_players').insert(payload);
   var r=await q;if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
-  await touchRosterDate();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
-  setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
+  await touchRosterDate();clearAdminDirty();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
+  clearAdminDirty();setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
 }
 async function deleteRosterPlayer(){
   var id=document.getElementById('rosterEditId').value,st=document.getElementById('adminRosterEditStatus');if(!id)return;
@@ -5495,7 +5575,8 @@ async function syncPublicRoster(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncPublicRoster);else syncPublicRoster();
 
-function closeAdmin(){stopAdminQnaWatch();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
+document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();},{passive:true});
+function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
 async function adminLoginSubmit(){
  const st=document.getElementById('adminLoginStatus');if(st)st.textContent='Sending secure sign-in link…';
  const {error}=await dcSupabase.auth.signInWithOtp({email:DC_ADMIN_EMAIL,options:{emailRedirectTo:'https://www.dumpandchasepod.com/',shouldCreateUser:false}});
@@ -5636,7 +5717,7 @@ if(payload.status==='final'&&payload.result){
   renderRecentResults();
   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
 }
-setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated'+(boxScoreChanged?' + box score':'')+' • ':'Published'+(boxScoreChanged?' • Box score updated':'')+' • ')+adminTimeStamp());syncAdminQuickControls();
+clearAdminDirty();setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated'+(boxScoreChanged?' + box score':'')+' • ':'Published'+(boxScoreChanged?' • Box score updated':'')+' • ')+adminTimeStamp());syncAdminQuickControls();
   if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
  finally{
@@ -5646,12 +5727,18 @@ setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & p
 document.addEventListener('input',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
   if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
-  if(e.target&&e.target.id==='adminRosterLabel')setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');
+  if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
+  if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
+  if(e.target&&e.target.closest&&e.target.closest('#adminRecordPanel'))markAdminDirty('Record changes');
+  if(e.target&&e.target.id==='adminRosterLabel'){markAdminDirty('Roster label');setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');}
 });
 document.addEventListener('change',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel'))markGameDayDirty();
   if(e.target&&e.target.closest&&e.target.closest('#adminRosterForm'))markRosterDirty();
-  if(e.target&&e.target.id==='adminRosterLabel')setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');
+  if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
+  if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
+  if(e.target&&e.target.closest&&e.target.closest('#adminRecordPanel'))markAdminDirty('Record changes');
+  if(e.target&&e.target.id==='adminRosterLabel'){markAdminDirty('Roster label');setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');}
 });
 </script>
 <script>
@@ -6012,12 +6099,12 @@ async function loadHomeNews(){
   try{var r=await dcSupabase.from('home_news_items').select('id,category,headline,link_url,created_at').order('created_at',{ascending:false});if(r.error)throw r.error;dcHomeNewsItems=r.data||[];var box=document.getElementById('homeHeadlines');if(!box)return;if(!dcHomeNewsItems.length){box.classList.remove('show');return;}box.classList.add('show');renderHomeHeadline(0);if(dcHomeNewsTimer)clearInterval(dcHomeNewsTimer);if(dcHomeNewsItems.length>1)dcHomeNewsTimer=setInterval(function(){renderHomeHeadline(dcHomeNewsIndex+1);},7000);}catch(e){console.warn('Headlines unavailable',e);}
 }
 function updateNewsCount(){var el=document.getElementById('adminNewsHeadline'),count=document.getElementById('adminNewsCount'),n=(el&&el.value||'').length;if(!count)return;count.textContent=n+' / 100';count.className='admin-news-count'+(n>=100?' max':n>=90?' warn':'');}
-function setNewsCategory(category){var el=document.getElementById('adminNewsCategory');if(el)el.value=category;document.querySelectorAll('.admin-news-category-btn').forEach(function(btn){btn.classList.toggle('active',btn.dataset.category===category);});}
-function openNewsEditor(id){var item=id?adminNewsItems.find(function(x){return Number(x.id)===Number(id);}):null;document.getElementById('adminNewsId').value=item?item.id:'';setNewsCategory(item?item.category:'NEWS');document.getElementById('adminNewsHeadline').value=item?item.headline:'';document.getElementById('adminNewsLink').value=item&&item.link_url?item.link_url:'';document.getElementById('adminNewsForm').classList.add('show');setAdminFeedback('adminNewsEditStatus','','');updateNewsCount();document.getElementById('adminNewsHeadline').focus();}
-function closeNewsEditor(){document.getElementById('adminNewsForm').classList.remove('show');document.getElementById('adminNewsId').value='';}
+function setNewsCategory(category){var el=document.getElementById('adminNewsCategory');if(el)el.value=category;document.querySelectorAll('.admin-news-category-btn').forEach(function(btn){btn.classList.toggle('active',btn.dataset.category===category);});if(document.getElementById('adminNewsForm')?.classList.contains('show')){markAdminDirty('News draft');saveNewsDraft();}}
+function openNewsEditor(id,restoring){if(!restoring&&!confirmDiscardAdminChanges())return;var item=id?adminNewsItems.find(function(x){return Number(x.id)===Number(id);}):null;document.getElementById('adminNewsId').value=item?item.id:'';setNewsCategory(item?item.category:'NEWS');document.getElementById('adminNewsHeadline').value=item?item.headline:'';document.getElementById('adminNewsLink').value=item&&item.link_url?item.link_url:'';document.getElementById('adminNewsForm').classList.add('show');setAdminFeedback('adminNewsEditStatus','','');updateNewsCount();document.getElementById('adminNewsHeadline').focus();}
+function closeNewsEditor(force){if(!force&&!confirmDiscardAdminChanges())return;clearNewsDraft();document.getElementById('adminNewsForm').classList.remove('show');document.getElementById('adminNewsId').value='';}
 function escapeNewsText(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-async function loadAdminNews(){var st=document.getElementById('adminNewsStatus'),list=document.getElementById('adminNewsList');if(st)st.textContent='Loading headlines…';try{var r=await dcSupabase.from('home_news_items').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;adminNewsItems=r.data||[];if(st)st.textContent=adminNewsItems.length+(adminNewsItems.length===1?' active headline':' active headlines');if(list)list.innerHTML=adminNewsItems.length?adminNewsItems.map(function(x){return '<div class="admin-news-item"><div class="admin-news-item-head"><span class="admin-news-item-category">'+escapeNewsText(x.category)+'</span></div><p>'+escapeNewsText(x.headline)+'</p><div class="admin-news-item-actions"><button class="admin-mini-btn" type="button" onclick="openNewsEditor('+x.id+')">EDIT</button><button class="admin-mini-btn delete" type="button" onclick="deleteNewsItem('+x.id+')">REMOVE</button></div></div>';}).join(''):'<div class="admin-muted">No active headlines. The Home ticker is hidden.</div>';}catch(e){if(st)st.textContent='Could not load headlines.';}}
-async function saveNewsItem(){var id=document.getElementById('adminNewsId').value,category=document.getElementById('adminNewsCategory').value,headline=document.getElementById('adminNewsHeadline').value.trim(),link=document.getElementById('adminNewsLink').value.trim();if(!headline){setAdminFeedback('adminNewsEditStatus','error','Enter a headline.');return;}if(headline.length>100){setAdminFeedback('adminNewsEditStatus','error','Headline is over 100 characters.');return;}setAdminFeedback('adminNewsEditStatus','saving','Saving…');var payload={category:category,headline:headline,link_url:link||null,updated_at:new Date().toISOString()};var r=id?await dcSupabase.from('home_news_items').update(payload).eq('id',id):await dcSupabase.from('home_news_items').insert(payload);if(r.error){setAdminFeedback('adminNewsEditStatus','error','Could not save headline.');return;}setAdminFeedback('adminNewsEditStatus','saved','Saved • '+adminTimeStamp());setTimeout(closeNewsEditor,450);await loadAdminNews();await loadHomeNews();}
+async function loadAdminNews(){var st=document.getElementById('adminNewsStatus'),list=document.getElementById('adminNewsList');if(st)st.textContent='Loading headlines…';try{var r=await dcSupabase.from('home_news_items').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;adminNewsItems=r.data||[];if(st)st.textContent=adminNewsItems.length+(adminNewsItems.length===1?' active headline':' active headlines');if(!document.getElementById('adminNewsForm')?.classList.contains('show'))restoreNewsDraft();if(list)list.innerHTML=adminNewsItems.length?adminNewsItems.map(function(x){return '<div class="admin-news-item"><div class="admin-news-item-head"><span class="admin-news-item-category">'+escapeNewsText(x.category)+'</span></div><p>'+escapeNewsText(x.headline)+'</p><div class="admin-news-item-actions"><button class="admin-mini-btn" type="button" onclick="openNewsEditor('+x.id+')">EDIT</button><button class="admin-mini-btn delete" type="button" onclick="deleteNewsItem('+x.id+')">REMOVE</button></div></div>';}).join(''):'<div class="admin-muted">No active headlines. The Home ticker is hidden.</div>';}catch(e){if(st)st.textContent='Could not load headlines.';}}
+async function saveNewsItem(){var id=document.getElementById('adminNewsId').value,category=document.getElementById('adminNewsCategory').value,headline=document.getElementById('adminNewsHeadline').value.trim(),link=document.getElementById('adminNewsLink').value.trim();if(!headline){setAdminFeedback('adminNewsEditStatus','error','Enter a headline.');return;}if(headline.length>100){setAdminFeedback('adminNewsEditStatus','error','Headline is over 100 characters.');return;}setAdminFeedback('adminNewsEditStatus','saving','Saving…');var payload={category:category,headline:headline,link_url:link||null,updated_at:new Date().toISOString()};var r=id?await dcSupabase.from('home_news_items').update(payload).eq('id',id):await dcSupabase.from('home_news_items').insert(payload);if(r.error){setAdminFeedback('adminNewsEditStatus','error','Could not save headline.');return;}clearAdminDirty();clearNewsDraft();setAdminFeedback('adminNewsEditStatus','saved','Saved • '+adminTimeStamp());setTimeout(function(){closeNewsEditor(true);},450);await loadAdminNews();await loadHomeNews();}
 async function deleteNewsItem(id){var item=adminNewsItems.find(function(x){return Number(x.id)===Number(id);});if(!item||!confirm('Remove this '+item.category+' headline?'))return;var r=await dcSupabase.from('home_news_items').delete().eq('id',id);if(r.error){setAdminFeedback('adminNewsStatus','error','Could not remove headline.');return;}await loadAdminNews();await loadHomeNews();}
 document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,180);});
 </script>
