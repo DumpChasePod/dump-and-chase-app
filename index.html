@@ -2893,7 +2893,7 @@ body::after{
 </style>
 
 <style>
-/* v321: tighter record pills + featured Game Day heading + pregame puck-drop countdown. */
+/* v324: fail-safe top Game Day placement, featured heading, compact pills, safe pregame countdown. */
 #nextGameHero .upcoming-team .team-record-pill,
 #publicGameDayCard .gameday-team .team-record-pill{
   width:max-content!important;
@@ -2906,30 +2906,33 @@ body::after{
   display:flex!important;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:12px;
   width:100%;
   text-align:center!important;
-  color:#c99cff!important;
-  font-size:12px!important;
-  letter-spacing:.18em!important;
-  text-shadow:0 0 12px rgba(165,108,255,.42);
+  color:#d3a8ff!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  letter-spacing:.2em!important;
+  text-shadow:0 0 5px rgba(220,180,255,.85),0 0 12px rgba(165,108,255,.68),0 0 24px rgba(120,67,210,.38)!important;
 }
 .home-section-title-gameday:before,
 .home-section-title-gameday:after{
   content:"";
-  width:34px;
+  flex:1 1 auto;
+  min-width:0;
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(165,108,255,.8));
+  background:linear-gradient(90deg,rgba(165,108,255,.05),rgba(165,108,255,.9));
+  box-shadow:0 0 8px rgba(165,108,255,.25);
 }
 .home-section-title-gameday:after{transform:scaleX(-1)}
 #publicGameDayCard .gameday-countdown-mini{
   display:table;
-  margin:0 auto 7px;
+  margin:0 auto 8px;
   padding:4px 9px;
   border-radius:999px;
-  border:1px solid rgba(165,108,255,.28);
-  background:rgba(165,108,255,.08);
-  color:#d6c0ff;
+  border:1px solid rgba(165,108,255,.3);
+  background:rgba(165,108,255,.09);
+  color:#d9c5ff;
   font-size:8.5px;
   font-weight:900;
   line-height:1;
@@ -2941,13 +2944,21 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v321</small>
+<header><small class="build-version build-version-corner">v324</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
 <div class="home-headlines" id="homeHeadlines" aria-live="polite"><span class="home-headline-badge" id="homeHeadlineBadge">NEWS</span><div class="home-headline-copy" id="homeHeadlineCopy"></div></div>
 
 <main id="home">
+
+  <section id="gameDaySection">
+    <div class="section-title home-section-title home-section-title-gameday">GAME DAY</div>
+    <div class="card gameday-card" id="publicGameDayCard">
+      <div class="gameday-loading">Loading game-day status…</div>
+    </div>
+  </section>
+
 
   <div class="hero" id="latestPodcastHero">
     <div class="eyebrow">LATEST EPISODE</div>
@@ -3014,12 +3025,6 @@ body::after{
     <button class="btn secondary game-action-wide next-game-hub-btn" onclick="window.openGameCenter()">OPEN PHANTOMS HQ</button>
   </div>
 
-  <section id="gameDaySection">
-    <div class="section-title home-section-title home-section-title-gameday">GAME DAY</div>
-    <div class="card gameday-card" id="publicGameDayCard">
-      <div class="gameday-loading">Loading game-day status…</div>
-    </div>
-  </section>
 
 
 
@@ -3856,7 +3861,7 @@ function updateNextGame(){
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
  const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
  if(heroPhantomsLogo) heroPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
- const isHome = g[2]==='Youngstown, OH';
+ const isHome = featuredHomeAwayRole(g)==='HOME';
  const phHomeAway=document.getElementById('heroPhantomsHomeAway');
  const oppHomeAway=document.getElementById('heroOpponentHomeAway');
  if(phHomeAway)phHomeAway.textContent=isHome?'HOME':'AWAY';
@@ -4086,6 +4091,12 @@ function weekdayFull(dateLike){
   }
   if(!(d instanceof Date)||isNaN(d))return '';
   return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+}
+function featuredHomeAwayRole(g){
+  var key=String(g&&g[0]||'').trim().toUpperCase();
+  var overrides={'SEP 17':'AWAY','SEP 18':'HOME','DEC 3':'AWAY','DEC 4':'HOME'};
+  if(overrides[key])return overrides[key];
+  return String(g&&g[2]||'')==='Youngstown, OH'?'HOME':'AWAY';
 }
 function resolveGCVenue(g){
     return scheduleVenue(g);
@@ -5853,17 +5864,19 @@ function syncGameDayHomePriority(){
    if(hero&&hero.nextElementSibling!==section)hero.insertAdjacentElement('afterend',section);
  }
 }
-function gameDayCountdownText(gameDate){
- var ms=(gameDate instanceof Date?gameDate.getTime():new Date(gameDate).getTime())-Date.now();
- if(!Number.isFinite(ms)||ms<=0)return 'Puck drop soon';
- var totalMinutes=Math.max(1,Math.ceil(ms/60000));
- var hours=Math.floor(totalMinutes/60),minutes=totalMinutes%60;
- if(hours>=24){
-  var days=Math.floor(hours/24),remHours=hours%24;
-  return days+'d '+remHours+'h to puck drop';
- }
- if(hours>0)return hours+'h '+minutes+'m to puck drop';
- return minutes+'m to puck drop';
+function featuredGameCountdownHtml(gameDate){
+ try{
+  var target=gameDate instanceof Date?gameDate.getTime():new Date(gameDate).getTime();
+  var ms=target-Date.now();
+  if(!isFinite(ms))return '';
+  if(ms<=0)return '<div class="gameday-countdown-mini">PUCK DROP SOON</div>';
+  var totalMinutes=Math.max(1,Math.ceil(ms/60000));
+  var hours=Math.floor(totalMinutes/60),minutes=totalMinutes%60,text='';
+  if(hours>=24){var days=Math.floor(hours/24),remHours=hours%24;text=days+'d '+remHours+'h to puck drop';}
+  else if(hours>0)text=hours+'h '+minutes+'m to puck drop';
+  else text=minutes+'m to puck drop';
+  return '<div class="gameday-countdown-mini">'+escapeHtml(text)+'</div>';
+ }catch(_){return '';}
 }
 function renderPublicGameDay(){
  var box=document.getElementById('publicGameDayCard');if(!box)return;
@@ -5893,7 +5906,9 @@ function renderPublicGameDay(){
   var finalOpp=String(finalResult.opponent||'Opponent').toUpperCase();
   var finalScore=(finalResult.phantoms??'—')+' – '+(finalResult.opponentScore??'—');
   var finalVenue=(finalResult.arena?finalResult.arena+' — ':'')+(finalResult.city||'');
-  var finalHomeAway=String(finalResult.homeAway||'').toUpperCase();
+  var featuredFinalRole=featuredHomeAwayRole(g);
+  var specialFinalKey=String(g&&g[0]||'').trim().toUpperCase();
+  var finalHomeAway=({'SEP 17':featuredFinalRole,'SEP 18':featuredFinalRole,'DEC 3':featuredFinalRole,'DEC 4':featuredFinalRole}[specialFinalKey]||String(finalResult.homeAway||'').toUpperCase());
   var finalPhRole=finalHomeAway==='HOME'?'HOME':finalHomeAway==='AWAY'?'AWAY':'';
   var finalOppRole=finalPhRole==='HOME'?'AWAY':finalPhRole==='AWAY'?'HOME':'';
   box.innerHTML='<div class="gameday-status gameday-final">FINAL</div>'+ 
@@ -5916,8 +5931,8 @@ function renderPublicGameDay(){
  var venue={arena:'',city:g[2]};
  try{if(typeof scheduleVenue==='function')venue=scheduleVenue(g);}catch(e){}
  var arena=venue.arena||'Arena TBA',city=venue.city||g[2]||'';
- var isHome=g[2]==='Youngstown, OH';
- var phRole=isHome?'HOME':'AWAY',oppRole=isHome?'AWAY':'HOME';
+ var phRole=featuredHomeAwayRole(g);
+ var isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME';
  var statusLabel=status==='live'?'LIVE':(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON':'GAME DAY');
  var cls=status==='live'?'gameday-live':'gameday-upcoming';
  var middle=status==='upcoming'
@@ -5933,8 +5948,7 @@ function renderPublicGameDay(){
        '<div class="gameday-period">'+((st.adminClock||'')==='INT'?((st.adminPeriod||'')+' INT').trim():((st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+(st.adminClock||'')))+'</div></div>'+ 
       (isHome?gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole):gameDayTeam(g[1],opp,oppRole))+
     '</div>';
- box.innerHTML=(status==='upcoming'?'<div class="gameday-countdown-mini">'+escapeHtml(gameDayCountdownText(next.d))+'</div>':'')+
-  '<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
+ box.innerHTML=(status==='upcoming'?featuredGameCountdownHtml(next.d):'')+'<div class="gameday-status '+cls+'">'+statusLabel+'</div>'+ 
   middle+
   '<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+
   boxScoreButton(boxScoreUrlForGame(g),'gameday-box-score');
