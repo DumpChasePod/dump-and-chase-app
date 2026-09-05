@@ -2870,11 +2870,32 @@ body::after{
 #nextGameHero .upcoming-team .team-record-pill,
 #publicGameDayCard .gameday-team .team-record-pill{display:flex!important;margin:4px auto 0;}
 </style>
+
+<style>
+/* v320: tighter HOME/AWAY pills + more readable record text on Home game cards. */
+#nextGameHero .upcoming-team .homeaway,
+#publicGameDayCard .gameday-team .homeaway{
+  width:max-content!important;
+  min-width:0!important;
+  max-width:max-content!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+#nextGameHero .upcoming-team .team-record-pill,
+#publicGameDayCard .gameday-team .team-record-pill{
+  font-size:9px!important;
+  line-height:1!important;
+}
+@media(max-width:380px){
+  #nextGameHero .upcoming-team .team-record-pill,
+  #publicGameDayCard .gameday-team .team-record-pill{font-size:9px!important;}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v319</small>
+<header><small class="build-version build-version-corner">v320</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
