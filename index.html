@@ -2982,11 +2982,53 @@ body.game-live #publicGameDayCard .gameday-status{
   .home-section-title-gameday{font-size:14px!important;text-shadow:0 0 4px rgba(220,180,255,.72),0 0 9px rgba(165,108,255,.48)!important}
 }
 </style>
+
+<style>
+/* v329: compact Game Day Admin for live game-night operation. */
+#adminGameDayPanel{font-size:11px}
+#adminGameDayPanel .admin-group-title{margin-top:9px;padding-top:9px;font-size:8px;letter-spacing:.09em}
+#adminGameDayPanel .admin-quick-section{margin-top:5px;padding:7px 8px;border-radius:10px}
+#adminGameDayPanel .admin-quick-label{font-size:8px;margin-bottom:5px}
+#adminGameDayPanel .admin-chip-row{gap:4px}
+#adminGameDayPanel .admin-chip{min-height:30px;padding:5px 7px;font-size:8.5px;border-radius:8px}
+#adminGameDayPanel .admin-game-shortcuts{gap:5px;margin-top:5px}
+#adminGameDayPanel .admin-game-shortcuts .admin-mini-btn{min-width:0;min-height:30px;padding:5px 7px;font-size:8px}
+#adminGameDayPanel .admin-period-tools{margin-top:5px}
+#adminGameDayPanel .admin-period-tools .admin-mini-btn{min-height:30px;padding:5px 8px;font-size:8px}
+#adminGameDayPanel .admin-score-card{gap:7px;margin-top:7px;padding:8px;border-radius:10px}
+#adminGameDayPanel .admin-score-team label{font-size:8px;margin-bottom:4px}
+#adminGameDayPanel .admin-score-stepper{grid-template-columns:34px minmax(0,1fr) 34px;gap:5px}
+#adminGameDayPanel .admin-score-stepper button{width:34px;min-width:34px;min-height:34px;height:34px;font-size:18px}
+#adminGameDayPanel .admin-score-stepper input{min-height:34px;height:34px;padding:4px;font-size:16px}
+#adminGameDayPanel .admin-field{margin-top:7px}
+#adminGameDayPanel .admin-field>label{font-size:8px;margin-bottom:4px}
+#adminGameDayPanel .admin-clock-digits{gap:4px;margin-top:5px}
+#adminGameDayPanel .admin-clock-digit{grid-template-rows:24px 32px 24px;width:40px;border-radius:9px}
+#adminGameDayPanel .admin-clock-digit button{min-height:24px!important;height:24px;font-size:15px}
+#adminGameDayPanel .admin-clock-digit output{font-size:19px}
+#adminGameDayPanel .admin-clock-colon{font-size:21px}
+#adminGameDayPanel .admin-clock-tools{gap:4px;margin-top:5px}
+#adminGameDayPanel .admin-clock-tools .admin-mini-btn{min-height:30px;padding:5px 3px;font-size:8px}
+#adminGameDayPanel .admin-field small{font-size:8px;line-height:1.25;margin-top:4px}
+#adminGameDayPanel .admin-box-score-controls input{min-height:34px;padding:6px 8px;font-size:10px}
+#adminGameDayPanel .admin-final-result-buttons{gap:4px}
+#adminGameDayPanel .admin-final-result-buttons .admin-chip{min-height:30px}
+#adminGameDayPanel .admin-results-list{gap:5px}
+#adminGameDayPanel .admin-reset-row{margin-top:8px}
+#adminGameDayPanel .admin-reset-row .btn{min-height:32px;padding:6px 9px;font-size:9px}
+#adminGameDayPanel .admin-publish-bar{padding-top:7px;padding-bottom:7px}
+#adminGameDayPanel .admin-publish-bar .btn{min-height:36px;padding:7px 10px;font-size:10px}
+#adminGameDayPanel .admin-publish-status{font-size:9px;line-height:1.2}
+/* Final-only controls take up no space until FINAL is selected. */
+#adminDashboard:not(.admin-is-final) #adminGameDayPanel .admin-final-controls{display:none!important}
+#adminDashboard.admin-is-final #adminGameDayPanel .admin-final-controls{display:block!important;opacity:1}
+#adminDashboard.admin-is-final #adminGameDayPanel #adminFinalResultControls{display:block!important}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v328</small>
+<header><small class="build-version build-version-corner">v329</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
