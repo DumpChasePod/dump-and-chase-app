@@ -2832,7 +2832,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v308</small>
+<header><small class="build-version build-version-corner">v309</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4694,7 +4694,9 @@ async function openAdmin(){
   await refreshAdminQnaIndicator();
   await loadAdminUpdates();
   syncAdminQuickControls();await syncCompletedResults();renderAdminRecentResults();
-  selectAdminTab('game-day');
+  var lastAdminTab='game-day';
+  try{lastAdminTab=localStorage.getItem('dcAdminLastTab')||'game-day';}catch(_){}
+  selectAdminTab(lastAdminTab);
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
@@ -4710,6 +4712,7 @@ async function openAdmin(){
 let dcAdminLoadedTabs=new Set();
 function selectAdminTab(tab){
   tab=['game-day','roster','record','schedule','news','qna','analytics'].includes(tab)?tab:'game-day';
+  try{localStorage.setItem('dcAdminLastTab',tab);}catch(_){}
   ['game-day','roster','record','schedule','news','qna','analytics'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':name.charAt(0).toUpperCase()+name.slice(1));
     var panel=document.getElementById('admin'+cap+'Panel');
