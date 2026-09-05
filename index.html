@@ -2674,6 +2674,10 @@ body::after{
 .admin-last-saved{margin-top:3px;color:#738095;font-size:9px;font-weight:800;letter-spacing:.02em}
 .admin-game-shortcuts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 .admin-game-shortcuts .admin-mini-btn{flex:1;min-width:110px}
+
+/* v311: discreet admin entry */
+.admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
+.admin-secret-trigger:hover{opacity:.72}
 </style>
 
 
@@ -2837,7 +2841,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v310</small>
+<header><small class="build-version build-version-corner">v311</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -2964,7 +2968,7 @@ body::after{
   </section>
 
 
-<div class="admin-footer"><button type="button" class="admin-link" onclick="openAdmin()">Dump &amp; Chase Podcast 2026 &copy;</button></div>
+<div class="admin-footer"><span class="admin-link admin-secret-trigger" id="adminSecretTrigger" role="button" tabindex="0" aria-label="Copyright">Dump &amp; Chase Podcast 2026 &copy;</span></div>
 
 </main>
 
@@ -4428,8 +4432,8 @@ else venue.arena=homeArenaByCity[g[2]]||'';
       <div class="admin-login-head"><div></div><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       <div class="eyebrow">PRIVATE AREA</div>
       <h2>Admin / Updates</h2>
-      <p class="admin-muted">Secure admin access is limited to samolmsteadradio@gmail.com. Request a sign-in link below.</p>
-      <div class="admin-field"><label for="adminEmail">Admin Email</label><input id="adminEmail" type="email" value="samolmsteadradio@gmail.com" readonly></div>
+      <p class="admin-muted">Authorized administrators may request a secure sign-in link below.</p>
+      <div class="admin-field"><label for="adminEmail">Admin Email</label><input id="adminEmail" type="email" value="" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="Enter admin email"></div>
       <div class="admin-actions"><button class="btn primary" type="button" onclick="adminLoginSubmit()">EMAIL SIGN-IN LINK</button></div>
       <div class="admin-status" id="adminLoginStatus"></div>
     </div>
@@ -4746,6 +4750,18 @@ function boxScoreButton(url,extraClass){
   }catch(e){
     console.warn('Shared game data boot failed',e);
   }
+})();
+var dcAdminSecretTapCount=0,dcAdminSecretTapTimer=null;
+function dcAdminSecretTap(){
+ dcAdminSecretTapCount++;
+ clearTimeout(dcAdminSecretTapTimer);
+ if(dcAdminSecretTapCount>=4){dcAdminSecretTapCount=0;openAdmin();return;}
+ dcAdminSecretTapTimer=setTimeout(function(){dcAdminSecretTapCount=0;},2500);
+}
+(function(){
+ var el=document.getElementById('adminSecretTrigger');if(!el)return;
+ el.addEventListener('click',dcAdminSecretTap);
+ el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();dcAdminSecretTap();}});
 })();
 async function dcGetSession(){const r=await dcSupabase.auth.getSession();return r.data.session||null;}
 async function dcIsAdmin(){const x=await dcGetSession();return !!(x&&String(x.user?.email||'').toLowerCase()===DC_ADMIN_EMAIL);}
@@ -5578,8 +5594,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();},{passive:true});
 function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
 async function adminLoginSubmit(){
- const st=document.getElementById('adminLoginStatus');if(st)st.textContent='Sending secure sign-in link…';
- const {error}=await dcSupabase.auth.signInWithOtp({email:DC_ADMIN_EMAIL,options:{emailRedirectTo:'https://www.dumpandchasepod.com/',shouldCreateUser:false}});
+ const st=document.getElementById('adminLoginStatus');
+ const input=document.getElementById('adminEmail');
+ const email=String(input&&input.value||'').trim().toLowerCase();
+ if(!email){if(st)st.textContent='Enter the admin email address.';return;}
+ if(email!==DC_ADMIN_EMAIL){if(st)st.textContent='If this address is authorized, a sign-in link will be sent.';return;}
+ if(st)st.textContent='Sending secure sign-in link…';
+ const {error}=await dcSupabase.auth.signInWithOtp({email:email,options:{emailRedirectTo:'https://www.dumpandchasepod.com/',shouldCreateUser:false}});
  if(st)st.textContent=error?'Could not send link: '+error.message:'Check your email and tap the sign-in link. It will return you to the Dump & Chase app.';
 }
 async function adminLogout(){stopAdminQnaWatch();await dcSupabase.auth.signOut();document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';}
