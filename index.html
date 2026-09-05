@@ -2811,10 +2811,10 @@ body::after{
 @media(max-width:390px){.v306-game-row{grid-template-columns:52px minmax(0,1fr) auto}.v306-game-opponent{font-size:10px}.admin-final-result-buttons{gap:5px}}
 
 
-/* v307: social links, game-night box-score shortcut, schedule density, safer result cleanup */
-.v307-schedule-row .v306-game-opponent{margin-bottom:1px;line-height:1.12}
-.v307-schedule-row .gc-series-role-line{margin-bottom:1px;gap:6px;line-height:1.05}
-.v307-schedule-row .gc-series-place{line-height:1.15}
+/* v308: social links, game-night box-score shortcut, schedule density, safer result cleanup */
+.v308-schedule-row .v306-game-opponent{margin-bottom:1px;line-height:1.12}
+.v308-schedule-row .gc-series-role-line{margin-bottom:1px;gap:6px;line-height:1.05}
+.v308-schedule-row .gc-series-place{line-height:1.15}
 
 .social-follow-card .more-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .social-brand-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:9px 11px}
@@ -2832,7 +2832,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v307</small>
+<header><small class="build-version build-version-corner">v308</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3249,8 +3249,8 @@ function openSheet(type){
      <div class="more-card"><h3>Phan Q&amp;A</h3><p>Send in a question for a future episode.</p><div class="more-actions"><button type="button" class="btn secondary" onclick="openPhanQaForm()">SUBMIT A QUESTION</button></div></div>
       <div class="more-card"><h3>Dump &amp; Chase Merch Store</h3><div class="more-actions"><button type="button" class="btn secondary" onclick="dcTrackedOpen('https://www.dcpodshop.com/','shop')">VISIT THE SHOP</button></div></div>
      <div class="more-card social-follow-card"><h3>Follow the Podcast</h3><div class="more-actions">
-       <button type="button" class="btn secondary social-brand-btn facebook" onclick="dcTrackedOpen('https://www.facebook.com/dumpandchasepodcast','facebook')" aria-label="Follow Dump &amp; Chase Podcast on Facebook"><svg viewBox="0 0 320 512" aria-hidden="true"><path fill="#1877F2" d="M279.14 288l14.22-92.66h-88.91V135.2c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H143V288h81.45v224h100.17V288z"/></svg><span>FACEBOOK</span></button>
-       <button type="button" class="btn secondary social-brand-btn instagram" onclick="dcTrackedOpen('https://www.instagram.com/dumpchasepodcast/','instagram')" aria-label="Follow Dump &amp; Chase Podcast on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradient307" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FEDA75"/><stop offset=".28" stop-color="#FA7E1E"/><stop offset=".52" stop-color="#D62976"/><stop offset=".76" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="none" stroke="url(#igGradient307)" stroke-width="2.7"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="url(#igGradient307)" stroke-width="2.5"/><circle cx="17.7" cy="6.4" r="1.25" fill="#D62976"/></svg><span>INSTAGRAM</span></button>
+       <button type="button" class="btn secondary social-brand-btn facebook" onclick="return dcOpenFacebook()" aria-label="Follow Dump &amp; Chase Podcast on Facebook"><svg viewBox="0 0 320 512" aria-hidden="true"><path fill="#1877F2" d="M279.14 288l14.22-92.66h-88.91V135.2c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H143V288h81.45v224h100.17V288z"/></svg><span>FACEBOOK</span></button>
+       <button type="button" class="btn secondary social-brand-btn instagram" onclick="dcTrackedOpen('https://www.instagram.com/dumpchasepodcast/','instagram')" aria-label="Follow Dump &amp; Chase Podcast on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradient308" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FEDA75"/><stop offset=".28" stop-color="#FA7E1E"/><stop offset=".52" stop-color="#D62976"/><stop offset=".76" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="none" stroke="url(#igGradient308)" stroke-width="2.7"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="url(#igGradient308)" stroke-width="2.5"/><circle cx="17.7" cy="6.4" r="1.25" fill="#D62976"/></svg><span>INSTAGRAM</span></button>
      </div></div>
      
    </div>
@@ -4065,7 +4065,7 @@ function scheduleHTML(monthIndex){
         statusHtml='<span class="gc-series-upcoming">'+escapeHtml((db&&db.time_label)||g[3]||'UPCOMING')+'</span>';
       }
       var boxUrl=db&&db.box_score_url?String(db.box_score_url).trim():'';
-      return '<div class="gc-series-row v306-game-row v307-schedule-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+statusHtml+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
+      return '<div class="gc-series-row v306-game-row v308-schedule-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+statusHtml+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation();dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
     }).join('')+'</div>';
   }
 
@@ -4590,6 +4590,34 @@ function dcTrackedOpen(url,context){
     var opened=window.open(url,'_blank','noopener');
     if(!opened)window.location.href=url;
   }catch(e){window.location.href=url;}
+}
+function dcOpenFacebook(){
+  var webUrl='https://www.facebook.com/dumpandchasepodcast';
+  dcTrack('outbound_click','facebook',{url:webUrl});
+  var hidden=false,timer=null;
+  function onVisibility(){if(document.hidden)hidden=true;}
+  document.addEventListener('visibilitychange',onVisibility);
+  timer=setTimeout(function(){
+    document.removeEventListener('visibilitychange',onVisibility);
+    if(hidden)return;
+    try{
+      var opened=window.open(webUrl,'_blank','noopener');
+      if(!opened)window.location.href=webUrl;
+    }catch(e){window.location.href=webUrl;}
+  },1400);
+  try{
+    var encoded=encodeURIComponent(webUrl);
+    if(/Android/i.test(navigator.userAgent||'')){
+      window.location.href='intent://facewebmodal/f?href='+encoded+'#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url='+encodeURIComponent(webUrl)+';end';
+    }else{
+      window.location.href='fb://facewebmodal/f?href='+encoded;
+    }
+  }catch(e){
+    clearTimeout(timer);
+    document.removeEventListener('visibilitychange',onVisibility);
+    window.location.href=webUrl;
+  }
+  return false;
 }
 function dcTrackInitialView(){
   dcTrack('app_view','home',{
