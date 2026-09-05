@@ -2800,7 +2800,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v304</small>
+<header><small class="build-version build-version-corner">v305</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5543,6 +5543,17 @@ document.addEventListener('change',function(e){
 });
 </script>
 <script>
+function gameDayWeekdayShort(dateLike){
+  var d;
+  if(dateLike instanceof Date){
+    d=dateLike;
+  }else{
+    var raw=String(dateLike||'');
+    d=/^\d{4}-\d{2}-\d{2}$/.test(raw)?new Date(raw+'T12:00:00'):new Date(raw);
+  }
+  if(!(d instanceof Date)||isNaN(d))return '';
+  return ['SUN','MON','TUES','WED','THURS','FRI','SAT'][d.getDay()];
+}
 function getAdminGameState(){
   try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}');}catch(e){return {};}
 }
@@ -5728,7 +5739,7 @@ function renderPublicGameDay(){
       '<div class="gameday-scorebox gameday-vsbox"><div class="gameday-vs">VS</div></div>'+ 
       gameDayTeam(g[1],opp,oppRole)+
     '</div>'+ 
-    '<div class="gameday-meta gameday-date">'+weekdayShort(easternScheduleDateStringForGame(g))+' • '+next.d.toLocaleDateString('en-US',{timeZone:'America/New_York',month:'long',day:'numeric',year:'numeric'})+' • '+g[3]+'</div>'
+    '<div class="gameday-meta gameday-date">'+gameDayWeekdayShort(easternScheduleDateStringForGame(g))+' • '+next.d.toLocaleDateString('en-US',{timeZone:'America/New_York',month:'long',day:'numeric',year:'numeric'})+' • '+g[3]+'</div>'
   : '<div class="gameday-matchup gameday-matchup-visual">'+
       gameDayTeam('Youngstown Phantoms','YOUNGSTOWN PHANTOMS',phRole)+
       '<div class="gameday-scorebox"><div class="gameday-score">'+score+'</div>'+ 
