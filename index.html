@@ -2675,7 +2675,7 @@ body::after{
 .admin-game-shortcuts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 .admin-game-shortcuts .admin-mini-btn{flex:1;min-width:110px}
 
-/* v313: Supabase schedule is the single source of truth; local cache only */
+/* v314: arena/location data now comes from Supabase schedule rows */
 .admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
 .admin-secret-trigger:hover{opacity:.72}
 </style>
@@ -2841,7 +2841,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v313</small>
+<header><small class="build-version build-version-corner">v314</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3801,64 +3801,14 @@ updateGameDayMode();
 
 
 
-const arenaByLocation={
- "Youngstown, OH":"Covelli Centre",
- "Dubuque, IA":"ImOn Arena",
- "Muskegon, MI":"Trinity Health Arena",
- "Des Moines, IA":"MidAmerican Energy Company RecPlex",
- "West Des Moines, IA":"MidAmerican Energy Company RecPlex",
- "Waterloo, IA":"Young Arena",
- "Madison, WI":"LEGACY20 Arena at DeForest Yards",
- "Middleton, WI":"LEGACY20 Arena at DeForest Yards",
- "DeForest, WI":"LEGACY20 Arena at DeForest Yards",
- "Cedar Rapids, IA":"ImOn Ice Arena",
- "Plymouth, MI":"USA Hockey Arena",
- "Rochester, NY":"Rochester Ice Center",
- "Omaha, NE":"Liberty First Credit Union Arena",
- "Green Bay, WI":"Resch Center",
- "Sioux City, IA":"Tyson Events Center",
- "Sioux Falls, SD":"Denny Sanford PREMIER Center",
- "Lincoln, NE":"The Ice Box",
- "Kearney, NE":"Viaero Center",
- "Fargo, ND":"Scheels Arena",
- "Geneva, IL":"USG Arena",
- "Chicago, IL":"USG Arena"
-};
-const arenaByOpponent={
- "Dubuque Fighting Saints":"ImOn Arena",
- "Muskegon Lumberjacks":"Trinity Health Arena",
- "Des Moines Buccaneers":"MidAmerican Energy Company RecPlex",
- "Waterloo Black Hawks":"Young Arena",
- "Madison Capitols":"LEGACY20 Arena at DeForest Yards",
- "Cedar Rapids RoughRiders":"ImOn Ice Arena",
- "NTDP U17":"USA Hockey Arena",
- "NTDP U18":"USA Hockey Arena",
- "Omaha Lancers":"Liberty First Credit Union Arena",
- "Green Bay Gamblers":"Resch Center",
- "Sioux City Musketeers":"Tyson Events Center",
- "Sioux Falls Stampede":"Denny Sanford PREMIER Center",
- "Lincoln Stars":"The Ice Box",
- "Tri-City Storm":"Viaero Center",
- "Fargo Force":"Scheels Arena",
- "Chicago Steel":"USG Arena"
-};
 function scheduleVenue(g){
-  // Neutral-site showcase games.
-  if(g[0]==='SEP 17' || g[0]==='SEP 18'){
-    return {arena:'USG Arena',city:'Chicago, IL'};
-  }
-  if(g[0]==='DEC 3' || g[0]==='DEC 4'){
-    return {arena:'Rochester Ice Center',city:'Rochester, NY'};
-  }
-
-  // Youngstown home games always use Covelli Centre.
-  if(g[2]==='Youngstown, OH'){
-    return {arena:'Covelli Centre',city:'Youngstown, OH'};
-  }
-
-  // Prefer the schedule's location, then fall back to the opponent's home arena.
-  var arena=arenaByLocation[g[2]]||arenaByOpponent[g[1]]||'Arena TBA';
-  return {arena:arena,city:g[2]};
+  // Arena and city now come from the matching Supabase schedule row.
+  // The locally cached schedule rows provide the same data when offline.
+  try{
+    var sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;
+    if(sr)return {arena:sr.arena||'Arena TBA',city:sr.location||g[2]||''};
+  }catch(_){}
+  return {arena:'Arena TBA',city:(g&&g[2])||''};
 }
 
 function scheduleEventLabel(g){
@@ -4028,26 +3978,7 @@ function weekdayShort(dateLike){
   return ['SUN','MON','TUES','WED','THURS','FRI','SAT'][d.getDay()];
 }
 function resolveGCVenue(g){
-    var city=g[2]||'';
-    if(g[0]==='SEP 17'||g[0]==='SEP 18')return {arena:'USG Arena',city:'Chicago, IL'};
-    if(g[0]==='DEC 3'||g[0]==='DEC 4')return {arena:'Rochester Ice Center',city:'Rochester, NY'};
-    if(city==='Youngstown, OH')return {arena:'Covelli Centre',city:city};
-    var byCity={
-      'Dubuque, IA':'ImOn Arena','Muskegon, MI':'Trinity Health Arena','Des Moines, IA':'MidAmerican Energy Company RecPlex',
-      'West Des Moines, IA':'MidAmerican Energy Company RecPlex','Waterloo, IA':'Young Arena','Madison, WI':'LEGACY20 Arena at DeForest Yards',
-      'Middleton, WI':'LEGACY20 Arena at DeForest Yards','DeForest, WI':'LEGACY20 Arena at DeForest Yards','Cedar Rapids, IA':'ImOn Ice Arena',
-      'Plymouth, MI':'USA Hockey Arena','Rochester, NY':'Rochester Ice Center','Omaha, NE':'Liberty First Credit Union Arena',
-      'Green Bay, WI':'Resch Center','Sioux City, IA':'Tyson Events Center','Sioux Falls, SD':'Denny Sanford PREMIER Center',
-      'Lincoln, NE':'The Ice Box','Kearney, NE':'Viaero Center','Fargo, ND':'Scheels Arena','Geneva, IL':'USG Arena','Chicago, IL':'USG Arena'
-    };
-    var byTeam={
-      'Dubuque Fighting Saints':'ImOn Arena','Muskegon Lumberjacks':'Trinity Health Arena','Des Moines Buccaneers':'MidAmerican Energy Company RecPlex',
-      'Waterloo Black Hawks':'Young Arena','Madison Capitols':'LEGACY20 Arena at DeForest Yards','Cedar Rapids RoughRiders':'ImOn Ice Arena',
-      'NTDP U17':'USA Hockey Arena','NTDP U18':'USA Hockey Arena','Omaha Lancers':'Liberty First Credit Union Arena',
-      'Green Bay Gamblers':'Resch Center','Sioux City Musketeers':'Tyson Events Center','Sioux Falls Stampede':'Denny Sanford PREMIER Center',
-      'Lincoln Stars':'The Ice Box','Tri-City Storm':'Viaero Center','Fargo Force':'Scheels Arena','Chicago Steel':'USG Arena'
-    };
-    return {arena:byCity[city]||byTeam[g[1]]||'Arena TBA',city:city};
+    return scheduleVenue(g);
   }
 
   
@@ -4305,35 +4236,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     var next=getNextGame();if(!next)return;
     var g=next.g,d=next.d,diff=Math.max(0,d.getTime()-Date.now()),isHome=g[2]==='Youngstown, OH';
     var opp=String(g[1]).toUpperCase();
-    var venue={arena:'',city:g[2]};
-var homeArenaByCity={
- 'Youngstown, OH':'Covelli Centre',
- 'Muskegon, MI':'Trinity Health Arena',
- 'Dubuque, IA':'ImOn Arena',
- 'Des Moines, IA':'MidAmerican Energy Company RecPlex',
- 'West Des Moines, IA':'MidAmerican Energy Company RecPlex',
- 'Waterloo, IA':'Young Arena',
- 'Madison, WI':'LEGACY20 Arena at DeForest Yards',
- 'Middleton, WI':'LEGACY20 Arena at DeForest Yards',
- 'DeForest, WI':'LEGACY20 Arena at DeForest Yards',
- 'Cedar Rapids, IA':'ImOn Ice Arena',
- 'Plymouth, MI':'USA Hockey Arena',
- 'Rochester, NY':'Rochester Ice Center',
- 'Omaha, NE':'Liberty First Credit Union Arena',
- 'Green Bay, WI':'Resch Center',
- 'Sioux City, IA':'Tyson Events Center',
- 'Sioux Falls, SD':'Denny Sanford PREMIER Center',
- 'Lincoln, NE':'The Ice Box',
- 'Kearney, NE':'Viaero Center',
- 'Fargo, ND':'Scheels Arena',
- 'Geneva, IL':'USG Arena',
- 'Chicago, IL':'USG Arena'
-};
-var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
-if(sr)venue={arena:sr.arena||'',city:sr.location||g[2]};
-else if(g[0]==='SEP 17'||g[0]==='SEP 18')venue={arena:'USG Arena',city:'Chicago, IL'};
-else if(g[0]==='DEC 3'||g[0]==='DEC 4')venue={arena:'Rochester Ice Center',city:'Rochester, NY'};
-else venue.arena=homeArenaByCity[g[2]]||'';
+    var venue={arena:'Arena TBA',city:g[2]};
+    try{venue=scheduleVenue(g);}catch(_){}
     var pre=(g[0]==='SEP 5'||g[0]==='SEP 6');
     var eventLabel='';try{if(typeof scheduleEventLabel==='function')eventLabel=scheduleEventLabel(g)||'';}catch(e){}
     if(!eventLabel)eventLabel=pre?'PRESEASON':'REGULAR SEASON';
@@ -5879,12 +5783,7 @@ function renderPublicGameDay(){
  var score=ph+' – '+os;
  var venue={arena:'',city:g[2]};
  try{if(typeof scheduleVenue==='function')venue=scheduleVenue(g);}catch(e){}
- var arena=venue.arena||'',city=venue.city||g[2]||'';
- if(!arena){
-  var cityKey=String(city).toLowerCase();
-  if(cityKey.indexOf('muskegon')>=0) arena='Trinity Health Arena';
-  else if(cityKey.indexOf('youngstown')>=0) arena='Covelli Centre';
- }
+ var arena=venue.arena||'Arena TBA',city=venue.city||g[2]||'';
  var isHome=g[2]==='Youngstown, OH';
  var phRole=isHome?'HOME':'AWAY',oppRole=isHome?'AWAY':'HOME';
  var statusLabel=status==='live'?'LIVE':(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON':'GAME DAY');
@@ -5922,34 +5821,8 @@ function adminResultSuffix(value){
 async function publishFinalResultFromCurrentState(raw){
  var next=getNextGameForGameDay();if(!next)return false;
  var normalizedResult=normalizeAdminResult(raw.result);
- var venue={arena:'',city:next.g[2]};
-try{if(typeof scheduleVenue==='function')venue=scheduleVenue(next.g);}catch(e){}
-if(!venue.arena){
-  var resultArenaByCity={
-    'Youngstown, OH':'Covelli Centre',
-    'Muskegon, MI':'Trinity Health Arena',
-    'Dubuque, IA':'ImOn Arena',
-    'Des Moines, IA':'MidAmerican Energy Company RecPlex',
-    'West Des Moines, IA':'MidAmerican Energy Company RecPlex',
-    'Waterloo, IA':'Young Arena',
-    'Madison, WI':'LEGACY20 Arena at DeForest Yards',
-    'Middleton, WI':'LEGACY20 Arena at DeForest Yards',
-    'DeForest, WI':'LEGACY20 Arena at DeForest Yards',
-    'Cedar Rapids, IA':'ImOn Ice Arena',
-    'Plymouth, MI':'USA Hockey Arena',
-    'Rochester, NY':'Rochester Ice Center',
-    'Omaha, NE':'Liberty First Credit Union Arena',
-    'Green Bay, WI':'Resch Center',
-    'Sioux City, IA':'Tyson Events Center',
-    'Sioux Falls, SD':'Denny Sanford PREMIER Center',
-    'Lincoln, NE':'The Ice Box',
-    'Kearney, NE':'Viaero Center',
-    'Fargo, ND':'Scheels Arena',
-    'Chicago, IL':'USG Arena',
-    'Geneva, IL':'USG Arena'
-  };
-  venue.arena=resultArenaByCity[next.g[2]]||'';
-}
+ var venue={arena:'Arena TBA',city:next.g[2]};
+ try{venue=scheduleVenue(next.g);}catch(e){}
  var record={
   date:next.g[0],opponent:next.g[1],result:normalizedResult,resultDetail:adminResultSuffix(raw.result),
   phantoms:Number(raw.phantoms_score||0),opponentScore:Number(raw.opponent_score||0),
