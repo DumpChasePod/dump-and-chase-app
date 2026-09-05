@@ -2893,7 +2893,7 @@ body::after{
 </style>
 
 <style>
-/* v325: restore Game Day initialization order; featured home/away helper loads before Next Game refresh. */
+/* v326: game-night polish + admin publish safeguards/status. */
 #nextGameHero .upcoming-team .team-record-pill,
 #publicGameDayCard .gameday-team .team-record-pill{
   width:max-content!important;
@@ -2927,24 +2927,44 @@ body::after{
 .home-section-title-gameday:after{transform:scaleX(-1)}
 #publicGameDayCard .gameday-countdown-mini{
   display:table;
-  margin:0 auto 8px;
-  padding:4px 9px;
+  margin:0 auto 14px;
+  padding:5px 10px;
   border-radius:999px;
-  border:1px solid rgba(165,108,255,.3);
-  background:rgba(165,108,255,.09);
-  color:#d9c5ff;
+  border:1px solid rgba(165,108,255,.34);
+  background:rgba(165,108,255,.11);
+  color:#e2d2ff;
   font-size:8.5px;
   font-weight:900;
   line-height:1;
   letter-spacing:.055em;
   text-transform:uppercase;
+  box-shadow:0 0 10px rgba(165,108,255,.12);
+}
+body.game-live #publicGameDayCard{
+  border-color:rgba(255,98,98,.55)!important;
+  background:linear-gradient(180deg,rgba(75,20,34,.22),rgba(17,23,34,.96))!important;
+  box-shadow:0 0 0 1px rgba(255,98,98,.08),0 8px 24px rgba(255,70,90,.08);
+}
+body.game-live #publicGameDayCard .gameday-status{
+  font-size:10px!important;
+  letter-spacing:.14em!important;
+  box-shadow:0 0 12px rgba(255,98,98,.12);
+}
+#gameDaySection{margin-bottom:8px}
+.admin-connection{display:flex;align-items:center;gap:5px;margin-top:4px;color:#738095;font-size:9px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+.admin-connection-dot{width:6px;height:6px;border-radius:50%;background:#738095;box-shadow:0 0 0 2px rgba(115,128,149,.12)}
+.admin-connection.is-online{color:#77c99a}.admin-connection.is-online .admin-connection-dot{background:#69d493;box-shadow:0 0 7px rgba(105,212,147,.45)}
+.admin-connection.is-offline{color:#ff9c9c}.admin-connection.is-offline .admin-connection-dot{background:#ff7777;box-shadow:0 0 7px rgba(255,119,119,.42)}
+#adminGameDayPanel .admin-publish-status.is-saved{font-size:11px;font-weight:950;letter-spacing:.035em;color:#8fe0aa}
+@media(max-width:470px){
+  .home-section-title-gameday{font-size:14px!important;text-shadow:0 0 4px rgba(220,180,255,.72),0 0 9px rgba(165,108,255,.48)!important}
 }
 </style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v325</small>
+<header><small class="build-version build-version-corner">v326</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3151,6 +3171,16 @@ function restoreAdminSavedLabel(){
   var stamp='';try{stamp=localStorage.getItem('dcAdminLastSavedAt')||'';}catch(_){}
   var el=document.getElementById('adminLastSaved');if(el)el.textContent=stamp?'Last saved '+stamp:'No saves this session';
 }
+function updateAdminConnectionStatus(){
+  var el=document.getElementById('adminConnection'),txt=document.getElementById('adminConnectionText');
+  if(!el||!txt)return;
+  var online=navigator.onLine!==false;
+  el.classList.toggle('is-online',online);
+  el.classList.toggle('is-offline',!online);
+  txt.textContent=online?'Online':'Offline';
+}
+window.addEventListener('online',updateAdminConnectionStatus);
+window.addEventListener('offline',updateAdminConnectionStatus);
 function markAdminDirty(context){dcAdminDirty=true;dcAdminDirtyContext=context||'changes';}
 function clearAdminDirty(){dcAdminDirty=false;dcAdminDirtyContext='';}
 function confirmDiscardAdminChanges(){
@@ -4412,7 +4442,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div></div>
+        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -4745,6 +4775,7 @@ async function openAdmin(){
   try{lastAdminTab=localStorage.getItem('dcAdminLastTab')||'game-day';}catch(_){}
   selectAdminTab(lastAdminTab,true);
   restoreAdminSavedLabel();
+  updateAdminConnectionStatus();
   restoreAdminScroll();
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
@@ -5682,6 +5713,17 @@ async function deleteAdminResult(index){
  }
  catch(e){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Could not delete result: '+e.message;}
 }
+function adminFinalResultLabel(value){
+  return ({W:'W',W_OT:'W OT',W_SO:'W SO',L:'L',L_OT:'L OT',L_SO:'L SO'})[value]||String(value||'');
+}
+function confirmFinalPublish(payload){
+  var next=null;try{next=getNextGameForGameDay();}catch(_){}
+  var opponent=next&&next.g?String(next.g[1]||'Opponent'):'Opponent';
+  var ph=String(payload.phantoms_score??'—'),op=String(payload.opponent_score??'—');
+  var result=adminFinalResultLabel(payload.result);
+  return confirm('Publish FINAL?\n\nYoungstown '+ph+' — '+op+' '+opponent+'\nResult: '+result+'\n\nThis will update Game Day, Schedule, Recent Results and the Phantoms record.');
+}
+
 async function saveAdminUpdates(){
  const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
  if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
@@ -5692,8 +5734,9 @@ async function saveAdminUpdates(){
  if(payload.status==='final'){
    if(payload.phantoms_score===null||payload.opponent_score===null){if(st)st.textContent='Enter both final scores before publishing FINAL.';return;}
    if(!payload.result){if(st)st.textContent='Choose a Final Result before publishing FINAL.';return;}
+   if(!confirmFinalPublish(payload)){setAdminFeedback(st,'','Final publish cancelled.');return;}
  }
- var publishBtn=document.querySelector('.admin-publish-bar .btn');
+ var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');
  if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
  setAdminFeedback(st,'saving','Publishing…');
  try{
@@ -5710,11 +5753,15 @@ if(payload.status==='final'&&payload.result){
   renderRecentResults();
   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
 }
-clearAdminDirty();setAdminFeedback(st,'saved',(payload.status==='final'&&payload.result?'Saved & published • Result + schedule updated'+(boxScoreChanged?' + box score':'')+' • ':'Published'+(boxScoreChanged?' • Box score updated':'')+' • ')+adminTimeStamp());syncAdminQuickControls();
+clearAdminDirty();
+var publishDetail=(payload.status==='final'&&payload.result?'Result + schedule updated'+(boxScoreChanged?' + box score':''):(boxScoreChanged?'Box score updated':'Game Day updated'));
+setAdminFeedback(st,'saved','✓ PUBLISHED • '+publishDetail+' • '+adminTimeStamp());
+syncAdminQuickControls();
+if(publishBtn){publishBtn.textContent='✓ PUBLISHED';setTimeout(function(){if(publishBtn&&!publishBtn.disabled)publishBtn.textContent='SAVE & PUBLISH';},1600);}
   if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
  finally{
-  if(publishBtn){publishBtn.disabled=false;publishBtn.textContent='SAVE & PUBLISH';}
+  if(publishBtn){publishBtn.disabled=false;if(publishBtn.textContent==='PUBLISHING…')publishBtn.textContent='SAVE & PUBLISH';}
  }
 }
 document.addEventListener('input',function(e){
