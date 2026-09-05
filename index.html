@@ -2893,7 +2893,7 @@ body::after{
 </style>
 
 <style>
-/* v324: fail-safe top Game Day placement, featured heading, compact pills, safe pregame countdown. */
+/* v325: restore Game Day initialization order; featured home/away helper loads before Next Game refresh. */
 #nextGameHero .upcoming-team .team-record-pill,
 #publicGameDayCard .gameday-team .team-record-pill{
   width:max-content!important;
@@ -2944,7 +2944,7 @@ body::after{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v324</small>
+<header><small class="build-version build-version-corner">v325</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3853,6 +3853,13 @@ window.addResultFromForm=async function(){
 renderRecentResults();
 
 
+function featuredHomeAwayRole(g){
+  var key=String(g&&g[0]||'').trim().toUpperCase();
+  var overrides={'SEP 17':'AWAY','SEP 18':'HOME','DEC 3':'AWAY','DEC 4':'HOME'};
+  if(overrides[key])return overrides[key];
+  return String(g&&g[2]||'')==='Youngstown, OH'?'HOME':'AWAY';
+}
+
 function updateNextGame(){
  const now=new Date();
  const next=phantomsSchedule.map(g=>({g,date:gameTimes[g[0]]?new Date(gameTimes[g[0]]):null})).find(x=>x.date&&x.date>now);
@@ -4091,12 +4098,6 @@ function weekdayFull(dateLike){
   }
   if(!(d instanceof Date)||isNaN(d))return '';
   return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
-}
-function featuredHomeAwayRole(g){
-  var key=String(g&&g[0]||'').trim().toUpperCase();
-  var overrides={'SEP 17':'AWAY','SEP 18':'HOME','DEC 3':'AWAY','DEC 4':'HOME'};
-  if(overrides[key])return overrides[key];
-  return String(g&&g[2]||'')==='Youngstown, OH'?'HOME':'AWAY';
 }
 function resolveGCVenue(g){
     return scheduleVenue(g);
