@@ -2679,7 +2679,7 @@ body::after{
 .admin-secret-trigger{cursor:default;text-decoration:none!important;opacity:.72;user-select:none;-webkit-user-select:none}
 .admin-secret-trigger:hover{opacity:.72}
 
-/* v327: compact Game Day box-score action + four-digit clock controls */
+/* v328: v327 hotfix — visible/selectable intermission state for digit clock controls */
 #publicGameDayCard .box-score-btn.gameday-box-score{
   display:flex!important;width:max-content!important;max-width:calc(100% - 24px);min-height:38px;
   margin:14px auto 2px!important;padding:9px 15px!important;align-items:center;justify-content:center;
@@ -2697,6 +2697,7 @@ body::after{
 .admin-clock-hidden{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .admin-clock-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .admin-clock-tools .admin-mini-btn{min-height:36px;padding:7px 5px;font-size:9px}
+.admin-clock-tools .admin-mini-btn.active{border-color:rgba(165,108,255,.78);background:rgba(165,108,255,.16);color:#e6d7ff;box-shadow:0 0 0 1px rgba(165,108,255,.16) inset}
 @media(max-width:380px){.admin-clock-digits{gap:4px}.admin-clock-digit{width:43px}}
 
 </style>
@@ -2985,7 +2986,7 @@ body.game-live #publicGameDayCard .gameday-status{
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
-<header><small class="build-version build-version-corner">v327</small>
+<header><small class="build-version build-version-corner">v328</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3267,6 +3268,8 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-period]').forEach(b=>b.classList.toggle('active',b.dataset.adminPeriod===pd));
  const rs=document.getElementById('adminResult')?.value||'';
  document.querySelectorAll('[data-admin-result]').forEach(b=>b.classList.toggle('active',b.dataset.adminResult===rs));
+ const ck=document.getElementById('adminClock')?.value||'';
+ document.querySelectorAll('[data-admin-intermission]').forEach(b=>b.classList.toggle('active',ck==='INT'&&b.dataset.adminIntermission===pd));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
 }
@@ -3324,13 +3327,13 @@ function stepAdminClockDigit(index,delta){
   var max=index===0?2:(index===2?5:9),cur=Number(out.textContent||0);cur=(cur+delta+(max+1))%(max+1);out.textContent=String(cur);
   if(index===0&&cur===2){var ones=document.getElementById('adminClockDigit1');if(ones)ones.textContent='0';var st=document.getElementById('adminClockDigit2');if(st)st.textContent='0';var so=document.getElementById('adminClockDigit3');if(so)so.textContent='0';}
   if(index===1&&Number(document.getElementById('adminClockDigit0')?.textContent||0)===2)out.textContent='0';
-  var el=document.getElementById('adminClock');if(el)el.value=adminClockValueFromDigits();markGameDayDirty();
+  var el=document.getElementById('adminClock');if(el)el.value=adminClockValueFromDigits();syncAdminQuickControls();markGameDayDirty();
 }
 function setAdminClock(value){
-  var el=document.getElementById('adminClock');if(!el)return;el.value=normalizeGameClockValue(value);syncAdminClockDigits(el.value);markGameDayDirty();
+  var el=document.getElementById('adminClock');if(!el)return;el.value=normalizeGameClockValue(value);syncAdminClockDigits(el.value);syncAdminQuickControls();markGameDayDirty();
 }
 function setAdminIntermission(period){
-  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');if(p)p.value=period;if(c)c.value='INT';markGameDayDirty();
+  var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');if(p)p.value=period;if(c)c.value='INT';syncAdminQuickControls();markGameDayDirty();
 }
 function stepAdminScore(id,delta){
  const el=document.getElementById(id);if(!el)return;
@@ -4510,7 +4513,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div></div>
       </div>
-      <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-clock-tools"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" onclick="setAdminIntermission('2ND')">2ND INT</button></div><small class="admin-muted">Use +/− to set the four clock digits. The first digit only allows 0, 1 or 2.</small></div>
+      <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-clock-tools"><button type="button" class="admin-mini-btn" onclick="setAdminClock('20:00')">20:00</button><button type="button" class="admin-mini-btn" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-mini-btn" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button></div><small class="admin-muted">Use +/− to set the four clock digits. The first digit only allows 0, 1 or 2.</small></div>
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">USHL Box Score URL</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><small class="admin-muted">Saved to this game and reused on Game Day, Schedule and Recent Results.</small></div>
       <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
