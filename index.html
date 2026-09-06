@@ -3582,6 +3582,47 @@ body.game-live #publicGameDayCard .gameday-status{
 
 <style>
 /* v394: production shootout tracker + live goal-card effects */
+
+/* v396: one-tap live stoppage controls + clearer live clock */
+#adminGameDayPanel .admin-stoppage-row{
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+#adminGameDayPanel .admin-stoppage-row .admin-chip{
+  min-width:0;
+  width:100%;
+  font-size:8px;
+  letter-spacing:.045em;
+}
+#adminGameDayPanel .admin-stoppage-row .admin-chip.active{
+  border-color:rgba(165,108,255,.72);
+  background:rgba(165,108,255,.18);
+  color:#d7c1ff;
+}
+body.game-live #publicGameDayCard .gameday-period{
+  font-size:13px;
+}
+#publicGameDayCard .dc-stoppage-pill{
+  display:table;
+  margin:6px auto 0;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.19);
+  background:rgba(255,255,255,.07);
+  color:#e6eaf0;
+  font-size:7.5px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+#publicGameDayCard .dc-stoppage-pill.review{
+  border-color:rgba(242,137,44,.42);
+  background:rgba(242,137,44,.09);
+  color:#f5bc84;
+}
+
 #adminGameDayPanel .admin-shootout-live{
   margin-top:10px;
   padding:10px;
@@ -4761,7 +4802,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v395</small>
+<header><small class="build-version build-version-corner">v396</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6638,6 +6679,14 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
       <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div></div>
+      <input id="adminStoppageStatus" type="hidden" value="">
+      <div class="admin-quick-section admin-status-group admin-live-controls admin-stoppage-controls">
+        <div class="admin-quick-label">Game Stoppage</div>
+        <div class="admin-chip-row admin-stoppage-row">
+          <button type="button" class="admin-chip" data-admin-stoppage="official_timeout" onclick="toggleAdminStoppage('official_timeout')">OFFICIAL TIMEOUT</button>
+          <button type="button" class="admin-chip" data-admin-stoppage="under_review" onclick="toggleAdminStoppage('under_review')">PLAY UNDER REVIEW</button>
+        </div>
+      </div>
       <input id="adminPowerPlay" type="hidden" value="">
       <input id="adminEmptyNet" type="hidden" value="">
       <div class="admin-score-card admin-status-group admin-live-controls">
@@ -7187,7 +7236,7 @@ async function openAdmin(){
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
-    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     if(typeof dcAdminShootoutState!=='undefined')dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent:0}};
     syncAdminQuickControls();
     var msg=document.getElementById('adminSaveStatus');if(msg)msg.textContent='Previous Final has rolled over. Next save will publish the upcoming-game state.';
@@ -9343,6 +9392,7 @@ async function dcPublishShootoutState(options){
     result:document.getElementById('adminResult')?.value||null,
     power_play:null,
     empty_net:null,
+    stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,
     shootout_state:dcNormalizeShootoutState(dcAdminShootoutState)
   };
   if(options.goalTeam){
@@ -9447,6 +9497,10 @@ async function adminShootoutUndo(){
 var dcBaseSyncAdminQuickControls=syncAdminQuickControls;
 syncAdminQuickControls=function(){
   dcBaseSyncAdminQuickControls();
+  var stoppage=document.getElementById('adminStoppageStatus')?.value||'';
+  document.querySelectorAll('[data-admin-stoppage]').forEach(function(b){
+    b.classList.toggle('active',b.dataset.adminStoppage===stoppage);
+  });
   syncAdminShootoutVisibility();
 };
 var dcBaseSetAdminPeriod=setAdminPeriod;
@@ -9477,6 +9531,7 @@ mapRemoteState=function(r){
     adminResult:r.result||'',
     adminPowerPlay:r.power_play||'',
     adminEmptyNet:r.empty_net||'',
+    adminStoppageStatus:r.stoppage_status||'',
     adminShootoutState:dcNormalizeShootoutState(r.shootout_state),
     goalEvent:r.goal_event||null,
     updatedAt:r.updated_at||''
@@ -9484,7 +9539,7 @@ mapRemoteState=function(r){
 };
 fetchRemoteGameState=async function(){
   try{
-    var q=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,shootout_state,goal_event,updated_at').eq('id','current').single();
+    var q=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,shootout_state,goal_event,stoppage_status,updated_at').eq('id','current').single();
     if(q.error)throw q.error;
     var x=mapRemoteState(q.data);
     localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));
@@ -9496,7 +9551,7 @@ fetchRemoteGameState=async function(){
 };
 loadAdminUpdates=async function(){
   var data=await fetchRemoteGameState();
-  ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(function(id){
+  ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus'].forEach(function(id){
     var el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];
   });
   dcAdminShootoutState=dcNormalizeShootoutState(data.adminShootoutState);
@@ -9522,6 +9577,7 @@ saveAdminUpdates=async function(){
     result:document.getElementById('adminResult')?.value||null,
     power_play:document.getElementById('adminPowerPlay')?.value||null,
     empty_net:document.getElementById('adminEmptyNet')?.value||null,
+    stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,
     shootout_state:String(period||'').toUpperCase()==='SO'?dcNormalizeShootoutState(dcAdminShootoutState):null
   };
   if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){
@@ -9565,6 +9621,73 @@ saveAdminUpdates=async function(){
     if(publishBtn){publishBtn.disabled=false;if(publishBtn.textContent==='PUBLISHING…')publishBtn.textContent='SAVE & PUBLISH';}
   }
 };
+
+
+async function toggleAdminStoppage(type){
+  if(type!=='official_timeout'&&type!=='under_review')return;
+  var hidden=document.getElementById('adminStoppageStatus');
+  if(!hidden)return;
+  var next=hidden.value===type?'':type;
+  var previous=hidden.value||'';
+  hidden.value=next;
+  syncAdminQuickControls();
+
+  var session=await dcGetSession();
+  if(!session||!(await dcVerifyAdminSession(session))){
+    hidden.value=previous;
+    syncAdminQuickControls();
+    setAdminFeedback('adminSaveStatus','error','Admin session expired.');
+    return;
+  }
+
+  var period=document.getElementById('adminPeriod')?.value||null;
+  var payload={
+    status:document.getElementById('adminGameStatus')?.value||'live',
+    phantoms_score:document.getElementById('adminPhantomsScore')?.value||0,
+    opponent_score:document.getElementById('adminOpponentScore')?.value||0,
+    period:period,
+    clock:document.getElementById('adminClock')?.value||null,
+    result:document.getElementById('adminResult')?.value||null,
+    power_play:document.getElementById('adminPowerPlay')?.value||null,
+    empty_net:document.getElementById('adminEmptyNet')?.value||null,
+    stoppage_status:next||null,
+    shootout_state:String(period||'').toUpperCase()==='SO'?dcNormalizeShootoutState(dcAdminShootoutState):null
+  };
+
+  try{
+    var res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify(payload)
+    });
+    var body=await res.json();
+    if(!res.ok)throw new Error(body.error||'Update failed');
+    var mapped=mapRemoteState(body.data);
+    localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
+    hidden.value=mapped.adminStoppageStatus||'';
+    syncAdminQuickControls();
+    refreshPublicGameDay();
+  }catch(e){
+    hidden.value=previous;
+    syncAdminQuickControls();
+    setAdminFeedback('adminSaveStatus','error','Could not update stoppage: '+e.message);
+  }
+}
+
+function dcApplyStoppagePill(box,state){
+  if(!box||!state)return;
+  var old=box.querySelector('.dc-stoppage-pill');
+  if(old)old.remove();
+  var status=String(state.adminGameStatus||'').toLowerCase();
+  var stoppage=String(state.adminStoppageStatus||'');
+  if(status!=='live'||(stoppage!=='official_timeout'&&stoppage!=='under_review'))return;
+  var periodBox=box.querySelector('.gameday-periodbox');
+  if(!periodBox)return;
+  var pill=document.createElement('div');
+  pill.className='dc-stoppage-pill'+(stoppage==='under_review'?' review':'');
+  pill.textContent=stoppage==='under_review'?'PLAY UNDER REVIEW':'OFFICIAL TIMEOUT';
+  periodBox.appendChild(pill);
+}
 
 /* Public goal-event handling. Each client plays a new event once. */
 function dcHandleGoalEvent(state){
@@ -9664,6 +9787,7 @@ renderPublicGameDay=function(){
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
   var st=getAdminGameState();
+  dcApplyStoppagePill(box,st);
   if(dcPublicGoalFx){
     dcPublicGoalCard(box,active.g,dcPublicGoalFx);
     syncGameDayHomePriority();
@@ -9671,6 +9795,7 @@ renderPublicGameDay=function(){
   }
   if(String(st.adminPeriod||'').toUpperCase()==='SO'){
     if(dcRenderPublicShootout(box,active.g,st)){
+      dcApplyStoppagePill(box,st);
       if(String(st.adminGameStatus||'').toLowerCase()==='final'){
         document.body.classList.remove('game-pregame','game-live','game-upcoming');
         document.body.classList.add('game-final');
