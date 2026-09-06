@@ -3768,7 +3768,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   background:rgba(255,255,255,.025);
 }
 </style>
-<header><small class="build-version build-version-corner">v374</small>
+<header><small class="build-version build-version-corner">v375</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5895,9 +5895,81 @@ function scheduleRowForGame(g){
   if(!g)return null;
   return dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===g[0]&&r.opponent===g[1];})||null;
 }
+var DC_AUTO_BOX_SCORE_CACHE_KEY='dc_auto_box_score_v1';
+var dcAutoBoxScoreCache=(function(){
+  try{
+    var parsed=JSON.parse(localStorage.getItem(DC_AUTO_BOX_SCORE_CACHE_KEY)||'{}');
+    return parsed&&typeof parsed==='object'?parsed:{};
+  }catch(_){return {};}
+})();
+var dcAutoBoxScoreAttempts={};
+var dcAutoBoxScoreInflight={};
+
+function autoBoxScoreKeyForGame(g){
+  if(!g)return '';
+  var date='';
+  try{date=easternScheduleDateStringForGame(g)||'';}catch(_){}
+  return date+'|'+String(g[1]||'').trim().toLowerCase();
+}
+function autoBoxScoreUrlForGame(g){
+  var key=autoBoxScoreKeyForGame(g);
+  var entry=key&&dcAutoBoxScoreCache[key];
+  return entry&&/^https?:\/\//i.test(String(entry.url||''))?String(entry.url):'';
+}
+function saveAutoBoxScoreCache(){
+  try{localStorage.setItem(DC_AUTO_BOX_SCORE_CACHE_KEY,JSON.stringify(dcAutoBoxScoreCache));}catch(_){}
+}
+async function ensureAutoBoxScoreForGame(g){
+  if(!g)return '';
+  var row=scheduleRowForGame(g);
+  var manual=row&&String(row.box_score_url||'').trim();
+  if(manual)return manual;
+
+  var key=autoBoxScoreKeyForGame(g);
+  if(!key)return '';
+  var cached=autoBoxScoreUrlForGame(g);
+  if(cached)return cached;
+  if(dcAutoBoxScoreInflight[key])return dcAutoBoxScoreInflight[key];
+
+  var now=Date.now();
+  var last=Number(dcAutoBoxScoreAttempts[key]||0);
+  if(last && now-last<300000)return '';
+  dcAutoBoxScoreAttempts[key]=now;
+
+  var date='';
+  try{date=easternScheduleDateStringForGame(g)||'';}catch(_){}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return '';
+
+  var task=(async function(){
+    try{
+      var url=DC_SUPABASE_URL+'/functions/v1/lookup-ushl-box-score?date='+encodeURIComponent(date)+'&opponent='+encodeURIComponent(String(g[1]||''));
+      var res=await fetch(url,{headers:{'apikey':DC_SUPABASE_KEY}});
+      if(!res.ok)throw new Error('Box score lookup failed ('+res.status+')');
+      var body=await res.json();
+      var found=body&&body.match&&String(body.match.box_score_url||'').trim();
+      if(/^https?:\/\//i.test(found)){
+        dcAutoBoxScoreCache[key]={url:found,game_id:String(body.match.game_id||''),checked_at:new Date().toISOString()};
+        saveAutoBoxScoreCache();
+        try{renderPublicGameDay();}catch(_){}
+        try{renderSelectedMonth();}catch(_){}
+        try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
+        return found;
+      }
+    }catch(e){
+      console.warn('Automatic USHL box score lookup unavailable.',e);
+    }finally{
+      delete dcAutoBoxScoreInflight[key];
+    }
+    return '';
+  })();
+
+  dcAutoBoxScoreInflight[key]=task;
+  return task;
+}
 function boxScoreUrlForGame(g){
   var r=scheduleRowForGame(g);
-  return r&&String(r.box_score_url||'').trim()?String(r.box_score_url).trim():'';
+  var manual=r&&String(r.box_score_url||'').trim()?String(r.box_score_url).trim():'';
+  return manual||autoBoxScoreUrlForGame(g);
 }
 function displayGameClock(value){var v=String(value||'').trim();if(!v)return '';if(v==='INT')return v;var m=v.match(/^0?(\d{1,2}):(\d{2})$/);return m?String(parseInt(m[1],10)||0)+':'+m[2]:v;}
 function boxScoreButton(url,extraClass){
@@ -7280,7 +7352,14 @@ async function publishFinalResultFromCurrentState(raw){
  return upsertCompletedResult(record);
 }
 function refreshPublicGameDay(){renderPublicGameDay();}
-async function syncPublicGameDay(){await Promise.all([fetchRemoteGameState(),syncCompletedResults()]);refreshPublicGameDay();}
+async function syncPublicGameDay(){
+  await Promise.all([fetchRemoteGameState(),syncCompletedResults()]);
+  try{
+    var active=gameDayAutomationWindow(new Date());
+    if(active&&active.g)await ensureAutoBoxScoreForGame(active.g);
+  }catch(e){console.warn('Automatic box score sync skipped.',e);}
+  refreshPublicGameDay();
+}
 if(document.readyState==='loading'){
  document.addEventListener('DOMContentLoaded',function(){syncPublicGameDay();setInterval(refreshPublicGameDay,1000);setInterval(syncPublicGameDay,15000);});
 }else{syncPublicGameDay();setInterval(refreshPublicGameDay,1000);setInterval(syncPublicGameDay,15000);}
