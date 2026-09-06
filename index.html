@@ -3872,7 +3872,91 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 
-/* v378 desktop responsive layout polish (from v377) */
+
+/* v379: compact Phantoms Record controls only */
+#adminRecordPanel > .admin-record-intro{margin-bottom:7px}
+#adminRecordPanel > .admin-record-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+#adminRecordPanel > .admin-record-grid .admin-record-field{
+  padding:6px;
+  border-radius:9px;
+}
+#adminRecordPanel > .admin-record-grid .admin-record-field label{
+  margin-bottom:4px;
+  font-size:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#adminRecordPanel > .admin-record-grid .admin-score-stepper{
+  grid-template-columns:28px minmax(0,1fr) 28px;
+  gap:3px;
+}
+#adminRecordPanel > .admin-record-grid .admin-score-stepper button{
+  width:28px;
+  min-width:28px;
+  min-height:30px;
+  padding:0;
+  border-radius:7px;
+  font-size:15px;
+}
+#adminRecordPanel > .admin-record-grid .admin-score-stepper input{
+  min-height:30px;
+  padding:4px 2px;
+  font-size:13px;
+}
+#adminRecordPanel > .admin-record-pct{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:6px;
+  padding:6px 8px;
+  border-radius:9px;
+}
+#adminRecordPanel > .admin-record-pct b{
+  margin-top:0;
+  font-size:16px;
+}
+#adminRecordPanel > .admin-publish-bar{
+  margin:6px 0 12px;
+}
+#adminRecordPanel > .admin-publish-bar .btn{
+  min-height:36px;
+  font-size:10px;
+}
+#adminRecordPanel > .admin-publish-bar .admin-status{
+  min-height:12px;
+}
+@media(max-width:360px){
+  #adminRecordPanel > .admin-record-grid{gap:4px}
+  #adminRecordPanel > .admin-record-grid .admin-score-stepper{
+    grid-template-columns:25px minmax(0,1fr) 25px;
+    gap:2px;
+  }
+  #adminRecordPanel > .admin-record-grid .admin-score-stepper button{
+    width:25px;min-width:25px;
+  }
+}
+
+/* v379: simpler analytics */
+.admin-analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(min-width:700px){.admin-analytics-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.admin-stat{padding:10px 8px}
+.admin-stat small{
+  margin-top:5px;
+  font-size:8.5px;
+  line-height:1.35;
+  text-transform:none;
+}
+#adminAnalyticsContexts{
+  margin-top:10px;
+  padding:0 2px;
+}
+
+/* v379 desktop responsive layout polish (from v378) */
 @media (min-width: 960px){
   body{
     padding-bottom:112px;
@@ -4047,7 +4131,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v378</small>
+<header><small class="build-version build-version-corner">v379</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6066,16 +6150,14 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
   <div class="admin-analytics-status" id="adminAnalyticsStatus">Loading analytics…</div>
   <div class="admin-analytics-grid" id="adminAnalyticsGrid">
-    <div class="admin-stat"><b>—</b><span>Visits</span></div>
-    <div class="admin-stat"><b>—</b><span>Visitors</span></div>
-    <div class="admin-stat"><b>—</b><span>Sessions</span></div>
-    <div class="admin-stat"><b>—</b><span>Episode Listens</span></div>
-    <div class="admin-stat"><b>—</b><span>Hub Opens</span></div>
-    <div class="admin-stat"><b>—</b><span>Installs</span></div>
-    <div class="admin-stat"><b>—</b><span>Visits / Visitor</span></div>
-    <div class="admin-stat"><b>—</b><span>Listen Rate</span></div>
+    <div class="admin-stat"><b>—</b><span>App Views</span><small>Times the app was opened or viewed.</small></div>
+    <div class="admin-stat"><b>—</b><span>Visitors</span><small>Unique devices seen in this time range.</small></div>
+    <div class="admin-stat"><b>—</b><span>Episode Listens</span><small>Taps that started an episode.</small></div>
+    <div class="admin-stat"><b>—</b><span>HQ Opens</span><small>Times Phantoms HQ was opened.</small></div>
+    <div class="admin-stat"><b>—</b><span>Box Score Clicks</span><small>Taps on the USHL Box Score button.</small></div>
+    <div class="admin-stat"><b>—</b><span>Phan Q&amp;A</span><small>Questions successfully submitted.</small></div>
   </div>
-  <div class="admin-analytics-contexts" id="adminAnalyticsContexts"></div>
+  <div class="admin-analytics-note" id="adminAnalyticsContexts">Numbers cover the selected time range. Visitors are device-based, so one person using two devices can count twice.</div>
 </div>
       </div>
       <button type="button" class="admin-back-top" id="adminBackTop" onclick="scrollAdminToTop()">↑ BACK TO TOP</button>
@@ -6891,25 +6973,22 @@ async function loadAdminAnalytics(days){
     var counts=body.counts||{};
     var visits=Number(counts.app_view||0);
     var visitors=Number(body.unique_visitors||0);
-    var sessions=Number(body.sessions||0);
     var listens=Number(counts.episode_listen||0);
-    var installs=Number(counts.app_installed||0);
-    var installClicks=Number(counts.install_click||0);
     var hubCount=0;
-    (body.top_contexts||[]).forEach(function(x){if(x.context==='phantoms_hub')hubCount=Number(x.count||0);});
-
-    var visitsPerVisitor=visitors>0?(visits/visitors).toFixed(visits/visitors>=10?0:1):'—';
-    var listenRate=visitors>0?Math.round((listens/visitors)*100)+'%':'—';
+    var boxScoreClicks=0;
+    (body.top_contexts||[]).forEach(function(x){
+      if(x.context==='phantoms_hub')hubCount=Number(x.count||0);
+      if(x.context==='ushl_box_score')boxScoreClicks=Number(x.count||0);
+    });
+    var qaCount=Number(counts.phan_qa_submit||0);
 
     var stats=[
-      [visits,'Visits','App opens'],
-      [visitors,'Visitors','Unique devices'],
-      [sessions,'Sessions','Browsing sessions'],
-      [listens,'Episode Listens','Listen taps'],
-      [hubCount,'HQ Opens','Phantoms HQ'],
-      [installs,'Installs',installClicks+' install click'+(installClicks===1?'':'s')],
-      [visitsPerVisitor,'Visits / Visitor','Average'],
-      [listenRate,'Listen Rate','Listens ÷ visitors']
+      [visits,'App Views','Times the app was opened or viewed.'],
+      [visitors,'Visitors','Unique devices seen in this time range.'],
+      [listens,'Episode Listens','Taps that started an episode.'],
+      [hubCount,'HQ Opens','Times Phantoms HQ was opened.'],
+      [boxScoreClicks,'Box Score Clicks','Taps on the USHL Box Score button.'],
+      [qaCount,'Phan Q&A','Questions successfully submitted.']
     ];
 
     if(grid){
@@ -6918,28 +6997,8 @@ async function loadAdminAnalytics(days){
       }).join('');
     }
 
-    var prettyLabels={
-      phan_qa:'Phan Q&A',
-      shop:'Merch Store',
-      standings:'Standings',
-      episode:'Episode Listens',
-      episode_page:'Episode Page',
-      pwa:'App Install'
-    };
-    var contextRows=(body.top_contexts||[]).filter(function(x){
-      return x.context!=='home'&&x.context!=='phantoms_hub';
-    }).slice(0,6);
-
     if(contexts){
-      contexts.innerHTML=contextRows.length
-        ? '<div class="admin-analytics-subhead">TOP ACTIVITY</div>'+
-          contextRows.map(function(x){
-            var raw=String(x.context||'');
-            var label=prettyLabels[raw]||raw.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-            return '<div class="admin-context-row"><span>'+escapeHtml(label)+'</span><b>'+Number(x.count||0)+'</b></div>';
-          }).join('')+
-          '<div class="admin-analytics-note">Listen Rate is episode listen taps divided by unique visitors. Visits / Visitor is total app opens divided by unique visitors.</div>'
-        : '<div class="admin-analytics-note">No additional activity was recorded in this range.</div>';
+      contexts.textContent='Numbers cover the selected time range. Visitors are device-based, so one person using two devices can count twice.';
     }
 
     if(st){
