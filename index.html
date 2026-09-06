@@ -640,7 +640,7 @@ button:active:not(:disabled){
 .admin-field small.admin-muted{display:block;margin-top:4px;font-size:9px}
 
 
-.admin-result-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}.admin-result-title{font-weight:850;font-size:11px}.admin-result-meta{color:#8994a4;font-size:9px;margin-top:2px}.admin-mini-btn{border:1px solid rgba(255,255,255,.14);background:#151e2a;color:inherit;border-radius:7px;padding:6px 8px;font-size:9px;font-weight:850;cursor:pointer}.admin-mini-btn.delete{color:#ff7b7b}.admin-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.admin-result-row{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}.admin-result-title{font-weight:850;font-size:11px}.admin-result-meta{color:#8994a4;font-size:9px;margin-top:2px}.admin-mini-btn{border:1px solid rgba(255,255,255,.14);background:#151e2a;color:inherit;border-radius:7px;padding:6px 8px;font-size:9px;font-weight:850;cursor:pointer}.admin-mini-btn.delete{color:#ff7b7b}.admin-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
 
 
 .hosts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
@@ -2423,6 +2423,11 @@ body::after{
 .admin-qna-question{margin-top:10px;color:#e7ebf1;font-size:11px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 .admin-qna-actions{display:flex;gap:7px;margin-top:11px}
 .admin-qna-actions .admin-mini-btn{min-height:36px}
+.admin-back-top{position:sticky;bottom:8px;margin:16px 0 0 auto;display:none;width:max-content;z-index:8;border:1px solid rgba(165,108,255,.55);background:rgba(21,30,42,.96);color:#d9c4ff;border-radius:999px;padding:8px 11px;font-size:9px;font-weight:950;letter-spacing:.04em;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.admin-back-top.show{display:block}
+.admin-schedule-next-btn{white-space:nowrap}
+.admin-copy-ok{border-color:rgba(88,214,141,.55)!important;color:#8ee7b1!important}
+
 .phan-qa-field-note{margin-top:6px;color:#8994a4;font-size:9px;line-height:1.45}
 
 /* v286 Home card color + Q&A private-note readability */
@@ -3111,7 +3116,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v346</small>
+<header><small class="build-version build-version-corner">v347</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4783,7 +4788,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         </div>
       </div>
       <div class="admin-section-panel" id="adminSchedulePanel" role="tabpanel" aria-labelledby="adminTabSchedule" hidden>
-        <div class="admin-roster-toolbar"><div><div class="eyebrow">SCHEDULE</div><div class="admin-muted" id="adminScheduleStatus">Select a game to edit.</div></div></div>
+        <div class="admin-roster-toolbar"><div><div class="eyebrow">SCHEDULE</div><div class="admin-muted" id="adminScheduleStatus">Select a game to edit.</div></div><button class="btn secondary admin-schedule-next-btn" type="button" onclick="editNextScheduleGame()">NEXT GAME</button></div>
         <div class="admin-schedule-list" id="adminScheduleList"></div>
         <div class="admin-schedule-form" id="adminScheduleForm">
           <input type="hidden" id="adminScheduleId">
@@ -4857,6 +4862,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-analytics-contexts" id="adminAnalyticsContexts"></div>
 </div>
       </div>
+      <button type="button" class="admin-back-top" id="adminBackTop" onclick="scrollAdminToTop()">↑ BACK TO TOP</button>
     </div>
   </div>
 </div>
@@ -5123,6 +5129,7 @@ function renderAdminQna(){
       (isNew?'<span class="admin-qna-badge">NEW</span>':'')+'</div>'+
       '<div class="admin-qna-question">'+escapeHtml(x.question||'')+'</div>'+
       '<div class="admin-qna-actions">'+
+      '<button class="admin-mini-btn" type="button" id="qnaCopy-'+x.id+'" onclick="copyQnaQuestion(&quot;'+x.id+'&quot;)">COPY</button>'+
       (isNew?'<button class="admin-mini-btn" type="button" onclick="markQnaUsed(&quot;'+x.id+'&quot;)">MARK USED</button>':'')+
       '<button class="admin-mini-btn delete" type="button" onclick="deleteQnaSubmission(&quot;'+x.id+'&quot;)">DELETE</button>'+
       '</div></div>';
@@ -5132,6 +5139,21 @@ function renderAdminQna(){
   if(used.length)html+='<div class="admin-qna-section-title">USED</div>'+used.map(card).join('');
   list.innerHTML=html;
 }
+function copyQnaQuestion(id){
+  var x=dcAdminQnaItems.find(function(item){return String(item.id)===String(id);});
+  if(!x)return;
+  var text=String(x.question||'').trim();
+  var btn=document.getElementById('qnaCopy-'+id);
+  function ok(){if(btn){btn.textContent='COPIED ✓';btn.classList.add('admin-copy-ok');setTimeout(function(){btn.textContent='COPY';btn.classList.remove('admin-copy-ok');},1400);}}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok).catch(function(){fallback();});return;}
+  fallback();
+  function fallback(){
+    var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');ok();}catch(_){var st=document.getElementById('adminQnaStatus');if(st)st.textContent='Could not copy that question.';}
+    ta.remove();
+  }
+}
+
 async function loadAdminQna(){
   var status=document.getElementById('adminQnaStatus');
   var list=document.getElementById('adminQnaList');
@@ -5194,6 +5216,21 @@ async function loadAdminSchedule(){
     var remembered=recalledAdminSelection('schedule');if(remembered&&dcScheduleRows.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){editScheduleGame(remembered,true);},40);
   }catch(e){if(st)st.textContent='Could not load schedule.';}
 }
+async function editNextScheduleGame(){
+  if(!confirmDiscardAdminChanges())return;
+  if(!dcScheduleRows.length)await loadAdminSchedule();
+  var today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  var next=dcScheduleRows.filter(function(r){
+    var status=String(r.status||'SCHEDULED').toUpperCase();
+    return String(r.game_date||'')>=today&&!['FINAL','FINAL-OT','FINAL-SO','POSTPONED','CANCELLED'].includes(status);
+  }).sort(function(a,b){
+    return String(a.game_date||'').localeCompare(String(b.game_date||''))||String(a.game_time||'99:99').localeCompare(String(b.game_time||'99:99'));
+  })[0];
+  var st=document.getElementById('adminScheduleStatus');
+  if(!next){if(st)st.textContent='No upcoming game found.';return;}
+  editScheduleGame(next.id,true);
+}
+
 function editScheduleGame(id,restoring){
   if(!restoring&&!confirmDiscardAdminChanges())return;
   var r=dcScheduleRows.find(function(x){return Number(x.id)===Number(id);});if(!r)return;
@@ -5851,7 +5888,9 @@ async function syncPublicRoster(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncPublicRoster);else syncPublicRoster();
 
-document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();},{passive:true});
+function scrollAdminToTop(){var panel=document.querySelector('#adminOverlay .admin-panel');if(panel)panel.scrollTo({top:0,behavior:'smooth'});}
+function syncAdminBackTop(){var panel=document.querySelector('#adminOverlay .admin-panel'),btn=document.getElementById('adminBackTop');if(panel&&btn)btn.classList.toggle('show',panel.scrollTop>420);}
+document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();syncAdminBackTop();},{passive:true});
 function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
 async function adminLoginSubmit(){
  const st=document.getElementById('adminLoginStatus');
@@ -5935,10 +5974,28 @@ function renderAdminRecentResults(){
  box.innerHTML=results.slice(0,10).map(function(r,i){
   var detail=r.resultDetail||'';
   return '<div class="admin-result-row"><div><div class="admin-result-title">'+escapeHtml(r.opponent||'Opponent')+' — '+r.result+escapeHtml(detail)+' '+(r.phantoms??'—')+'–'+(r.opponentScore??'—')+'</div><div class="admin-result-meta">'+escapeHtml(r.date||'')+'</div></div>'+
-   '<button class="admin-mini-btn" type="button" onclick="editAdminResult('+i+')">Edit</button>'+
-   '<button class="admin-mini-btn delete" type="button" onclick="deleteAdminResult('+i+')">Delete</button></div>';
+   '<button class="admin-mini-btn" type="button" onclick="correctAdminResultScore('+i+')">SCORE</button>'+
+   '<button class="admin-mini-btn" type="button" onclick="editAdminResult('+i+')">RESULT</button>'+
+   '<button class="admin-mini-btn delete" type="button" onclick="deleteAdminResult('+i+')">DELETE</button></div>';
  }).join('');
 }
+async function correctAdminResultScore(index){
+ var results=getStoredResults(),r=results[index];if(!r)return;
+ var score1=prompt('Correct Youngstown score:',String(r.phantoms??''));if(score1===null)return;
+ var score2=prompt('Correct opponent score:',String(r.opponentScore??''));if(score2===null)return;
+ var ph=Number(score1),op=Number(score2);
+ if(!Number.isInteger(ph)||!Number.isInteger(op)||ph<0||op<0||ph===op){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Enter two valid final scores with a winner.';return;}
+ var detail=String(r.resultDetail||'').toUpperCase();
+ var newResult=ph>op?'W':(detail.indexOf('SO')>=0?'SOL':detail.indexOf('OT')>=0?'OTL':'L');
+ var updated=Object.assign({},r,{phantoms:ph,opponentScore:op,result:newResult});
+ try{
+   await upsertCompletedResult(updated);
+   if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
+   try{renderRecentResults();}catch(_){}
+   var st=document.getElementById('adminSaveStatus');setAdminFeedback(st,'saved','Score corrected everywhere • '+adminTimeStamp());
+ }catch(e){var st=document.getElementById('adminSaveStatus');if(st)st.textContent='Could not correct score: '+e.message;}
+}
+
 async function editAdminResult(index){
  var results=getStoredResults(),r=results[index];if(!r)return;
  var score1=prompt('Youngstown score:',String(r.phantoms??''));if(score1===null)return;
