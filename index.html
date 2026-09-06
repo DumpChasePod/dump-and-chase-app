@@ -3708,8 +3708,46 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 .more-qna-button:active{
   background:rgba(255,148,74,.22)!important;
 }
+
+/* v371 episode now-playing state */
+#episodeList .episode-card.is-now-playing{
+  border-color:rgba(147,92,255,.52)!important;
+  background:
+    radial-gradient(circle at 96% 0%,rgba(139,77,255,.14),transparent 36%),
+    linear-gradient(145deg,rgba(139,77,255,.09),#101722 44%,rgba(63,38,93,.05))!important;
+}
+#episodeList .episode-card.is-now-playing::before{
+  background:#9b61ff!important;
+  opacity:1;
+}
+#episodeList .episode-card.is-now-playing .episode-listen{
+  border-color:rgba(147,92,255,.52)!important;
+  background:rgba(139,77,255,.16)!important;
+  color:#eadfff!important;
+}
+#episodeList .episode-card.is-now-playing .episode-title::after{
+  content:"NOW PLAYING";
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  padding:3px 6px;
+  border:1px solid rgba(147,92,255,.38);
+  border-radius:999px;
+  background:rgba(139,77,255,.10);
+  color:#cdb5ff;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.08em;
+  vertical-align:2px;
+}
+#episodeList .episode-card.is-paused .episode-title::after{
+  content:"PAUSED";
+  color:#aab4c2;
+  border-color:#334054;
+  background:rgba(255,255,255,.025);
+}
 </style>
-<header><small class="build-version build-version-corner">v370</small>
+<header><small class="build-version build-version-corner">v371</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4340,7 +4378,8 @@ function episodeCard(e,isLatest){
  const duration=escapeHtml(formatEpisodeDuration(e.duration));
  const desc=escapeHtml(e.desc||'');
  const hasDesc=String(e.desc||'').trim().length>0;
- return `<article class="card episode-card${isLatest?' episode-featured':''}" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
+ const audioSrc=escapeHtml((e.enclosure&&(e.enclosure.link||e.enclosure.url))||e.audio||'');
+ return `<article class="card episode-card${isLatest?' episode-featured':''}" data-episode-audio="${audioSrc}" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
    <div class="episode-card-top">
      <div class="episode-card-meta">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
      <span class="episode-duration episode-duration-top">${duration}</span>
@@ -4494,6 +4533,7 @@ function renderEpisodeArchive(year){
   list.innerHTML=filtered.map(function(e){
     return episodeCard(e,dcEpisodeArchive.length>0&&e===dcEpisodeArchive[0]);
   }).join('');
+  if(typeof syncEpisodeNowPlaying==='function')syncEpisodeNowPlaying();
 }
 function syncEpisodeSearchClear(){
   var clear=document.getElementById('episodeSearchClear');
@@ -4919,6 +4959,7 @@ function startAudio(item){
  if(screen)screen.classList.add('loaded-paused');
  document.getElementById('audioPlayer').classList.remove('show');
  document.getElementById('playerScreen').classList.add('show');
+ if(typeof syncEpisodeNowPlaying==='function')syncEpisodeNowPlaying();
 }
 function toggleAudio(){
  const a=document.getElementById('audio');
@@ -7474,6 +7515,23 @@ window.addEventListener('load',function(){
     }
   };
 
+  window.syncEpisodeNowPlaying=function(){
+    var a=audio();
+    var src=a&&a.src ? a.src : '';
+    var paused=!a || a.paused;
+    document.querySelectorAll('#episodeList .episode-card').forEach(function(card){
+      var cardSrc=card.getAttribute('data-episode-audio')||'';
+      var match=!!src && !!cardSrc && src===cardSrc;
+      card.classList.toggle('is-now-playing',match);
+      card.classList.toggle('is-paused',match&&paused);
+      var btn=card.querySelector('.episode-listen');
+      if(btn){
+        if(match)btn.textContent=paused?'▶ RESUME':'❚❚ NOW PLAYING';
+        else btn.textContent='▶ LISTEN';
+      }
+    });
+  };
+
   function bind(){
     var a=audio();
     if(!a)return;
@@ -7481,9 +7539,9 @@ window.addEventListener('load',function(){
     ['loadedmetadata','durationchange','canplay','timeupdate','progress','seeking','seeked','playing'].forEach(function(evt){
       a.addEventListener(evt,paint);
     });
-    a.addEventListener('play',startTimer);
-    a.addEventListener('pause',stopTimer);
-    a.addEventListener('ended',stopTimer);
+    a.addEventListener('play',function(){startTimer();syncEpisodeNowPlaying();});
+    a.addEventListener('pause',function(){stopTimer();syncEpisodeNowPlaying();});
+    a.addEventListener('ended',function(){stopTimer();syncEpisodeNowPlaying();});
 
     var small=document.getElementById('audioRange');
     var big=document.getElementById('bigRange');
@@ -7493,6 +7551,7 @@ window.addEventListener('load',function(){
     });
 
     paint();
+    syncEpisodeNowPlaying();
     window.addEventListener('resize',paint);
     window.addEventListener('orientationchange',function(){setTimeout(paint,120);});
   }
