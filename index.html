@@ -2717,6 +2717,11 @@ body::after{
 #adminGameDayPanel .admin-box-score-edit{width:100%;min-height:32px;border-color:rgba(165,108,255,.55);color:#d9c4ff;background:rgba(165,108,255,.10)}
 body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gameday-special){height:42px;flex-direction:column;align-items:stretch;justify-content:center;gap:3px}
 body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gameday-special) .gameday-special{flex:0 0 auto;width:100%;box-sizing:border-box}
+
+/* v343 clock touch-spacing refinement */
+#adminGameDayPanel .admin-clock-readout{margin-bottom:18px}
+#adminGameDayPanel .admin-clock-digit{grid-template-rows:32px 32px;height:auto}
+#adminGameDayPanel .admin-clock-digit output{display:none}
 </style>
 
 
@@ -3103,7 +3108,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v342</small>
+<header><small class="build-version build-version-corner">v343</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
