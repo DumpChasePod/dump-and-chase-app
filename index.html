@@ -3338,8 +3338,45 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   font-size:11px;
   line-height:1.45;
 }
+
+/* v356 Episodes compact navigation + explicit search action */
+.episode-year-bar{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  padding:1px 0 9px;
+}
+.episode-year-btn{
+  width:100%;
+  min-height:34px;
+  padding:6px 8px;
+  font-size:9.5px;
+  border-radius:10px;
+}
+.episode-search{
+  padding-right:5px;
+}
+.episode-search input[type="search"]::-webkit-search-cancel-button{
+  -webkit-appearance:none;
+  appearance:none;
+  display:none;
+}
+.episode-search-go{
+  flex:0 0 auto;
+  min-width:68px;
+  height:34px;
+  padding:0 11px;
+  border:1px solid rgba(147,92,255,.55);
+  border-radius:9px;
+  background:rgba(139,77,255,.18);
+  color:#e7dcff;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.055em;
+}
+.episode-search-go:active{transform:translateY(1px)}
 </style>
-<header><small class="build-version build-version-corner">v354</small>
+<header><small class="build-version build-version-corner">v356</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3905,7 +3942,8 @@ function openSheet(type){
      <div class="episode-tools">
        <label class="episode-search" aria-label="Search episodes">
          <span class="episode-search-icon" aria-hidden="true">⌕</span>
-         <input id="episodeSearchInput" type="search" inputmode="search" autocomplete="off" placeholder="Search episodes…" oninput="filterEpisodeArchive(this.value)">
+         <input id="episodeSearchInput" type="search" inputmode="search" autocomplete="off" placeholder="Search all episodes…" onkeydown="if(event.key==='Enter'){event.preventDefault();filterEpisodeArchive(this.value);this.blur();}">
+         <button type="button" class="episode-search-go" onclick="runEpisodeSearch()">SEARCH</button>
        </label>
        <div class="episode-year-summary" id="episodeYearSummary"></div>
      </div>
@@ -4059,24 +4097,27 @@ function renderEpisodeArchive(year){
   if(!year||years.indexOf(Number(year))===-1)year=years[0];
   dcEpisodeSelectedYear=Number(year);
 
+  var query=String(dcEpisodeSearchQuery||'').trim().toLowerCase();
+
   bar.innerHTML=years.map(function(y){
-    return '<button type="button" class="episode-year-btn'+(y===dcEpisodeSelectedYear?' active':'')+'" onclick="selectEpisodeYear('+y+')">'+y+'</button>';
+    return '<button type="button" class="episode-year-btn'+(!query&&y===dcEpisodeSelectedYear?' active':'')+'" onclick="selectEpisodeYear('+y+')">'+y+'</button>';
   }).join('');
 
   var selected=dcEpisodeArchive.filter(function(item){return episodeYear(item)===dcEpisodeSelectedYear;});
-  var query=String(dcEpisodeSearchQuery||'').trim().toLowerCase();
-  var filtered=query?selected.filter(function(item){
+  var filtered=query?dcEpisodeArchive.filter(function(item){
     return [item.title,item.desc,item.date].join(' ').toLowerCase().indexOf(query)!==-1;
   }):selected;
 
   if(summary){
     summary.textContent=query
-      ? filtered.length+' match'+(filtered.length===1?'':'es')+' in '+dcEpisodeSelectedYear
+      ? filtered.length+' match'+(filtered.length===1?'':'es')+' • ALL YEARS'
       : selected.length+' episode'+(selected.length===1?'':'s')+' • '+dcEpisodeSelectedYear;
   }
 
   if(!filtered.length){
-    list.innerHTML='<div class="card episode-empty-search"><strong>No matches in '+dcEpisodeSelectedYear+'.</strong><span>Try another search or choose a different year.</span></div>';
+    list.innerHTML=query
+      ? '<div class="card episode-empty-search"><strong>No matches across the archive.</strong><span>Try a different search.</span></div>'
+      : '<div class="card episode-empty-search"><strong>No episodes in '+dcEpisodeSelectedYear+'.</strong><span>Choose a different year.</span></div>';
     return;
   }
 
@@ -4088,12 +4129,17 @@ function filterEpisodeArchive(value){
   dcEpisodeSearchQuery=String(value||'');
   renderEpisodeArchive(dcEpisodeSelectedYear);
   var input=document.getElementById('episodeSearchInput');
-  if(input){
-    input.value=dcEpisodeSearchQuery;
-    try{input.focus({preventScroll:true});}catch(e){}
-  }
+  if(input)input.value=dcEpisodeSearchQuery;
+}
+function runEpisodeSearch(){
+  var input=document.getElementById('episodeSearchInput');
+  filterEpisodeArchive(input?input.value:'');
+  if(input)input.blur();
 }
 function selectEpisodeYear(year){
+  dcEpisodeSearchQuery='';
+  var input=document.getElementById('episodeSearchInput');
+  if(input)input.value='';
   renderEpisodeArchive(Number(year));
   var body=document.getElementById('sheetBody');
   if(body)body.scrollTo({top:0,behavior:'smooth'});
