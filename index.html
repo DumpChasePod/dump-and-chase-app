@@ -2307,6 +2307,54 @@ body::after{
   min-height:44px;
 }
 
+/* v349 read-only Admin game-day snapshot */
+.admin-game-status-strip{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px 12px;
+  align-items:center;
+  margin:10px 0 12px;
+  padding:10px 12px;
+  border:1px solid rgba(139,82,255,.22);
+  border-radius:12px;
+  background:rgba(139,82,255,.075);
+}
+.admin-game-status-strip .admin-status-strip-label{
+  font-size:9px;
+  line-height:1;
+  letter-spacing:.13em;
+  font-weight:900;
+  color:#a987ff;
+}
+.admin-game-status-strip .admin-status-strip-game{
+  min-width:0;
+  margin-top:4px;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.admin-game-status-strip .admin-status-strip-state{
+  justify-self:end;
+  text-align:right;
+}
+.admin-game-status-strip .admin-status-strip-state strong{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  line-height:1;
+  letter-spacing:.04em;
+}
+.admin-game-status-strip[data-state="live"] .admin-status-strip-state strong{color:#78e3a6;}
+.admin-game-status-strip[data-state="final"] .admin-status-strip-state strong{color:#f3c56b;}
+@media(max-width:430px){
+  .admin-game-status-strip{gap:7px 9px;padding:9px 10px;}
+  .admin-game-status-strip .admin-status-strip-game,
+  .admin-game-status-strip .admin-status-strip-state strong{font-size:10px;}
+}
+
 /* Tabs overlap the title/header by a few pixels so there is no transparent seam. */
 .admin-section-tabs{
   position:sticky;
@@ -3116,7 +3164,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v348</small>
+<header><small class="build-version build-version-corner">v349</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3436,6 +3484,35 @@ function updateAdminGameDayPreview(){
   var stateEl=document.getElementById('adminPreviewState');if(stateEl)stateEl.textContent=state;
   box.classList.toggle('is-final',st==='final');box.classList.toggle('is-upcoming',st==='upcoming');
 }
+function adminNextGameRow(){
+  var today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  return dcScheduleRows.filter(function(r){
+    var status=String(r.status||'SCHEDULED').toUpperCase();
+    return String(r.game_date||'')>=today&&!['FINAL','FINAL-OT','FINAL-SO','POSTPONED','CANCELLED'].includes(status);
+  }).sort(function(a,b){
+    return String(a.game_date||'').localeCompare(String(b.game_date||''))||String(a.game_time||'99:99').localeCompare(String(b.game_time||'99:99'));
+  })[0]||null;
+}
+function adminStatusStripDayLabel(dateStr){
+  if(!dateStr)return '';
+  var today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  if(dateStr===today)return 'TODAY';
+  var t=new Date(today+'T12:00:00Z');
+  if(!isNaN(t.getTime())){t.setUTCDate(t.getUTCDate()+1);if(dateStr===t.toISOString().slice(0,10))return 'TOMORROW';}
+  var d=new Date(String(dateStr)+'T12:00:00');
+  return isNaN(d.getTime())?String(dateStr):d.toLocaleDateString('en-US',{month:'short',day:'numeric'}).toUpperCase();
+}
+function updateAdminGameStatusStrip(){
+  var strip=document.getElementById('adminGameStatusStrip'),game=document.getElementById('adminStatusStripGame'),state=document.getElementById('adminStatusStripState');
+  if(!strip||!game||!state)return;
+  var st=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
+  strip.dataset.state=st;
+  state.textContent=st.toUpperCase();
+  var next=adminNextGameRow();
+  if(!next){game.textContent=dcScheduleRows.length?'NO UPCOMING GAME':'Loading schedule…';return;}
+  var time=String(next.time_label||'TBD').replace(/\s*ET$/i,'');
+  game.textContent=[String(next.opponent||'UPCOMING GAME').toUpperCase(),adminStatusStripDayLabel(String(next.game_date||'')),time].filter(Boolean).join(' • ');
+}
 function syncAdminQuickControls(){
  const st=document.getElementById('adminGameStatus')?.value||'';
  document.querySelectorAll('[data-admin-status]').forEach(b=>b.classList.toggle('active',b.dataset.adminStatus===st));
@@ -3451,6 +3528,7 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-en]').forEach(b=>b.classList.toggle('active',b.dataset.adminEn===en));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
+ updateAdminGameStatusStrip();
  updateAdminGameDayPreview();
 }
 function setAdminStatus(value){
@@ -4702,6 +4780,16 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-section-tab admin-qna-tab" id="adminTabQna" role="tab" aria-selected="false" aria-controls="adminQnaPanel" onclick="selectAdminTab('qna')"><span class="admin-qna-dot" id="adminQnaDot" aria-hidden="true"></span><span>Q&amp;A</span></button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
+      <div class="admin-game-status-strip" id="adminGameStatusStrip" data-state="upcoming" aria-live="polite">
+        <div>
+          <div class="admin-status-strip-label">NEXT GAME</div>
+          <div class="admin-status-strip-game" id="adminStatusStripGame">Loading schedule…</div>
+        </div>
+        <div class="admin-status-strip-state">
+          <div class="admin-status-strip-label">GAME CENTER</div>
+          <strong id="adminStatusStripState">UPCOMING</strong>
+        </div>
+      </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-quick-label">Status</div><div class="admin-chip-row admin-status-flow"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div><div class="admin-game-shortcuts"><button type="button" class="admin-mini-btn" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-mini-btn" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
@@ -5213,6 +5301,7 @@ async function loadAdminSchedule(){
       return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
     }).join('');
     if(st)st.textContent=dcScheduleRows.length+' games · changes publish immediately.';
+    updateAdminGameStatusStrip();
     var remembered=recalledAdminSelection('schedule');if(remembered&&dcScheduleRows.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){editScheduleGame(remembered,true);},40);
   }catch(e){if(st)st.textContent='Could not load schedule.';}
 }
@@ -5919,7 +6008,7 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();updateAdminGameStatusStrip();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
 function formatGameClock(input){
   if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
 }
