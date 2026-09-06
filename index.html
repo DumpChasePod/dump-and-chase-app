@@ -3116,7 +3116,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v347</small>
+<header><small class="build-version build-version-corner">v348</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5228,7 +5228,13 @@ async function editNextScheduleGame(){
   })[0];
   var st=document.getElementById('adminScheduleStatus');
   if(!next){if(st)st.textContent='No upcoming game found.';return;}
-  editScheduleGame(next.id,true);
+  parkScheduleEditor();
+  var form=document.getElementById('adminScheduleForm');
+  if(form)form.classList.remove('show');
+  document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.toggle('active',Number(b.dataset.scheduleId)===Number(next.id));});
+  var button=document.querySelector('.admin-schedule-game[data-schedule-id="'+next.id+'"]');
+  if(button)button.scrollIntoView({block:'center',behavior:'smooth'});
+  if(st)st.textContent='Next game highlighted · tap it to edit.';
 }
 
 function editScheduleGame(id,restoring){
