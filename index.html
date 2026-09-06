@@ -3090,6 +3090,19 @@ body.game-live #publicGameDayCard .gameday-status{
 #adminGameDayPanel .admin-live-preview.is-final .admin-live-preview-state{color:#8fe0aa}
 #adminGameDayPanel .admin-live-preview.is-upcoming .admin-live-preview-state{color:#aab5c5}
 </style>
+
+<style>
+/* v381 revised: simplify Game Status to one 3-wide lifecycle row. */
+#adminGameDayPanel .admin-status-flow-simple{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+#adminGameDayPanel .admin-status-flow-simple .admin-chip{
+  width:100%;
+  min-width:0;
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4131,7 +4144,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v380</small>
+<header><small class="build-version build-version-corner">v381</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6003,7 +6016,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
-      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-chip-row admin-status-flow"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="setAdminStatus('live')">LIVE</button><button type="button" class="admin-chip" data-admin-status="final" onclick="setAdminStatus('final')">FINAL</button></div><div class="admin-game-shortcuts"><button type="button" class="admin-mini-btn" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-mini-btn" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
+      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-chip-row admin-status-flow admin-status-flow-simple"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-chip" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
       <input id="adminPeriod" type="hidden" value="">
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
