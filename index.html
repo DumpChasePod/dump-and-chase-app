@@ -3956,7 +3956,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   padding:0 2px;
 }
 
-/* v379 desktop responsive layout polish (from v378) */
+/* v380 desktop responsive layout polish (from v379) */
 @media (min-width: 960px){
   body{
     padding-bottom:112px;
@@ -4131,7 +4131,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v379</small>
+<header><small class="build-version build-version-corner">v380</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6155,7 +6155,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="admin-stat"><b>—</b><span>Episode Listens</span><small>Taps that started an episode.</small></div>
     <div class="admin-stat"><b>—</b><span>HQ Opens</span><small>Times Phantoms HQ was opened.</small></div>
     <div class="admin-stat"><b>—</b><span>Box Score Clicks</span><small>Taps on the USHL Box Score button.</small></div>
-    <div class="admin-stat"><b>—</b><span>Phan Q&amp;A</span><small>Questions successfully submitted.</small></div>
+    <div class="admin-stat"><b>—</b><span>App Installs</span><small>Times the app reported a successful install.</small></div>
   </div>
   <div class="admin-analytics-note" id="adminAnalyticsContexts">Numbers cover the selected time range. Visitors are device-based, so one person using two devices can count twice.</div>
 </div>
@@ -6980,7 +6980,7 @@ async function loadAdminAnalytics(days){
       if(x.context==='phantoms_hub')hubCount=Number(x.count||0);
       if(x.context==='ushl_box_score')boxScoreClicks=Number(x.count||0);
     });
-    var qaCount=Number(counts.phan_qa_submit||0);
+    var installCount=Number(counts.app_installed||0);
 
     var stats=[
       [visits,'App Views','Times the app was opened or viewed.'],
@@ -6988,7 +6988,7 @@ async function loadAdminAnalytics(days){
       [listens,'Episode Listens','Taps that started an episode.'],
       [hubCount,'HQ Opens','Times Phantoms HQ was opened.'],
       [boxScoreClicks,'Box Score Clicks','Taps on the USHL Box Score button.'],
-      [qaCount,'Phan Q&A','Questions successfully submitted.']
+      [installCount,'App Installs','Times the app reported a successful install.']
     ];
 
     if(grid){
