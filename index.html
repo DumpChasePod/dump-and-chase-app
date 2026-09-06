@@ -3086,7 +3086,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v339</small>
+<header><small class="build-version build-version-corner">v340</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3962,7 +3962,7 @@ function renderRecentResults(){
         const city=(scheduleMatch&&scheduleMatch.location)||g.city||'';
         const venue=[arena,city].filter(Boolean).join(' — ');
         const boxUrl=scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'';
-        return '<div class="gc-series-row v306-game-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+tagHtml+'</div>'+escapeHtml(venue)+'</div><div class="gc-series-status"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span>'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span>'+(boxUrl?'<a class="result-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
+        return '<div class="gc-series-row v306-game-row v308-schedule-row"><div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+'</div>'+escapeHtml(arena||city)+'</div><div class="gc-series-status">'+tagHtml+'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span class="schedule-final-score">'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span></span>'+(boxUrl?'<a class="schedule-box-score v306-box-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>':'')+'</div></div>';
       }).join('')+'</div>';
   boxes.forEach(function(box){box.innerHTML=html;});
 }
