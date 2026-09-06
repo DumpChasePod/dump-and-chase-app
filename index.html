@@ -3747,7 +3747,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   background:rgba(255,255,255,.025);
 }
 </style>
-<header><small class="build-version build-version-corner">v371</small>
+<header><small class="build-version build-version-corner">v372</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7515,6 +7515,61 @@ window.addEventListener('load',function(){
     }
   };
 
+  var DC_PLAYBACK_KEY='dc_episode_playback_positions_v1';
+
+  function getSavedPlaybackMap(){
+    try{
+      var raw=localStorage.getItem(DC_PLAYBACK_KEY);
+      var parsed=raw?JSON.parse(raw):{};
+      return parsed&&typeof parsed==='object'?parsed:{};
+    }catch(e){
+      return {};
+    }
+  }
+
+  function savePlaybackPosition(){
+    var a=audio();
+    if(!a||!a.src)return;
+    var d=Number(a.duration||0);
+    var t=Number(a.currentTime||0);
+    if(!Number.isFinite(t)||t<0)return;
+
+    var map=getSavedPlaybackMap();
+
+    /* Treat an episode as finished if it is within 20 seconds of the end. */
+    if(d>0 && (d-t)<=20){
+      delete map[a.src];
+    }else if(t>=5){
+      map[a.src]=Math.floor(t);
+    }else{
+      delete map[a.src];
+    }
+
+    try{localStorage.setItem(DC_PLAYBACK_KEY,JSON.stringify(map));}catch(e){}
+  }
+
+  function restorePlaybackPosition(){
+    var a=audio();
+    if(!a||!a.src)return;
+    var map=getSavedPlaybackMap();
+    var saved=Number(map[a.src]||0);
+    var d=Number(a.duration||0);
+
+    if(saved>=5 && (!d || saved<d-20)){
+      try{a.currentTime=saved;}catch(e){}
+    }
+  }
+
+  function clearFinishedPlayback(){
+    var a=audio();
+    if(!a||!a.src)return;
+    var map=getSavedPlaybackMap();
+    if(Object.prototype.hasOwnProperty.call(map,a.src)){
+      delete map[a.src];
+      try{localStorage.setItem(DC_PLAYBACK_KEY,JSON.stringify(map));}catch(e){}
+    }
+  }
+
   window.syncEpisodeNowPlaying=function(){
     var a=audio();
     var src=a&&a.src ? a.src : '';
@@ -7539,9 +7594,25 @@ window.addEventListener('load',function(){
     ['loadedmetadata','durationchange','canplay','timeupdate','progress','seeking','seeked','playing'].forEach(function(evt){
       a.addEventListener(evt,paint);
     });
+    a.addEventListener('loadedmetadata',restorePlaybackPosition);
+    a.addEventListener('canplay',restorePlaybackPosition);
+
+    var lastSavedSecond=-1;
+    a.addEventListener('timeupdate',function(){
+      var now=Math.floor(Number(a.currentTime||0));
+      if(now>=0 && (lastSavedSecond<0 || now-lastSavedSecond>=5)){
+        lastSavedSecond=now;
+        savePlaybackPosition();
+      }
+    });
+
     a.addEventListener('play',function(){startTimer();syncEpisodeNowPlaying();});
-    a.addEventListener('pause',function(){stopTimer();syncEpisodeNowPlaying();});
-    a.addEventListener('ended',function(){stopTimer();syncEpisodeNowPlaying();});
+    a.addEventListener('pause',function(){savePlaybackPosition();stopTimer();syncEpisodeNowPlaying();});
+    a.addEventListener('ended',function(){clearFinishedPlayback();stopTimer();syncEpisodeNowPlaying();});
+    window.addEventListener('pagehide',savePlaybackPosition);
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='hidden')savePlaybackPosition();
+    });
 
     var small=document.getElementById('audioRange');
     var big=document.getElementById('bigRange');
