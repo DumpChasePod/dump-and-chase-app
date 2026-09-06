@@ -3423,8 +3423,78 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   margin:7px 2px 0;
   min-height:12px;
 }
+
+/* v364 player range visual alignment */
+.big-range,
+.audio-range{
+  --dc-range-pct:0%;
+  -webkit-appearance:none;
+  appearance:none;
+  background:linear-gradient(to right,#8b4dff 0%,#8b4dff var(--dc-range-pct),#e7e7e7 var(--dc-range-pct),#e7e7e7 100%);
+  border-radius:999px;
+  outline:none;
+}
+.big-range{
+  height:8px;
+}
+.audio-range{
+  height:4px;
+}
+.big-range::-webkit-slider-runnable-track,
+.audio-range::-webkit-slider-runnable-track{
+  height:100%;
+  background:transparent;
+  border:0;
+  border-radius:999px;
+}
+.big-range::-webkit-slider-thumb,
+.audio-range::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  border:0;
+  border-radius:50%;
+  background:#8b4dff;
+  cursor:pointer;
+}
+.big-range::-webkit-slider-thumb{
+  width:24px;
+  height:24px;
+  margin-top:-8px;
+}
+.audio-range::-webkit-slider-thumb{
+  width:16px;
+  height:16px;
+  margin-top:-6px;
+}
+.big-range::-moz-range-track,
+.audio-range::-moz-range-track{
+  height:100%;
+  background:#e7e7e7;
+  border:0;
+  border-radius:999px;
+}
+.big-range::-moz-range-progress,
+.audio-range::-moz-range-progress{
+  height:100%;
+  background:#8b4dff;
+  border-radius:999px;
+}
+.big-range::-moz-range-thumb,
+.audio-range::-moz-range-thumb{
+  border:0;
+  border-radius:50%;
+  background:#8b4dff;
+}
+.big-range::-moz-range-thumb{
+  width:24px;
+  height:24px;
+}
+.audio-range::-moz-range-thumb{
+  width:16px;
+  height:16px;
+}
 </style>
-<header><small class="build-version build-version-corner">v363</small>
+<header><small class="build-version build-version-corner">v364</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7074,8 +7144,8 @@ window.addEventListener('load',function(){
     if(bc)bc.textContent=fmtLocal(c);
     if(ad&&d>0)ad.textContent=fmtLocal(d);
     if(bd&&d>0)bd.textContent=fmtLocal(d);
-    if(ar)ar.value=String(pct);
-    if(br)br.value=String(pct);
+    if(ar){ar.value=String(pct);ar.style.setProperty('--dc-range-pct',pct+'%');}
+    if(br){br.value=String(pct);br.style.setProperty('--dc-range-pct',pct+'%');}
   }
   function startTimer(){
     clearInterval(timer);
@@ -7163,8 +7233,8 @@ window.addEventListener('load',function(){
     var small=document.getElementById('audioRange');
     var big=document.getElementById('bigRange');
     ['input','change'].forEach(function(evt){
-      if(small)small.addEventListener(evt,function(e){seekPercent(e.target.value);});
-      if(big)big.addEventListener(evt,function(e){seekPercent(e.target.value);});
+      if(small)small.addEventListener(evt,function(e){small.style.setProperty('--dc-range-pct',e.target.value+'%');seekPercent(e.target.value);});
+      if(big)big.addEventListener(evt,function(e){big.style.setProperty('--dc-range-pct',e.target.value+'%');seekPercent(e.target.value);});
     });
 
     paint();
