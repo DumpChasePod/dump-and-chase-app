@@ -2869,6 +2869,9 @@ body::after{
   margin-top:0;
   margin-bottom:1px;
 }
+.v308-schedule-row .schedule-final-line{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.v308-schedule-row .schedule-final-line .result-outcome-pill{margin-right:0}
+.v308-schedule-row .schedule-final-score{font-size:11px;font-weight:950;color:#edf2f8;line-height:1}
 @media(max-width:390px){
   .v308-schedule-row .v306-game-opponent{font-size:11px}
 }
@@ -3083,7 +3086,7 @@ body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding
 body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
 @media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v338</small>
+<header><small class="build-version build-version-corner">v339</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3949,7 +3952,7 @@ function renderRecentResults(){
     : '<div class="gc-series-list v306-game-list">'+completedResults.slice(0,5).map(function(g){
         const parts=String(g.date||'').trim().toUpperCase().split(/\s+/);
         const dt=g.iso?new Date(g.iso):null;
-        const wd=dt&&!isNaN(dt)?weekdayShort(dt):'';
+        const wd=dt&&!isNaN(dt)?['SUN','MON','TUES','WED','THURS','FRI','SAT'][dt.getDay()]:'';
         const dateHtml=wd?'<small>'+escapeHtml(wd)+'</small><span>'+escapeHtml((parts[0]||'')+' '+(parts[1]||''))+'</span>':escapeHtml(g.date||'');
         const scheduleMatch=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===String(g.date||'').trim().toUpperCase()&&String(r.opponent||'').trim()===String(g.opponent||'').trim();});
         const role=String((scheduleMatch&&scheduleMatch.home_away)||g.homeAway||'').toUpperCase();
@@ -4367,7 +4370,7 @@ function scheduleHTML(monthIndex){
       var score=(db&&db.phantoms_score!=null&&db.opponent_score!=null)?String(db.phantoms_score)+'–'+String(db.opponent_score):(result?String(result.phantoms)+'–'+String(result.opponentScore):'');
       var statusHtml='';
       if(finalish){
-        statusHtml=(result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span>':'<span class="gc-series-status-pill">'+escapeHtml(status.replace('FINAL-','FINAL '))+'</span>')+(score?'<span>'+escapeHtml(score)+'</span>':'');
+        statusHtml='<span class="schedule-final-line">'+(result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span>':'<span class="gc-series-status-pill">'+escapeHtml(status.replace('FINAL-','FINAL '))+'</span>')+(score?'<span class="schedule-final-score">'+escapeHtml(score)+'</span>':'')+'</span>';
       }else if(status==='LIVE'){
         statusHtml='<span class="gc-series-status-pill live">LIVE</span>'+(score?'<span>'+escapeHtml(score)+'</span>':'');
       }else if(status==='POSTPONED'||status==='CANCELLED'){
@@ -4655,7 +4658,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="eyebrow">DUMP &amp; CHASE</div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
