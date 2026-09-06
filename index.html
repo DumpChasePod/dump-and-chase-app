@@ -4610,6 +4610,15 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   padding:4px 2px;
   font-size:13px;
 }
+#adminRecordPanel > .admin-record-grid .admin-record-points-auto{
+  display:block;
+}
+#adminRecordPanel > .admin-record-grid .admin-record-points-auto input{
+  width:100%;
+  text-align:center;
+  cursor:default;
+  opacity:.92;
+}
 #adminRecordPanel > .admin-record-pct{
   display:flex;
   align-items:center;
@@ -4834,7 +4843,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v407</small>
+<header><small class="build-version build-version-corner">v408</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6862,7 +6871,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
           <div class="admin-record-field"><label for="adminRecordL">Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordL',-1)">−</button><input id="adminRecordL" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordL',1)">+</button></div></div>
           <div class="admin-record-field"><label for="adminRecordOtl">OT Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordOtl',-1)">−</button><input id="adminRecordOtl" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordOtl',1)">+</button></div></div>
           <div class="admin-record-field"><label for="adminRecordSol">SO Losses</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordSol',-1)">−</button><input id="adminRecordSol" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordSol',1)">+</button></div></div>
-          <div class="admin-record-field"><label for="adminRecordPts">Points</label><div class="admin-score-stepper"><button type="button" onclick="stepAdminRecord('adminRecordPts',-1)">−</button><input id="adminRecordPts" inputmode="numeric" pattern="[0-9]*" value="0" oninput="updateAdminRecordPct()"><button type="button" onclick="stepAdminRecord('adminRecordPts',1)">+</button></div></div>
+          <div class="admin-record-field"><label for="adminRecordPts">Points</label><div class="admin-score-stepper admin-record-points-auto"><input id="adminRecordPts" inputmode="numeric" pattern="[0-9]*" value="0" readonly aria-readonly="true" title="Calculated automatically: 2 points per win, 1 per OT/SO loss"></div></div>
         </div>
         <div class="admin-record-pct"><span>Win %</span><b id="adminRecordPct">.000</b></div>
         <div class="admin-publish-bar">
@@ -7905,7 +7914,7 @@ function recordWithAdjustments(base,row){
 function renderAdminRecordControls(record){
   if(!document.getElementById('adminRecordGp'))return;
   record=record||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
-  [['adminRecordGp','gp'],['adminRecordW','w'],['adminRecordL','l'],['adminRecordOtl','otl'],['adminRecordSol','sol'],['adminRecordPts','pts']].forEach(function(pair){
+  [['adminRecordGp','gp'],['adminRecordW','w'],['adminRecordL','l'],['adminRecordOtl','otl'],['adminRecordSol','sol']].forEach(function(pair){
     var el=document.getElementById(pair[0]);
     if(el)el.value=String(Math.max(0,parseInt(record[pair[1]],10)||0));
   });
@@ -8079,18 +8088,20 @@ function adminRecordValues(){
     if(el)el.value=String(v);
     return v;
   }
-  return {
-    gp:n('adminRecordGp'),
-    w:n('adminRecordW'),
-    l:n('adminRecordL'),
-    otl:n('adminRecordOtl'),
-    sol:n('adminRecordSol'),
-    pts:n('adminRecordPts')
-  };
+  var gp=n('adminRecordGp'),
+      w=n('adminRecordW'),
+      l=n('adminRecordL'),
+      otl=n('adminRecordOtl'),
+      sol=n('adminRecordSol'),
+      pts=(w*2)+otl+sol;
+  var ptsEl=document.getElementById('adminRecordPts');
+  if(ptsEl)ptsEl.value=String(pts);
+  return {gp:gp,w:w,l:l,otl:otl,sol:sol,pts:pts};
 }
 function updateAdminRecordPct(){
+  var record=adminRecordValues();
   var pct=document.getElementById('adminRecordPct');
-  if(pct)pct.textContent=formatPhantomsPct(adminRecordValues());
+  if(pct)pct.textContent=formatPhantomsPct(record);
 }
 function stepAdminRecord(id,delta){
   var el=document.getElementById(id);
