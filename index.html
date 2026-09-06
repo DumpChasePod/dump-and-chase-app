@@ -3424,7 +3424,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   min-height:12px;
 }
 </style>
-<header><small class="build-version build-version-corner">v362</small>
+<header><small class="build-version build-version-corner">v363</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7024,6 +7024,159 @@ window.addEventListener('load',function(){
 })();
 </script>
 
+
+<script>
+/* v363 isolated audio controller: independent of main app startup */
+(function(){
+  var timer=0;
+
+  function audio(){ return document.getElementById('audio'); }
+  function fmtLocal(sec){
+    sec=Number(sec);
+    if(!Number.isFinite(sec)||sec<0)sec=0;
+    var m=Math.floor(sec/60), s=Math.floor(sec%60);
+    return m+':'+String(s).padStart(2,'0');
+  }
+  function feedDurationSeconds(){
+    var a=audio(), raw=a&&a.dataset ? String(a.dataset.feedDuration||'').trim() : '';
+    if(!raw)return 0;
+    if(/^\d+$/.test(raw))return Number(raw)||0;
+    var p=raw.split(':').map(Number);
+    if(p.some(function(n){return !Number.isFinite(n);}))return 0;
+    if(p.length===3)return p[0]*3600+p[1]*60+p[2];
+    if(p.length===2)return p[0]*60+p[1];
+    return 0;
+  }
+  function duration(){
+    var a=audio();
+    if(!a)return 0;
+    if(Number.isFinite(a.duration)&&a.duration>0)return a.duration;
+    try{
+      if(a.seekable&&a.seekable.length){
+        var end=a.seekable.end(a.seekable.length-1);
+        if(Number.isFinite(end)&&end>0)return end;
+      }
+    }catch(_){}
+    return feedDurationSeconds();
+  }
+  function current(){
+    var a=audio();
+    if(!a)return 0;
+    if(Number.isFinite(a.currentTime)&&a.currentTime>=0)return a.currentTime;
+    return 0;
+  }
+  function paint(){
+    var c=current(), d=duration(), pct=d>0?Math.max(0,Math.min(100,c/d*100)):0;
+    var ac=document.getElementById('audioCurrent'), bc=document.getElementById('bigCurrent');
+    var ad=document.getElementById('audioDuration'), bd=document.getElementById('bigDuration');
+    var ar=document.getElementById('audioRange'), br=document.getElementById('bigRange');
+    if(ac)ac.textContent=fmtLocal(c);
+    if(bc)bc.textContent=fmtLocal(c);
+    if(ad&&d>0)ad.textContent=fmtLocal(d);
+    if(bd&&d>0)bd.textContent=fmtLocal(d);
+    if(ar)ar.value=String(pct);
+    if(br)br.value=String(pct);
+  }
+  function startTimer(){
+    clearInterval(timer);
+    paint();
+    timer=setInterval(paint,250);
+  }
+  function stopTimer(){
+    clearInterval(timer);
+    timer=0;
+    paint();
+  }
+  function seekTo(sec){
+    var a=audio(), d=duration();
+    if(!a||!a.src)return;
+    sec=Number(sec);
+    if(!Number.isFinite(sec))return;
+    if(d>0)sec=Math.max(0,Math.min(d,sec));
+    else sec=Math.max(0,sec);
+    try{
+      a.currentTime=sec;
+    }catch(_){
+      setTimeout(function(){
+        try{a.currentTime=sec;}catch(__){}
+      },250);
+    }
+    setTimeout(paint,50);
+    setTimeout(paint,300);
+  }
+  function seekBy(delta){
+    seekTo(current()+Number(delta||0));
+  }
+  function seekPercent(value){
+    var d=duration();
+    if(!d)return;
+    var pct=Math.max(0,Math.min(100,Number(value)||0));
+    seekTo(d*pct/100);
+  }
+
+  window.seekAudio=function(seconds){ seekBy(seconds); };
+
+  window.toggleAudio=function(){
+    var a=audio();
+    if(!a||!a.src){
+      if(typeof toast==='function')toast('Choose an episode first.');
+      return;
+    }
+    var status=document.getElementById('playerStatus');
+    var screen=document.getElementById('playerScreen');
+    if(a.paused){
+      var playPromise=a.play();
+      if(playPromise&&typeof playPromise.then==='function'){
+        playPromise.then(function(){
+          var p1=document.getElementById('audioPlay'),p2=document.getElementById('bigPlay');
+          if(p1)p1.textContent='❚❚'; if(p2)p2.textContent='❚❚';
+          if(status)status.textContent='NOW PLAYING';
+          if(screen)screen.classList.remove('loaded-paused');
+          startTimer();
+        }).catch(function(){
+          if(typeof toast==='function')toast('Could not start this episode.');
+        });
+      }else{
+        startTimer();
+      }
+    }else{
+      a.pause();
+      var p1=document.getElementById('audioPlay'),p2=document.getElementById('bigPlay');
+      if(p1)p1.textContent='▶'; if(p2)p2.textContent='▶';
+      if(status)status.textContent='PAUSED';
+      if(screen)screen.classList.add('loaded-paused');
+      stopTimer();
+    }
+  };
+
+  function bind(){
+    var a=audio();
+    if(!a)return;
+
+    ['loadedmetadata','durationchange','canplay','timeupdate','progress','seeking','seeked','playing'].forEach(function(evt){
+      a.addEventListener(evt,paint);
+    });
+    a.addEventListener('play',startTimer);
+    a.addEventListener('pause',stopTimer);
+    a.addEventListener('ended',stopTimer);
+
+    var small=document.getElementById('audioRange');
+    var big=document.getElementById('bigRange');
+    ['input','change'].forEach(function(evt){
+      if(small)small.addEventListener(evt,function(e){seekPercent(e.target.value);});
+      if(big)big.addEventListener(evt,function(e){seekPercent(e.target.value);});
+    });
+
+    paint();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bind,{once:true});
+  }else{
+    bind();
+  }
+})();
+</script>
 </body>
 </html>
 
