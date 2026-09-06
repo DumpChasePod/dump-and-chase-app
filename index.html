@@ -3424,7 +3424,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   min-height:12px;
 }
 </style>
-<header><small class="build-version build-version-corner">v360</small>
+<header><small class="build-version build-version-corner">v362</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3568,7 +3568,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
   <button class="audio-btn" id="audioPlay" onclick="toggleAudio()">▶</button><button class="audio-btn reopen-audio" onclick="openFullPlayer()">↗</button>
   <button class="audio-btn secondary-audio" onclick="closePlayer()">✕</button>
-  <audio id="audio"></audio>
+  <audio id="audio" preload="metadata"></audio>
 </div>
 
 
@@ -4609,6 +4609,7 @@ function toggleAudio(){
    a.play().then(function(){
      document.getElementById('audioPlay').textContent='❚❚';document.getElementById('bigPlay').textContent='❚❚';
      if(status)status.textContent='NOW PLAYING';if(screen)screen.classList.remove('loaded-paused');
+     startAudioProgressTimer();
    }).catch(function(){toast('Could not start this episode.');});
  }else{
    a.pause();document.getElementById('audioPlay').textContent='▶';document.getElementById('bigPlay').textContent='▶';
@@ -4625,12 +4626,66 @@ function openFullPlayer(){
  document.getElementById('playerScreen').classList.add('show');
  document.getElementById('audioPlayer').classList.remove('show');
 }
+let dcPendingSeekTarget=null;
+
+function seekAudioToSeconds(target){
+  var a=liveAudio(),d=effectiveAudioDuration();
+  if(!a||!a.src)return false;
+  if(d>0)target=Math.max(0,Math.min(d,Number(target)||0));
+  else target=Math.max(0,Number(target)||0);
+
+  dcPendingSeekTarget=target;
+
+  var applySeek=function(){
+    var media=liveAudio();
+    if(!media)return false;
+    try{
+      if(typeof media.fastSeek==='function')media.fastSeek(target);
+      else media.currentTime=target;
+      dcPendingSeekTarget=null;
+      setTimeout(updateAudioProgress,60);
+      setTimeout(updateAudioProgress,220);
+      updateMediaSessionPosition();
+      return true;
+    }catch(_){
+      try{
+        media.currentTime=target;
+        dcPendingSeekTarget=null;
+        setTimeout(updateAudioProgress,80);
+        setTimeout(updateAudioProgress,260);
+        updateMediaSessionPosition();
+        return true;
+      }catch(__){}
+    }
+    return false;
+  };
+
+  if(a.readyState>=1 && applySeek())return true;
+
+  var retry=function(){
+    var media=liveAudio();
+    if(!media||dcPendingSeekTarget===null)return;
+    if(applySeek()){
+      ['loadedmetadata','canplay','loadeddata','durationchange'].forEach(function(evt){
+        media.removeEventListener(evt,retry);
+      });
+    }
+  };
+  ['loadedmetadata','canplay','loadeddata','durationchange'].forEach(function(evt){
+    a.addEventListener(evt,retry,{once:true});
+  });
+  try{a.load();}catch(_){}
+  return false;
+}
+
 function seekAudio(seconds){
- const a=document.getElementById('audio'),d=effectiveAudioDuration(); if(a.src&&d) a.currentTime=Math.max(0,Math.min(d,a.currentTime+seconds));
+  var a=liveAudio();
+  if(!a||!a.src)return;
+  seekAudioToSeconds(effectiveAudioCurrent()+Number(seconds||0));
 }
 function closePlayer(){document.getElementById('audio').pause();document.getElementById('audioPlayer').classList.remove('show');document.getElementById('playerScreen').classList.remove('show');}
 const audioEl=document.getElementById('audio');
-let dcAudioProgressFrame=0;
+let dcAudioProgressTimer=0;
 
 function parseEpisodeDurationSeconds(value){
   var text=String(value||'').trim();
@@ -4642,20 +4697,38 @@ function parseEpisodeDurationSeconds(value){
   if(parts.length===2)return parts[0]*60+parts[1];
   return 0;
 }
+function liveAudio(){
+  return document.getElementById('audio');
+}
 function effectiveAudioDuration(){
-  if(!audioEl)return 0;
-  if(Number.isFinite(audioEl.duration)&&audioEl.duration>0)return audioEl.duration;
+  var a=liveAudio();
+  if(!a)return 0;
+  if(Number.isFinite(a.duration)&&a.duration>0)return a.duration;
   try{
-    if(audioEl.seekable&&audioEl.seekable.length){
-      var end=audioEl.seekable.end(audioEl.seekable.length-1);
+    if(a.seekable&&a.seekable.length){
+      var end=a.seekable.end(a.seekable.length-1);
       if(Number.isFinite(end)&&end>0)return end;
     }
   }catch(_){}
-  return parseEpisodeDurationSeconds(audioEl.dataset.feedDuration||'');
+  return parseEpisodeDurationSeconds(a.dataset.feedDuration||'');
+}
+function effectiveAudioCurrent(){
+  var a=liveAudio();
+  if(!a)return 0;
+  var current=Number.isFinite(a.currentTime)?a.currentTime:0;
+  if(current>0)return current;
+  try{
+    if(a.played&&a.played.length){
+      var playedEnd=a.played.end(a.played.length-1);
+      if(Number.isFinite(playedEnd)&&playedEnd>0)return playedEnd;
+    }
+  }catch(_){}
+  return current;
 }
 function updateAudioProgress(){
-  if(!audioEl)return;
-  var current=Number.isFinite(audioEl.currentTime)?audioEl.currentTime:0;
+  var a=liveAudio();
+  if(!a)return;
+  var current=effectiveAudioCurrent();
   var duration=effectiveAudioDuration();
   var pct=duration>0?Math.max(0,Math.min(100,current/duration*100)):0;
   var ac=document.getElementById('audioCurrent'),bc=document.getElementById('bigCurrent');
@@ -4665,26 +4738,76 @@ function updateAudioProgress(){
   if(bc)bc.textContent=fmt(current);
   if(ad&&duration>0)ad.textContent=fmt(duration);
   if(bd&&duration>0)bd.textContent=fmt(duration);
-  if(ar)ar.value=pct;
-  if(br)br.value=pct;
+  if(ar&&!ar.matches(':active'))ar.value=pct;
+  if(br&&!br.matches(':active'))br.value=pct;
 }
-function runAudioProgressLoop(){
-  cancelAnimationFrame(dcAudioProgressFrame);
-  function tick(){
+function startAudioProgressTimer(){
+  clearInterval(dcAudioProgressTimer);
+  updateAudioProgress();
+  updateMediaSessionPosition();
+  dcAudioProgressTimer=setInterval(function(){
     updateAudioProgress();
-    if(audioEl&&!audioEl.paused&&!audioEl.ended)dcAudioProgressFrame=requestAnimationFrame(tick);
-  }
-  tick();
+    updateMediaSessionPosition();
+  },250);
 }
-['loadedmetadata','durationchange','canplay','progress','timeupdate','seeking','seeked'].forEach(function(evt){
-  audioEl?.addEventListener(evt,updateAudioProgress);
+function stopAudioProgressTimer(){
+  clearInterval(dcAudioProgressTimer);
+  dcAudioProgressTimer=0;
+  updateAudioProgress();
+}
+function setAudioPositionFromPercent(value){
+  var duration=effectiveAudioDuration();
+  if(!duration)return;
+  var pct=Math.max(0,Math.min(100,Number(value)||0));
+  seekAudioToSeconds((pct/100)*duration);
+}
+function updateMediaSessionPosition(){
+  var a=liveAudio();
+  if(!a||!('mediaSession' in navigator)||typeof navigator.mediaSession.setPositionState!=='function')return;
+  var d=effectiveAudioDuration(),c=effectiveAudioCurrent();
+  if(!(d>0))return;
+  try{
+    navigator.mediaSession.setPositionState({
+      duration:d,
+      playbackRate:a.playbackRate||1,
+      position:Math.max(0,Math.min(d,c))
+    });
+  }catch(_){}
+}
+function setupMediaSessionSeeking(){
+  if(!('mediaSession' in navigator)||!navigator.mediaSession)return;
+  try{
+    navigator.mediaSession.setActionHandler('seekbackward',function(details){
+      seekAudio(-(details&&details.seekOffset?details.seekOffset:15));
+    });
+  }catch(_){}
+  try{
+    navigator.mediaSession.setActionHandler('seekforward',function(details){
+      seekAudio(details&&details.seekOffset?details.seekOffset:30);
+    });
+  }catch(_){}
+  try{
+    navigator.mediaSession.setActionHandler('seekto',function(details){
+      if(details&&Number.isFinite(details.seekTime))seekAudioToSeconds(details.seekTime);
+    });
+  }catch(_){}
+}
+setupMediaSessionSeeking();
+
+['loadedmetadata','durationchange','canplay','progress','timeupdate','seeking','seeked','playing'].forEach(function(evt){
+  audioEl?.addEventListener(evt,function(){
+    updateAudioProgress();
+    updateMediaSessionPosition();
+  });
 });
-audioEl?.addEventListener('play',runAudioProgressLoop);
-audioEl?.addEventListener('pause',function(){cancelAnimationFrame(dcAudioProgressFrame);updateAudioProgress();});
-audioEl?.addEventListener('ended',()=>{cancelAnimationFrame(dcAudioProgressFrame);updateAudioProgress();document.getElementById('audioPlay').textContent='▶';document.getElementById('bigPlay').textContent='▶';var st=document.getElementById('playerStatus');if(st)st.textContent='FINISHED';document.getElementById('playerScreen')?.classList.add('loaded-paused')});
+audioEl?.addEventListener('play',function(){startAudioProgressTimer();try{if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing';}catch(_){} updateMediaSessionPosition();});
+audioEl?.addEventListener('pause',function(){stopAudioProgressTimer();try{if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';}catch(_){} updateMediaSessionPosition();});
+audioEl?.addEventListener('ended',()=>{stopAudioProgressTimer();document.getElementById('audioPlay').textContent='▶';document.getElementById('bigPlay').textContent='▶';var st=document.getElementById('playerStatus');if(st)st.textContent='FINISHED';document.getElementById('playerScreen')?.classList.add('loaded-paused')});
 audioEl?.addEventListener('error',()=>toast('This episode audio could not be loaded.'));
-document.getElementById('audioRange')?.addEventListener('input',e=>{var d=effectiveAudioDuration();if(d)audioEl.currentTime=(e.target.value/100)*d});
-document.getElementById('bigRange')?.addEventListener('input',e=>{var d=effectiveAudioDuration();if(d)audioEl.currentTime=(e.target.value/100)*d});
+['input','change'].forEach(function(evt){
+  document.getElementById('audioRange')?.addEventListener(evt,e=>setAudioPositionFromPercent(e.target.value));
+  document.getElementById('bigRange')?.addEventListener(evt,e=>setAudioPositionFromPercent(e.target.value));
+});
 function fmt(s){if(!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`}
 
 
