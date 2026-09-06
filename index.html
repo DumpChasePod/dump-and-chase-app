@@ -3457,23 +3457,39 @@ body.game-live #publicGameDayCard .gameday-status{
   animation:adminSoGoalPulse .72s ease-in-out infinite alternate;
 }
 #adminSoTestPanel #adminSoPublicCard.admin-so-goalfx-opponent{
-  background:linear-gradient(135deg,#373a3f,#22262b 62%,#30343a);
-  border:1px solid #565d66;
-  border-left:3px solid #7f8791;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,255,255,.07),transparent 43%),
+    var(--admin-so-opponent-goal-bg,#3a3032);
+  border:1px solid var(--admin-so-opponent-goal-border,#625458);
+  border-left:3px solid var(--admin-so-opponent-goal-border,#625458);
   box-shadow:inset -3px 0 0 rgba(255,255,255,.04);
 }
 #adminSoTestPanel .admin-so-goalfx-stage-opponent{
   min-height:210px;
+  gap:8px;
+}
+#adminSoTestPanel .admin-so-opponent-logo-wrap{
+  width:104px;
+  height:104px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  filter:drop-shadow(0 5px 9px rgba(0,0,0,.28));
+}
+#adminSoTestPanel .admin-so-opponent-logo-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
 #adminSoTestPanel .admin-so-goalfx-opponent-word{
   padding:0 18px;
-  font-size:28px;
-  line-height:1.08;
+  font-size:30px;
+  line-height:1;
   font-weight:1000;
-  letter-spacing:.05em;
+  letter-spacing:.08em;
   text-transform:uppercase;
-  color:#e5e8ec;
-  text-shadow:0 2px 0 rgba(0,0,0,.28);
+  color:#f0f1f2;
+  text-shadow:0 2px 0 rgba(0,0,0,.32);
 }
 @keyframes adminSoBeaconSpin{
   0%{transform:perspective(110px) rotateY(0deg)}
@@ -3491,7 +3507,7 @@ body.game-live #publicGameDayCard .gameday-status{
 @media(max-width:420px){
   #adminSoTestPanel .admin-so-goalfx-grid{grid-template-columns:1fr}
   #adminSoTestPanel .admin-so-goalfx-word{font-size:38px}
-  #adminSoTestPanel .admin-so-goalfx-opponent-word{font-size:24px}
+  #adminSoTestPanel .admin-so-goalfx-opponent-word{font-size:26px}
 }
 </style>
 
@@ -4582,7 +4598,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v391</small>
+<header><small class="build-version build-version-corner">v392</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7117,6 +7133,15 @@ function adminSoTestPublishLive(){
   adminSoTestRender();
 }
 
+function adminSoTestOpponentGoalStyle(){
+  /* Dummy opponent is Muskegon. Use a muted version of the club logo's primary red. */
+  return {
+    team:'Muskegon Lumberjacks',
+    bg:'#4a2529',
+    border:'#765056'
+  };
+}
+
 function adminSoTestGoalFx(team,duration,label){
   if(dcAdminSoTest.goalFxTimer){
     clearTimeout(dcAdminSoTest.goalFxTimer);
@@ -7261,6 +7286,8 @@ function adminSoTestRender(){
   if(publicCard){
     if(dcAdminSoTest.goalFx){
       if(dcAdminSoTest.goalFx.team==='youngstown'){
+        publicCard.style.removeProperty('--admin-so-opponent-goal-bg');
+        publicCard.style.removeProperty('--admin-so-opponent-goal-border');
         publicCard.className='card gameday-card admin-so-live-card admin-so-goalfx-card admin-so-goalfx-phantoms';
         publicCard.innerHTML=
           '<div class="admin-so-goalfx-stage">'+
@@ -7268,15 +7295,21 @@ function adminSoTestRender(){
             '<div class="admin-so-goalfx-word">GOAL!</div>'+
           '</div>';
       }else{
+        var opponentGoalStyle=adminSoTestOpponentGoalStyle();
         publicCard.className='card gameday-card admin-so-live-card admin-so-goalfx-card admin-so-goalfx-opponent';
+        publicCard.style.setProperty('--admin-so-opponent-goal-bg',opponentGoalStyle.bg);
+        publicCard.style.setProperty('--admin-so-opponent-goal-border',opponentGoalStyle.border);
         publicCard.innerHTML=
           '<div class="admin-so-goalfx-stage admin-so-goalfx-stage-opponent">'+
-            '<div class="admin-so-goalfx-opponent-word">'+dcAdminSoTest.goalFx.label+'</div>'+
+            '<div class="admin-so-opponent-logo-wrap">'+matchupLogo(opponentGoalStyle.team)+'</div>'+
+            '<div class="admin-so-goalfx-opponent-word">GOAL</div>'+
           '</div>';
       }
       return;
     }
 
+    publicCard.style.removeProperty('--admin-so-opponent-goal-bg');
+    publicCard.style.removeProperty('--admin-so-opponent-goal-border');
     publicCard.className='card gameday-card admin-so-live-card';
     var inShootout=dcAdminSoTest.publicMode==='shootout';
     var publicRound=Math.max(y.length,o.length)+1;
