@@ -3285,6 +3285,77 @@ body.game-live #publicGameDayCard .gameday-status{
 }
 </style>
 
+
+<style>
+/* v388: compact shootout turn indicators */
+#adminSoTestPanel .admin-so-summary small{
+  display:block;
+  margin-top:2px;
+  font-size:7.5px;
+  font-weight:800;
+  letter-spacing:.045em;
+  opacity:.52;
+}
+#adminSoTestPanel .admin-so-team-head span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+}
+#adminSoTestPanel .admin-so-next-pill{
+  display:none;
+  padding:2px 5px;
+  border-radius:999px;
+  border:1px solid rgba(165,108,255,.55);
+  background:rgba(165,108,255,.12);
+  color:#c6a4ff;
+  font-size:6.5px;
+  font-style:normal;
+  font-weight:950;
+  letter-spacing:.08em;
+  line-height:1.2;
+}
+#adminSoTestPanel .admin-so-next-pill.show{display:inline-flex}
+#adminSoTestPanel #adminSoPublicCard .admin-so-public-next{
+  display:none;
+  margin:5px auto 0;
+  width:max-content;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(165,108,255,.55);
+  background:rgba(165,108,255,.12);
+  color:#c6a4ff;
+  font-size:6.5px;
+  font-weight:950;
+  letter-spacing:.08em;
+  line-height:1.2;
+}
+#adminSoTestPanel #adminSoPublicCard .admin-so-public-next.show{display:block}
+</style>
+
+
+<style>
+/* v389: selectable first shooter in isolated shootout test */
+#adminSoTestPanel .admin-so-first-shooter{
+  margin-bottom:10px;
+}
+#adminSoTestPanel .admin-so-first-shooter>span{
+  display:block;
+  margin-bottom:5px;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.085em;
+  opacity:.58;
+}
+#adminSoTestPanel .admin-so-first-shooter .admin-chip-row{
+  grid-template-columns:1fr 1fr;
+}
+#adminSoTestPanel .admin-so-first-shooter .admin-chip:disabled{
+  opacity:.48;
+  cursor:default;
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4326,7 +4397,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v387</small>
+<header><small class="build-version build-version-corner">v389</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6368,14 +6439,21 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 
   <div class="admin-group-title">SHOOTOUT TRACKER</div>
   <div class="admin-so-tracker">
+    <div class="admin-so-first-shooter">
+      <span>FIRST SHOOTER</span>
+      <div class="admin-chip-row">
+        <button type="button" class="admin-chip active" id="adminSoFirstYoungstown" onclick="adminSoTestSetFirst('youngstown')">YOUNGSTOWN</button>
+        <button type="button" class="admin-chip" id="adminSoFirstOpponent" onclick="adminSoTestSetFirst('opponent')">OPPONENT</button>
+      </div>
+    </div>
     <div class="admin-so-summary">
-      <div id="adminSoTestStatus">Round 1 · Youngstown shoots next</div>
+      <div><div id="adminSoTestStatus">Round 1 · Youngstown shoots next</div><small id="adminSoFirstShooter">Youngstown shoots first</small></div>
       <b id="adminSoTestScore">0 – 0</b>
     </div>
 
     <div class="admin-so-teams">
       <div class="admin-so-team-card">
-        <div class="admin-so-team-head"><span>YOUNGSTOWN</span><b id="adminSoTestYGoals">0</b></div>
+        <div class="admin-so-team-head"><span>YOUNGSTOWN <em class="admin-so-next-pill" id="adminSoNextYoungstown">NEXT</em></span><b id="adminSoTestYGoals">0</b></div>
         <div class="admin-so-attempts" id="adminSoTestYAttempts"><span class="admin-so-empty">No attempts yet</span></div>
         <div class="admin-so-actions">
           <button type="button" class="btn primary" onclick="adminSoTestAttempt('youngstown',true)">GOAL</button>
@@ -6384,7 +6462,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
 
       <div class="admin-so-team-card">
-        <div class="admin-so-team-head"><span>OPPONENT</span><b id="adminSoTestOGoals">0</b></div>
+        <div class="admin-so-team-head"><span>OPPONENT <em class="admin-so-next-pill" id="adminSoNextOpponent">NEXT</em></span><b id="adminSoTestOGoals">0</b></div>
         <div class="admin-so-attempts" id="adminSoTestOAttempts"><span class="admin-so-empty">No attempts yet</span></div>
         <div class="admin-so-actions">
           <button type="button" class="btn primary" onclick="adminSoTestAttempt('opponent',true)">GOAL</button>
@@ -6743,6 +6821,14 @@ function adminSoTestNextTeam(){
   return adminSoTestOther(dcAdminSoTest.attempts[dcAdminSoTest.attempts.length-1].team);
 }
 
+function adminSoTestSetFirst(team){
+  if(dcAdminSoTest.attempts.length)return;
+  dcAdminSoTest.first=team==='opponent'?'opponent':'youngstown';
+  dcAdminSoTest.status='live';
+  dcAdminSoTest.result='';
+  adminSoTestRender();
+}
+
 function adminSoTestDecision(){
   var y=adminSoTestTeamAttempts('youngstown'),o=adminSoTestTeamAttempts('opponent');
   var yg=adminSoTestGoals('youngstown'),og=adminSoTestGoals('opponent');
@@ -6814,6 +6900,7 @@ function adminSoTestPublicTeam(team,label,homeAway,attemptTeam){
     '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
     '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
     '<div class="homeaway">'+homeAway+'</div>'+
+    '<div class="admin-so-public-next" id="adminSoPublicNext-'+attemptTeam+'">NEXT</div>'+
     adminSoPublicAttemptMarks(attemptTeam)+
   '</div>';
 }
@@ -6843,10 +6930,26 @@ function adminSoTestRender(){
   var result=document.getElementById('adminSoTestResult');
   var gameY=document.getElementById('adminSoTestGameYScore');
   var gameO=document.getElementById('adminSoTestGameOScore');
+  var nextY=document.getElementById('adminSoNextYoungstown');
+  var nextO=document.getElementById('adminSoNextOpponent');
+  var firstShooter=document.getElementById('adminSoFirstShooter');
+  var firstYBtn=document.getElementById('adminSoFirstYoungstown');
+  var firstOBtn=document.getElementById('adminSoFirstOpponent');
 
   if(ygEl)ygEl.textContent=yg;
   if(ogEl)ogEl.textContent=og;
   if(score)score.textContent=yg+' – '+og;
+  if(firstShooter)firstShooter.textContent=(dcAdminSoTest.first==='youngstown'?'Youngstown':'Opponent')+' shoots first';
+  if(firstYBtn){
+    firstYBtn.classList.toggle('active',dcAdminSoTest.first==='youngstown');
+    firstYBtn.disabled=dcAdminSoTest.attempts.length>0;
+  }
+  if(firstOBtn){
+    firstOBtn.classList.toggle('active',dcAdminSoTest.first==='opponent');
+    firstOBtn.disabled=dcAdminSoTest.attempts.length>0;
+  }
+  if(nextY)nextY.classList.toggle('show',!winner&&next==='youngstown');
+  if(nextO)nextO.classList.toggle('show',!winner&&next==='opponent');
 
   var baseY=Number(dcAdminSoTest.baseGameScore.youngstown||0);
   var baseO=Number(dcAdminSoTest.baseGameScore.opponent||0);
@@ -6895,6 +6998,11 @@ function adminSoTestRender(){
       '</div>'+
       '<div class="gameday-meta gameday-venue">Covelli Centre — Youngstown, OH</div>'+
       '<button type="button" class="box-score-btn gameday-box-score" disabled>USHL BOX SCORE</button>';
+
+    var publicNextY=document.getElementById('adminSoPublicNext-youngstown');
+    var publicNextO=document.getElementById('adminSoPublicNext-opponent');
+    if(publicNextY)publicNextY.classList.toggle('show',dcAdminSoTest.status!=='final'&&next==='youngstown');
+    if(publicNextO)publicNextO.classList.toggle('show',dcAdminSoTest.status!=='final'&&next==='opponent');
   }
 }
 
