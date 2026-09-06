@@ -3769,7 +3769,35 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 }
 
 
-/* v376 desktop responsive layout polish */
+
+/* v377: Game Center batch polish */
+#adminGameDayPanel .admin-publish-bar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:6px;
+}
+#adminGameDayPanel .admin-publish-bar .admin-live-preview,
+#adminGameDayPanel .admin-publish-bar .admin-publish-status{
+  grid-column:1 / -1;
+}
+#adminGameDayPanel .admin-publish-bar .btn{
+  width:100%;
+  min-width:0;
+  margin:0;
+}
+#adminGameDayPanel .admin-publish-bar .admin-leave-unpublished{
+  margin-top:0;
+  min-height:36px;
+  padding:7px 6px;
+  font-size:9px;
+}
+/* Home: give the latest-episode CTA a clearly defined edge. */
+#heroLatestEpisodePlay{
+  border:1px solid rgba(196,164,255,.72)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* v377 desktop responsive layout polish (from v376) */
 @media (min-width: 960px){
   body{
     padding-bottom:112px;
@@ -3944,7 +3972,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v376</small>
+<header><small class="build-version build-version-corner">v377</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4239,6 +4267,7 @@ function updateAdminGameDayPreview(){
   var op=Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0);
   var row=null;try{if(typeof adminActiveScheduleRow==='function')row=adminActiveScheduleRow();}catch(_){}
   var opponent=adminPreviewCityName(row&&row.opponent||'Opponent');
+  var opponentScoreLabel=document.getElementById('adminOpponentScoreLabel');if(opponentScoreLabel)opponentScoreLabel.textContent=opponent;
   var role=String(row&&row.home_away||'').toUpperCase();
   var phHome=role==='HOME';
   var leftTeam=phHome?opponent:'Youngstown', rightTeam=phHome?'Youngstown':opponent;
@@ -5808,7 +5837,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <input id="adminEmptyNet" type="hidden" value="">
       <div class="admin-score-card admin-status-group admin-live-controls">
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="phantoms" onclick="setAdminEmptyNet('phantoms')">EMPTY NET</button></div></div>
-        <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
+        <div class="admin-score-team"><label for="adminOpponentScore" id="adminOpponentScoreLabel">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
       </div>
       <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-readout" id="adminClockReadout" aria-live="polite">20:00</div><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div></div>
       <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
