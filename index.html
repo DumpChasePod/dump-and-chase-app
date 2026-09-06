@@ -3767,8 +3767,184 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   border-color:#334054;
   background:rgba(255,255,255,.025);
 }
+
+
+/* v376 desktop responsive layout polish */
+@media (min-width: 960px){
+  body{
+    padding-bottom:112px;
+  }
+  header{
+    padding-left:max(28px,calc((100vw - 1180px)/2 + 20px));
+    padding-right:max(28px,calc((100vw - 1180px)/2 + 20px));
+  }
+  .home-headlines{
+    width:min(1180px,calc(100% - 56px));
+    margin-left:auto;
+    margin-right:auto;
+  }
+  main#home{
+    width:min(1180px,calc(100% - 56px));
+    margin:0 auto;
+    padding:0;
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:18px;
+    align-items:start;
+    grid-auto-flow:row dense;
+  }
+  #home > *{
+    min-width:0;
+  }
+  #home #gameDaySection,
+  #home #gameDayPanel,
+  #home #meetHosts,
+  #home .admin-footer{
+    grid-column:1 / -1;
+  }
+  #home #latestPodcastHero{
+    grid-column:span 8;
+    margin-top:10px;
+    min-height:245px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  #home .listen-platforms{
+    grid-column:span 4;
+    margin:10px 0 0;
+    min-height:245px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  #home .listen-platforms-row{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  #home .listen-platform{
+    min-height:48px;
+  }
+  #home .phan-qa-schedule-style{
+    grid-column:span 4;
+    margin-top:0;
+    min-height:100%;
+    align-content:center;
+  }
+  #home #nextGameHero{
+    grid-column:span 8;
+    margin-top:0;
+    min-height:100%;
+  }
+  #meetHosts .hosts-compact{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+  }
+  #meetHosts .host-compact-card{
+    margin:0;
+    height:100%;
+  }
+
+  .bottomnav.nav-v200{
+    width:min(820px,calc(100% - 56px));
+    padding:7px 10px;
+  }
+  .bottomnav.nav-v200 .navitem{
+    min-height:54px;
+  }
+
+  .modal{
+    place-items:center;
+    padding:32px;
+  }
+  .sheet{
+    width:min(1120px,calc(100vw - 64px));
+    max-height:88vh;
+    border-radius:24px;
+    padding:24px 26px 28px;
+    box-shadow:0 28px 80px rgba(0,0,0,.55);
+  }
+  .sheethead{
+    position:sticky;
+    top:-24px;
+    z-index:30;
+    margin:-24px -26px 18px;
+    padding:20px 26px 14px;
+    background:linear-gradient(#111925 82%,rgba(17,25,37,.92));
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+
+  #sheetBody .episode-archive{
+    max-width:none;
+  }
+  #sheetBody .episode-sticky-controls{
+    top:56px;
+  }
+  #episodeList{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    align-items:start;
+  }
+  #episodeList .episode-featured{
+    grid-column:1 / -1;
+  }
+  #episodeList .episode-card{
+    margin-bottom:0;
+    height:100%;
+  }
+
+  #sheetBody .more-stack{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  #sheetBody .more-stack .more-card{
+    margin:0;
+    height:100%;
+  }
+  #sheetBody .more-stack .social-follow-card{
+    grid-column:1 / -1;
+  }
+  #sheetBody .install-card{
+    margin-top:12px;
+  }
+
+  #sheetBody .gamecenter-roster-card .roster-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:20px;
+    row-gap:0;
+  }
+  #sheetBody .gamecenter-roster-card .roster-player{
+    min-height:62px;
+  }
+  #sheetBody #gcScheduleCard .sched{
+    grid-template-columns:84px minmax(0,1fr) 150px;
+    column-gap:18px;
+  }
+  #sheetBody .gc-series-card,
+  #sheetBody > .card,
+  #sheetBody .phan-qa-card,
+  #sheetBody #gcScheduleCard,
+  #sheetBody .gamecenter-roster-card,
+  #sheetBody .gc-news-card-compact{
+    max-width:none;
+  }
+
+  .audio-player{
+    width:min(900px,calc(100% - 56px));
+  }
+}
+
+@media (min-width: 1240px){
+  #home #latestPodcastHero h1{
+    font-size:54px;
+  }
+  .sheet{
+    width:min(1180px,calc(100vw - 80px));
+  }
+}
 </style>
-<header><small class="build-version build-version-corner">v375</small>
+<header><small class="build-version build-version-corner">v376</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
