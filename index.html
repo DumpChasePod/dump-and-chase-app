@@ -3146,8 +3146,200 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 #sheetBody .gamecenter-roster-card .roster-position-buttons{margin-top:0}
 #sheetBody .gc-news-card-compact{padding:14px 16px}
 #sheetBody .gc-news-card-compact .btn{width:100%;display:flex;align-items:center;justify-content:center}
+
+/* v354 Episodes redesign */
+.episode-archive{padding-bottom:10px}
+.episode-year-bar{
+  gap:8px;
+  padding:1px 0 12px;
+  margin-bottom:0;
+}
+.episode-year-btn{
+  min-height:44px;
+  border-radius:13px;
+  border-color:#2a394d;
+  background:linear-gradient(145deg,#111a26,#0f1722);
+  font-size:11px;
+}
+.episode-year-btn.active{
+  color:#fff;
+  background:linear-gradient(145deg,rgba(139,77,255,.30),rgba(94,48,153,.22));
+  border-color:#935cff;
+  box-shadow:0 0 0 1px rgba(139,82,255,.12) inset,0 7px 20px rgba(78,36,145,.15);
+}
+.episode-tools{
+  margin:0 0 13px;
+  padding:0;
+}
+.episode-search{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  height:44px;
+  padding:0 13px;
+  border:1px solid #2a394d;
+  border-radius:13px;
+  background:linear-gradient(145deg,rgba(139,77,255,.055),#101722 45%);
+}
+.episode-search:focus-within{
+  border-color:rgba(147,92,255,.72);
+  box-shadow:0 0 0 2px rgba(139,82,255,.08);
+}
+.episode-search-icon{
+  flex:0 0 auto;
+  color:#a56cff;
+  font-size:20px;
+  line-height:1;
+  transform:translateY(-1px);
+}
+.episode-search input{
+  width:100%;
+  min-width:0;
+  border:0;
+  outline:0;
+  padding:0;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+  font-size:12px;
+  font-weight:750;
+}
+.episode-search input::placeholder{color:#738094}
+.episode-search input::-webkit-search-cancel-button{filter:invert(.7)}
+.episode-year-summary{
+  min-height:0;
+  margin:9px 2px 0;
+  text-align:center;
+  color:#8e9aac;
+  font-size:9.5px;
+  font-weight:900;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+}
+#episodeList{
+  display:grid;
+  gap:11px;
+}
+#episodeList .episode-card{
+  position:relative;
+  overflow:hidden;
+  margin:0;
+  padding:15px 16px;
+  border-color:rgba(139,82,255,.20);
+  background:linear-gradient(145deg,rgba(139,77,255,.045),#101722 40%,rgba(63,38,93,.035));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.015);
+}
+#episodeList .episode-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:14px;
+  bottom:14px;
+  width:2px;
+  border-radius:2px;
+  background:rgba(165,108,255,.28);
+}
+#episodeList .episode-card-top{
+  margin-bottom:7px;
+  gap:8px;
+}
+#episodeList .episode-date{
+  color:#a56cff;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#episodeList .episode-title{
+  margin:0 0 7px;
+  font-size:16px;
+  line-height:1.25;
+}
+#episodeList .episode-desc{
+  font-size:11.5px;
+  line-height:1.48;
+  -webkit-line-clamp:2;
+}
+#episodeList .episode-card-footer{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:9px;
+  align-items:stretch;
+  margin-top:12px;
+}
+#episodeList .episode-listen{
+  width:100%!important;
+  min-width:0;
+  min-height:42px;
+  padding:10px 14px!important;
+  border-radius:12px;
+}
+#episodeList .episode-duration{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  padding:0 10px;
+  border:1px solid #273548;
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+  color:#91a0b4;
+  font-size:10px;
+  font-weight:900;
+}
+#episodeList .episode-featured{
+  padding:18px 17px;
+  border-color:rgba(151,86,255,.50);
+  background:
+    radial-gradient(circle at 94% 0%,rgba(139,77,255,.18),transparent 38%),
+    linear-gradient(145deg,rgba(139,77,255,.14),#111925 48%,rgba(52,31,76,.13));
+  box-shadow:0 10px 28px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.025);
+}
+#episodeList .episode-featured::before{
+  width:3px;
+  top:15px;
+  bottom:15px;
+  background:#9b61ff;
+}
+#episodeList .episode-featured .episode-latest{
+  padding:5px 8px;
+  color:#eadfff;
+  border-color:rgba(166,108,255,.48);
+  background:rgba(139,82,255,.20);
+}
+#episodeList .episode-featured .episode-title{
+  margin-bottom:9px;
+  font-size:19px;
+  line-height:1.2;
+}
+#episodeList .episode-featured .episode-desc{
+  font-size:12px;
+  line-height:1.5;
+  -webkit-line-clamp:3;
+}
+#episodeList .episode-featured .episode-card-footer{
+  margin-top:14px;
+}
+#episodeList .episode-featured .episode-listen{
+  min-height:47px;
+  font-size:12px;
+}
+.episode-empty-search{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  padding:18px 16px;
+  text-align:center;
+  color:#d6dce5;
+  background:linear-gradient(145deg,rgba(139,77,255,.05),#101722);
+}
+.episode-empty-search span{
+  color:#8491a3;
+  font-size:11px;
+  line-height:1.45;
+}
 </style>
-<header><small class="build-version build-version-corner">v353</small>
+<header><small class="build-version build-version-corner">v354</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3710,7 +3902,13 @@ function openSheet(type){
    title.textContent='Episodes';
    body.innerHTML=`<div class="episode-archive">
      <div class="episode-year-bar" id="episodeYearBar"></div>
-     <div class="episode-year-summary" id="episodeYearSummary"></div>
+     <div class="episode-tools">
+       <label class="episode-search" aria-label="Search episodes">
+         <span class="episode-search-icon" aria-hidden="true">⌕</span>
+         <input id="episodeSearchInput" type="search" inputmode="search" autocomplete="off" placeholder="Search episodes…" oninput="filterEpisodeArchive(this.value)">
+       </label>
+       <div class="episode-year-summary" id="episodeYearSummary"></div>
+     </div>
      <div id="episodeList"><div class="card feed-state-card" role="status" aria-live="polite"><p><span class="feed-loading-dot"></span>Loading the Dump &amp; Chase archive…</p></div></div>
    </div>`;
    setTimeout(refreshFeed,50);
@@ -3767,7 +3965,7 @@ function episodeCard(e,isLatest){
  const date=escapeHtml(e.date||'');
  const duration=escapeHtml(formatEpisodeDuration(e.duration));
  const desc=escapeHtml(e.desc||'');
- return `<article class="card episode-card" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
+ return `<article class="card episode-card${isLatest?' episode-featured':''}" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
    <div class="episode-card-top">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
    <h3 class="episode-title">${escapeHtml(e.title||'Dump & Chase Podcast')}</h3>
    <p class="episode-desc">${desc}</p>
@@ -3836,6 +4034,7 @@ function cleanEpisodeDescription(raw){
 }
 let dcEpisodeArchive=[];
 let dcEpisodeSelectedYear=null;
+let dcEpisodeSearchQuery='';
 
 function episodeYear(item){
   var d=new Date(item.pubDateRaw||item.date||'');
@@ -3865,11 +4064,34 @@ function renderEpisodeArchive(year){
   }).join('');
 
   var selected=dcEpisodeArchive.filter(function(item){return episodeYear(item)===dcEpisodeSelectedYear;});
-  if(summary)summary.textContent=selected.length+' episode'+(selected.length===1?'':'s')+' from '+dcEpisodeSelectedYear;
+  var query=String(dcEpisodeSearchQuery||'').trim().toLowerCase();
+  var filtered=query?selected.filter(function(item){
+    return [item.title,item.desc,item.date].join(' ').toLowerCase().indexOf(query)!==-1;
+  }):selected;
 
-  list.innerHTML=selected.map(function(e){
+  if(summary){
+    summary.textContent=query
+      ? filtered.length+' match'+(filtered.length===1?'':'es')+' in '+dcEpisodeSelectedYear
+      : selected.length+' episode'+(selected.length===1?'':'s')+' • '+dcEpisodeSelectedYear;
+  }
+
+  if(!filtered.length){
+    list.innerHTML='<div class="card episode-empty-search"><strong>No matches in '+dcEpisodeSelectedYear+'.</strong><span>Try another search or choose a different year.</span></div>';
+    return;
+  }
+
+  list.innerHTML=filtered.map(function(e){
     return episodeCard(e,dcEpisodeArchive.length>0&&e===dcEpisodeArchive[0]);
   }).join('');
+}
+function filterEpisodeArchive(value){
+  dcEpisodeSearchQuery=String(value||'');
+  renderEpisodeArchive(dcEpisodeSelectedYear);
+  var input=document.getElementById('episodeSearchInput');
+  if(input){
+    input.value=dcEpisodeSearchQuery;
+    try{input.focus({preventScroll:true});}catch(e){}
+  }
 }
 function selectEpisodeYear(year){
   renderEpisodeArchive(Number(year));
