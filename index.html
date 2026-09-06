@@ -4761,7 +4761,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v394</small>
+<header><small class="build-version build-version-corner">v395</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -9655,6 +9655,11 @@ function dcRenderPublicShootout(box,g,st){
 /* Decorate the existing proven Game Day renderer rather than replacing its normal-game logic. */
 var dcBaseRenderPublicGameDay=renderPublicGameDay;
 renderPublicGameDay=function(){
+  var preBox=document.getElementById('publicGameDayCard');
+  if(preBox){
+    preBox.className='card gameday-card';
+    preBox.style.cssText='';
+  }
   dcBaseRenderPublicGameDay();
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
