@@ -3067,18 +3067,20 @@ body.game-live #publicGameDayCard .gameday-period{margin:0;font-size:11px;font-w
 /* v333 Game Day scoreboard PP alignment hotfix */
 #adminGameDayPanel .admin-status-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:100%}
 #adminGameDayPanel .admin-status-flow .admin-chip{width:100%;min-width:0}
-#adminGameDayPanel .admin-score-team .admin-pp-btn{display:block;width:100%;margin-top:6px;min-height:29px;padding:5px 8px;border:1px solid #324258;border-radius:8px;background:#101927;color:#aeb8c7;font-size:9px;font-weight:950;letter-spacing:.08em}
+#adminGameDayPanel .admin-score-specials{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}
+#adminGameDayPanel .admin-score-team .admin-pp-btn,#adminGameDayPanel .admin-score-team .admin-en-btn{display:block;width:100%;min-height:29px;padding:5px 5px;border:1px solid #324258;border-radius:8px;background:#101927;color:#aeb8c7;font-size:8px;font-weight:950;letter-spacing:.04em;white-space:nowrap}
 #adminGameDayPanel .admin-score-team .admin-pp-btn.active{border-color:#45d27a;background:rgba(69,210,122,.14);color:#78eea2;box-shadow:0 0 0 1px rgba(69,210,122,.14) inset}
+#adminGameDayPanel .admin-score-team .admin-en-btn.active{border-color:#ef5966;background:rgba(239,89,102,.14);color:#ff7b86;box-shadow:0 0 0 1px rgba(239,89,102,.14) inset}
 body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr)}
 body.game-live #publicGameDayCard .gameday-scoreboard{min-width:0;display:flex;flex-direction:column;gap:6px}
 body.game-live #publicGameDayCard .gameday-score-pair{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 body.game-live #publicGameDayCard .gameday-score-cell{position:relative;min-width:0;display:flex;flex-direction:column}
 body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{padding:11px 3px 10px;border-radius:12px;background:#0a111b;border:1px solid #28374a;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);font-size:34px;line-height:1;text-align:center}
 body.game-live #publicGameDayCard .gameday-scoreboard .gameday-periodbox{padding:7px 4px;border-radius:10px;background:#101927;border:1px solid #314057;text-align:center}
-body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center}body.game-live #publicGameDayCard .gameday-pp{width:100%;padding:4px 3px;border-radius:7px;background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}
-@media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-pp{font-size:5.8px;padding:3px 2px}}
+body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;display:flex;align-items:center;gap:4px}body.game-live #publicGameDayCard .gameday-special{flex:1;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}body.game-live #publicGameDayCard .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}body.game-live #publicGameDayCard .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
+@media(max-width:390px){body.game-live #publicGameDayCard .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}body.game-live #publicGameDayCard .gameday-score-cell .gameday-score{font-size:31px}body.game-live #publicGameDayCard .gameday-special{font-size:5.8px;padding:3px 2px}}
 </style>
-<header><small class="build-version build-version-corner">v335</small>
+<header><small class="build-version build-version-corner">v336</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3404,6 +3406,8 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-intermission]').forEach(b=>b.classList.toggle('active',ck==='INT'&&b.dataset.adminIntermission===pd));
  const pp=document.getElementById('adminPowerPlay')?.value||'';
  document.querySelectorAll('[data-admin-pp]').forEach(b=>b.classList.toggle('active',b.dataset.adminPp===pp));
+ const en=document.getElementById('adminEmptyNet')?.value||'';
+ document.querySelectorAll('[data-admin-en]').forEach(b=>b.classList.toggle('active',b.dataset.adminEn===en));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
  updateAdminGameDayPreview();
@@ -3417,10 +3421,10 @@ function setAdminStatus(value){
  }
  if(value==='upcoming'){
    var period=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock'),result=document.getElementById('adminResult');
-   if(period)period.value='';if(clock)clock.value='';if(result)result.value='';var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';
+   if(period)period.value='';if(clock)clock.value='';if(result)result.value='';var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';
  }
  syncAdminQuickControls();loadAdminGameDayBoxScore();markGameDayDirty();
- if(value==='final'){var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';
+ if(value==='final'){var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';
    setTimeout(function(){
      var el=document.getElementById('adminFinalResultControls');
      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
@@ -3429,6 +3433,7 @@ function setAdminStatus(value){
 }
 function setAdminResult(value){const el=document.getElementById('adminResult');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
 function setAdminPowerPlay(value){const el=document.getElementById('adminPowerPlay');if(!el)return;el.value=(el.value===value?'':value);syncAdminQuickControls();markGameDayDirty();}
+function setAdminEmptyNet(value){const el=document.getElementById('adminEmptyNet');if(!el)return;el.value=(el.value===value?'':value);syncAdminQuickControls();markGameDayDirty();}
 function setAdminPeriod(value){
   const el=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock');if(!el)return;
   el.value=value;
@@ -4660,9 +4665,10 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
       <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div></div>
       <input id="adminPowerPlay" type="hidden" value="">
+      <input id="adminEmptyNet" type="hidden" value="">
       <div class="admin-score-card admin-status-group admin-live-controls">
-        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><button type="button" class="admin-pp-btn" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">PP</button></div>
-        <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">PP</button></div>
+        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">PP</button><button type="button" class="admin-en-btn" data-admin-en="phantoms" onclick="setAdminEmptyNet('phantoms')">EMPTY NET</button></div></div>
+        <div class="admin-score-team"><label for="adminOpponentScore">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">PP</button><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
       </div>
       <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button></div><div class="admin-clock-digit"><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button></div><div class="admin-clock-digit"><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button></div></div><small class="admin-muted">Use +/− to set the four clock digits. The first digit only allows 0, 1 or 2.</small></div>
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">USHL Box Score URL</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><small class="admin-muted">Saved to this game and reused on Game Day, Schedule and Recent Results.</small></div>
@@ -4988,7 +4994,7 @@ async function openAdmin(){
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
-    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     syncAdminQuickControls();
     var msg=document.getElementById('adminSaveStatus');if(msg)msg.textContent='Previous Final has rolled over. Next save will publish the upcoming-game state.';
   }
@@ -5815,12 +5821,12 @@ async function adminLoginSubmit(){
  }
 }
 async function adminLogout(){stopAdminQnaWatch();await dcSupabase.auth.signOut();document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';}
-function mapRemoteState(r){r=r||{};return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',updatedAt:r.updated_at||''};}
+function mapRemoteState(r){r=r||{};return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminEmptyNet:r.empty_net||'',updatedAt:r.updated_at||''};}
 async function fetchRemoteGameState(){
- try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
+ try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
 function formatGameClock(input){
   if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
 }
@@ -5858,7 +5864,7 @@ async function persistAdminGameDayBoxScore(){
 
 async function resetAdminGame(){
  if(!confirm('Reset the current game-day information?'))return;
- ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
+ ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
  await saveAdminUpdates();var st=document.getElementById('adminSaveStatus');setAdminFeedback(st,'saved','Game reset & published • '+adminTimeStamp());
 }
 function getStoredResults(){return completedResults.slice();}
@@ -5928,7 +5934,7 @@ function confirmFinalPublish(payload){
 async function saveAdminUpdates(){
  const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
  if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
- const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:document.getElementById('adminPeriod')?.value||null,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null};
+ const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:document.getElementById('adminPeriod')?.value||null,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null};
  if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){
    if(st)st.textContent='Enter both scores before publishing LIVE.';return;
  }
@@ -6197,14 +6203,23 @@ function renderPublicGameDay(){
       var leftRole=isHome?oppRole:phRole, rightRole=isHome?phRole:oppRole;
       var leftScore=isHome?os:ph, rightScore=isHome?ph:os;
       var pp=String(st.adminPowerPlay||'');
+      var en=String(st.adminEmptyNet||'');
       var leftPp=(pp==='phantoms'&&!isHome)||(pp==='opponent'&&isHome);
       var rightPp=(pp==='phantoms'&&isHome)||(pp==='opponent'&&!isHome);
+      var leftEn=(en==='phantoms'&&!isHome)||(en==='opponent'&&isHome);
+      var rightEn=(en==='phantoms'&&isHome)||(en==='opponent'&&!isHome);
+      function specialHtml(hasPp,hasEn){
+        if(hasPp&&hasEn)return '<div class="gameday-special gameday-pp">PP</div><div class="gameday-special gameday-en">EN</div>';
+        if(hasPp)return '<div class="gameday-special gameday-pp">POWER PLAY</div>';
+        if(hasEn)return '<div class="gameday-special gameday-en">EMPTY NET</div>';
+        return '';
+      }
       var periodText=((st.adminClock||'')==='INT'?((st.adminPeriod||'')+' INT').trim():((st.adminPeriod||'')+(st.adminPeriod&&st.adminClock?' • ':'')+displayGameClock(st.adminClock||'')));
       return '<div class="gameday-matchup gameday-matchup-visual">'+
         gameDayTeam(leftTeam,leftLabel,leftRole)+
         '<div class="gameday-scoreboard"><div class="gameday-score-pair">'+
-          '<div class="gameday-score-cell"><div class="gameday-pp-slot">'+(leftPp?'<div class="gameday-pp">POWER PLAY</div>':'')+'</div><div class="gameday-score">'+leftScore+'</div></div>'+
-          '<div class="gameday-score-cell"><div class="gameday-pp-slot">'+(rightPp?'<div class="gameday-pp">POWER PLAY</div>':'')+'</div><div class="gameday-score">'+rightScore+'</div></div>'+
+          '<div class="gameday-score-cell"><div class="gameday-pp-slot">'+specialHtml(leftPp,leftEn)+'</div><div class="gameday-score">'+leftScore+'</div></div>'+
+          '<div class="gameday-score-cell"><div class="gameday-pp-slot">'+specialHtml(rightPp,rightEn)+'</div><div class="gameday-score">'+rightScore+'</div></div>'+
         '</div><div class="gameday-periodbox"><div class="gameday-period">'+periodText+'</div></div></div>'+
         gameDayTeam(rightTeam,rightLabel,rightRole)+
       '</div>';
