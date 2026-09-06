@@ -4482,7 +4482,11 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   max-height:none;
   margin:0;
   padding:0 16px 28px;
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
   border:0;
   border-radius:0;
   background:#070b11;
@@ -4800,7 +4804,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v403</small>
+<header><small class="build-version build-version-corner">v404</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4987,6 +4991,17 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 const PODCAST_FEED_ENDPOINT='https://halnzstinpginidcefts.supabase.co/functions/v1/get-podcast-feed';
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+function dcResetAppViewScroll(){
+  var modal=document.getElementById('modal');
+  var sheet=modal&&modal.querySelector('.sheet');
+  if(!sheet)return;
+  sheet.scrollTop=0;
+  // Re-prime iOS Safari/PWA's momentum scroller after pull-to-refresh/overscroll.
+  sheet.style.webkitOverflowScrolling='auto';
+  void sheet.offsetHeight;
+  sheet.style.webkitOverflowScrolling='touch';
+  requestAnimationFrame(function(){sheet.scrollTop=0;});
+}
 function goHome(el){
   setActive(el);
   var modal=document.getElementById('modal');
@@ -5420,6 +5435,7 @@ function openSheet(type){
    <div class="more-disclaimer">The Dump &amp; Chase Podcast is an independent, non-commercial fan production and is not affiliated with, employed by, or compensated by the Youngstown Phantoms, the United States Hockey League, or any affiliated league, club, or team.</div>`;
  }
  if(modal)modal.classList.add('show');
+ if(type==='episodes')requestAnimationFrame(dcResetAppViewScroll);
  if(type!=='episodes')setTimeout(refreshInstallCard,0);
 }
 
@@ -6589,6 +6605,7 @@ function renderSelectedMonth(){
 
     modal.classList.remove('app-view','app-view-episodes','app-view-hq');
     modal.classList.add('app-view','app-view-hq','show');
+    requestAnimationFrame(dcResetAppViewScroll);
     renderNextGame();
     setTimeout(function(){
       showRosterGroup('GOALTENDERS');
