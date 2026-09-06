@@ -3495,6 +3495,52 @@ body.game-live #publicGameDayCard .gameday-status{
 }
 </style>
 
+
+<style>
+/* v391: automated goal effects in isolated dummy workflow */
+#adminSoTestPanel .admin-so-publish-note{
+  margin:4px 0 8px;
+  font-size:9px;
+  line-height:1.35;
+  opacity:.62;
+}
+#adminSoTestPanel .admin-so-publish-score-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+#adminSoTestPanel .admin-so-publish-team{
+  padding:9px;
+  border:1px solid #2c3543;
+  border-radius:12px;
+  background:#111722;
+}
+#adminSoTestPanel .admin-so-publish-team>span{
+  display:block;
+  margin-bottom:7px;
+  text-align:center;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.075em;
+  opacity:.65;
+}
+#adminSoTestPanel .admin-so-publish-stepper{
+  display:grid;
+  grid-template-columns:32px 1fr 32px;
+  align-items:center;
+  gap:6px;
+}
+#adminSoTestPanel .admin-so-publish-stepper b{
+  text-align:center;
+  font-size:24px;
+  line-height:1;
+}
+#adminSoTestPanel .admin-so-dummy-publish{
+  width:100%;
+  margin-top:8px;
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4536,7 +4582,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v390</small>
+<header><small class="build-version build-version-corner">v391</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6613,13 +6659,27 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="admin-so-result" id="adminSoTestResult" hidden></div>
     <div class="admin-so-auto-final-note" id="adminSoAutoFinalNote">AUTO FINAL-SO TEST ENABLED</div>
 
-    <div class="admin-group-title admin-so-goalfx-title">GOAL CARD EFFECT TEST</div>
-    <div class="admin-so-goalfx-grid">
-      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('youngstown',5000,'YOUNGSTOWN GOAL')">YOUNGSTOWN · 5 SEC</button>
-      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('opponent',3000,'MUSKEGON GOAL')">MUSKEGON · 3 SEC</button>
-      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('youngstown',3000,'YOUNGSTOWN GOAL')">YOUNGSTOWN SO · 3 SEC</button>
-      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('opponent',3000,'MUSKEGON GOAL')">MUSKEGON SO · 3 SEC</button>
+    <div class="admin-group-title admin-so-goalfx-title">DUMMY LIVE PUBLISH TEST</div>
+    <div class="admin-so-publish-note">Change a score, then publish. A score increase automatically triggers the goal card effect.</div>
+    <div class="admin-so-publish-score-grid">
+      <div class="admin-so-publish-team">
+        <span>YOUNGSTOWN</span>
+        <div class="admin-so-publish-stepper">
+          <button type="button" class="admin-mini-btn" onclick="adminSoTestAdjustDraftScore('youngstown',-1)">−</button>
+          <b id="adminSoDraftYScore">2</b>
+          <button type="button" class="admin-mini-btn" onclick="adminSoTestAdjustDraftScore('youngstown',1)">+</button>
+        </div>
+      </div>
+      <div class="admin-so-publish-team">
+        <span>MUSKEGON</span>
+        <div class="admin-so-publish-stepper">
+          <button type="button" class="admin-mini-btn" onclick="adminSoTestAdjustDraftScore('opponent',-1)">−</button>
+          <b id="adminSoDraftOScore">2</b>
+          <button type="button" class="admin-mini-btn" onclick="adminSoTestAdjustDraftScore('opponent',1)">+</button>
+        </div>
+      </div>
     </div>
+    <button type="button" class="btn primary admin-so-dummy-publish" onclick="adminSoTestPublishLive()">PUBLISH DUMMY UPDATE</button>
 
     <div class="admin-so-footer-actions">
       <button type="button" class="admin-mini-btn" onclick="adminSoTestUndo()">UNDO LAST</button>
@@ -6628,7 +6688,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
 
   <div class="admin-group-title">DUMMY PUBLIC GAME DAY CARD</div>
-  <div class="admin-so-public-note">Preview only — styled exactly like the live Home Game Day card. Nothing here appears on Home.</div>
+  <div class="admin-so-public-note">Preview only — regular goals trigger on dummy publish; shootout goals trigger instantly. Nothing here appears on Home.</div>
   <div class="card gameday-card admin-so-live-card" id="adminSoPublicCard"></div>
 </div>
 
@@ -6955,6 +7015,9 @@ let dcAdminSoTest={
   attempts:[],
   first:'youngstown',
   baseGameScore:{youngstown:2,opponent:2},
+  liveDraftScore:{youngstown:2,opponent:2},
+  livePublishedScore:{youngstown:2,opponent:2},
+  publicMode:'shootout',
   status:'live',
   result:'',
   goalFx:null,
@@ -6973,6 +7036,7 @@ function adminSoTestNextTeam(){
 function adminSoTestSetFirst(team){
   if(dcAdminSoTest.attempts.length)return;
   dcAdminSoTest.first=team==='opponent'?'opponent':'youngstown';
+  dcAdminSoTest.publicMode='shootout';
   dcAdminSoTest.status='live';
   dcAdminSoTest.result='';
   adminSoTestRender();
@@ -7008,14 +7072,48 @@ function adminSoTestAttempt(team,goal){
     }
     return;
   }
+  dcAdminSoTest.publicMode='shootout';
   dcAdminSoTest.attempts.push({team:team,goal:!!goal});
-  adminSoTestRender();
+  if(goal){
+    adminSoTestGoalFx(team,3000,team==='youngstown'?'YOUNGSTOWN GOAL':'MUSKEGON GOAL');
+  }else{
+    adminSoTestRender();
+  }
 }
 
 function adminSoTestUndo(){
   if(dcAdminSoTest.attempts.length)dcAdminSoTest.attempts.pop();
   dcAdminSoTest.status='live';
   dcAdminSoTest.result='';
+  adminSoTestRender();
+}
+
+function adminSoTestAdjustDraftScore(team,delta){
+  var key=team==='opponent'?'opponent':'youngstown';
+  var current=Number(dcAdminSoTest.liveDraftScore[key]||0);
+  dcAdminSoTest.liveDraftScore[key]=Math.max(0,current+Number(delta||0));
+  adminSoTestRender();
+}
+
+function adminSoTestPublishLive(){
+  var oldY=Number(dcAdminSoTest.livePublishedScore.youngstown||0);
+  var oldO=Number(dcAdminSoTest.livePublishedScore.opponent||0);
+  var newY=Number(dcAdminSoTest.liveDraftScore.youngstown||0);
+  var newO=Number(dcAdminSoTest.liveDraftScore.opponent||0);
+
+  dcAdminSoTest.livePublishedScore={youngstown:newY,opponent:newO};
+  dcAdminSoTest.publicMode='live';
+  dcAdminSoTest.status='live';
+  dcAdminSoTest.result='';
+
+  if(newY>oldY){
+    adminSoTestGoalFx('youngstown',5000,'YOUNGSTOWN GOAL');
+    return;
+  }
+  if(newO>oldO){
+    adminSoTestGoalFx('opponent',3000,'MUSKEGON GOAL');
+    return;
+  }
   adminSoTestRender();
 }
 
@@ -7044,6 +7142,10 @@ function adminSoTestReset(){
   dcAdminSoTest.goalFx=null;
   dcAdminSoTest.attempts=[];
   dcAdminSoTest.first='youngstown';
+  dcAdminSoTest.baseGameScore={youngstown:2,opponent:2};
+  dcAdminSoTest.liveDraftScore={youngstown:2,opponent:2};
+  dcAdminSoTest.livePublishedScore={youngstown:2,opponent:2};
+  dcAdminSoTest.publicMode='shootout';
   dcAdminSoTest.status='live';
   dcAdminSoTest.result='';
   adminSoTestRender();
@@ -7067,12 +7169,16 @@ function adminSoPublicAttemptMarks(team){
 }
 
 function adminSoTestPublicTeam(team,label,homeAway,attemptTeam){
+  var soBits='';
+  if(attemptTeam){
+    soBits='<div class="admin-so-public-next" id="adminSoPublicNext-'+attemptTeam+'">NEXT</div>'+
+      adminSoPublicAttemptMarks(attemptTeam);
+  }
   return '<div class="gameday-team">'+
     '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
     '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
     '<div class="homeaway">'+homeAway+'</div>'+
-    '<div class="admin-so-public-next" id="adminSoPublicNext-'+attemptTeam+'">NEXT</div>'+
-    adminSoPublicAttemptMarks(attemptTeam)+
+    soBits+
   '</div>';
 }
 
@@ -7106,7 +7212,11 @@ function adminSoTestRender(){
   var firstShooter=document.getElementById('adminSoFirstShooter');
   var firstYBtn=document.getElementById('adminSoFirstYoungstown');
   var firstOBtn=document.getElementById('adminSoFirstOpponent');
+  var draftY=document.getElementById('adminSoDraftYScore');
+  var draftO=document.getElementById('adminSoDraftOScore');
 
+  if(draftY)draftY.textContent=Number(dcAdminSoTest.liveDraftScore.youngstown||0);
+  if(draftO)draftO.textContent=Number(dcAdminSoTest.liveDraftScore.opponent||0);
   if(ygEl)ygEl.textContent=yg;
   if(ogEl)ogEl.textContent=og;
   if(score)score.textContent=yg+' – '+og;
@@ -7168,31 +7278,33 @@ function adminSoTestRender(){
     }
 
     publicCard.className='card gameday-card admin-so-live-card';
+    var inShootout=dcAdminSoTest.publicMode==='shootout';
     var publicRound=Math.max(y.length,o.length)+1;
     if(Math.min(y.length,o.length)<3)publicRound=Math.min(y.length,o.length)+1;
-    var publicPeriod=dcAdminSoTest.status==='final'?'FINAL-SO':'SO · ROUND '+publicRound;
-    var publicStatusText=dcAdminSoTest.status==='final'?'FINAL-SO':'LIVE';
-    var publicStatusClass=dcAdminSoTest.status==='final'?'gameday-final':'gameday-live';
-    var leftTeam='Youngstown Phantoms',rightTeam='Des Moines Buccaneers';
-    var leftScore=finalY,rightScore=finalO;
+    var publicPeriod=inShootout?(dcAdminSoTest.status==='final'?'FINAL-SO':'SO · ROUND '+publicRound):'3RD · 08:24';
+    var publicStatusText=(inShootout&&dcAdminSoTest.status==='final')?'FINAL-SO':'LIVE';
+    var publicStatusClass=(inShootout&&dcAdminSoTest.status==='final')?'gameday-final':'gameday-live';
+    var leftTeam='Youngstown Phantoms',rightTeam='Muskegon Lumberjacks';
+    var leftScore=inShootout?finalY:Number(dcAdminSoTest.livePublishedScore.youngstown||0);
+    var rightScore=inShootout?finalO:Number(dcAdminSoTest.livePublishedScore.opponent||0);
 
     publicCard.innerHTML=
       '<div class="gameday-status '+publicStatusClass+'">'+publicStatusText+'</div>'+
       '<div class="gameday-matchup gameday-matchup-visual">'+
-        adminSoTestPublicTeam(leftTeam,'YOUNGSTOWN PHANTOMS','HOME','youngstown')+
+        adminSoTestPublicTeam(leftTeam,'YOUNGSTOWN PHANTOMS','HOME',inShootout?'youngstown':'')+
         '<div class="gameday-scoreboard"><div class="gameday-score-pair">'+
           '<div class="gameday-score-cell"><div class="gameday-pp-slot"></div><div class="gameday-score">'+leftScore+'</div></div>'+
           '<div class="gameday-score-cell"><div class="gameday-pp-slot"></div><div class="gameday-score">'+rightScore+'</div></div>'+
         '</div><div class="gameday-periodbox"><div class="gameday-period">'+publicPeriod+'</div></div></div>'+
-        adminSoTestPublicTeam(rightTeam,'DES MOINES BUCCANEERS','AWAY','opponent')+
+        adminSoTestPublicTeam(rightTeam,'MUSKEGON LUMBERJACKS','AWAY',inShootout?'opponent':'')+
       '</div>'+
       '<div class="gameday-meta gameday-venue">Covelli Centre — Youngstown, OH</div>'+
       '<button type="button" class="box-score-btn gameday-box-score" disabled>USHL BOX SCORE</button>';
 
     var publicNextY=document.getElementById('adminSoPublicNext-youngstown');
     var publicNextO=document.getElementById('adminSoPublicNext-opponent');
-    if(publicNextY)publicNextY.classList.toggle('show',dcAdminSoTest.status!=='final'&&next==='youngstown');
-    if(publicNextO)publicNextO.classList.toggle('show',dcAdminSoTest.status!=='final'&&next==='opponent');
+    if(publicNextY)publicNextY.classList.toggle('show',inShootout&&dcAdminSoTest.status!=='final'&&next==='youngstown');
+    if(publicNextO)publicNextO.classList.toggle('show',inShootout&&dcAdminSoTest.status!=='final'&&next==='opponent');
   }
 }
 
