@@ -3171,30 +3171,92 @@ body.game-live #publicGameDayCard .gameday-status{
 
 
 <style>
-/* v385: isolated public Game Day shootout layout preview */
-.admin-so-public-note{font-size:8.5px;opacity:.58;margin:-3px 0 7px}
-.admin-so-public-card{
-  overflow:hidden;border:1px solid rgba(255,255,255,.10);border-radius:14px;
-  padding:12px;background:rgba(0,0,0,.16)
+/* v386: dummy public preview mirrors the actual live Home Game Day card. */
+#adminSoTestPanel #adminSoPublicCard{
+  overflow:hidden;
+  padding:18px 16px;
+  background:linear-gradient(135deg,#1a1528,#111722 60%,#25183c);
+  border:1px solid rgba(165,108,255,.42);
+  border-left:3px solid #a56cff;
+  box-shadow:inset -3px 0 0 rgba(242,137,44,.45);
+  position:relative;
 }
-.admin-so-public-eyebrow{text-align:center;font-size:9px;font-weight:950;letter-spacing:.13em;opacity:.68}
-.admin-so-public-status{text-align:center;margin:4px 0 11px;font-size:11px;font-weight:950;letter-spacing:.055em}
-.admin-so-public-matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
-.admin-so-public-team{display:flex;min-width:0;flex-direction:column;align-items:center;text-align:center}
-.admin-so-public-ha{font-size:7.5px;font-weight:900;letter-spacing:.09em;opacity:.55;margin-bottom:3px}
-.admin-so-public-team strong{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
-.admin-so-public-team b{font-size:30px;line-height:1;margin:6px 0}
-.admin-so-public-middle{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:42px}
-.admin-so-public-middle>span{font-size:10px;font-weight:950;letter-spacing:.1em}
-.admin-so-public-middle small{font-size:10px;font-weight:900;white-space:nowrap}
-.admin-so-public-attempts{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:18px}
-.admin-so-public-attempts span{font-size:13px;font-weight:950;line-height:1}
-.admin-so-public-attempts .goal{color:#39d98a}
-.admin-so-public-attempts .miss{color:#ff5d67}
-.admin-so-public-attempts .empty{opacity:.35}
-.admin-so-public-footer{
-  margin-top:11px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07);
-  text-align:center;font-size:9px;font-weight:850;letter-spacing:.025em
+#adminSoTestPanel #adminSoPublicCard:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(90deg,rgba(165,108,255,.9),rgba(242,137,44,.85));
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-status{
+  display:table;margin:0 auto 6px;padding:5px 9px;border-radius:999px;
+  background:rgba(255,98,98,.12);border:1px solid rgba(255,98,98,.35);
+  color:#ff7474;text-align:center;font-size:9px;font-weight:950;
+  letter-spacing:.13em;text-transform:uppercase;
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-status.gameday-final{
+  background:rgba(88,214,141,.10);
+  border-color:rgba(88,214,141,.35);
+  color:#58d68d;
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-matchup-visual{
+  display:grid;grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);
+  align-items:center;gap:14px;margin:10px 0 12px;
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-team{min-width:0;text-align:center}
+#adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap{
+  width:88px;height:88px;display:flex;align-items:center;justify-content:center;margin:0 auto 7px
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap .matchup-logo{width:84px;height:84px}
+#adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap .matchup-logo-fallback{width:70px;height:70px}
+#adminSoTestPanel #adminSoPublicCard .gameday-team-name{
+  min-height:28px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:950;line-height:1.25;text-align:center
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-team-name .matchup-name-stack{align-items:center;text-align:center}
+#adminSoTestPanel #adminSoPublicCard .gameday-team-name .matchup-name-city{font-size:9px}
+#adminSoTestPanel #adminSoPublicCard .gameday-team-name .matchup-name-team{font-size:10px}
+#adminSoTestPanel #adminSoPublicCard .gameday-team .homeaway{
+  display:flex;margin:6px auto 0;
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-scoreboard{min-width:0;display:flex;flex-direction:column;gap:6px}
+#adminSoTestPanel #adminSoPublicCard .gameday-score-pair{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#adminSoTestPanel #adminSoPublicCard .gameday-score-cell{position:relative;min-width:0;display:flex;flex-direction:column}
+#adminSoTestPanel #adminSoPublicCard .gameday-score-cell .gameday-score{
+  padding:11px 3px 10px;border-radius:12px;background:#0a111b;border:1px solid #28374a;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);font-size:34px;line-height:1;text-align:center
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-scoreboard .gameday-periodbox{
+  padding:7px 4px;border-radius:10px;background:#101927;border:1px solid #314057;text-align:center
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-period{
+  margin:0;font-size:11px;font-weight:950;letter-spacing:.055em;color:#d2d9e3
+}
+#adminSoTestPanel #adminSoPublicCard .gameday-pp-slot{height:25px;margin:0 0 4px}
+#adminSoTestPanel #adminSoPublicCard .gameday-venue{
+  margin-top:7px;color:#aab4c3;text-align:center;line-height:1.5;font-size:11px
+}
+#adminSoTestPanel #adminSoPublicCard .box-score-btn.gameday-box-score{
+  display:block;width:100%;margin-top:12px;text-align:center;text-decoration:none
+}
+#adminSoTestPanel #adminSoPublicCard .box-score-btn.gameday-box-score:disabled{opacity:.72}
+#adminSoTestPanel #adminSoPublicCard .admin-so-live-attempts{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:18px;margin-top:6px
+}
+#adminSoTestPanel #adminSoPublicCard .admin-so-live-attempts span{
+  font-size:13px;font-weight:950;line-height:1
+}
+#adminSoTestPanel #adminSoPublicCard .admin-so-live-attempts .goal{color:#39d98a}
+#adminSoTestPanel #adminSoPublicCard .admin-so-live-attempts .miss{color:#ff5d67}
+@media(max-width:420px){
+  #adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap{width:72px;height:72px}
+  #adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap .matchup-logo{width:69px;height:69px}
+  #adminSoTestPanel #adminSoPublicCard .gameday-logo-wrap .matchup-logo-fallback{width:60px;height:60px}
+  #adminSoTestPanel #adminSoPublicCard .gameday-team-name{font-size:9px;min-height:24px}
+}
+@media(max-width:390px){
+  #adminSoTestPanel #adminSoPublicCard .gameday-matchup-visual{
+    grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px
+  }
+  #adminSoTestPanel #adminSoPublicCard .gameday-score-cell .gameday-score{font-size:31px}
+  #adminSoTestPanel #adminSoPublicCard .gameday-period{font-size:10px}
 }
 </style>
 
@@ -4239,7 +4301,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v385</small>
+<header><small class="build-version build-version-corner">v386</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6315,30 +6377,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
 
   <div class="admin-group-title">DUMMY PUBLIC GAME DAY CARD</div>
-  <div class="admin-so-public-note">Preview only — this does not appear on Home.</div>
-  <div class="admin-so-public-card">
-    <div class="admin-so-public-eyebrow">GAME DAY</div>
-    <div class="admin-so-public-status" id="adminSoPublicStatus">SHOOTOUT · ROUND 1</div>
-    <div class="admin-so-public-matchup">
-      <div class="admin-so-public-team">
-        <span class="admin-so-public-ha">HOME</span>
-        <strong>Youngstown</strong>
-        <b id="adminSoPublicYScore">2</b>
-        <div class="admin-so-public-attempts" id="adminSoPublicYAttempts"><span>—</span></div>
-      </div>
-      <div class="admin-so-public-middle">
-        <span>SO</span>
-        <small id="adminSoPublicShootoutScore">0 – 0</small>
-      </div>
-      <div class="admin-so-public-team">
-        <span class="admin-so-public-ha">AWAY</span>
-        <strong>Opponent</strong>
-        <b id="adminSoPublicOScore">2</b>
-        <div class="admin-so-public-attempts" id="adminSoPublicOAttempts"><span>—</span></div>
-      </div>
-    </div>
-    <div class="admin-so-public-footer" id="adminSoPublicFooter">Youngstown shoots next</div>
-  </div>
+  <div class="admin-so-public-note">Preview only — styled exactly like the live Home Game Day card. Nothing here appears on Home.</div>
+  <div class="card gameday-card admin-so-live-card" id="adminSoPublicCard"></div>
 </div>
 
 <div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
@@ -6731,10 +6771,19 @@ function adminSoTestRenderAttempts(team,id){
 
 function adminSoPublicAttemptMarks(team){
   var attempts=adminSoTestTeamAttempts(team);
-  if(!attempts.length)return '<span class="empty">—</span>';
-  return attempts.map(function(x){
+  if(!attempts.length)return '';
+  return '<div class="admin-so-live-attempts">'+attempts.map(function(x){
     return '<span class="'+(x.goal?'goal':'miss')+'">'+(x.goal?'✓':'×')+'</span>';
-  }).join('');
+  }).join('')+'</div>';
+}
+
+function adminSoTestPublicTeam(team,label,homeAway,attemptTeam){
+  return '<div class="gameday-team">'+
+    '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
+    '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
+    '<div class="homeaway">'+homeAway+'</div>'+
+    adminSoPublicAttemptMarks(attemptTeam)+
+  '</div>';
 }
 
 function adminSoTestRender(){
@@ -6766,24 +6815,9 @@ function adminSoTestRender(){
   if(gameY)gameY.textContent=finalY;
   if(gameO)gameO.textContent=finalO;
 
-  var publicY=document.getElementById('adminSoPublicYScore');
-  var publicO=document.getElementById('adminSoPublicOScore');
-  var publicYS=document.getElementById('adminSoPublicYAttempts');
-  var publicOS=document.getElementById('adminSoPublicOAttempts');
-  var publicSoScore=document.getElementById('adminSoPublicShootoutScore');
-  if(publicY)publicY.textContent=finalY;
-  if(publicO)publicO.textContent=finalO;
-  if(publicYS)publicYS.innerHTML=adminSoPublicAttemptMarks('youngstown');
-  if(publicOS)publicOS.innerHTML=adminSoPublicAttemptMarks('opponent');
-  if(publicSoScore)publicSoScore.textContent=yg+' – '+og;
-
   if(winner){
     var winnerName=winner==='youngstown'?'Youngstown':'Opponent';
     if(status)status.textContent='Shootout complete';
-    var publicStatus=document.getElementById('adminSoPublicStatus');
-    var publicFooter=document.getElementById('adminSoPublicFooter');
-    if(publicStatus)publicStatus.textContent='FINAL-SO';
-    if(publicFooter)publicFooter.textContent=winnerName+' wins the shootout';
     if(result){
       result.hidden=false;
       result.innerHTML='<b>'+winnerName+' wins the shootout</b><span>Winning shootout goal has been added to the game score. This would finish as FINAL-SO in the real Game Center.</span>';
@@ -6796,10 +6830,31 @@ function adminSoTestRender(){
     var phase=(round>3?'Sudden Death · Round '+round+' · ':'Round '+round+' · ');
     var nextName=next==='youngstown'?'Youngstown':'Opponent';
     if(status)status.textContent=phase+nextName+' shoots next';
-    var publicStatus=document.getElementById('adminSoPublicStatus');
-    var publicFooter=document.getElementById('adminSoPublicFooter');
-    if(publicStatus)publicStatus.textContent=round>3?'SHOOTOUT · SUDDEN DEATH · ROUND '+round:'SHOOTOUT · ROUND '+round;
-    if(publicFooter)publicFooter.textContent=nextName+' shoots next';
+  }
+
+  /* Dummy public preview uses the same structure/classes as the actual live Game Day card. */
+  var publicCard=document.getElementById('adminSoPublicCard');
+  if(publicCard){
+    var publicRound=Math.max(y.length,o.length)+1;
+    if(Math.min(y.length,o.length)<3)publicRound=Math.min(y.length,o.length)+1;
+    var publicPeriod=winner?'FINAL-SO':(publicRound>3?'SO · ROUND '+publicRound:'SO · ROUND '+publicRound);
+    var publicStatusText=winner?'FINAL-SO':'LIVE';
+    var publicStatusClass=winner?'gameday-final':'gameday-live';
+    var leftTeam='Youngstown Phantoms',rightTeam='Des Moines Buccaneers';
+    var leftScore=finalY,rightScore=finalO;
+
+    publicCard.innerHTML=
+      '<div class="gameday-status '+publicStatusClass+'">'+publicStatusText+'</div>'+
+      '<div class="gameday-matchup gameday-matchup-visual">'+
+        adminSoTestPublicTeam(leftTeam,'YOUNGSTOWN PHANTOMS','HOME','youngstown')+
+        '<div class="gameday-scoreboard"><div class="gameday-score-pair">'+
+          '<div class="gameday-score-cell"><div class="gameday-pp-slot"></div><div class="gameday-score">'+leftScore+'</div></div>'+
+          '<div class="gameday-score-cell"><div class="gameday-pp-slot"></div><div class="gameday-score">'+rightScore+'</div></div>'+
+        '</div><div class="gameday-periodbox"><div class="gameday-period">'+publicPeriod+'</div></div></div>'+
+        adminSoTestPublicTeam(rightTeam,'DES MOINES BUCCANEERS','AWAY','opponent')+
+      '</div>'+
+      '<div class="gameday-meta gameday-venue">Covelli Centre — Youngstown, OH</div>'+
+      '<button type="button" class="box-score-btn gameday-box-score" disabled>USHL BOX SCORE</button>';
   }
 }
 
