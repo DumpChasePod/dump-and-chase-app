@@ -3103,6 +3103,56 @@ body.game-live #publicGameDayCard .gameday-status{
 }
 </style>
 
+
+<style>
+/* v382: isolated shootout test lab */
+.admin-so-test-tab{border-color:rgba(255,255,255,.16)}
+.admin-so-test-warning{
+  display:flex;flex-direction:column;gap:4px;
+  margin-bottom:12px;padding:10px 11px;border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;background:rgba(255,255,255,.025)
+}
+.admin-so-test-warning b{font-size:10px;letter-spacing:.09em}
+.admin-so-test-warning span{font-size:9px;line-height:1.45;opacity:.72}
+.admin-so-dummy-scoreboard{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
+  margin:8px 0 15px;padding:10px;border:1px solid rgba(255,255,255,.08);border-radius:11px
+}
+.admin-so-dummy-team{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.admin-so-dummy-team span{font-size:9px;font-weight:900;letter-spacing:.05em}
+.admin-so-dummy-team b{font-size:26px;line-height:1}
+.admin-so-dummy-center{display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.8}
+.admin-so-dummy-center strong{font-size:11px;letter-spacing:.1em}
+.admin-so-dummy-center span{font-size:10px}
+.admin-so-tracker{border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px;background:rgba(255,255,255,.018)}
+.admin-so-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.admin-so-summary div{font-size:9px;font-weight:850;letter-spacing:.03em}
+.admin-so-summary b{font-size:17px;white-space:nowrap}
+.admin-so-nudge{animation:adminSoNudge .45s ease}
+@keyframes adminSoNudge{50%{transform:scale(1.035)}}
+.admin-so-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.admin-so-team-card{padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(0,0,0,.12)}
+.admin-so-team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.admin-so-team-head span{font-size:9px;font-weight:950;letter-spacing:.055em}
+.admin-so-team-head b{font-size:18px}
+.admin-so-attempts{display:flex;flex-wrap:wrap;gap:5px;min-height:27px;align-items:center;margin-bottom:8px}
+.admin-so-empty{font-size:8.5px;opacity:.52}
+.admin-so-attempt{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;border:1px solid rgba(255,255,255,.18);font-size:15px;font-weight:950}
+.admin-so-attempt.goal{background:rgba(255,255,255,.12)}
+.admin-so-attempt.miss{opacity:.52}
+.admin-so-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.admin-so-actions .btn{min-height:34px;padding:6px 4px;font-size:9px}
+.admin-so-result{margin-top:9px;padding:9px;border:1px solid rgba(255,255,255,.14);border-radius:9px;text-align:center}
+.admin-so-result b,.admin-so-result span{display:block}
+.admin-so-result b{font-size:11px;margin-bottom:3px}
+.admin-so-result span{font-size:8.5px;opacity:.68}
+.admin-so-footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.admin-so-footer-actions .admin-mini-btn{width:100%}
+@media(max-width:390px){
+  .admin-so-teams{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4144,7 +4194,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v381</small>
+<header><small class="build-version build-version-corner">v382</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6014,6 +6064,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
         <button type="button" class="admin-section-tab admin-qna-tab" id="adminTabQna" role="tab" aria-selected="false" aria-controls="adminQnaPanel" onclick="selectAdminTab('qna')"><span class="admin-qna-dot" id="adminQnaDot" aria-hidden="true"></span><span>Q&amp;A</span></button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
+        <button type="button" class="admin-section-tab admin-so-test-tab" id="adminTabSoTest" role="tab" aria-selected="false" aria-controls="adminSoTestPanel" onclick="selectAdminTab('so-test')">SO TEST</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-chip-row admin-status-flow admin-status-flow-simple"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-chip" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
@@ -6147,6 +6198,76 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div><div class="eyebrow">PHAN Q&amp;A INBOX</div><div class="admin-muted" id="adminQnaStatus">Loading questions…</div></div>
   </div>
   <div class="admin-qna-list" id="adminQnaList"></div>
+</div>
+
+
+<div class="admin-section-panel" id="adminSoTestPanel" role="tabpanel" aria-labelledby="adminTabSoTest" hidden>
+  <div class="admin-so-test-warning">
+    <b>SHOOTOUT TEST MODE</b>
+    <span>This is a completely isolated dummy Game Center. Nothing here publishes, saves, or changes the real Game Day.</span>
+  </div>
+
+  <div class="admin-group-title">DUMMY GAME STATUS</div>
+  <div class="admin-quick-section admin-quick-section-first">
+    <div class="admin-chip-row admin-status-flow admin-status-flow-simple">
+      <button type="button" class="admin-chip">UPCOMING</button>
+      <button type="button" class="admin-chip">START GAME</button>
+      <button type="button" class="admin-chip active">GO FINAL</button>
+    </div>
+  </div>
+
+  <div class="admin-group-title">DUMMY GAME CONTROLS</div>
+  <div class="admin-field admin-status-group admin-live-controls">
+    <label>PERIOD</label>
+    <div class="admin-chip-row admin-period-flow">
+      <button type="button" class="admin-chip">1ST</button>
+      <button type="button" class="admin-chip">2ND</button>
+      <button type="button" class="admin-chip">3RD</button>
+      <button type="button" class="admin-chip">OT</button>
+      <button type="button" class="admin-chip active">SO</button>
+    </div>
+  </div>
+
+  <div class="admin-so-dummy-scoreboard">
+    <div class="admin-so-dummy-team"><span>YOUNGSTOWN</span><b>2</b></div>
+    <div class="admin-so-dummy-center"><strong>SO</strong><span>00:00</span></div>
+    <div class="admin-so-dummy-team"><span>OPPONENT</span><b>2</b></div>
+  </div>
+
+  <div class="admin-group-title">SHOOTOUT TRACKER</div>
+  <div class="admin-so-tracker">
+    <div class="admin-so-summary">
+      <div id="adminSoTestStatus">Round 1 · Youngstown shoots next</div>
+      <b id="adminSoTestScore">0 – 0</b>
+    </div>
+
+    <div class="admin-so-teams">
+      <div class="admin-so-team-card">
+        <div class="admin-so-team-head"><span>YOUNGSTOWN</span><b id="adminSoTestYGoals">0</b></div>
+        <div class="admin-so-attempts" id="adminSoTestYAttempts"><span class="admin-so-empty">No attempts yet</span></div>
+        <div class="admin-so-actions">
+          <button type="button" class="btn primary" onclick="adminSoTestAttempt('youngstown',true)">GOAL</button>
+          <button type="button" class="btn secondary" onclick="adminSoTestAttempt('youngstown',false)">MISS</button>
+        </div>
+      </div>
+
+      <div class="admin-so-team-card">
+        <div class="admin-so-team-head"><span>OPPONENT</span><b id="adminSoTestOGoals">0</b></div>
+        <div class="admin-so-attempts" id="adminSoTestOAttempts"><span class="admin-so-empty">No attempts yet</span></div>
+        <div class="admin-so-actions">
+          <button type="button" class="btn primary" onclick="adminSoTestAttempt('opponent',true)">GOAL</button>
+          <button type="button" class="btn secondary" onclick="adminSoTestAttempt('opponent',false)">MISS</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-so-result" id="adminSoTestResult" hidden></div>
+
+    <div class="admin-so-footer-actions">
+      <button type="button" class="admin-mini-btn" onclick="adminSoTestUndo()">UNDO LAST</button>
+      <button type="button" class="admin-mini-btn" onclick="adminSoTestReset()">RESET TEST</button>
+    </div>
+  </div>
 </div>
 
 <div class="admin-section-panel" id="adminAnalyticsPanel" role="tabpanel" aria-labelledby="adminTabAnalytics" hidden>
@@ -6444,10 +6565,10 @@ let dcAdminLoadedTabs=new Set();
 function selectAdminTab(tab,skipDirtyCheck){
   if(!skipDirtyCheck&&!confirmDiscardAdminChanges())return;
   rememberAdminScroll();
-  tab=['game-day','roster','record','schedule','news','qna','analytics'].includes(tab)?tab:'game-day';
+  tab=['game-day','roster','record','schedule','news','qna','analytics','so-test'].includes(tab)?tab:'game-day';
   try{localStorage.setItem('dcAdminLastTab',tab);}catch(_){}
-  ['game-day','roster','record','schedule','news','qna','analytics'].forEach(function(name){
-    var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':name.charAt(0).toUpperCase()+name.slice(1));
+  ['game-day','roster','record','schedule','news','qna','analytics','so-test'].forEach(function(name){
+    var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':(name==='so-test'?'SoTest':name.charAt(0).toUpperCase()+name.slice(1)));
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
     var active=name===tab;
@@ -6456,7 +6577,7 @@ function selectAdminTab(tab,skipDirtyCheck){
   });
   refreshAdminQnaIndicator();
   if(tab==='qna'){dcAdminLoadedTabs.add('qna');loadAdminQna();return;}
-  if(tab==='game-day'||dcAdminLoadedTabs.has(tab))return;
+  if(tab==='game-day'||tab==='so-test'||dcAdminLoadedTabs.has(tab)){if(tab==='so-test')adminSoTestRender();return;}
   dcAdminLoadedTabs.add(tab);
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
   if(tab==='roster')loadAdminRoster();
@@ -6465,6 +6586,113 @@ function selectAdminTab(tab,skipDirtyCheck){
   if(tab==='news')loadAdminNews();
 }
 
+
+
+/* v382: isolated shootout test lab. No Supabase reads/writes and no Game Day state changes. */
+let dcAdminSoTest={
+  attempts:[],
+  first:'youngstown'
+};
+
+function adminSoTestOther(team){return team==='youngstown'?'opponent':'youngstown';}
+function adminSoTestTeamAttempts(team){return dcAdminSoTest.attempts.filter(function(x){return x.team===team;});}
+function adminSoTestGoals(team){return adminSoTestTeamAttempts(team).filter(function(x){return x.goal;}).length;}
+
+function adminSoTestNextTeam(){
+  if(!dcAdminSoTest.attempts.length)return dcAdminSoTest.first;
+  return adminSoTestOther(dcAdminSoTest.attempts[dcAdminSoTest.attempts.length-1].team);
+}
+
+function adminSoTestDecision(){
+  var y=adminSoTestTeamAttempts('youngstown'),o=adminSoTestTeamAttempts('opponent');
+  var yg=adminSoTestGoals('youngstown'),og=adminSoTestGoals('opponent');
+
+  /* Regulation shootout: three attempts per team, allowing early mathematical clinch. */
+  if(y.length<3 || o.length<3){
+    var yRemain=Math.max(0,3-y.length),oRemain=Math.max(0,3-o.length);
+    if(yg>og+oRemain)return 'youngstown';
+    if(og>yg+yRemain)return 'opponent';
+    return '';
+  }
+
+  /* After both have three, only decide at the end of a complete sudden-death pair. */
+  if(y.length===o.length && yg!==og)return yg>og?'youngstown':'opponent';
+  return '';
+}
+
+function adminSoTestAttempt(team,goal){
+  if(adminSoTestDecision())return;
+  var next=adminSoTestNextTeam();
+  if(team!==next){
+    var who=next==='youngstown'?'Youngstown':'Opponent';
+    var status=document.getElementById('adminSoTestStatus');
+    if(status){
+      status.textContent=who+' shoots next';
+      status.classList.add('admin-so-nudge');
+      setTimeout(function(){status.classList.remove('admin-so-nudge');},450);
+    }
+    return;
+  }
+  dcAdminSoTest.attempts.push({team:team,goal:!!goal});
+  adminSoTestRender();
+}
+
+function adminSoTestUndo(){
+  if(dcAdminSoTest.attempts.length)dcAdminSoTest.attempts.pop();
+  adminSoTestRender();
+}
+
+function adminSoTestReset(){
+  dcAdminSoTest.attempts=[];
+  dcAdminSoTest.first='youngstown';
+  adminSoTestRender();
+}
+
+function adminSoTestRenderAttempts(team,id){
+  var el=document.getElementById(id);if(!el)return;
+  var attempts=adminSoTestTeamAttempts(team);
+  if(!attempts.length){el.innerHTML='<span class="admin-so-empty">No attempts yet</span>';return;}
+  el.innerHTML=attempts.map(function(x,i){
+    return '<span class="admin-so-attempt '+(x.goal?'goal':'miss')+'" title="Attempt '+(i+1)+'">'+(x.goal?'✓':'×')+'</span>';
+  }).join('');
+}
+
+function adminSoTestRender(){
+  var panel=document.getElementById('adminSoTestPanel');if(!panel)return;
+  var y=adminSoTestTeamAttempts('youngstown'),o=adminSoTestTeamAttempts('opponent');
+  var yg=adminSoTestGoals('youngstown'),og=adminSoTestGoals('opponent');
+  var winner=adminSoTestDecision();
+  var next=adminSoTestNextTeam();
+
+  adminSoTestRenderAttempts('youngstown','adminSoTestYAttempts');
+  adminSoTestRenderAttempts('opponent','adminSoTestOAttempts');
+
+  var ygEl=document.getElementById('adminSoTestYGoals');
+  var ogEl=document.getElementById('adminSoTestOGoals');
+  var score=document.getElementById('adminSoTestScore');
+  var status=document.getElementById('adminSoTestStatus');
+  var result=document.getElementById('adminSoTestResult');
+
+  if(ygEl)ygEl.textContent=yg;
+  if(ogEl)ogEl.textContent=og;
+  if(score)score.textContent=yg+' – '+og;
+
+  if(winner){
+    var winnerName=winner==='youngstown'?'Youngstown':'Opponent';
+    if(status)status.textContent='Shootout complete';
+    if(result){
+      result.hidden=false;
+      result.innerHTML='<b>'+winnerName+' wins the shootout</b><span>Would finish as FINAL-SO in the real Game Center.</span>';
+    }
+  }else{
+    if(result){result.hidden=true;result.innerHTML='';}
+    var completedPairs=Math.min(y.length,o.length);
+    var round=(completedPairs<3)?completedPairs+1:Math.max(y.length,o.length)+1;
+    var phase=(completedPairs>=3?'Sudden death · ':'Round '+round+' · ');
+    var nextName=next==='youngstown'?'Youngstown':'Opponent';
+    if(status)status.textContent=phase+nextName+' shoots next';
+  }
+}
 
 
 let dcAdminQnaItems=[];
