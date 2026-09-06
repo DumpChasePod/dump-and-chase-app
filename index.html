@@ -3356,6 +3356,145 @@ body.game-live #publicGameDayCard .gameday-status{
 }
 </style>
 
+
+<style>
+/* v390: isolated dummy Game Day goal-card effects */
+#adminSoTestPanel .admin-so-goalfx-title{margin-top:14px}
+#adminSoTestPanel .admin-so-goalfx-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:6px;
+}
+#adminSoTestPanel #adminSoPublicCard.admin-so-goalfx-card{
+  min-height:210px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  overflow:hidden;
+}
+#adminSoTestPanel #adminSoPublicCard.admin-so-goalfx-phantoms{
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,55,55,.16),transparent 42%),
+    linear-gradient(135deg,#160f19,#0d1118 62%,#190f13);
+  border:1px solid rgba(255,75,75,.48);
+  border-left:3px solid #d72828;
+  box-shadow:inset -3px 0 0 rgba(255,255,255,.05);
+}
+#adminSoTestPanel #adminSoPublicCard.admin-so-goalfx-phantoms:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 38%,rgba(255,0,0,.20),transparent 43%);
+  animation:adminSoGoalFlash .72s linear infinite;
+}
+#adminSoTestPanel .admin-so-goalfx-stage{
+  position:relative;
+  z-index:1;
+  width:100%;
+  min-height:210px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+}
+#adminSoTestPanel .admin-so-police-light{
+  position:relative;
+  width:94px;
+  height:78px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  filter:drop-shadow(0 0 16px rgba(255,30,30,.28));
+}
+#adminSoTestPanel .admin-so-police-dome{
+  position:absolute;
+  top:0;
+  width:70px;
+  height:52px;
+  border-radius:36px 36px 12px 12px;
+  border:2px solid rgba(255,255,255,.26);
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 5px,rgba(255,255,255,0) 5px 12px),
+    linear-gradient(180deg,#ff5555 0%,#df1616 42%,#750808 100%);
+  box-shadow:
+    inset 0 8px 12px rgba(255,255,255,.16),
+    inset 0 -8px 12px rgba(60,0,0,.32),
+    0 0 18px rgba(255,25,25,.45);
+  transform-origin:50% 86%;
+  animation:adminSoBeaconSpin .56s linear infinite;
+}
+#adminSoTestPanel .admin-so-police-dome:after{
+  content:"";
+  position:absolute;
+  inset:4px 8px 20px;
+  border-radius:50%;
+  background:linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%);
+  opacity:.72;
+}
+#adminSoTestPanel .admin-so-police-base{
+  width:86px;
+  height:18px;
+  border-radius:6px 6px 10px 10px;
+  background:linear-gradient(180deg,#3e444c,#161a20);
+  border:1px solid #5b626d;
+  box-shadow:0 5px 10px rgba(0,0,0,.38);
+}
+#adminSoTestPanel .admin-so-goalfx-word{
+  font-size:42px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:#fff;
+  text-shadow:0 0 13px rgba(255,40,40,.78),0 2px 0 #7b0707;
+  animation:adminSoGoalPulse .72s ease-in-out infinite alternate;
+}
+#adminSoTestPanel #adminSoPublicCard.admin-so-goalfx-opponent{
+  background:linear-gradient(135deg,#373a3f,#22262b 62%,#30343a);
+  border:1px solid #565d66;
+  border-left:3px solid #7f8791;
+  box-shadow:inset -3px 0 0 rgba(255,255,255,.04);
+}
+#adminSoTestPanel .admin-so-goalfx-stage-opponent{
+  min-height:210px;
+}
+#adminSoTestPanel .admin-so-goalfx-opponent-word{
+  padding:0 18px;
+  font-size:28px;
+  line-height:1.08;
+  font-weight:1000;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:#e5e8ec;
+  text-shadow:0 2px 0 rgba(0,0,0,.28);
+}
+@keyframes adminSoBeaconSpin{
+  0%{transform:perspective(110px) rotateY(0deg)}
+  50%{transform:perspective(110px) rotateY(180deg)}
+  100%{transform:perspective(110px) rotateY(360deg)}
+}
+@keyframes adminSoGoalFlash{
+  0%,100%{opacity:.35}
+  50%{opacity:1}
+}
+@keyframes adminSoGoalPulse{
+  from{transform:scale(.96);opacity:.88}
+  to{transform:scale(1.04);opacity:1}
+}
+@media(max-width:420px){
+  #adminSoTestPanel .admin-so-goalfx-grid{grid-template-columns:1fr}
+  #adminSoTestPanel .admin-so-goalfx-word{font-size:38px}
+  #adminSoTestPanel .admin-so-goalfx-opponent-word{font-size:24px}
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4397,7 +4536,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v389</small>
+<header><small class="build-version build-version-corner">v390</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6474,6 +6613,14 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="admin-so-result" id="adminSoTestResult" hidden></div>
     <div class="admin-so-auto-final-note" id="adminSoAutoFinalNote">AUTO FINAL-SO TEST ENABLED</div>
 
+    <div class="admin-group-title admin-so-goalfx-title">GOAL CARD EFFECT TEST</div>
+    <div class="admin-so-goalfx-grid">
+      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('youngstown',5000,'YOUNGSTOWN GOAL')">YOUNGSTOWN · 5 SEC</button>
+      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('opponent',3000,'MUSKEGON GOAL')">MUSKEGON · 3 SEC</button>
+      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('youngstown',3000,'YOUNGSTOWN GOAL')">YOUNGSTOWN SO · 3 SEC</button>
+      <button type="button" class="admin-chip" onclick="adminSoTestGoalFx('opponent',3000,'MUSKEGON GOAL')">MUSKEGON SO · 3 SEC</button>
+    </div>
+
     <div class="admin-so-footer-actions">
       <button type="button" class="admin-mini-btn" onclick="adminSoTestUndo()">UNDO LAST</button>
       <button type="button" class="admin-mini-btn" onclick="adminSoTestReset()">RESET TEST</button>
@@ -6809,7 +6956,9 @@ let dcAdminSoTest={
   first:'youngstown',
   baseGameScore:{youngstown:2,opponent:2},
   status:'live',
-  result:''
+  result:'',
+  goalFx:null,
+  goalFxTimer:null
 };
 
 function adminSoTestOther(team){return team==='youngstown'?'opponent':'youngstown';}
@@ -6870,7 +7019,29 @@ function adminSoTestUndo(){
   adminSoTestRender();
 }
 
+function adminSoTestGoalFx(team,duration,label){
+  if(dcAdminSoTest.goalFxTimer){
+    clearTimeout(dcAdminSoTest.goalFxTimer);
+    dcAdminSoTest.goalFxTimer=null;
+  }
+  dcAdminSoTest.goalFx={
+    team:team==='opponent'?'opponent':'youngstown',
+    label:String(label||'GOAL').toUpperCase()
+  };
+  adminSoTestRender();
+  dcAdminSoTest.goalFxTimer=setTimeout(function(){
+    dcAdminSoTest.goalFx=null;
+    dcAdminSoTest.goalFxTimer=null;
+    adminSoTestRender();
+  },Math.max(500,Number(duration)||3000));
+}
+
 function adminSoTestReset(){
+  if(dcAdminSoTest.goalFxTimer){
+    clearTimeout(dcAdminSoTest.goalFxTimer);
+    dcAdminSoTest.goalFxTimer=null;
+  }
+  dcAdminSoTest.goalFx=null;
   dcAdminSoTest.attempts=[];
   dcAdminSoTest.first='youngstown';
   dcAdminSoTest.status='live';
@@ -6978,6 +7149,25 @@ function adminSoTestRender(){
   /* Dummy public preview uses the same structure/classes as the actual live Game Day card. */
   var publicCard=document.getElementById('adminSoPublicCard');
   if(publicCard){
+    if(dcAdminSoTest.goalFx){
+      if(dcAdminSoTest.goalFx.team==='youngstown'){
+        publicCard.className='card gameday-card admin-so-live-card admin-so-goalfx-card admin-so-goalfx-phantoms';
+        publicCard.innerHTML=
+          '<div class="admin-so-goalfx-stage">'+
+            '<div class="admin-so-police-light" aria-hidden="true"><div class="admin-so-police-dome"></div><div class="admin-so-police-base"></div></div>'+
+            '<div class="admin-so-goalfx-word">GOAL!</div>'+
+          '</div>';
+      }else{
+        publicCard.className='card gameday-card admin-so-live-card admin-so-goalfx-card admin-so-goalfx-opponent';
+        publicCard.innerHTML=
+          '<div class="admin-so-goalfx-stage admin-so-goalfx-stage-opponent">'+
+            '<div class="admin-so-goalfx-opponent-word">'+dcAdminSoTest.goalFx.label+'</div>'+
+          '</div>';
+      }
+      return;
+    }
+
+    publicCard.className='card gameday-card admin-so-live-card';
     var publicRound=Math.max(y.length,o.length)+1;
     if(Math.min(y.length,o.length)<3)publicRound=Math.min(y.length,o.length)+1;
     var publicPeriod=dcAdminSoTest.status==='final'?'FINAL-SO':'SO · ROUND '+publicRound;
