@@ -2730,6 +2730,27 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 #adminGameDayPanel .admin-clock-readout{margin-bottom:30px}
 #adminGameDayPanel .admin-clock-digit{grid-template-rows:32px 32px!important;height:64px!important;min-height:64px!important;overflow:hidden!important}
 #adminGameDayPanel .admin-clock-digit output{display:none!important;height:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important}
+
+/* v374 listened episode state */
+#episodeList .episode-card.is-listened:not(.is-now-playing){
+  border-color:rgba(147,92,255,.24)!important;
+}
+#episodeList .episode-card.is-listened:not(.is-now-playing) .episode-title::after{
+  content:"✓ LISTENED";
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  padding:3px 6px;
+  border:1px solid rgba(147,92,255,.26);
+  border-radius:999px;
+  background:rgba(139,77,255,.07);
+  color:#a99bc4;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.08em;
+  vertical-align:2px;
+}
+
 </style>
 
 
@@ -3747,7 +3768,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   background:rgba(255,255,255,.025);
 }
 </style>
-<header><small class="build-version build-version-corner">v373</small>
+<header><small class="build-version build-version-corner">v374</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7577,6 +7598,31 @@ window.addEventListener('load',function(){
     }
   }
 
+  var DC_LISTENED_KEY='dc_episode_listened_v1';
+
+  function getListenedEpisodeMap(){
+    try{
+      var raw=localStorage.getItem(DC_LISTENED_KEY);
+      var parsed=raw?JSON.parse(raw):{};
+      return parsed&&typeof parsed==='object'?parsed:{};
+    }catch(e){
+      return {};
+    }
+  }
+
+  function markEpisodeListened(src){
+    if(!src)return;
+    var map=getListenedEpisodeMap();
+    map[src]=Date.now();
+    try{localStorage.setItem(DC_LISTENED_KEY,JSON.stringify(map));}catch(e){}
+  }
+
+  function isEpisodeListened(src){
+    if(!src)return false;
+    var map=getListenedEpisodeMap();
+    return Object.prototype.hasOwnProperty.call(map,src);
+  }
+
   window.syncEpisodeNowPlaying=function(){
     var a=audio();
     var src=a&&a.src ? a.src : '';
@@ -7584,8 +7630,10 @@ window.addEventListener('load',function(){
     document.querySelectorAll('#episodeList .episode-card').forEach(function(card){
       var cardSrc=card.getAttribute('data-episode-audio')||'';
       var match=!!src && !!cardSrc && src===cardSrc;
+      var listened=isEpisodeListened(cardSrc);
       card.classList.toggle('is-now-playing',match);
       card.classList.toggle('is-paused',match&&paused);
+      card.classList.toggle('is-listened',listened);
       var btn=card.querySelector('.episode-listen');
       if(btn){
         if(match)btn.textContent=paused?'▶ RESUME':'❚❚ NOW PLAYING';
@@ -7618,7 +7666,12 @@ window.addEventListener('load',function(){
 
     a.addEventListener('play',function(){startTimer();syncEpisodeNowPlaying();});
     a.addEventListener('pause',function(){savePlaybackPosition();stopTimer();syncEpisodeNowPlaying();});
-    a.addEventListener('ended',function(){clearFinishedPlayback();stopTimer();syncEpisodeNowPlaying();});
+    a.addEventListener('ended',function(){
+      markEpisodeListened(a.src);
+      clearFinishedPlayback();
+      stopTimer();
+      syncEpisodeNowPlaying();
+    });
     window.addEventListener('pagehide',savePlaybackPosition);
     document.addEventListener('visibilitychange',function(){
       if(document.visibilityState==='hidden')savePlaybackPosition();
