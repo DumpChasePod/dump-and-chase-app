@@ -3424,7 +3424,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   min-height:12px;
 }
 </style>
-<header><small class="build-version build-version-corner">v359</small>
+<header><small class="build-version build-version-corner">v360</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4581,11 +4581,15 @@ function startAudio(item){
  if(!src){toast('Audio URL was not available.');return}
  audio.pause();
  audio.src=src;
+ audio.dataset.feedDuration=String(item.duration||'');
  audio.load();
  document.getElementById('audioTitle').textContent=item.title||'Dump & Chase Podcast';
  document.getElementById('bigAudioTitle').textContent=item.title||'Dump & Chase Podcast';
  document.getElementById('audioCurrent').textContent='0:00';
  document.getElementById('bigCurrent').textContent='0:00';
+ var feedSeconds=parseEpisodeDurationSeconds(item.duration||'');
+ document.getElementById('audioDuration').textContent=feedSeconds?fmt(feedSeconds):'0:00';
+ document.getElementById('bigDuration').textContent=feedSeconds?fmt(feedSeconds):'0:00';
  document.getElementById('audioRange').value=0;
  document.getElementById('bigRange').value=0;
  document.getElementById('audioPlay').textContent='▶';
@@ -4622,16 +4626,65 @@ function openFullPlayer(){
  document.getElementById('audioPlayer').classList.remove('show');
 }
 function seekAudio(seconds){
- const a=document.getElementById('audio'); if(a.src) a.currentTime=Math.max(0,Math.min(a.duration||0,a.currentTime+seconds));
+ const a=document.getElementById('audio'),d=effectiveAudioDuration(); if(a.src&&d) a.currentTime=Math.max(0,Math.min(d,a.currentTime+seconds));
 }
 function closePlayer(){document.getElementById('audio').pause();document.getElementById('audioPlayer').classList.remove('show');document.getElementById('playerScreen').classList.remove('show');}
 const audioEl=document.getElementById('audio');
-audioEl?.addEventListener('loadedmetadata',()=>{document.getElementById('audioDuration').textContent=fmt(audioEl.duration);document.getElementById('bigDuration').textContent=fmt(audioEl.duration)});
-audioEl?.addEventListener('timeupdate',()=>{const pct=audioEl.duration?(audioEl.currentTime/audioEl.duration*100):0;document.getElementById('audioCurrent').textContent=fmt(audioEl.currentTime);document.getElementById('bigCurrent').textContent=fmt(audioEl.currentTime);document.getElementById('audioRange').value=pct;document.getElementById('bigRange').value=pct});
-audioEl?.addEventListener('ended',()=>{document.getElementById('audioPlay').textContent='▶';document.getElementById('bigPlay').textContent='▶';var st=document.getElementById('playerStatus');if(st)st.textContent='FINISHED';document.getElementById('playerScreen')?.classList.add('loaded-paused')});
+let dcAudioProgressFrame=0;
+
+function parseEpisodeDurationSeconds(value){
+  var text=String(value||'').trim();
+  if(!text)return 0;
+  if(/^\d+$/.test(text))return Number(text)||0;
+  var parts=text.split(':').map(Number);
+  if(parts.some(function(n){return !Number.isFinite(n);}))return 0;
+  if(parts.length===3)return parts[0]*3600+parts[1]*60+parts[2];
+  if(parts.length===2)return parts[0]*60+parts[1];
+  return 0;
+}
+function effectiveAudioDuration(){
+  if(!audioEl)return 0;
+  if(Number.isFinite(audioEl.duration)&&audioEl.duration>0)return audioEl.duration;
+  try{
+    if(audioEl.seekable&&audioEl.seekable.length){
+      var end=audioEl.seekable.end(audioEl.seekable.length-1);
+      if(Number.isFinite(end)&&end>0)return end;
+    }
+  }catch(_){}
+  return parseEpisodeDurationSeconds(audioEl.dataset.feedDuration||'');
+}
+function updateAudioProgress(){
+  if(!audioEl)return;
+  var current=Number.isFinite(audioEl.currentTime)?audioEl.currentTime:0;
+  var duration=effectiveAudioDuration();
+  var pct=duration>0?Math.max(0,Math.min(100,current/duration*100)):0;
+  var ac=document.getElementById('audioCurrent'),bc=document.getElementById('bigCurrent');
+  var ad=document.getElementById('audioDuration'),bd=document.getElementById('bigDuration');
+  var ar=document.getElementById('audioRange'),br=document.getElementById('bigRange');
+  if(ac)ac.textContent=fmt(current);
+  if(bc)bc.textContent=fmt(current);
+  if(ad&&duration>0)ad.textContent=fmt(duration);
+  if(bd&&duration>0)bd.textContent=fmt(duration);
+  if(ar)ar.value=pct;
+  if(br)br.value=pct;
+}
+function runAudioProgressLoop(){
+  cancelAnimationFrame(dcAudioProgressFrame);
+  function tick(){
+    updateAudioProgress();
+    if(audioEl&&!audioEl.paused&&!audioEl.ended)dcAudioProgressFrame=requestAnimationFrame(tick);
+  }
+  tick();
+}
+['loadedmetadata','durationchange','canplay','progress','timeupdate','seeking','seeked'].forEach(function(evt){
+  audioEl?.addEventListener(evt,updateAudioProgress);
+});
+audioEl?.addEventListener('play',runAudioProgressLoop);
+audioEl?.addEventListener('pause',function(){cancelAnimationFrame(dcAudioProgressFrame);updateAudioProgress();});
+audioEl?.addEventListener('ended',()=>{cancelAnimationFrame(dcAudioProgressFrame);updateAudioProgress();document.getElementById('audioPlay').textContent='▶';document.getElementById('bigPlay').textContent='▶';var st=document.getElementById('playerStatus');if(st)st.textContent='FINISHED';document.getElementById('playerScreen')?.classList.add('loaded-paused')});
 audioEl?.addEventListener('error',()=>toast('This episode audio could not be loaded.'));
-document.getElementById('audioRange')?.addEventListener('input',e=>{if(audioEl.duration)audioEl.currentTime=(e.target.value/100)*audioEl.duration});
-document.getElementById('bigRange')?.addEventListener('input',e=>{if(audioEl.duration)audioEl.currentTime=(e.target.value/100)*audioEl.duration});
+document.getElementById('audioRange')?.addEventListener('input',e=>{var d=effectiveAudioDuration();if(d)audioEl.currentTime=(e.target.value/100)*d});
+document.getElementById('bigRange')?.addEventListener('input',e=>{var d=effectiveAudioDuration();if(d)audioEl.currentTime=(e.target.value/100)*d});
 function fmt(s){if(!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`}
 
 
