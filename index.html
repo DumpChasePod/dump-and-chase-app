@@ -4194,7 +4194,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v382</small>
+<header><small class="build-version build-version-corner">v383</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6229,9 +6229,9 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
 
   <div class="admin-so-dummy-scoreboard">
-    <div class="admin-so-dummy-team"><span>YOUNGSTOWN</span><b>2</b></div>
+    <div class="admin-so-dummy-team"><span>YOUNGSTOWN</span><b id="adminSoTestGameYScore">2</b></div>
     <div class="admin-so-dummy-center"><strong>SO</strong><span>00:00</span></div>
-    <div class="admin-so-dummy-team"><span>OPPONENT</span><b>2</b></div>
+    <div class="admin-so-dummy-team"><span>OPPONENT</span><b id="adminSoTestGameOScore">2</b></div>
   </div>
 
   <div class="admin-group-title">SHOOTOUT TRACKER</div>
@@ -6591,7 +6591,8 @@ function selectAdminTab(tab,skipDirtyCheck){
 /* v382: isolated shootout test lab. No Supabase reads/writes and no Game Day state changes. */
 let dcAdminSoTest={
   attempts:[],
-  first:'youngstown'
+  first:'youngstown',
+  baseGameScore:{youngstown:2,opponent:2}
 };
 
 function adminSoTestOther(team){return team==='youngstown'?'opponent':'youngstown';}
@@ -6672,23 +6673,31 @@ function adminSoTestRender(){
   var score=document.getElementById('adminSoTestScore');
   var status=document.getElementById('adminSoTestStatus');
   var result=document.getElementById('adminSoTestResult');
+  var gameY=document.getElementById('adminSoTestGameYScore');
+  var gameO=document.getElementById('adminSoTestGameOScore');
 
   if(ygEl)ygEl.textContent=yg;
   if(ogEl)ogEl.textContent=og;
   if(score)score.textContent=yg+' – '+og;
+
+  var baseY=Number(dcAdminSoTest.baseGameScore.youngstown||0);
+  var baseO=Number(dcAdminSoTest.baseGameScore.opponent||0);
+  if(gameY)gameY.textContent=baseY+(winner==='youngstown'?1:0);
+  if(gameO)gameO.textContent=baseO+(winner==='opponent'?1:0);
 
   if(winner){
     var winnerName=winner==='youngstown'?'Youngstown':'Opponent';
     if(status)status.textContent='Shootout complete';
     if(result){
       result.hidden=false;
-      result.innerHTML='<b>'+winnerName+' wins the shootout</b><span>Would finish as FINAL-SO in the real Game Center.</span>';
+      result.innerHTML='<b>'+winnerName+' wins the shootout</b><span>Winning shootout goal has been added to the game score. This would finish as FINAL-SO in the real Game Center.</span>';
     }
   }else{
     if(result){result.hidden=true;result.innerHTML='';}
     var completedPairs=Math.min(y.length,o.length);
-    var round=(completedPairs<3)?completedPairs+1:Math.max(y.length,o.length)+1;
-    var phase=(completedPairs>=3?'Sudden death · ':'Round '+round+' · ');
+    var round=Math.max(y.length,o.length)+1;
+    if(completedPairs<3)round=completedPairs+1;
+    var phase=(round>3?'Sudden Death · Round '+round+' · ':'Round '+round+' · ');
     var nextName=next==='youngstown'?'Youngstown':'Opponent';
     if(status)status.textContent=phase+nextName+' shoots next';
   }
