@@ -3747,7 +3747,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   background:rgba(255,255,255,.025);
 }
 </style>
-<header><small class="build-version build-version-corner">v372</small>
+<header><small class="build-version build-version-corner">v373</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7548,9 +7548,16 @@ window.addEventListener('load',function(){
     try{localStorage.setItem(DC_PLAYBACK_KEY,JSON.stringify(map));}catch(e){}
   }
 
-  function restorePlaybackPosition(){
+  var dcRestoredPlaybackSrc='';
+
+  function restorePlaybackPositionOnce(){
     var a=audio();
     if(!a||!a.src)return;
+    if(dcRestoredPlaybackSrc===a.src)return;
+
+    /* Mark this source before seeking so seek/canplay events cannot restore it again. */
+    dcRestoredPlaybackSrc=a.src;
+
     var map=getSavedPlaybackMap();
     var saved=Number(map[a.src]||0);
     var d=Number(a.duration||0);
@@ -7594,16 +7601,19 @@ window.addEventListener('load',function(){
     ['loadedmetadata','durationchange','canplay','timeupdate','progress','seeking','seeked','playing'].forEach(function(evt){
       a.addEventListener(evt,paint);
     });
-    a.addEventListener('loadedmetadata',restorePlaybackPosition);
-    a.addEventListener('canplay',restorePlaybackPosition);
+    a.addEventListener('loadedmetadata',restorePlaybackPositionOnce);
 
     var lastSavedSecond=-1;
     a.addEventListener('timeupdate',function(){
       var now=Math.floor(Number(a.currentTime||0));
-      if(now>=0 && (lastSavedSecond<0 || now-lastSavedSecond>=5)){
+      if(now>=0 && (lastSavedSecond<0 || Math.abs(now-lastSavedSecond)>=5)){
         lastSavedSecond=now;
         savePlaybackPosition();
       }
+    });
+    a.addEventListener('seeked',function(){
+      lastSavedSecond=Math.floor(Number(a.currentTime||0));
+      savePlaybackPosition();
     });
 
     a.addEventListener('play',function(){startTimer();syncEpisodeNowPlaying();});
