@@ -3424,13 +3424,24 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   min-height:12px;
 }
 
-/* v365 player range alignment */
+/* v366 knobless player progress bar */
 .big-range,
 .audio-range{
+  --dc-progress:0%;
   -webkit-appearance:none;
   appearance:none;
-  border-radius:999px;
+  width:100%;
+  border:0;
   outline:none;
+  cursor:pointer;
+  border-radius:999px;
+  background:linear-gradient(
+    to right,
+    #8b4dff 0%,
+    #8b4dff var(--dc-progress),
+    #e7e7e7 var(--dc-progress),
+    #e7e7e7 100%
+  );
 }
 .big-range{
   height:8px;
@@ -3449,20 +3460,12 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 .audio-range::-webkit-slider-thumb{
   -webkit-appearance:none;
   appearance:none;
+  width:1px;
+  height:1px;
+  margin:0;
   border:0;
-  border-radius:50%;
-  background:#8b4dff;
-  cursor:pointer;
-}
-.big-range::-webkit-slider-thumb{
-  width:24px;
-  height:24px;
-  margin-top:-8px;
-}
-.audio-range::-webkit-slider-thumb{
-  width:16px;
-  height:16px;
-  margin-top:-6px;
+  background:transparent;
+  box-shadow:none;
 }
 .big-range::-moz-range-track,
 .audio-range::-moz-range-track{
@@ -3471,22 +3474,21 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   border:0;
   border-radius:999px;
 }
+.big-range::-moz-range-progress,
+.audio-range::-moz-range-progress{
+  height:100%;
+  background:transparent;
+}
 .big-range::-moz-range-thumb,
 .audio-range::-moz-range-thumb{
+  width:1px;
+  height:1px;
   border:0;
-  border-radius:50%;
-  background:#8b4dff;
-}
-.big-range::-moz-range-thumb{
-  width:24px;
-  height:24px;
-}
-.audio-range::-moz-range-thumb{
-  width:16px;
-  height:16px;
+  background:transparent;
+  box-shadow:none;
 }
 </style>
-<header><small class="build-version build-version-corner">v365</small>
+<header><small class="build-version build-version-corner">v366</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7136,16 +7138,14 @@ window.addEventListener('load',function(){
     if(bc)bc.textContent=fmtLocal(c);
     if(ad&&d>0)ad.textContent=fmtLocal(d);
     if(bd&&d>0)bd.textContent=fmtLocal(d);
-    function paintRange(el,percent,thumbPx){
+    function paintRange(el,percent){
       if(!el)return;
-      el.value=String(percent);
-      var w=el.clientWidth||0;
-      var half=thumbPx/2;
-      var stop=w>thumbPx ? half+((w-thumbPx)*(percent/100)) : 0;
-      el.style.background='linear-gradient(to right,#8b4dff 0px,#8b4dff '+stop+'px,#e7e7e7 '+stop+'px,#e7e7e7 100%)';
+      var clean=Math.max(0,Math.min(100,Number(percent)||0));
+      el.value=String(clean);
+      el.style.setProperty('--dc-progress',clean+'%');
     }
-    paintRange(ar,pct,16);
-    paintRange(br,pct,24);
+    paintRange(ar,pct);
+    paintRange(br,pct);
   }
   function startTimer(){
     clearInterval(timer);
