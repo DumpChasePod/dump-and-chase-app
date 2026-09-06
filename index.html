@@ -3260,6 +3260,31 @@ body.game-live #publicGameDayCard .gameday-status{
 }
 </style>
 
+
+<style>
+/* v387: shootout test live-final behavior + five attempts per row */
+#adminSoTestPanel .admin-so-attempts{
+  display:grid;
+  grid-template-columns:repeat(5,25px);
+  justify-content:start;
+  gap:5px;
+}
+#adminSoTestPanel #adminSoPublicCard .admin-so-live-attempts{
+  display:grid;
+  grid-template-columns:repeat(5,max-content);
+  justify-content:center;
+  gap:4px 5px;
+}
+#adminSoTestPanel .admin-so-auto-final-note{
+  margin-top:8px;
+  text-align:center;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  opacity:.52;
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -4301,7 +4326,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v386</small>
+<header><small class="build-version build-version-corner">v387</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6369,6 +6394,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
 
     <div class="admin-so-result" id="adminSoTestResult" hidden></div>
+    <div class="admin-so-auto-final-note" id="adminSoAutoFinalNote">AUTO FINAL-SO TEST ENABLED</div>
 
     <div class="admin-so-footer-actions">
       <button type="button" class="admin-mini-btn" onclick="adminSoTestUndo()">UNDO LAST</button>
@@ -6703,7 +6729,9 @@ function selectAdminTab(tab,skipDirtyCheck){
 let dcAdminSoTest={
   attempts:[],
   first:'youngstown',
-  baseGameScore:{youngstown:2,opponent:2}
+  baseGameScore:{youngstown:2,opponent:2},
+  status:'live',
+  result:''
 };
 
 function adminSoTestOther(team){return team==='youngstown'?'opponent':'youngstown';}
@@ -6751,12 +6779,16 @@ function adminSoTestAttempt(team,goal){
 
 function adminSoTestUndo(){
   if(dcAdminSoTest.attempts.length)dcAdminSoTest.attempts.pop();
+  dcAdminSoTest.status='live';
+  dcAdminSoTest.result='';
   adminSoTestRender();
 }
 
 function adminSoTestReset(){
   dcAdminSoTest.attempts=[];
   dcAdminSoTest.first='youngstown';
+  dcAdminSoTest.status='live';
+  dcAdminSoTest.result='';
   adminSoTestRender();
 }
 
@@ -6793,6 +6825,14 @@ function adminSoTestRender(){
   var winner=adminSoTestDecision();
   var next=adminSoTestNextTeam();
 
+  if(winner){
+    dcAdminSoTest.status='final';
+    dcAdminSoTest.result=winner==='youngstown'?'W_SO':'L_SO';
+  }else{
+    dcAdminSoTest.status='live';
+    dcAdminSoTest.result='';
+  }
+
   adminSoTestRenderAttempts('youngstown','adminSoTestYAttempts');
   adminSoTestRenderAttempts('opponent','adminSoTestOAttempts');
 
@@ -6820,7 +6860,7 @@ function adminSoTestRender(){
     if(status)status.textContent='Shootout complete';
     if(result){
       result.hidden=false;
-      result.innerHTML='<b>'+winnerName+' wins the shootout</b><span>Winning shootout goal has been added to the game score. This would finish as FINAL-SO in the real Game Center.</span>';
+      result.innerHTML='<b>'+winnerName+' wins the shootout · FINAL-SO</b><span>Winning shootout goal added automatically. UNDO LAST will reopen the game to LIVE / SO and remove that goal.</span>';
     }
   }else{
     if(result){result.hidden=true;result.innerHTML='';}
@@ -6837,9 +6877,9 @@ function adminSoTestRender(){
   if(publicCard){
     var publicRound=Math.max(y.length,o.length)+1;
     if(Math.min(y.length,o.length)<3)publicRound=Math.min(y.length,o.length)+1;
-    var publicPeriod=winner?'FINAL-SO':(publicRound>3?'SO · ROUND '+publicRound:'SO · ROUND '+publicRound);
-    var publicStatusText=winner?'FINAL-SO':'LIVE';
-    var publicStatusClass=winner?'gameday-final':'gameday-live';
+    var publicPeriod=dcAdminSoTest.status==='final'?'FINAL-SO':'SO · ROUND '+publicRound;
+    var publicStatusText=dcAdminSoTest.status==='final'?'FINAL-SO':'LIVE';
+    var publicStatusClass=dcAdminSoTest.status==='final'?'gameday-final':'gameday-live';
     var leftTeam='Youngstown Phantoms',rightTeam='Des Moines Buccaneers';
     var leftScore=finalY,rightScore=finalO;
 
