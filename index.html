@@ -4800,7 +4800,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v402</small>
+<header><small class="build-version build-version-corner">v403</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -8402,10 +8402,13 @@ function adminActiveScheduleRow(){
 function syncAdminGameDayBoxScoreControl(forceEdit){
   var input=document.getElementById('adminGameDayBoxScore'),btn=document.getElementById('adminGameDayBoxScoreEdit'),done=document.getElementById('adminGameDayBoxScoreDone');if(!input)return;
   var hasUrl=!!String(input.value||'').trim();
-  var editing=!!forceEdit||!hasUrl;
+  var editing=!!forceEdit;
   input.hidden=!editing;
-  if(btn)btn.hidden=editing||!hasUrl;
-  if(done)done.hidden=!editing||!hasUrl;
+  if(btn){
+    btn.hidden=editing;
+    btn.innerHTML=hasUrl?'BOX SCORE ✓ &nbsp; EDIT':'ADD BOX SCORE';
+  }
+  if(done)done.hidden=!editing;
 }
 function editAdminGameDayBoxScore(){syncAdminGameDayBoxScoreControl(true);var input=document.getElementById('adminGameDayBoxScore');if(input){input.focus();try{input.setSelectionRange(input.value.length,input.value.length);}catch(_){}}}
 function doneAdminGameDayBoxScore(){var input=document.getElementById('adminGameDayBoxScore');if(input)input.blur();syncAdminGameDayBoxScoreControl(false);}
