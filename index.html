@@ -3487,8 +3487,104 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   background:transparent;
   box-shadow:none;
 }
+
+/* v367 compact episode cards with expandable descriptions */
+#episodeList .episode-card{
+  padding:13px 14px;
+}
+#episodeList .episode-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+#episodeList .episode-card-meta{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+}
+#episodeList .episode-date{
+  margin:0;
+}
+#episodeList .episode-duration-top{
+  flex:0 0 auto;
+  min-width:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#8995a7;
+  font-size:9.5px;
+  font-weight:850;
+}
+#episodeList .episode-title{
+  margin:0;
+  font-size:15.5px;
+  line-height:1.24;
+}
+#episodeList .episode-card-footer{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+}
+#episodeList .episode-listen{
+  min-height:38px;
+  padding:8px 12px!important;
+  border-radius:10px;
+}
+#episodeList .episode-description-toggle{
+  min-height:38px;
+  padding:0 10px;
+  border:1px solid #2c394b;
+  border-radius:10px;
+  background:rgba(255,255,255,.025);
+  color:#9aa7b8;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.045em;
+  white-space:nowrap;
+}
+#episodeList .episode-description-toggle[aria-expanded="true"]{
+  color:#dbc8ff;
+  border-color:rgba(147,92,255,.48);
+  background:rgba(139,77,255,.12);
+}
+#episodeList .episode-desc-expanded{
+  margin-top:11px;
+  padding:11px 12px;
+  border-top:1px solid rgba(255,255,255,.065);
+  color:#cbd3df;
+  font-size:11.5px;
+  line-height:1.56;
+  white-space:pre-wrap;
+}
+#episodeList .episode-desc-expanded[hidden]{
+  display:none!important;
+}
+#episodeList .episode-featured{
+  padding:14px 15px;
+}
+#episodeList .episode-featured .episode-title{
+  margin:0;
+  font-size:17px;
+  line-height:1.22;
+}
+#episodeList .episode-featured .episode-card-footer{
+  margin-top:11px;
+}
+#episodeList .episode-featured .episode-listen{
+  min-height:40px;
+  font-size:11px;
+}
+#episodeList .episode-card.desc-open{
+  border-color:rgba(147,92,255,.38);
+}
 </style>
-<header><small class="build-version build-version-corner">v366</small>
+<header><small class="build-version build-version-corner">v367</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4118,15 +4214,49 @@ function episodeCard(e,isLatest){
  const date=escapeHtml(e.date||'');
  const duration=escapeHtml(formatEpisodeDuration(e.duration));
  const desc=escapeHtml(e.desc||'');
+ const hasDesc=String(e.desc||'').trim().length>0;
  return `<article class="card episode-card${isLatest?' episode-featured':''}" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
-   <div class="episode-card-top">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
+   <div class="episode-card-top">
+     <div class="episode-card-meta">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
+     <span class="episode-duration episode-duration-top">${duration}</span>
+   </div>
    <h3 class="episode-title">${escapeHtml(e.title||'Dump & Chase Podcast')}</h3>
-   <p class="episode-desc">${desc}</p>
    <div class="episode-card-footer">
      <button class="btn primary episode-listen" onclick="event.stopPropagation();listenEpisode('${payload}')">▶ LISTEN</button>
-     <span class="episode-duration">${duration}</span>
+     ${hasDesc?'<button type="button" class="episode-description-toggle" aria-expanded="false" onclick="toggleEpisodeDescription(this,event)">DESCRIPTION</button>':''}
    </div>
+   ${hasDesc?`<div class="episode-desc-expanded" hidden>${desc}</div>`:''}
  </article>`;
+}
+
+function toggleEpisodeDescription(btn,event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ var card=btn&&btn.closest?btn.closest('.episode-card'):null;
+ if(!card)return;
+
+ var wasOpen=card.classList.contains('desc-open');
+
+ document.querySelectorAll('#episodeList .episode-card.desc-open').forEach(function(other){
+   if(other===card)return;
+   other.classList.remove('desc-open');
+   var otherDesc=other.querySelector('.episode-desc-expanded');
+   var otherBtn=other.querySelector('.episode-description-toggle');
+   if(otherDesc)otherDesc.hidden=true;
+   if(otherBtn){otherBtn.textContent='DESCRIPTION';otherBtn.setAttribute('aria-expanded','false');}
+ });
+
+ var desc=card.querySelector('.episode-desc-expanded');
+ if(wasOpen){
+   card.classList.remove('desc-open');
+   if(desc)desc.hidden=true;
+   btn.textContent='DESCRIPTION';
+   btn.setAttribute('aria-expanded','false');
+ }else{
+   card.classList.add('desc-open');
+   if(desc)desc.hidden=false;
+   btn.textContent='HIDE DESCRIPTION';
+   btn.setAttribute('aria-expanded','true');
+ }
 }
 function listenEpisode(payload){
  try{
