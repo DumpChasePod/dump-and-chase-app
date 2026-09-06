@@ -3089,6 +3089,8 @@ body.game-live #publicGameDayCard .gameday-status{
 #adminGameDayPanel .admin-live-preview-state{margin-top:3px;font-size:9px;font-weight:900;color:#cbb1ff;letter-spacing:.045em;text-transform:uppercase}
 #adminGameDayPanel .admin-live-preview.is-final .admin-live-preview-state{color:#8fe0aa}
 #adminGameDayPanel .admin-live-preview.is-upcoming .admin-live-preview-state{color:#aab5c5}
+#adminGameDayPanel .admin-live-preview-stoppage{display:table;margin:5px auto 0;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.19);background:rgba(255,255,255,.07);color:#e6eaf0;font-size:7.5px;line-height:1;font-weight:950;letter-spacing:.07em;text-transform:uppercase}
+#adminGameDayPanel .admin-live-preview-stoppage.review{border-color:rgba(242,137,44,.42);background:rgba(242,137,44,.09);color:#f5bc84}
 </style>
 
 <style>
@@ -4796,7 +4798,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v397</small>
+<header><small class="build-version build-version-corner">v398</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5123,6 +5125,14 @@ function updateAdminGameDayPreview(){
     else{var displayClock=clock;var m=/^(\d{1,2}):(\d{2})$/.exec(clock);if(m)displayClock=String(Number(m[1]))+':'+m[2];state=(period?period+' • ':'')+(displayClock||'LIVE');}
   }else if(st==='final'){state='FINAL';}
   var stateEl=document.getElementById('adminPreviewState');if(stateEl)stateEl.textContent=state;
+  var stoppageEl=document.getElementById('adminPreviewStoppage');
+  if(stoppageEl){
+    var stoppage=String(document.getElementById('adminStoppageStatus')?.value||'');
+    var showStoppage=st==='live'&&(stoppage==='official_timeout'||stoppage==='under_review'||stoppage==='injury_timeout');
+    stoppageEl.hidden=!showStoppage;
+    stoppageEl.classList.toggle('review',stoppage==='under_review');
+    stoppageEl.textContent=stoppage==='under_review'?'PLAY UNDER REVIEW':(stoppage==='injury_timeout'?'INJURY TIMEOUT':'OFFICIAL TIMEOUT');
+  }
   box.classList.toggle('is-final',st==='final');box.classList.toggle('is-upcoming',st==='upcoming');
 }
 function syncAdminQuickControls(){
@@ -6723,7 +6733,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-live-preview" id="adminGameDayPreview" aria-live="polite">
     <div class="admin-live-preview-label">LIVE PREVIEW</div>
     <div class="admin-live-preview-teams"><span class="admin-live-preview-team" id="adminPreviewLeftTeam">Opponent</span><span class="admin-live-preview-team" id="adminPreviewRightTeam">Youngstown</span></div><div class="admin-live-preview-score"><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewLeftPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewLeftEN" hidden>EN</span></span><span class="admin-live-preview-num" id="adminPreviewLeftScore">0</span><span class="admin-live-preview-sep">–</span><span class="admin-live-preview-num" id="adminPreviewRightScore">0</span><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewRightPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewRightEN" hidden>EN</span></span></div>
-    <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div>
+    <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div><div class="admin-live-preview-stoppage" id="adminPreviewStoppage" hidden></div>
   </div>
   <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
   <button class="btn primary" type="button" onclick="saveAdminUpdates()">SAVE &amp; PUBLISH</button>
