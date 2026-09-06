@@ -68,7 +68,9 @@
     .navitem{border:0;background:transparent;border-radius:13px;padding:9px 5px;color:#8290a2;cursor:pointer;font-size:11px;font-weight:800}.navitem.active{background:#ffffff0d;color:var(--text)}
     .navitem span{display:block;font-size:18px;margin-bottom:3px}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(15px);background:#f4f7fb;color:#07101a;
       padding:11px 15px;border-radius:12px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:30}.toast.show{opacity:1;transform:translateX(-50%)}
-    .modal{position:fixed;inset:0;background:#0009;display:none;place-items:end center;z-index:40}.modal.show{display:grid}
+    .modal{position:fixed;inset:0;background:#0009;display:none;place-items:end center;z-index:40;overscroll-behavior:none}.modal.show{display:grid}
+body.dc-modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+.modal:not(.app-view) .sheet{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
     .sheet{width:min(700px,100%);background:#111925;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px;max-height:80vh;overflow:auto}
     .sheethead{display:flex;justify-content:space-between;align-items:center}.close{background:#ffffff0d;border:1px solid var(--line);border-radius:10px;width:36px;height:36px;cursor:pointer}
     input,textarea{width:100%;background:#0b111a;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px;margin:7px 0 12px;font:inherit}
@@ -4804,7 +4806,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v404</small>
+<header><small class="build-version build-version-corner">v405</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4991,6 +4993,19 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 const PODCAST_FEED_ENDPOINT='https://halnzstinpginidcefts.supabase.co/functions/v1/get-podcast-feed';
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+var dcModalPageScrollY=0;
+function dcLockPageScroll(){
+  if(document.body.classList.contains('dc-modal-open'))return;
+  dcModalPageScrollY=window.scrollY||window.pageYOffset||0;
+  document.body.style.top=(-dcModalPageScrollY)+'px';
+  document.body.classList.add('dc-modal-open');
+}
+function dcUnlockPageScroll(){
+  if(!document.body.classList.contains('dc-modal-open'))return;
+  document.body.classList.remove('dc-modal-open');
+  document.body.style.top='';
+  window.scrollTo(0,dcModalPageScrollY||0);
+}
 function dcResetAppViewScroll(){
   var modal=document.getElementById('modal');
   var sheet=modal&&modal.querySelector('.sheet');
@@ -5008,6 +5023,7 @@ function goHome(el){
   if(modal&&modal.classList.contains('app-view')){
     modal.classList.remove('show','app-view','app-view-episodes','app-view-hq');
     var body=document.getElementById('sheetBody');if(body)body.innerHTML='';
+    dcUnlockPageScroll();
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -5295,6 +5311,7 @@ function closeSheet(){
   var modal=document.getElementById('modal');
   if(!modal)return;
   modal.classList.remove('show','app-view','app-view-episodes','app-view-hq');
+  dcUnlockPageScroll();
   resetNavHome();
 }
 function toggleHostBio(slug){
@@ -5328,6 +5345,7 @@ document.addEventListener('keydown',function(e){
 
 function openPhanQaForm(){
   dcTrack('section_open','phan_qa');
+  dcLockPageScroll();
   var modal=document.getElementById('modal');
   if(modal)modal.classList.remove('app-view','app-view-episodes','app-view-hq');
   var title=document.getElementById('sheetTitle');
@@ -5394,6 +5412,7 @@ async function submitPhanQa(event){
 
 function openSheet(type){
  dcTrack('section_open',type==='episodes'?'episodes':'more');
+ dcLockPageScroll();
  const modal=document.getElementById('modal'), title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
  if(modal){
    modal.classList.remove('app-view','app-view-episodes','app-view-hq');
@@ -6551,6 +6570,7 @@ function renderSelectedMonth(){
 
   window.openGameCenter=function(){
     dcTrack('section_open','phantoms_hub');
+    dcLockPageScroll();
     var modal=document.getElementById('modal'),title=document.getElementById('sheetTitle'),body=document.getElementById('sheetBody');
     if(!modal||!title||!body)return false;
     title.textContent='Phantoms HQ';
