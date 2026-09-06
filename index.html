@@ -3375,8 +3375,22 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   letter-spacing:.055em;
 }
 .episode-search-go:active{transform:translateY(1px)}
+
+.episode-search-clear{
+  flex:0 0 auto;
+  height:34px;
+  padding:0 9px;
+  border:1px solid #2b394c;
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+  color:#9aa6b7;
+  font-size:8.5px;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.episode-search-clear[hidden]{display:none!important}
 </style>
-<header><small class="build-version build-version-corner">v356</small>
+<header><small class="build-version build-version-corner">v357</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -3944,6 +3958,7 @@ function openSheet(type){
          <span class="episode-search-icon" aria-hidden="true">⌕</span>
          <input id="episodeSearchInput" type="search" inputmode="search" autocomplete="off" placeholder="Search all episodes…" onkeydown="if(event.key==='Enter'){event.preventDefault();filterEpisodeArchive(this.value);this.blur();}">
          <button type="button" class="episode-search-go" onclick="runEpisodeSearch()">SEARCH</button>
+         <button type="button" class="episode-search-clear" id="episodeSearchClear" onclick="clearEpisodeSearch()" hidden>CLEAR</button>
        </label>
        <div class="episode-year-summary" id="episodeYearSummary"></div>
      </div>
@@ -4125,22 +4140,35 @@ function renderEpisodeArchive(year){
     return episodeCard(e,dcEpisodeArchive.length>0&&e===dcEpisodeArchive[0]);
   }).join('');
 }
+function syncEpisodeSearchClear(){
+  var clear=document.getElementById('episodeSearchClear');
+  if(clear)clear.hidden=!String(dcEpisodeSearchQuery||'').trim();
+}
 function filterEpisodeArchive(value){
   dcEpisodeSearchQuery=String(value||'');
   renderEpisodeArchive(dcEpisodeSelectedYear);
   var input=document.getElementById('episodeSearchInput');
   if(input)input.value=dcEpisodeSearchQuery;
+  syncEpisodeSearchClear();
 }
 function runEpisodeSearch(){
   var input=document.getElementById('episodeSearchInput');
   filterEpisodeArchive(input?input.value:'');
   if(input)input.blur();
 }
+function clearEpisodeSearch(){
+  dcEpisodeSearchQuery='';
+  var input=document.getElementById('episodeSearchInput');
+  if(input)input.value='';
+  renderEpisodeArchive(dcEpisodeSelectedYear);
+  syncEpisodeSearchClear();
+}
 function selectEpisodeYear(year){
   dcEpisodeSearchQuery='';
   var input=document.getElementById('episodeSearchInput');
   if(input)input.value='';
   renderEpisodeArchive(Number(year));
+  syncEpisodeSearchClear();
   var body=document.getElementById('sheetBody');
   if(body)body.scrollTo({top:0,behavior:'smooth'});
 }
