@@ -3627,8 +3627,47 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   font-size:10.5px;
   background:rgba(139,77,255,.14)!important;
 }
+
+/* v369 correct episode action positions */
+#episodeList .episode-card-footer{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+  align-items:stretch!important;
+}
+#episodeList .episode-card-footer .episode-listen{
+  order:1!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:38px!important;
+  padding:8px 12px!important;
+  border:1px solid rgba(147,92,255,.36)!important;
+  border-radius:10px!important;
+  background:rgba(139,77,255,.10)!important;
+  color:#d9c8ff!important;
+  box-shadow:none!important;
+}
+#episodeList .episode-card-footer .episode-description-toggle{
+  order:2!important;
+  width:auto!important;
+  min-width:96px!important;
+  min-height:38px!important;
+  padding:8px 10px!important;
+  border:1px solid #2c394b!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.025)!important;
+  color:#aab4c2!important;
+}
+#episodeList .episode-card-footer .episode-description-toggle[aria-expanded="true"]{
+  color:#dbc8ff!important;
+  border-color:rgba(147,92,255,.48)!important;
+  background:rgba(139,77,255,.12)!important;
+}
+#episodeList .episode-featured .episode-listen{
+  background:rgba(139,77,255,.11)!important;
+}
 </style>
-<header><small class="build-version build-version-corner">v368</small>
+<header><small class="build-version build-version-corner">v369</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -4266,8 +4305,8 @@ function episodeCard(e,isLatest){
    </div>
    <h3 class="episode-title">${escapeHtml(e.title||'Dump & Chase Podcast')}</h3>
    <div class="episode-card-footer">
-     ${hasDesc?'<button type="button" class="episode-description-toggle" aria-expanded="false" onclick="toggleEpisodeDescription(this,event)">DESCRIPTION</button>':''}
      <button class="btn episode-listen" onclick="event.stopPropagation();listenEpisode('${payload}')">▶ LISTEN</button>
+     ${hasDesc?'<button type="button" class="episode-description-toggle" aria-expanded="false" onclick="toggleEpisodeDescription(this,event)">DESCRIPTION</button>':''}
    </div>
    ${hasDesc?`<div class="episode-desc-expanded" hidden>${desc}</div>`:''}
  </article>`;
