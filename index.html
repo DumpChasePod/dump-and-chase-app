@@ -4111,9 +4111,10 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-number{min-width:48px;color:#a56cff;font-size:28px;font-weight:950;text-align:center}
 .player-profile-name{font-size:18px;font-weight:950;line-height:1.15;color:#f4f6f9}
 .player-profile-position{margin-top:3px;color:#9da8b7;font-size:11px;font-weight:850}
-.player-profile-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
-.player-profile-detail{padding:9px 10px;border:1px solid rgba(176,188,207,.13);border-radius:10px;background:rgba(18,26,38,.72)}
-.player-profile-detail.wide{grid-column:1/-1}
+.player-profile-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:13px}
+.player-profile-detail{min-width:0;padding:9px 8px;border:1px solid rgba(176,188,207,.13);border-radius:10px;background:rgba(18,26,38,.72)}
+.player-profile-detail.wide{grid-column:1/-1;padding:10px}
+.player-profile-detail .player-profile-value{overflow-wrap:anywhere}
 .player-profile-label{color:#7f8b9c;font-size:8px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
 .player-profile-value{margin-top:3px;color:#e9edf3;font-size:11px;font-weight:850;line-height:1.3}
 </style>
@@ -5195,7 +5196,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v422</small>
+<header><small class="build-version build-version-corner">v423</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -10430,10 +10431,33 @@ setInterval(dcFastLiveGameSync,2500);
 </script>
 
 <div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div id="playerProfileNumber" class="player-profile-number"></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
-function dcPlayerAge(birthdate){if(!birthdate)return '';var d=new Date(String(birthdate)+'T12:00:00');if(isNaN(d.getTime()))return '';var n=new Date(),a=n.getFullYear()-d.getFullYear(),m=n.getMonth()-d.getMonth();if(m<0||(m===0&&n.getDate()<d.getDate()))a--;return a>=0?String(a):'';}
+function dcPlayerAge(birthdate){
+  if(!birthdate)return '';
+  var raw=String(birthdate).trim(),y,m,d,match;
+  match=raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(match){y=parseInt(match[1],10);m=parseInt(match[2],10);d=parseInt(match[3],10);}
+  else{
+    match=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(match){m=parseInt(match[1],10);d=parseInt(match[2],10);y=parseInt(match[3],10);}
+  }
+  if(!y||!m||!d)return '';
+  var now=new Date(),age=now.getFullYear()-y;
+  var beforeBirthday=(now.getMonth()+1<m)||((now.getMonth()+1===m)&&now.getDate()<d);
+  if(beforeBirthday)age--;
+  return age>=0?String(age):'';
+}
 function dcPlayerPositionName(p){return !p?'':p.position==='G'?'Goaltender':p.position==='D'?'Defenseman':p.position==='F'?'Forward':(p.position||'');}
 function dcProfileDetail(label,value,wide){if(value===null||value===undefined||String(value).trim()==='')return '';return '<div class="player-profile-detail'+(wide?' wide':'')+'"><div class="player-profile-label">'+escapeHtml(label)+'</div><div class="player-profile-value">'+escapeHtml(String(value))+'</div></div>';}
-function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(function(x){return String(x.id)===String(id);});if(!p)return;var action=p.position==='G'?'Catches':'Shoots';document.getElementById('playerProfileNumber').textContent=p.number?'#'+p.number:'—';document.getElementById('playerProfileName').textContent=p.name||'Player';document.getElementById('playerProfilePosition').textContent=dcPlayerPositionName(p);var birth=rosterBirthdateForDisplay(p.birthdate),age=dcPlayerAge(p.birthdate),height=(p.height_feet!==null&&p.height_feet!==undefined&&p.height_feet!=='')?String(p.height_feet)+"' "+formatRosterInches(p.height_inches)+'"':'';document.getElementById('playerProfileDetails').innerHTML=dcProfileDetail(action,p.shoots_catches)+dcProfileDetail('Height',height)+dcProfileDetail('Weight',p.weight_lbs?String(p.weight_lbs)+' lbs':'')+dcProfileDetail('Birthdate',birth)+dcProfileDetail('Age',age)+dcProfileDetail('Hometown',p.hometown,true)+dcProfileDetail('Youth Team',p.youth_team,true)+dcProfileDetail('College Commitment',p.college_commitment,true);document.getElementById('playerProfileBackdrop').hidden=false;}
+function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(function(x){return String(x.id)===String(id);});if(!p)return;var action=p.position==='G'?'Catches':'Shoots';document.getElementById('playerProfileNumber').textContent=p.number?'#'+p.number:'—';document.getElementById('playerProfileName').textContent=p.name||'Player';document.getElementById('playerProfilePosition').textContent=dcPlayerPositionName(p);var birth=rosterBirthdateForDisplay(p.birthdate),age=dcPlayerAge(p.birthdate),height=(p.height_feet!==null&&p.height_feet!==undefined&&p.height_feet!=='')?String(p.height_feet)+"' "+formatRosterInches(p.height_inches)+'"':'';document.getElementById('playerProfileDetails').innerHTML=
+  dcProfileDetail('Birthdate',birth)+
+  dcProfileDetail('Age',age)+
+  dcProfileDetail('Hometown',p.hometown)+
+  dcProfileDetail(action,p.shoots_catches)+
+  dcProfileDetail('Height',height)+
+  dcProfileDetail('Weight',p.weight_lbs?String(p.weight_lbs)+' lbs':'')+
+  dcProfileDetail('Youth Team',p.youth_team,true)+
+  dcProfileDetail('College Commitment',p.college_commitment,true);
+document.getElementById('playerProfileBackdrop').hidden=false;}
 function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(b)b.hidden=true;}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerProfile();});
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
