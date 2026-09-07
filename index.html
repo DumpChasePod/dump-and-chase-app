@@ -32,7 +32,7 @@
       --bg:#070b11;--panel:#101722;--panel2:#151e2b;--text:#f4f7fb;--muted:#9aa7b8;
       --accent:#8b4dff;--line:#243142;--danger:#df5b5b;--radius:18px;
     }
-    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    *{box-sizing:border-box} html{scroll-behavior:smooth;background:#070b11}
     body{margin:0;background:radial-gradient(circle at 80% -10%,#25344a 0,#0b1018 32%,#070b11 70%);
       color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     button{font:inherit;color:inherit}
@@ -4843,7 +4843,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v408</small>
+<header><small class="build-version build-version-corner">v409</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -5031,10 +5031,16 @@ const PODCAST_FEED_ENDPOINT='https://halnzstinpginidcefts.supabase.co/functions/
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
 var dcModalPageScrollY=0;
-function dcLockPageScroll(){
+function dcLockPageScroll(resetToTop){
   if(document.body.classList.contains('dc-modal-open'))return;
   dcModalPageScrollY=window.scrollY||window.pageYOffset||0;
-  document.body.style.top=(-dcModalPageScrollY)+'px';
+  if(resetToTop){
+    dcModalPageScrollY=0;
+    window.scrollTo(0,0);
+    document.body.style.top='0px';
+  }else{
+    document.body.style.top=(-dcModalPageScrollY)+'px';
+  }
   document.documentElement.classList.add('dc-modal-open');
   document.body.classList.add('dc-modal-open');
 }
@@ -5467,7 +5473,7 @@ async function submitPhanQa(event){
 
 function openSheet(type){
  dcTrack('section_open',type==='episodes'?'episodes':'more');
- dcLockPageScroll();
+ dcLockPageScroll(type==='episodes');
  const modal=document.getElementById('modal'), title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
  if(modal){
    modal.classList.remove('app-view','app-view-episodes','app-view-hq');
@@ -6625,7 +6631,7 @@ function renderSelectedMonth(){
 
   window.openGameCenter=function(){
     dcTrack('section_open','phantoms_hub');
-    dcLockPageScroll();
+    dcLockPageScroll(true);
     var modal=document.getElementById('modal'),title=document.getElementById('sheetTitle'),body=document.getElementById('sheetBody');
     if(!modal||!title||!body)return false;
     title.textContent='Phantoms HQ';
