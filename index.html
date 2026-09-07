@@ -592,9 +592,6 @@ button:active:not(:disabled){
 #sheetBody .gamecenter-roster-card{
   margin-top:0;
 }
-#sheetBody .gamecenter-roster-card .roster-intro p{
-  margin-top:0;
-}
 
 #episodeList{display:grid;gap:11px}
 #episodeList .episode-card{margin-top:0}
@@ -662,7 +659,7 @@ button:active:not(:disabled){
 @media(max-width:800px){.hosts-grid{grid-template-columns:1fr}}
 
 
-.roster-card{overflow:hidden}.roster-intro{margin-bottom:12px}.roster-intro p{margin:5px 0 0;color:#8994a4;font-size:11px}.roster-select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:#151e2a;color:inherit;font:800 11px inherit;margin-bottom:12px}.roster-group{display:none}.roster-group.active{display:block}.roster-group-title{font-size:9px;letter-spacing:.1em;font-weight:950;color:#a56cff;margin:8px 0}.roster-list{border-top:1px solid rgba(255,255,255,.09)}.roster-player{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.07)}.roster-number{font-size:14px;font-weight:950;color:#a56cff;text-align:center}.roster-player-name{font-size:12px;font-weight:900}.roster-player-meta{margin-top:3px;color:#8994a4;font-size:9px}.roster-birth{font-weight:800}.roster-source{margin:12px 0 0;color:#667283;font-size:8px}
+.roster-card{overflow:hidden}.roster-group{display:none}.roster-group.active{display:block}.roster-group-title{font-size:9px;letter-spacing:.1em;font-weight:950;color:#a56cff;margin:8px 0}.roster-list{border-top:1px solid rgba(255,255,255,.09)}.roster-player{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.07)}.roster-number{font-size:14px;font-weight:950;color:#a56cff;text-align:center}.roster-player-name{font-size:12px;font-weight:900}.roster-player-meta{margin-top:3px;color:#8994a4;font-size:9px}.roster-birth{font-weight:800}.roster-source{margin:12px 0 0;color:#667283;font-size:8px}
 
 
 .gamecenter-roster-card{margin-top:10px}.gamecenter-roster-card .roster-player{padding:8px 2px}.gamecenter-roster-card .roster-player-name{font-size:11px}
@@ -1252,10 +1249,6 @@ body.game-final #gameDaySection .sectionhead{
 }
 
 
-#sheetBody .gamecenter-roster-card .roster-intro p{
-  font-size:12px;
-  line-height:1.45;
-}
 #sheetBody .gamecenter-roster-card .roster-player{
   grid-template-columns:42px 1fr;
   gap:11px;
@@ -4127,8 +4120,8 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-stats-note{padding:8px 2px;color:#7f8b9c;font-size:9px;line-height:1.35}
 </style>
 
-<style id="v427-roster-admin-categories">
-/* V429: reliable first-tap player-profile close + V428 profile watermark */
+<style id="admin-category-profile-styles">
+/* Admin category controls and player-profile presentation. */
 .admin-category-buttons{display:grid;gap:6px;margin:10px 0 12px}
 .admin-roster-categories{grid-template-columns:repeat(3,minmax(0,1fr))}
 .admin-schedule-categories{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -4222,14 +4215,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
 }
 #sheetBody #gcScheduleCard{padding-top:15px;padding-bottom:15px}
-#sheetBody .gamecenter-roster-card .roster-intro p{
-  margin:0 0 13px;
-  text-align:center;
-  color:#c8d0dc;
-  font-size:12px;
-  font-weight:850;
-  letter-spacing:.015em;
-}
 #sheetBody .gamecenter-roster-card .roster-position-buttons{margin-top:0}
 #sheetBody .gc-news-card-compact{padding:14px 16px}
 #sheetBody .gc-news-card-compact .btn{width:100%;display:flex;align-items:center;justify-content:center}
@@ -5234,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v429</small>
+<header><small class="build-version build-version-corner">v430</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -9073,8 +9058,7 @@ async function syncPublicRoster(){
   try{
     var data=await fetchRosterData();if(!data.players.length)return;window.dcRosterPlayers=data.players;
     document.querySelectorAll('.gamecenter-roster-card').forEach(function(card){
-      var intro=card.querySelector('.roster-intro p'),groups=card.querySelector('#rosterGroups'),source=card.querySelector('.roster-source');
-      if(intro&&data.meta&&data.meta.roster_label)intro.textContent=data.meta.roster_label;
+      var groups=card.querySelector('#rosterGroups'),source=card.querySelector('.roster-source');
       if(groups)groups.innerHTML=publicRosterMarkup(data.players,data.meta);
       if(source&&data.meta&&data.meta.checked_date)source.textContent='Roster data checked '+formatRosterCheckedDate(data.meta.checked_date)+'.';
     });
