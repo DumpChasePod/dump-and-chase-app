@@ -4105,7 +4105,7 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-backdrop{position:fixed;inset:0;z-index:12000;background:rgba(2,5,10,.72);display:flex;align-items:flex-end;justify-content:center;padding:14px}
 .player-profile-backdrop[hidden]{display:none}
 .player-profile-sheet{position:relative;width:min(100%,520px);max-height:78vh;overflow:auto;border:1px solid rgba(139,82,255,.42);border-radius:20px;background:linear-gradient(160deg,#182131,#0b111a 62%);box-shadow:0 -12px 45px rgba(0,0,0,.42);padding:18px}
-.player-profile-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:0;background:transparent;color:#aeb7c5;font-size:26px;line-height:1;cursor:pointer}
+.player-profile-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:0;background:transparent;color:#aeb7c5;font-size:26px;line-height:1;cursor:pointer;z-index:20;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .player-profile-kicker{color:#b98cff;font-size:9px;font-weight:950;letter-spacing:.1em}
 .player-profile-identity{display:flex;align-items:center;gap:12px;padding:10px 36px 13px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 .player-profile-number{min-width:48px;color:#a56cff;font-size:28px;font-weight:950;text-align:center}
@@ -4128,7 +4128,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="v427-roster-admin-categories">
-/* V428: Admin categories preserved + permanent player-profile header watermark */
+/* V429: reliable first-tap player-profile close + V428 profile watermark */
 .admin-category-buttons{display:grid;gap:6px;margin:10px 0 12px}
 .admin-roster-categories{grid-template-columns:repeat(3,minmax(0,1fr))}
 .admin-schedule-categories{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -5234,7 +5234,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v428</small>
+<header><small class="build-version build-version-corner">v429</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -10525,7 +10525,7 @@ function dcFastLiveGameSync(){
 setInterval(dcFastLiveGameSync,2500);
 </script>
 
-<div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section id="playerProfileSheet" class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div class="player-profile-number-wrap"><div id="playerProfileNumber" class="player-profile-number"></div></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
+<div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section id="playerProfileSheet" class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="event.preventDefault();event.stopPropagation();closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div class="player-profile-number-wrap"><div id="playerProfileNumber" class="player-profile-number"></div></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
 function dcPlayerAge(birthdate){
   if(!birthdate)return '';
   var raw=String(birthdate).trim(),y,m,d,match;
