@@ -4127,28 +4127,8 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-stats-note{padding:8px 2px;color:#7f8b9c;font-size:9px;line-height:1.35}
 </style>
 
-<style id="v426-roster-admin-categories">
-/* V426: roster watermark + Admin roster/schedule category filters */
-#sheetBody .gamecenter-roster-card .roster-number{
-  position:relative;
-  min-height:34px;
-  display:grid;
-  place-items:center;
-  isolation:isolate;
-  overflow:visible;
-}
-#sheetBody .gamecenter-roster-card .roster-number::before{
-  content:"";
-  position:absolute;
-  inset:50% auto auto 50%;
-  width:34px;
-  height:34px;
-  transform:translate(-50%,-50%);
-  background:url("logos/Youngstown-phantoms.png") center/contain no-repeat;
-  opacity:.13;
-  z-index:-1;
-  pointer-events:none;
-}
+<style id="v427-roster-admin-categories">
+/* V427: Admin roster/schedule category filters + player profile number watermark */
 .admin-category-buttons{display:grid;gap:6px;margin:10px 0 12px}
 .admin-roster-categories{grid-template-columns:repeat(3,minmax(0,1fr))}
 .admin-schedule-categories{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -4160,6 +4140,19 @@ body.game-live #publicGameDayCard .gameday-period{
   border-color:#8b52ff;background:linear-gradient(180deg,rgba(139,82,255,.26),rgba(139,82,255,.12));
   color:#dccbff;box-shadow:0 0 0 1px rgba(139,82,255,.08) inset
 }
+.admin-schedule-game .admin-schedule-edit-pill{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  margin:0;padding:6px 8px;border:1px solid rgba(255,255,255,.14);border-radius:7px;
+  background:#151e2a;color:inherit;font-size:9px;font-weight:850;line-height:1
+}
+.player-profile-number-wrap{
+  position:relative;min-width:58px;min-height:58px;display:grid;place-items:center;isolation:isolate
+}
+.player-profile-number-wrap::before{
+  content:"";position:absolute;left:50%;top:50%;width:58px;height:58px;transform:translate(-50%,-50%);
+  background:url("logos/Youngstown-phantoms.png") center/contain no-repeat;opacity:.13;pointer-events:none;z-index:0
+}
+.player-profile-number-wrap .player-profile-number{position:relative;z-index:1;min-width:48px}
 </style>
 </head>
 <body>
@@ -5239,7 +5232,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v426</small>
+<header><small class="build-version build-version-corner">v427</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -8370,7 +8363,7 @@ function renderAdminScheduleList(){
   var box=document.getElementById('adminScheduleList');if(!box)return;
   var rows=dcScheduleRows.filter(function(r){return adminScheduleMonthForRow(r)===adminScheduleMonth;});
   box.innerHTML=rows.map(function(r){
-    return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
+    return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
   }).join('');
   document.querySelectorAll('[data-admin-schedule-month]').forEach(function(b){b.classList.toggle('active',b.dataset.adminScheduleMonth===adminScheduleMonth);});
 }
@@ -8390,8 +8383,9 @@ async function loadAdminSchedule(){
     var rememberedRow=remembered?dcScheduleRows.find(function(x){return String(x.id)===String(remembered);}):null;
     adminScheduleMonth=rememberedRow?adminScheduleMonthForRow(rememberedRow):defaultAdminScheduleMonth();
     renderAdminScheduleList();
-    if(st)st.textContent=dcScheduleRows.length+' games · changes publish immediately.';
-    if(rememberedRow)setTimeout(function(){editScheduleGame(remembered,true);},40);
+    var form=document.getElementById('adminScheduleForm');if(form)form.classList.remove('show');
+    document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.remove('active');});
+    if(st)st.textContent=dcScheduleRows.length+' games · select a game to edit.';
   }catch(e){if(st)st.textContent='Could not load schedule.';}
 }
 
@@ -10529,7 +10523,7 @@ function dcFastLiveGameSync(){
 setInterval(dcFastLiveGameSync,2500);
 </script>
 
-<div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div id="playerProfileNumber" class="player-profile-number"></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
+<div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div class="player-profile-number-wrap"><div id="playerProfileNumber" class="player-profile-number"></div></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
 function dcPlayerAge(birthdate){
   if(!birthdate)return '';
   var raw=String(birthdate).trim(),y,m,d,match;
