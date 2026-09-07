@@ -5204,7 +5204,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v424</small>
+<header><small class="build-version build-version-corner">v425</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -10479,7 +10479,7 @@ async function dcLoadPlayerStats(player){
   marker.innerHTML='<div class="player-profile-stats-note">Loading official USHL stats…</div>';
   host.appendChild(marker);
   try{
-    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'');
+    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'')+'&position='+encodeURIComponent(player.position||player.position_group||'');
     var res=await fetch(url,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
     var data=await res.json();
     if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
