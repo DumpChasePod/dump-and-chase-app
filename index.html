@@ -4099,6 +4099,24 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
+<style>
+.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player{cursor:pointer;position:relative;padding-right:26px!important}
+.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player::after{content:"›";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#7f8998;font-size:18px;font-weight:900}
+.player-profile-backdrop{position:fixed;inset:0;z-index:12000;background:rgba(2,5,10,.72);display:flex;align-items:flex-end;justify-content:center;padding:14px}
+.player-profile-backdrop[hidden]{display:none}
+.player-profile-sheet{position:relative;width:min(100%,520px);max-height:78vh;overflow:auto;border:1px solid rgba(139,82,255,.42);border-radius:20px;background:linear-gradient(160deg,#182131,#0b111a 62%);box-shadow:0 -12px 45px rgba(0,0,0,.42);padding:18px}
+.player-profile-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:0;background:transparent;color:#aeb7c5;font-size:26px;line-height:1;cursor:pointer}
+.player-profile-kicker{color:#b98cff;font-size:9px;font-weight:950;letter-spacing:.1em}
+.player-profile-identity{display:flex;align-items:center;gap:12px;padding:10px 36px 13px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.player-profile-number{min-width:48px;color:#a56cff;font-size:28px;font-weight:950;text-align:center}
+.player-profile-name{font-size:18px;font-weight:950;line-height:1.15;color:#f4f6f9}
+.player-profile-position{margin-top:3px;color:#9da8b7;font-size:11px;font-weight:850}
+.player-profile-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.player-profile-detail{padding:9px 10px;border:1px solid rgba(176,188,207,.13);border-radius:10px;background:rgba(18,26,38,.72)}
+.player-profile-detail.wide{grid-column:1/-1}
+.player-profile-label{color:#7f8b9c;font-size:8px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.player-profile-value{margin-top:3px;color:#e9edf3;font-size:11px;font-weight:850;line-height:1.3}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -5177,7 +5195,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v421</small>
+<header><small class="build-version build-version-corner">v422</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7340,7 +7358,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
             <div class="admin-field wide"><label for="rosterEditName">Name</label><input id="rosterEditName"></div>
             <div class="admin-field"><label for="rosterEditShot">Shoots / Catches</label><select id="rosterEditShot"><option value="L">Left</option><option value="R">Right</option></select></div>
             <div class="admin-field"><label for="rosterEditBirthdate">Birthdate</label><input id="rosterEditBirthdate" inputmode="numeric" maxlength="10" placeholder="MM/DD/YYYY" oninput="formatRosterBirthdate(this)"></div>
-            <div class="admin-field wide"><label for="rosterEditHometown">Hometown</label><input id="rosterEditHometown"></div>
+            <div class="admin-field wide"><label for="rosterEditHometown">Hometown</label><input id="rosterEditHometown"></div><div class="admin-field wide"><label for="rosterEditYouthTeam">Youth Team</label><input id="rosterEditYouthTeam"></div><div class="admin-field wide"><label for="rosterEditCollegeCommitment">College Commitment</label><input id="rosterEditCollegeCommitment"></div>
             <div class="admin-size-row wide"><div class="admin-field"><label for="rosterEditHeightFeet">Feet</label><input id="rosterEditHeightFeet" inputmode="numeric" pattern="[0-9]*" maxlength="1"></div><div class="admin-field"><label for="rosterEditHeightInches">Inches</label><input id="rosterEditHeightInches" inputmode="decimal" maxlength="5"></div><div class="admin-field"><label for="rosterEditWeight">Weight</label><input id="rosterEditWeight" inputmode="numeric" pattern="[0-9]*" maxlength="3"></div></div>
           </div>
           <div class="admin-actions"><button class="btn secondary" type="button" onclick="closeRosterEditor()">Cancel</button><button class="btn primary" type="button" onclick="saveRosterPlayer()">SAVE PLAYER</button></div>
@@ -8790,7 +8808,7 @@ function rosterBirthdateForDisplay(value){
 }
 async function fetchRosterData(){
   var results=await Promise.all([
-    dcSupabase.from('roster_players').select('id,position_group,number,name,position,shoots_catches,hometown,birthdate,height_weight,height_feet,height_inches,weight_lbs,sort_order').order('position_group').order('sort_order').order('number'),
+    dcSupabase.from('roster_players').select('id,position_group,number,name,position,shoots_catches,hometown,birthdate,height_weight,height_feet,height_inches,weight_lbs,youth_team,college_commitment,sort_order').order('position_group').order('sort_order').order('number'),
     dcSupabase.from('roster_meta').select('roster_label,checked_date').eq('id','current').maybeSingle()
   ]);
   if(results[0].error)throw results[0].error;
@@ -8826,6 +8844,8 @@ function openRosterEditor(id,restoring){
   document.getElementById('rosterEditShot').value=p?p.shoots_catches:'L';
   document.getElementById('rosterEditBirthdate').value=p?rosterBirthdateForEditor(p.birthdate):'';
   document.getElementById('rosterEditHometown').value=p?p.hometown:'';
+  document.getElementById('rosterEditYouthTeam').value=p?p.youth_team||'':'';
+  document.getElementById('rosterEditCollegeCommitment').value=p?p.college_commitment||'':'';
   document.getElementById('rosterEditHeightFeet').value=p&&p.height_feet!==null?p.height_feet:'';
   document.getElementById('rosterEditHeightInches').value=p&&p.height_inches!==null?formatRosterInches(p.height_inches):'';
   document.getElementById('rosterEditWeight').value=p&&p.weight_lbs!==null?p.weight_lbs:'';
@@ -8867,7 +8887,9 @@ async function saveRosterPlayer(){
   var birthdate=normalizedRosterBirthdate(document.getElementById('rosterEditBirthdate').value);
   var feetRaw=document.getElementById('rosterEditHeightFeet').value.trim(), inchesRaw=document.getElementById('rosterEditHeightInches').value.trim(), weightRaw=document.getElementById('rosterEditWeight').value.trim();
   var feet=feetRaw===''?null:Number(feetRaw), inches=inchesRaw===''?null:Number(inchesRaw), weight=weightRaw===''?null:Number(weightRaw);
-  var payload={number:num,name:document.getElementById('rosterEditName').value.trim(),position:pos,position_group:rosterGroupForPosition(pos),shoots_catches:document.getElementById('rosterEditShot').value,hometown:document.getElementById('rosterEditHometown').value.trim(),birthdate:birthdate,height_feet:feet,height_inches:inches,weight_lbs:weight,height_weight:'',sort_order:num,updated_at:new Date().toISOString()};
+  var payload={number:num,name:document.getElementById('rosterEditName').value.trim(),position:pos,position_group:rosterGroupForPosition(pos),shoots_catches:document.getElementById('rosterEditShot').value,hometown:document.getElementById('rosterEditHometown').value.trim(),
+      youth_team:document.getElementById('rosterEditYouthTeam').value.trim(),
+      college_commitment:document.getElementById('rosterEditCollegeCommitment').value.trim(),birthdate:birthdate,height_feet:feet,height_inches:inches,weight_lbs:weight,height_weight:'',sort_order:num,updated_at:new Date().toISOString()};
   if(!Number.isInteger(num)||num<0||num>99||!payload.name||!birthdate){if(st)st.textContent='Number, name and a complete MM/DD/YYYY birthdate are required.';return;}
   if((feet!==null&&!Number.isInteger(feet))||(weight!==null&&!Number.isInteger(weight))){if(st)st.textContent='Feet and weight must use whole numbers.';return;}
   if(inches!==null&&(!Number.isFinite(inches)||Math.abs(inches*4-Math.round(inches*4))>0.000001)){if(st)st.textContent='Inches can use quarter-inch values: .25, .5 or .75.';return;}
@@ -8947,13 +8969,13 @@ function publicRosterMarkup(players,meta){
   return order.map(function(group){
     var rows=players.filter(function(p){return p.position_group===group;}).sort(function(a,b){return (a.sort_order||a.number)-(b.sort_order||b.number);});
     return '<div class="roster-group" data-roster-group="'+group+'"><div class="roster-group-title">'+group+'</div><div class="roster-list">'+rows.map(function(p){
-      return '<article class="roster-player"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterPublicMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div></article>';
+      return '<article class="roster-player" data-player-id="'+escapeHtml(p.id)+'"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterPublicMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div></article>';
     }).join('')+'</div></div>';
   }).join('');
 }
 async function syncPublicRoster(){
   try{
-    var data=await fetchRosterData();if(!data.players.length)return;
+    var data=await fetchRosterData();if(!data.players.length)return;window.dcRosterPlayers=data.players;
     document.querySelectorAll('.gamecenter-roster-card').forEach(function(card){
       var intro=card.querySelector('.roster-intro p'),groups=card.querySelector('#rosterGroups'),source=card.querySelector('.roster-source');
       if(intro&&data.meta&&data.meta.roster_label)intro.textContent=data.meta.roster_label;
@@ -10407,6 +10429,14 @@ function dcFastLiveGameSync(){
 setInterval(dcFastLiveGameSync,2500);
 </script>
 
-</body>
+<div id="playerProfileBackdrop" class="player-profile-backdrop" hidden onclick="if(event.target===this)closePlayerProfile()"><section class="player-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="playerProfileName"><button class="player-profile-close" type="button" aria-label="Close player profile" onclick="closePlayerProfile()">×</button><div class="player-profile-kicker">PLAYER PROFILE</div><div class="player-profile-identity"><div id="playerProfileNumber" class="player-profile-number"></div><div><div id="playerProfileName" class="player-profile-name"></div><div id="playerProfilePosition" class="player-profile-position"></div></div></div><div id="playerProfileDetails" class="player-profile-details"></div></section></div><script>
+function dcPlayerAge(birthdate){if(!birthdate)return '';var d=new Date(String(birthdate)+'T12:00:00');if(isNaN(d.getTime()))return '';var n=new Date(),a=n.getFullYear()-d.getFullYear(),m=n.getMonth()-d.getMonth();if(m<0||(m===0&&n.getDate()<d.getDate()))a--;return a>=0?String(a):'';}
+function dcPlayerPositionName(p){return !p?'':p.position==='G'?'Goaltender':p.position==='D'?'Defenseman':p.position==='F'?'Forward':(p.position||'');}
+function dcProfileDetail(label,value,wide){if(value===null||value===undefined||String(value).trim()==='')return '';return '<div class="player-profile-detail'+(wide?' wide':'')+'"><div class="player-profile-label">'+escapeHtml(label)+'</div><div class="player-profile-value">'+escapeHtml(String(value))+'</div></div>';}
+function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(function(x){return String(x.id)===String(id);});if(!p)return;var action=p.position==='G'?'Catches':'Shoots';document.getElementById('playerProfileNumber').textContent=p.number?'#'+p.number:'—';document.getElementById('playerProfileName').textContent=p.name||'Player';document.getElementById('playerProfilePosition').textContent=dcPlayerPositionName(p);var birth=rosterBirthdateForDisplay(p.birthdate),age=dcPlayerAge(p.birthdate),height=(p.height_feet!==null&&p.height_feet!==undefined&&p.height_feet!=='')?String(p.height_feet)+"' "+formatRosterInches(p.height_inches)+'"':'';document.getElementById('playerProfileDetails').innerHTML=dcProfileDetail(action,p.shoots_catches)+dcProfileDetail('Height',height)+dcProfileDetail('Weight',p.weight_lbs?String(p.weight_lbs)+' lbs':'')+dcProfileDetail('Birthdate',birth)+dcProfileDetail('Age',age)+dcProfileDetail('Hometown',p.hometown,true)+dcProfileDetail('Youth Team',p.youth_team,true)+dcProfileDetail('College Commitment',p.college_commitment,true);document.getElementById('playerProfileBackdrop').hidden=false;}
+function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(b)b.hidden=true;}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerProfile();});
+document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
+</script></body>
 </html>
 
