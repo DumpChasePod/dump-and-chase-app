@@ -4117,6 +4117,14 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-detail .player-profile-value{overflow-wrap:anywhere}
 .player-profile-label{color:#7f8b9c;font-size:8px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
 .player-profile-value{margin-top:3px;color:#e9edf3;font-size:11px;font-weight:850;line-height:1.3}
+ .player-profile-stats{grid-column:1/-1;margin-top:3px}
+.player-profile-stats-title{margin:5px 0 7px;color:#b98cff;font-size:9px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+.player-profile-stats-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.player-profile-stats-grid.goalie{grid-template-columns:repeat(8,minmax(0,1fr))}
+.player-profile-stat{min-width:0;padding:8px 3px;border:1px solid rgba(176,188,207,.13);border-radius:9px;background:rgba(18,26,38,.72);text-align:center}
+.player-profile-stat-label{color:#7f8b9c;font-size:7px;font-weight:950}
+.player-profile-stat-value{margin-top:3px;color:#eef1f6;font-size:11px;font-weight:950;white-space:nowrap}
+.player-profile-stats-note{padding:8px 2px;color:#7f8b9c;font-size:9px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -5196,7 +5204,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v423</small>
+<header><small class="build-version build-version-corner">v424</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -10448,6 +10456,45 @@ function dcPlayerAge(birthdate){
 }
 function dcPlayerPositionName(p){return !p?'':p.position==='G'?'Goaltender':p.position==='D'?'Defenseman':p.position==='F'?'Forward':(p.position||'');}
 function dcProfileDetail(label,value,wide){if(value===null||value===undefined||String(value).trim()==='')return '';return '<div class="player-profile-detail'+(wide?' wide':'')+'"><div class="player-profile-label">'+escapeHtml(label)+'</div><div class="player-profile-value">'+escapeHtml(String(value))+'</div></div>';}
+function dcStatCell(label,value){
+  var shown=(value===null||value===undefined||value==='')?'—':String(value);
+  return '<div class="player-profile-stat"><div class="player-profile-stat-label">'+escapeHtml(label)+'</div><div class="player-profile-stat-value">'+escapeHtml(shown)+'</div></div>';
+}
+function dcRenderPlayerStatsBlock(title,kind,stats){
+  if(!stats)return '';
+  var cells='';
+  if(kind==='goalie'){
+    cells=dcStatCell('GP',stats.gp)+dcStatCell('W',stats.w)+dcStatCell('L',stats.l)+dcStatCell('OTL',stats.otl)+dcStatCell('SOL',stats.sol)+dcStatCell('GAA',stats.gaa)+dcStatCell('SV%',stats.sv_pct)+dcStatCell('SO',stats.so);
+  }else{
+    cells=dcStatCell('GP',stats.gp)+dcStatCell('G',stats.g)+dcStatCell('A',stats.a)+dcStatCell('PTS',stats.pts)+dcStatCell('PIM',stats.pim)+dcStatCell('+/-',stats.plus_minus);
+  }
+  return '<div class="player-profile-stats"><div class="player-profile-stats-title">'+escapeHtml(title)+'</div><div class="player-profile-stats-grid '+(kind==='goalie'?'goalie':'')+'">'+cells+'</div></div>';
+}
+async function dcLoadPlayerStats(player){
+  var host=document.getElementById('playerProfileDetails');
+  if(!host||!player)return;
+  var marker=document.createElement('div');
+  marker.className='player-profile-stats';
+  marker.id='playerProfileStatsArea';
+  marker.innerHTML='<div class="player-profile-stats-note">Loading official USHL stats…</div>';
+  host.appendChild(marker);
+  try{
+    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'');
+    var res=await fetch(url,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
+    var data=await res.json();
+    if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
+    if(!data.found){
+      marker.innerHTML='<div class="player-profile-stats-note">No official USHL stats are available for this player yet.</div>';
+      return;
+    }
+    var html=dcRenderPlayerStatsBlock('2026–2027 STATS',data.kind,data.current);
+    if(data.career)html+=dcRenderPlayerStatsBlock('USHL CAREER STATS',data.kind,data.career);
+    marker.outerHTML=html||'<div class="player-profile-stats-note">No official USHL stats are available for this player yet.</div>';
+  }catch(e){
+    console.warn('Player stats unavailable',e);
+    marker.innerHTML='<div class="player-profile-stats-note">Official USHL stats are temporarily unavailable.</div>';
+  }
+}
 function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(function(x){return String(x.id)===String(id);});if(!p)return;var action=p.position==='G'?'Catches':'Shoots';document.getElementById('playerProfileNumber').textContent=p.number?'#'+p.number:'—';document.getElementById('playerProfileName').textContent=p.name||'Player';document.getElementById('playerProfilePosition').textContent=dcPlayerPositionName(p);var birth=rosterBirthdateForDisplay(p.birthdate),age=dcPlayerAge(p.birthdate),height=(p.height_feet!==null&&p.height_feet!==undefined&&p.height_feet!=='')?String(p.height_feet)+"' "+formatRosterInches(p.height_inches)+'"':'';document.getElementById('playerProfileDetails').innerHTML=
   dcProfileDetail('Birthdate',birth)+
   dcProfileDetail('Age',age)+
@@ -10457,7 +10504,7 @@ function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(funct
   dcProfileDetail('Weight',p.weight_lbs?String(p.weight_lbs)+' lbs':'')+
   dcProfileDetail('Youth Team',p.youth_team,true)+
   dcProfileDetail('College Commitment',p.college_commitment,true);
-document.getElementById('playerProfileBackdrop').hidden=false;}
+document.getElementById('playerProfileBackdrop').hidden=false;dcLoadPlayerStats(p);}
 function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(b)b.hidden=true;}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerProfile();});
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
