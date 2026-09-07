@@ -1618,6 +1618,154 @@ body.game-final #gameDaySection .sectionhead{
   .phantoms-record-stat span{font-size:6.5px}
   .phantoms-record-stat b{font-size:12px}
 }
+
+.gc-standings-card{
+  overflow:hidden;
+  padding:0;
+  border:1px solid rgba(139,82,255,.28);
+  background:
+    linear-gradient(180deg,rgba(139,82,255,.10),rgba(16,23,34,.96) 34%,rgba(11,16,24,.98));
+}
+.gc-standings-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 12px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(135deg,rgba(139,82,255,.13),rgba(31,40,55,.40));
+}
+.gc-standings-kicker{
+  color:#c9a9ff;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.gc-standings-title{
+  margin-top:2px;
+  color:#f3f5f8;
+  font-size:15px;
+  font-weight:950;
+  letter-spacing:.01em;
+}
+.gc-standings-tabs{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px;
+  min-width:118px;
+}
+.gc-standings-tab{
+  min-height:30px;
+  padding:6px 8px;
+  border:1px solid #33445b;
+  border-radius:9px;
+  background:#101722;
+  color:#8f9bac;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.05em;
+  cursor:pointer;
+}
+.gc-standings-tab.active{
+  border-color:#8b52ff;
+  background:linear-gradient(180deg,rgba(139,82,255,.26),rgba(139,82,255,.12));
+  color:#dccbff;
+  box-shadow:0 0 0 1px rgba(139,82,255,.08) inset;
+}
+.gc-standings-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.gc-standings-table{
+  width:100%;
+  min-width:330px;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+.gc-standings-table th{
+  padding:8px 2px 7px;
+  border-bottom:1px solid rgba(255,255,255,.09);
+  background:rgba(7,11,17,.72);
+  color:#7f8b9c;
+  font-size:6.8px;
+  font-weight:950;
+  letter-spacing:.025em;
+  text-align:center;
+  white-space:nowrap;
+}
+.gc-standings-table td{
+  height:31px;
+  padding:6px 2px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+  color:#d7dde6;
+  font-size:8.2px;
+  font-weight:850;
+  text-align:center;
+  white-space:nowrap;
+}
+.gc-standings-table tr:last-child td{border-bottom:0}
+.gc-standings-table .gc-st-rk{width:25px}
+.gc-standings-table .gc-st-team{
+  width:52px;
+  text-align:left;
+  font-weight:950;
+  letter-spacing:.03em;
+}
+.gc-standings-table .gc-st-narrow{width:25px}
+.gc-standings-table .gc-st-loss{width:29px}
+.gc-standings-table .gc-st-pts{width:29px;color:#f2f4f7;font-weight:950}
+.gc-standings-table .gc-st-pct{width:35px}
+.gc-standings-table .gc-st-row{width:31px}
+.gc-standings-table tr.is-youngstown td{
+  background:linear-gradient(90deg,rgba(139,82,255,.18),rgba(139,82,255,.08));
+  color:#f6f1ff;
+}
+.gc-standings-table tr.is-youngstown .gc-st-team,
+.gc-standings-table tr.is-youngstown .gc-st-rk{
+  color:#c9a9ff;
+}
+.gc-standings-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 11px 10px;
+  border-top:1px solid rgba(255,255,255,.07);
+  color:#718096;
+  font-size:7.5px;
+  font-weight:800;
+}
+.gc-standings-foot a{
+  color:#a98aff;
+  font-weight:950;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.gc-standings-loading,
+.gc-standings-error{
+  padding:24px 14px;
+  color:#8490a0;
+  font-size:10px;
+  font-weight:800;
+  text-align:center;
+}
+.gc-standings-error strong{
+  display:block;
+  margin-bottom:5px;
+  color:#f1f3f7;
+  font-size:11px;
+}
+@media(max-width:380px){
+  .gc-standings-head{padding-left:10px;padding-right:10px}
+  .gc-standings-title{font-size:14px}
+  .gc-standings-tabs{min-width:108px}
+  .gc-standings-tab{padding-left:5px;padding-right:5px;font-size:7.5px}
+  .gc-standings-table{min-width:324px}
+  .gc-standings-table td{font-size:7.8px}
+}
 .admin-record-intro{margin:16px 0 12px}
 .admin-record-grid{
   display:grid;
@@ -4861,7 +5009,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v411</small>
+<header><small class="build-version build-version-corner">v412</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6650,6 +6798,112 @@ function renderSelectedMonth(){
     ['gcDays','gcHours','gcMinutes','gcSeconds'].forEach(function(id,i){setText(id,String(vals[i]).padStart(2,'0'));});
   }
 
+
+  var dcUshlStandingsRows=[];
+  var dcUshlStandingsConference='EAST';
+
+  function gcStandingsTeamCode(row){
+    var code=String(row&&row.team_code||'').trim().toUpperCase();
+    if(code&&code.length<=5)return code;
+    var name=String(row&&row.team||'').toLowerCase();
+    var map=[
+      ['youngstown','YNG'],['cedar rapids','CRR'],['chicago','CHI'],['dubuque','DBQ'],
+      ['green bay','GB'],['madison','MAD'],['muskegon','MUS'],['usa hockey','USA'],
+      ['ntdp','USA'],['des moines','DM'],['fargo','FAR'],['lincoln','LIN'],['omaha','OMA'],
+      ['sioux city','SC'],['sioux falls','SF'],['tri-city','TC'],['tri city','TC'],['waterloo','WLO']
+    ];
+    for(var i=0;i<map.length;i++)if(name.indexOf(map[i][0])!==-1)return map[i][1];
+    var words=name.split(/\s+/).filter(Boolean);
+    return words.map(function(x){return x.charAt(0)}).join('').slice(0,4).toUpperCase()||'—';
+  }
+
+  function gcIsYoungstownStanding(row){
+    var text=(String(row&&row.team||'')+' '+String(row&&row.team_code||'')).toLowerCase();
+    return text.indexOf('youngstown')!==-1||/\byng\b/.test(text);
+  }
+
+  function setGCStandingsConference(conf){
+    if(conf!=='EAST'&&conf!=='WEST')return;
+    dcUshlStandingsConference=conf;
+    document.querySelectorAll('[data-gc-standings-conf]').forEach(function(btn){
+      btn.classList.toggle('active',btn.getAttribute('data-gc-standings-conf')===conf);
+    });
+    renderGCStandings();
+  }
+  window.setGCStandingsConference=setGCStandingsConference;
+
+  function renderGCStandings(){
+    var host=document.getElementById('gcStandingsBody');
+    if(!host)return;
+    var rows=(dcUshlStandingsRows||[]).filter(function(row){
+      return String(row&&row.conference||'').toUpperCase()===dcUshlStandingsConference;
+    });
+    if(!rows.length){
+      host.innerHTML='<div class="gc-standings-error"><strong>Standings unavailable</strong>No '+escapeHtml(dcUshlStandingsConference.toLowerCase())+' conference rows were returned.</div>';
+      return;
+    }
+    host.innerHTML=
+      '<div class="gc-standings-table-wrap">'+
+        '<table class="gc-standings-table" aria-label="'+escapeHtml(dcUshlStandingsConference)+' Conference standings">'+
+          '<thead><tr>'+
+            '<th class="gc-st-rk">RK</th>'+
+            '<th class="gc-st-team">TEAM</th>'+
+            '<th class="gc-st-narrow">GP</th>'+
+            '<th class="gc-st-narrow">W</th>'+
+            '<th class="gc-st-narrow">L</th>'+
+            '<th class="gc-st-loss">OTL</th>'+
+            '<th class="gc-st-loss">SOL</th>'+
+            '<th class="gc-st-pts">PTS</th>'+
+            '<th class="gc-st-pct">%</th>'+
+            '<th class="gc-st-row">ROW</th>'+
+          '</tr></thead>'+
+          '<tbody>'+
+          rows.map(function(row){
+            var isYng=gcIsYoungstownStanding(row);
+            var rank=(row.rank===null||row.rank===undefined||row.rank==='')?'—':String(row.rank);
+            var team=gcStandingsTeamCode(row);
+            var full=String(row.team||team);
+            return '<tr'+(isYng?' class="is-youngstown"':'')+'>'+
+              '<td class="gc-st-rk">'+escapeHtml(rank)+'</td>'+
+              '<td class="gc-st-team" title="'+escapeHtml(full)+'">'+escapeHtml(team)+'</td>'+
+              '<td class="gc-st-narrow">'+escapeHtml(String(row.gp??0))+'</td>'+
+              '<td class="gc-st-narrow">'+escapeHtml(String(row.w??0))+'</td>'+
+              '<td class="gc-st-narrow">'+escapeHtml(String(row.l??0))+'</td>'+
+              '<td class="gc-st-loss">'+escapeHtml(String(row.otl??0))+'</td>'+
+              '<td class="gc-st-loss">'+escapeHtml(String(row.sol??0))+'</td>'+
+              '<td class="gc-st-pts">'+escapeHtml(String(row.pts??0))+'</td>'+
+              '<td class="gc-st-pct">'+escapeHtml(String(row.pct||'.000'))+'</td>'+
+              '<td class="gc-st-row">'+escapeHtml(String(row.row??0))+'</td>'+
+            '</tr>';
+          }).join('')+
+          '</tbody>'+
+        '</table>'+
+      '</div>';
+  }
+
+  async function loadUshlStandings(){
+    var host=document.getElementById('gcStandingsBody');
+    var meta=document.getElementById('gcStandingsMeta');
+    if(host)host.innerHTML='<div class="gc-standings-loading">Loading official USHL standings…</div>';
+    try{
+      var res=await fetch(DC_SUPABASE_URL+'/functions/v1/get-ushl-standings',{
+        method:'GET',
+        cache:'no-store',
+        headers:{'apikey':DC_SUPABASE_KEY}
+      });
+      var data=await res.json();
+      if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
+      dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
+      if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
+      renderGCStandings();
+      if(meta)meta.textContent='Official USHL data • Auto-updated';
+    }catch(e){
+      console.warn('USHL standings unavailable',e);
+      if(host)host.innerHTML='<div class="gc-standings-error"><strong>Standings could not be loaded.</strong>Use the official USHL link below to view the current table.</div>';
+      if(meta)meta.textContent='Official USHL data';
+    }
+  }
+
   window.openGameCenter=function(){
     dcTrack('section_open','phantoms_hub');
     dcLockPageScroll(true);
@@ -6673,27 +6927,23 @@ function renderSelectedMonth(){
       '<div class="section-title gc-hub-section-title">RECENT RESULTS</div>'+
       '<div class="card"><div class="results-list" id="recentResultsList"><div class="result-empty">No completed games yet. Results will appear here after each game.</div></div></div>'+
       '<div class="section-title gc-hub-section-title">STANDINGS</div>'+
-      `<section class="phan-qa-card" style="display:block">
-  <div class="phantoms-record-summary">
-    <div class="phantoms-record-title">Youngstown Phantoms Record</div>
-    <div class="phantoms-record-grid">
-      <div class="phantoms-record-stat"><span>GP</span><b id="recordGp">0</b></div>
-      <div class="phantoms-record-stat"><span>W</span><b id="recordW">0</b></div>
-      <div class="phantoms-record-stat"><span>L</span><b id="recordL">0</b></div>
-      <div class="phantoms-record-stat"><span>OTL</span><b id="recordOtl">0</b></div>
-      <div class="phantoms-record-stat"><span>SOL</span><b id="recordSol">0</b></div>
-      <div class="phantoms-record-stat"><span>PTS</span><b id="recordPts">0</b></div>
-      <div class="phantoms-record-stat"><span>PCT</span><b id="recordPct">.000</b></div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-    <div class="phan-qa-copy">
-      <h3>Official USHL Standings</h3>
-      <p>View the current league standings on the USHL website.</p>
-    </div>
-    <a class="btn secondary phan-qa-button" href="https://ushl.com/ht/#/team-stats" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','standings',{url:'https://ushl.com/ht/#/team-stats'})">CHECK<br>STANDINGS</a>
-  </div>
-</section>`+
+      `<section class="card gc-standings-card">
+        <div class="gc-standings-head">
+          <div>
+            <div class="gc-standings-kicker">2026–27 USHL</div>
+            <div class="gc-standings-title">Conference Standings</div>
+          </div>
+          <div class="gc-standings-tabs" role="tablist" aria-label="USHL conference">
+            <button type="button" class="gc-standings-tab active" data-gc-standings-conf="EAST" onclick="setGCStandingsConference('EAST')">EAST</button>
+            <button type="button" class="gc-standings-tab" data-gc-standings-conf="WEST" onclick="setGCStandingsConference('WEST')">WEST</button>
+          </div>
+        </div>
+        <div id="gcStandingsBody"><div class="gc-standings-loading">Loading official USHL standings…</div></div>
+        <div class="gc-standings-foot">
+          <span id="gcStandingsMeta">Official USHL data</span>
+          <a href="https://ushl.com/ht/#/team-stats" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','standings',{url:'https://ushl.com/ht/#/team-stats'})">USHL.COM ↗</a>
+        </div>
+      </section>`+
 
       '<div class="section-title gc-hub-section-title">SCHEDULE</div>'+
       '<div class="grid gc-hub-grid">'+
@@ -6722,9 +6972,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 });
 
     loadPhantomsRecord();
+    loadUshlStandings();
     loadOpponentRecord();
-    var st=document.getElementById('gcStandingsBtn');
-    if(st)st.onclick=function(){window.open('https://ushl.com/ht/#/team-stats','_blank','noopener');};
     return false;
   };
 
