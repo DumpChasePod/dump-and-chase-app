@@ -5009,7 +5009,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v412</small>
+<header><small class="build-version build-version-corner">v413</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6858,9 +6858,9 @@ function renderSelectedMonth(){
             '<th class="gc-st-row">ROW</th>'+
           '</tr></thead>'+
           '<tbody>'+
-          rows.map(function(row){
+          rows.map(function(row,index){
             var isYng=gcIsYoungstownStanding(row);
-            var rank=(row.rank===null||row.rank===undefined||row.rank==='')?'—':String(row.rank);
+            var rank=String(index+1);
             var team=gcStandingsTeamCode(row);
             var full=String(row.team||team);
             return '<tr'+(isYng?' class="is-youngstown"':'')+'>'+
