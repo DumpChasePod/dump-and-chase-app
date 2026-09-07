@@ -1643,12 +1643,42 @@ body.game-final #gameDaySection .sectionhead{
   letter-spacing:.01em;
 }
 .gc-hq-panel[data-gc-hq-panel="schedule"] .gc-inline-schedule{margin-top:6px}
-.gc-hq-panel[data-gc-hq-panel="roster"] .gamecenter-roster-card .roster-player{
-  padding:5px 2px;
-  border-bottom:1px solid rgba(176,188,207,.18);
+
+.gc-hq-panel[data-gc-hq-panel="roster"] .roster-position-buttons{
+  gap:5px;
+  margin:7px 0 9px;
+}
+.gc-hq-panel[data-gc-hq-panel="roster"] .roster-position-btn{
+  min-height:30px;
+  padding:5px 3px;
+  border-radius:8px;
+  font-size:7.5px;
+  letter-spacing:.015em;
 }
 .gc-hq-panel[data-gc-hq-panel="roster"] .roster-list{
-  border-top:1px solid rgba(176,188,207,.20);
+  display:grid;
+  gap:6px;
+  border-top:0;
+}
+.gc-hq-panel[data-gc-hq-panel="roster"] .gamecenter-roster-card .roster-player{
+  padding:7px 7px;
+  border:1px solid rgba(176,188,207,.16);
+  border-radius:10px;
+  background:linear-gradient(180deg,rgba(24,33,46,.86),rgba(15,22,32,.90));
+}
+.gc-hq-panel[data-gc-hq-panel="roster"] .gamecenter-roster-card .roster-player:last-child{
+  border-bottom:1px solid rgba(176,188,207,.16);
+}
+.gc-hq-panel[data-gc-hq-panel="roster"] .gamecenter-roster-card .roster-player{
+  padding:7px 7px;
+  border:1px solid rgba(176,188,207,.16);
+  border-radius:10px;
+  background:linear-gradient(180deg,rgba(24,33,46,.86),rgba(15,22,32,.90));
+}
+.gc-hq-panel[data-gc-hq-panel="roster"] .roster-list{
+  display:grid;
+  gap:6px;
+  border-top:0;
 }
 .gc-hq-panel[data-gc-hq-panel="roster"] .roster-player-meta{
   margin-top:2px;
@@ -5049,7 +5079,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v417</small>
+<header><small class="build-version build-version-corner">v418</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -6925,6 +6955,41 @@ function renderSelectedMonth(){
       '</div>';
   }
 
+  function gcOfficialStandingFor(team){
+    var target=String(team||'').trim().toLowerCase();
+    if(!target)return null;
+    return (dcUshlStandingsRows||[]).find(function(row){
+      var name=String(row&&row.team||'').trim().toLowerCase();
+      if(name===target)return true;
+      if(target.indexOf('youngstown')!==-1&&gcIsYoungstownStanding(row))return true;
+      return false;
+    })||null;
+  }
+  function gcRecordFromStanding(row){
+    if(!row)return null;
+    return {
+      gp:Math.max(0,parseInt(row.gp,10)||0),
+      w:Math.max(0,parseInt(row.w,10)||0),
+      l:Math.max(0,parseInt(row.l,10)||0),
+      otl:Math.max(0,parseInt(row.otl,10)||0),
+      sol:Math.max(0,parseInt(row.sol,10)||0),
+      pts:Math.max(0,parseInt(row.pts,10)||0)
+    };
+  }
+  function applyOfficialMatchupRecords(){
+    if(!dcUshlStandingsRows||!dcUshlStandingsRows.length)return false;
+    var yng=gcOfficialStandingFor('Youngstown Phantoms');
+    var opp=currentNextOpponent();
+    var oppRow=gcOfficialStandingFor(opp);
+    if(yng)renderPhantomsRecord(gcRecordFromStanding(yng));
+    if(oppRow){
+      dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(oppRow));
+      renderMatchupRecords();
+      if(typeof renderPublicGameDay==='function')renderPublicGameDay();
+    }
+    return !!(yng||oppRow);
+  }
+
   async function loadUshlStandings(){
     var host=document.getElementById('gcStandingsBody');
     var meta=document.getElementById('gcStandingsMeta');
@@ -6939,6 +7004,7 @@ function renderSelectedMonth(){
       if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
+      applyOfficialMatchupRecords();
       renderGCStandings();
       if(meta)meta.textContent='Official USHL data • Auto-updated';
     }catch(e){
@@ -7599,7 +7665,7 @@ function boxScoreButton(url,extraClass){
 (async function dcBootSharedGameData(){
   try{
     await loadSupabaseSchedule();
-    await Promise.all([loadPhantomsRecord(),loadOpponentRecord()]);
+    await Promise.all([loadPhantomsRecord(),loadOpponentRecord(),loadUshlStandings()]);
   }catch(e){
     console.warn('Shared game data boot failed',e);
   }
@@ -8338,11 +8404,17 @@ function renderMatchupRecords(){
   setRecordPill('heroOpponentRecord',opponentRecordFor(opp));
 }
 async function loadOpponentRecord(){
-  try{
-    var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
-    if(r.error)throw r.error;
-    dcOpponentRecord=r.data||null;
-  }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+  var opp=currentNextOpponent();
+  var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
+  if(official){
+    dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));
+  }else{
+    try{
+      var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+      if(r.error)throw r.error;
+      dcOpponentRecord=r.data||null;
+    }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+  }
   renderMatchupRecords();
   if(typeof renderPublicGameDay==='function')renderPublicGameDay();
 }
@@ -8403,12 +8475,23 @@ function renderPhantomsRecord(record){
 }
 async function loadPhantomsRecord(){
   try{
+    if(!dcScheduleRows.length)await loadSupabaseSchedule();
+    var results=null;
+    try{results=await syncCompletedResults(true);}catch(_){}
+    if(Array.isArray(results)){
+      var automatic=completedResultsRecordBase(results);
+      renderPhantomsRecord(automatic);
+      return automatic;
+    }
     var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
     if(r.error)throw r.error;
-    renderPhantomsRecord(r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0});
+    var fallback=r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+    renderPhantomsRecord(fallback);
+    return fallback;
   }catch(e){
     console.warn('Phantoms record unavailable',e);
-    renderPhantomsRecord({gp:0,w:0,l:0,otl:0,sol:0,pts:0});
+    renderPhantomsRecord(dcPhantomsRecord||{gp:0,w:0,l:0,otl:0,sol:0,pts:0});
+    return dcPhantomsRecord;
   }
 }
 function adminRecordValues(){
