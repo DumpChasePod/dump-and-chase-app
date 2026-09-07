@@ -4126,6 +4126,41 @@ body.game-live #publicGameDayCard .gameday-period{
 .player-profile-stat-value{margin-top:3px;color:#eef1f6;font-size:11px;font-weight:950;white-space:nowrap}
 .player-profile-stats-note{padding:8px 2px;color:#7f8b9c;font-size:9px;line-height:1.35}
 </style>
+
+<style id="v426-roster-admin-categories">
+/* V426: roster watermark + Admin roster/schedule category filters */
+#sheetBody .gamecenter-roster-card .roster-number{
+  position:relative;
+  min-height:34px;
+  display:grid;
+  place-items:center;
+  isolation:isolate;
+  overflow:visible;
+}
+#sheetBody .gamecenter-roster-card .roster-number::before{
+  content:"";
+  position:absolute;
+  inset:50% auto auto 50%;
+  width:34px;
+  height:34px;
+  transform:translate(-50%,-50%);
+  background:url("logos/Youngstown-phantoms.png") center/contain no-repeat;
+  opacity:.13;
+  z-index:-1;
+  pointer-events:none;
+}
+.admin-category-buttons{display:grid;gap:6px;margin:10px 0 12px}
+.admin-roster-categories{grid-template-columns:repeat(3,minmax(0,1fr))}
+.admin-schedule-categories{grid-template-columns:repeat(4,minmax(0,1fr))}
+.admin-category-btn{
+  min-width:0;min-height:32px;padding:6px 4px;border:1px solid #33445b;border-radius:9px;
+  background:#101722;color:#8f9bac;font-size:8px;font-weight:950;letter-spacing:.045em;cursor:pointer
+}
+.admin-category-btn.active{
+  border-color:#8b52ff;background:linear-gradient(180deg,rgba(139,82,255,.26),rgba(139,82,255,.12));
+  color:#dccbff;box-shadow:0 0 0 1px rgba(139,82,255,.08) inset
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -5204,7 +5239,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v425</small>
+<header><small class="build-version build-version-corner">v426</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7358,6 +7393,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
       <div class="admin-section-panel" id="adminRosterPanel" role="tabpanel" aria-labelledby="adminTabRoster" hidden>
         <div class="admin-roster-toolbar"><div><div class="eyebrow">ROSTER</div><div class="admin-muted" id="adminRosterStatus">Loading roster…</div><div class="admin-save-feedback admin-feedback" id="adminRosterFeedback"></div></div><button class="btn primary" type="button" onclick="openRosterEditor()">ADD PLAYER</button></div>
+        <div class="admin-category-buttons admin-roster-categories" id="adminRosterCategories" aria-label="Roster position">
+          <button type="button" class="admin-category-btn active" data-admin-roster-group="FORWARDS" onclick="setAdminRosterGroup('FORWARDS')">FORWARDS</button>
+          <button type="button" class="admin-category-btn" data-admin-roster-group="DEFENSEMEN" onclick="setAdminRosterGroup('DEFENSEMEN')">DEFENSE</button>
+          <button type="button" class="admin-category-btn" data-admin-roster-group="GOALTENDERS" onclick="setAdminRosterGroup('GOALTENDERS')">GOALIES</button>
+        </div>
         <div class="admin-roster-list" id="adminRosterList"></div>
         <div class="admin-roster-form" id="adminRosterForm">
           <input type="hidden" id="rosterEditId">
@@ -7416,6 +7456,16 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
       <div class="admin-section-panel" id="adminSchedulePanel" role="tabpanel" aria-labelledby="adminTabSchedule" hidden>
         <div class="admin-roster-toolbar"><div><div class="eyebrow">SCHEDULE</div><div class="admin-muted" id="adminScheduleStatus">Select a game to edit.</div></div><button class="btn secondary admin-schedule-next-btn" type="button" onclick="editNextScheduleGame()">NEXT GAME</button></div>
+        <div class="admin-category-buttons admin-schedule-categories" id="adminScheduleCategories" aria-label="Schedule month">
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="SEP" onclick="setAdminScheduleMonth('SEP')">SEP</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="OCT" onclick="setAdminScheduleMonth('OCT')">OCT</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="NOV" onclick="setAdminScheduleMonth('NOV')">NOV</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="DEC" onclick="setAdminScheduleMonth('DEC')">DEC</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="JAN" onclick="setAdminScheduleMonth('JAN')">JAN</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="FEB" onclick="setAdminScheduleMonth('FEB')">FEB</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="MAR" onclick="setAdminScheduleMonth('MAR')">MAR</button>
+          <button type="button" class="admin-category-btn" data-admin-schedule-month="APR" onclick="setAdminScheduleMonth('APR')">APR</button>
+        </div>
         <div class="admin-schedule-list" id="adminScheduleList"></div>
         <div class="admin-schedule-form" id="adminScheduleForm">
           <input type="hidden" id="adminScheduleId">
@@ -8305,6 +8355,30 @@ function parkScheduleEditor(){
   var form=document.getElementById('adminScheduleForm'),list=document.getElementById('adminScheduleList');
   if(form&&list&&form.parentElement===list)list.insertAdjacentElement('afterend',form);
 }
+var adminScheduleMonth='';
+function adminScheduleMonthForRow(r){
+  var d=new Date(String(r.game_date||'')+'T12:00:00');
+  return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]||'';
+}
+function defaultAdminScheduleMonth(){
+  var now=new Date(),m=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][now.getMonth()];
+  if(['SEP','OCT','NOV','DEC','JAN','FEB','MAR','APR'].includes(m)&&dcScheduleRows.some(function(r){return adminScheduleMonthForRow(r)===m;}))return m;
+  var upcoming=dcScheduleRows.find(function(r){return String(r.game_date||'')>=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());});
+  return upcoming?adminScheduleMonthForRow(upcoming):(dcScheduleRows[0]?adminScheduleMonthForRow(dcScheduleRows[0]):'SEP');
+}
+function renderAdminScheduleList(){
+  var box=document.getElementById('adminScheduleList');if(!box)return;
+  var rows=dcScheduleRows.filter(function(r){return adminScheduleMonthForRow(r)===adminScheduleMonth;});
+  box.innerHTML=rows.map(function(r){
+    return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
+  }).join('');
+  document.querySelectorAll('[data-admin-schedule-month]').forEach(function(b){b.classList.toggle('active',b.dataset.adminScheduleMonth===adminScheduleMonth);});
+}
+function setAdminScheduleMonth(month){
+  if(!confirmDiscardAdminChanges())return;
+  parkScheduleEditor();var f=document.getElementById('adminScheduleForm');if(f)f.classList.remove('show');
+  adminScheduleMonth=month;rememberAdminSelection('schedule','');renderAdminScheduleList();
+}
 async function loadAdminSchedule(){
   var box=document.getElementById('adminScheduleList'),st=document.getElementById('adminScheduleStatus');
   if(st)st.textContent='Loading schedule…';
@@ -8312,13 +8386,15 @@ async function loadAdminSchedule(){
     await loadSupabaseSchedule();
     if(!box)return;
     parkScheduleEditor();
-    box.innerHTML=dcScheduleRows.map(function(r){
-      return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span>EDIT</span></button>';
-    }).join('');
+    var remembered=recalledAdminSelection('schedule');
+    var rememberedRow=remembered?dcScheduleRows.find(function(x){return String(x.id)===String(remembered);}):null;
+    adminScheduleMonth=rememberedRow?adminScheduleMonthForRow(rememberedRow):defaultAdminScheduleMonth();
+    renderAdminScheduleList();
     if(st)st.textContent=dcScheduleRows.length+' games · changes publish immediately.';
-    var remembered=recalledAdminSelection('schedule');if(remembered&&dcScheduleRows.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){editScheduleGame(remembered,true);},40);
+    if(rememberedRow)setTimeout(function(){editScheduleGame(remembered,true);},40);
   }catch(e){if(st)st.textContent='Could not load schedule.';}
 }
+
 async function editNextScheduleGame(){
   if(!confirmDiscardAdminChanges())return;
   if(!dcScheduleRows.length)await loadAdminSchedule();
@@ -8331,6 +8407,7 @@ async function editNextScheduleGame(){
   })[0];
   var st=document.getElementById('adminScheduleStatus');
   if(!next){if(st)st.textContent='No upcoming game found.';return;}
+  adminScheduleMonth=adminScheduleMonthForRow(next);renderAdminScheduleList();
   parkScheduleEditor();
   var form=document.getElementById('adminScheduleForm');
   if(form)form.classList.remove('show');
@@ -8823,6 +8900,19 @@ async function fetchRosterData(){
   if(results[0].error)throw results[0].error;
   return {players:results[0].data||[],meta:results[1].data||null};
 }
+var adminRosterGroup='FORWARDS';
+function renderAdminRosterList(){
+  var list=document.getElementById('adminRosterList');if(!list)return;
+  var players=adminRosterPlayers.filter(function(p){return String(p.position_group||rosterGroupForPosition(p.position||'')).toUpperCase()===adminRosterGroup;});
+  list.innerHTML=players.map(function(p){
+    return '<div class="admin-roster-row" data-player-id="'+p.id+'"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
+  }).join('');
+  document.querySelectorAll('[data-admin-roster-group]').forEach(function(b){b.classList.toggle('active',b.dataset.adminRosterGroup===adminRosterGroup);});
+}
+function setAdminRosterGroup(group){
+  if(!confirmDiscardAdminChanges())return;
+  adminRosterGroup=group;rememberAdminSelection('roster','');var f=document.getElementById('adminRosterForm');if(f){f.classList.remove('show','inline-add');}document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});renderAdminRosterList();
+}
 async function loadAdminRoster(){
   var st=document.getElementById('adminRosterStatus'),list=document.getElementById('adminRosterList');
   if(st)st.textContent='Loading roster…';
@@ -8832,12 +8922,13 @@ async function loadAdminRoster(){
     if(labelInput)labelInput.value=(data.meta&&data.meta.roster_label)||'';
     if(verified)verified.textContent=data.meta&&data.meta.checked_date?'Last verified '+formatRosterCheckedDate(data.meta.checked_date):'';
     if(st)st.textContent=adminRosterPlayers.length+' players';
-    if(list)list.innerHTML=adminRosterPlayers.map(function(p){
-      return '<div class="admin-roster-row" data-player-id="'+p.id+'"><div class="admin-roster-num">'+escapeHtml(p.number)+'</div><div><div class="admin-roster-name">'+escapeHtml(p.name)+'</div><div class="admin-roster-meta">'+escapeHtml(rosterMetaLine(p))+' • '+escapeHtml(rosterBirthdateForDisplay(p.birthdate||''))+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterEditor('+p.id+')">EDIT</button></div>';
-    }).join('');
-    var remembered=recalledAdminSelection('roster');if(remembered&&adminRosterPlayers.some(function(x){return String(x.id)===String(remembered);}))setTimeout(function(){openRosterEditor(remembered,true);},40);
+    var remembered=recalledAdminSelection('roster'),rememberedPlayer=remembered?adminRosterPlayers.find(function(x){return String(x.id)===String(remembered);}):null;
+    adminRosterGroup=rememberedPlayer?String(rememberedPlayer.position_group||rosterGroupForPosition(rememberedPlayer.position||'F')).toUpperCase():'FORWARDS';
+    renderAdminRosterList();
+    if(rememberedPlayer)setTimeout(function(){openRosterEditor(remembered,true);},40);
   }catch(e){if(st)st.textContent='Roster could not be loaded.';if(list)list.innerHTML='';}
 }
+
 function openRosterEditor(id,restoring){
   if(!restoring&&!confirmDiscardAdminChanges())return;
   var p=id?adminRosterPlayers.find(function(x){return Number(x.id)===Number(id);}):null;
