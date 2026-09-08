@@ -5219,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v433</small>
+<header><small class="build-version build-version-corner">v434</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7122,7 +7122,16 @@ function renderSelectedMonth(){
   }
 
   function gcStandingTeamKey(value){
-    var name=String(value||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');
+    var name=String(value||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+    if(!name)return '';
+    var exactCodes={
+      'yng':'youngstown','yp':'youngstown','crr':'cedar rapids','chi':'chicago','dbq':'dubuque',
+      'gb':'green bay','gbg':'green bay','mad':'madison','mus':'muskegon',
+      'dm':'des moines','dsm':'des moines','des':'des moines','far':'fargo','lin':'lincoln','oma':'omaha',
+      'sc':'sioux city','scm':'sioux city','sf':'sioux falls','sfs':'sioux falls',
+      'tc':'tri city','tcs':'tri city','wat':'waterloo','wlo':'waterloo','usa':'team usa','ntdp':'team usa'
+    };
+    if(exactCodes[name])return exactCodes[name];
     var aliases=[
       ['youngstown','youngstown'],['cedar rapids','cedar rapids'],['chicago','chicago'],
       ['dubuque','dubuque'],['green bay','green bay'],['madison','madison'],['muskegon','muskegon'],
@@ -7137,7 +7146,7 @@ function renderSelectedMonth(){
     var target=gcStandingTeamKey(team);
     if(!target)return null;
     return (dcUshlStandingsRows||[]).find(function(row){
-      return gcStandingTeamKey(row&&row.team||'')===target;
+      return gcStandingTeamKey(row&&row.team||'')===target||gcStandingTeamKey(row&&row.team_code||'')===target;
     })||null;
   }
   function gcRecordFromStanding(row){
