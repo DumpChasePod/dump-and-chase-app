@@ -5219,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v432</small>
+<header><small class="build-version build-version-corner">v433</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7001,6 +7001,32 @@ function renderSelectedMonth(){
 
   var dcUshlStandingsRows=[];
   var dcUshlStandingsConference='EAST';
+  var DC_USHL_STANDINGS_CACHE_KEY='dc_ushl_standings_v1';
+
+  function loadCachedUshlStandings(){
+    try{
+      var raw=localStorage.getItem(DC_USHL_STANDINGS_CACHE_KEY);
+      if(!raw)return false;
+      var cached=JSON.parse(raw);
+      var rows=Array.isArray(cached&&cached.rows)?cached.rows:[];
+      if(!rows.length)return false;
+      dcUshlStandingsRows=rows;
+      applyOfficialMatchupRecords();
+      renderGCStandings();
+      return true;
+    }catch(e){
+      console.warn('Cached USHL standings unavailable',e);
+      return false;
+    }
+  }
+  function saveCachedUshlStandings(rows){
+    try{
+      if(!Array.isArray(rows)||!rows.length)return;
+      localStorage.setItem(DC_USHL_STANDINGS_CACHE_KEY,JSON.stringify({saved_at:Date.now(),rows:rows}));
+    }catch(e){
+      console.warn('USHL standings cache could not be saved',e);
+    }
+  }
 
   function gcStandingsTeamCode(row){
     var code=String(row&&row.team_code||'').trim().toUpperCase();
@@ -7142,7 +7168,9 @@ function renderSelectedMonth(){
   async function loadUshlStandings(){
     var host=document.getElementById('gcStandingsBody');
     var meta=document.getElementById('gcStandingsMeta');
-    if(host)host.innerHTML='<div class="gc-standings-loading">Loading official USHL standings…</div>';
+    var hadCached=loadCachedUshlStandings();
+    if(host&&!hadCached)host.innerHTML='<div class="gc-standings-loading">Loading official USHL standings…</div>';
+    if(meta&&hadCached)meta.textContent='Official USHL data • Updating…';
     try{
       var res=await fetch(DC_SUPABASE_URL+'/functions/v1/get-ushl-standings',{
         method:'GET',
@@ -7153,13 +7181,20 @@ function renderSelectedMonth(){
       if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
+      saveCachedUshlStandings(dcUshlStandingsRows);
       applyOfficialMatchupRecords();
       renderGCStandings();
       if(meta)meta.textContent='Official USHL data • Auto-updated';
     }catch(e){
       console.warn('USHL standings unavailable',e);
-      if(host)host.innerHTML='<div class="gc-standings-error"><strong>Standings could not be loaded.</strong>Use the official USHL link below to view the current table.</div>';
-      if(meta)meta.textContent='Official USHL data';
+      if(hadCached){
+        applyOfficialMatchupRecords();
+        renderGCStandings();
+        if(meta)meta.textContent='Official USHL data • Last saved copy';
+      }else{
+        if(host)host.innerHTML='<div class="gc-standings-error"><strong>Standings could not be loaded.</strong>Use the official USHL link below to view the current table.</div>';
+        if(meta)meta.textContent='Official USHL data';
+      }
     }
   }
 
