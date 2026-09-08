@@ -7363,7 +7363,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v439</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v440</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10707,29 +10707,70 @@ function dcRenderPlayerStatsBlock(title,kind,stats){
   }
   return '<div class="player-profile-stats"><div class="player-profile-stats-title">'+escapeHtml(title)+'</div><div class="player-profile-stats-grid '+(kind==='goalie'?'goalie':'')+'">'+cells+'</div></div>';
 }
+function dcPlayerStatsKind(player){
+  return player&&String(player.position||player.position_group||'').toUpperCase()==='G'?'goalie':'skater';
+}
+function dcZeroPlayerStats(kind){
+  return kind==='goalie'
+    ?{gp:0,w:0,l:0,otl:0,sol:0,gaa:'0.00',sv_pct:'.000',so:0}
+    :{gp:0,g:0,a:0,pts:0,pim:0,plus_minus:0};
+}
+function dcPlayerStatsCacheKey(player){
+  return 'dc-player-stats-v2|91|'+String(player&&player.name||'').trim().toLowerCase()+'|'+String(player&&player.position||player&&player.position_group||'').trim().toLowerCase();
+}
+function dcReadPlayerStatsCache(player){
+  try{
+    var raw=localStorage.getItem(dcPlayerStatsCacheKey(player));
+    if(!raw)return null;
+    var wrapped=JSON.parse(raw);
+    if(!wrapped||!wrapped.data||!wrapped.saved_at)return null;
+    if(Date.now()-Number(wrapped.saved_at)>30*60*1000)return null;
+    return wrapped.data;
+  }catch(_){return null;}
+}
+function dcWritePlayerStatsCache(player,data){
+  try{localStorage.setItem(dcPlayerStatsCacheKey(player),JSON.stringify({saved_at:Date.now(),data:data}));}catch(_){}
+}
+function dcPlayerHasPriorCareer(data){
+  if(!data)return false;
+  if(data.has_prior_ushl===true)return true;
+  var ids=Array.isArray(data.career_regular_season_ids)?data.career_regular_season_ids:[];
+  return ids.some(function(id){return String(id)!=='91';});
+}
+function dcPlayerStatsHtml(player,data){
+  var kind=(data&&data.kind)||dcPlayerStatsKind(player);
+  var current=(data&&data.current)||dcZeroPlayerStats(kind);
+  if(!data||data.found===false)current=dcZeroPlayerStats(kind);
+  var html=dcRenderPlayerStatsBlock('2026–2027 STATS',kind,current);
+  if(data&&data.career&&dcPlayerHasPriorCareer(data))html+=dcRenderPlayerStatsBlock('USHL CAREER STATS',kind,data.career);
+  return html;
+}
 async function dcLoadPlayerStats(player){
   var host=document.getElementById('playerProfileDetails');
   if(!host||!player)return;
   var marker=document.createElement('div');
   marker.className='player-profile-stats';
   marker.id='playerProfileStatsArea';
-  marker.innerHTML='<div class="player-profile-stats-note">Loading official USHL stats…</div>';
+  var requestKey=dcPlayerStatsCacheKey(player);
+  marker.dataset.playerStatsKey=requestKey;
+  var cached=dcReadPlayerStatsCache(player);
+  if(cached)marker.innerHTML=dcPlayerStatsHtml(player,cached);
+  else marker.innerHTML='<div class="player-profile-stats-note">Loading official USHL stats…</div>';
   host.appendChild(marker);
   try{
     var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'')+'&position='+encodeURIComponent(player.position||player.position_group||'');
     var res=await fetch(url,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
     var data=await res.json();
     if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
-    if(!data.found){
-      marker.innerHTML='<div class="player-profile-stats-note">No official USHL stats are available for this player yet.</div>';
-      return;
-    }
-    var html=dcRenderPlayerStatsBlock('2026–2027 STATS',data.kind,data.current);
-    if(data.career)html+=dcRenderPlayerStatsBlock('USHL CAREER STATS',data.kind,data.career);
-    marker.outerHTML=html||'<div class="player-profile-stats-note">No official USHL stats are available for this player yet.</div>';
+    dcWritePlayerStatsCache(player,data);
+    var liveMarker=document.getElementById('playerProfileStatsArea');
+    if(!liveMarker||liveMarker.dataset.playerStatsKey!==requestKey)return;
+    liveMarker.outerHTML=dcPlayerStatsHtml(player,data);
   }catch(e){
     console.warn('Player stats unavailable',e);
-    marker.innerHTML='<div class="player-profile-stats-note">Official USHL stats are temporarily unavailable.</div>';
+    var liveMarker=document.getElementById('playerProfileStatsArea');
+    if(!liveMarker||liveMarker.dataset.playerStatsKey!==requestKey)return;
+    if(!cached)liveMarker.innerHTML='<div class="player-profile-stats-note">Official USHL stats are temporarily unavailable.</div>';
   }
 }
 function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(function(x){return String(x.id)===String(id);});if(!p)return;var action=p.position==='G'?'Catches':'Shoots';document.getElementById('playerProfileNumber').textContent=p.number?'#'+p.number:'—';document.getElementById('playerProfileName').textContent=p.name||'Player';document.getElementById('playerProfilePosition').textContent=dcPlayerPositionName(p);var birth=rosterBirthdateForDisplay(p.birthdate),age=dcPlayerAge(p.birthdate),height=(p.height_feet!==null&&p.height_feet!==undefined&&p.height_feet!=='')?String(p.height_feet)+"' "+formatRosterInches(p.height_inches)+'"':'';document.getElementById('playerProfileDetails').innerHTML=
