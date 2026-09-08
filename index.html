@@ -10635,6 +10635,39 @@ document.getElementById('playerProfileBackdrop').hidden=false;dcLoadPlayerStats(
 function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(b)b.hidden=true;}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerProfile();});
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
+
+/* TEMP V434 opponent-record diagnostic — remove after diagnosis */
+function dcOpponentRecordDiagnostic(){
+  try{
+    var opp=currentNextOpponent();
+    var target=typeof gcStandingTeamKey==='function'?gcStandingTeamKey(opp):'';
+    var rows=Array.isArray(dcUshlStandingsRows)?dcUshlStandingsRows:[];
+    var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
+    var des=rows.filter(function(r){
+      var blob=(String(r&&r.team||'')+' '+String(r&&r.team_code||'')).toLowerCase();
+      return blob.indexOf('des')!==-1||blob.indexOf('moines')!==-1||['DM','DSM','DES'].indexOf(String(r&&r.team_code||'').trim().toUpperCase())!==-1;
+    });
+    var pill=document.getElementById('heroOpponentRecord');
+    var data={
+      nextOpponent:opp,
+      targetKey:target,
+      standingsRows:rows.length,
+      desMoinesRows:des.map(function(r){return {team:r.team,team_code:r.team_code,w:r.w,l:r.l,otl:r.otl,sol:r.sol,pts:r.pts};}),
+      officialMatch:official?{team:official.team,team_code:official.team_code,w:official.w,l:official.l,otl:official.otl,sol:official.sol,pts:official.pts}:null,
+      opponentRecord:dcOpponentRecord,
+      heroPill:pill?{hidden:pill.hidden,text:pill.textContent}:null
+    };
+    var box=document.getElementById('dcOpponentDiag');
+    if(!box){
+      box=document.createElement('div');box.id='dcOpponentDiag';
+      box.style.cssText='position:fixed;left:8px;right:8px;bottom:76px;z-index:999999;background:#08111d;color:#eef2f7;border:2px solid #e5b900;border-radius:10px;padding:9px;font:11px/1.35 monospace;max-height:42vh;overflow:auto;white-space:pre-wrap;box-shadow:0 8px 28px rgba(0,0,0,.55)';
+      document.body.appendChild(box);
+    }
+    box.textContent='OPPONENT RECORD DIAGNOSTIC\n'+JSON.stringify(data,null,2);
+  }catch(e){console.warn('Opponent diagnostic failed',e);}
+}
+setInterval(dcOpponentRecordDiagnostic,1000);
+setTimeout(dcOpponentRecordDiagnostic,250);
 </script></body>
 </html>
 
