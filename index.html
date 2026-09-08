@@ -944,6 +944,10 @@ header{position:relative}
  letter-spacing:.08em;text-transform:uppercase;
 }
 
+.admin-title-row{display:flex;align-items:baseline;gap:8px}
+.admin-title-row h2{margin:0}
+.admin-build-version{color:#6f7b8c;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+
 
 #nextGameHero .gc-venue,
 .gc-next-card .gc-venue{
@@ -5219,7 +5223,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v438</small>
+<header>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7312,6 +7316,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     var heroOppName=document.getElementById('heroOpponent');if(heroOppName)heroOppName.innerHTML=teamNameStack(g[1]);
     var heroPhName=document.getElementById('heroPhantomsName');if(heroPhName)heroPhName.innerHTML=teamNameStack('Youngstown Phantoms');
     renderMatchupRecords();
+    ensureHomeOpponentRecord();
     setText('gameHeroDate',weekdayFull(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'}));
     setText('gameHeroLocation',venue.arena+(venue.arena&&venue.city?' — ':'')+venue.city);
     setText('homeGameEvent',eventLabel);
@@ -7358,7 +7363,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><h2>Admin</h2><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v439</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8701,6 +8706,30 @@ async function loadHomeOpponentRecordDirect(){
     dcHomeOpponentRecordDirect=null;
     return false;
   }
+}
+var dcHomeOpponentEnsureKey='';
+var dcHomeOpponentEnsureInflight=false;
+var dcHomeOpponentEnsureRetryAt=0;
+function ensureHomeOpponentRecord(){
+  var target=currentNextGameRecordTarget();
+  if(!target||!target.opponent||!target.game_date)return;
+  var key=String(target.game_date)+'|'+String(target.opponent).trim();
+  if(dcHomeOpponentRecordDirect&&String(dcHomeOpponentRecordDirect.opponent||'').trim()===String(target.opponent).trim()){
+    setRecordPill('heroOpponentRecord',dcHomeOpponentRecordDirect);
+    return;
+  }
+  if(dcHomeOpponentEnsureInflight)return;
+  if(dcHomeOpponentEnsureKey===key&&Date.now()<dcHomeOpponentEnsureRetryAt)return;
+  dcHomeOpponentEnsureKey=key;
+  dcHomeOpponentEnsureInflight=true;
+  loadHomeOpponentRecordDirect().then(function(ok){
+    dcHomeOpponentEnsureRetryAt=ok?0:(Date.now()+5000);
+    if(ok)renderMatchupRecords();
+  }).catch(function(){
+    dcHomeOpponentEnsureRetryAt=Date.now()+5000;
+  }).finally(function(){
+    dcHomeOpponentEnsureInflight=false;
+  });
 }
 async function loadOpponentRecord(){
   var opp=currentNextOpponent();
