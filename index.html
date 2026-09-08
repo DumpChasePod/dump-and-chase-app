@@ -5219,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v436</small>
+<header><small class="build-version build-version-corner">v437</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -8636,17 +8636,24 @@ function formatRecordPill(record){
   function n(k){return Math.max(0,parseInt(record[k],10)||0);}
   return n('w')+'-'+n('l')+'-'+n('otl')+'-'+n('sol')+' '+n('pts')+'pts';
 }
-function currentNextOpponent(){
+function currentNextGameRecordTarget(){
   try{
-    if(typeof getNextGameForGameDay==='function'){var next=getNextGameForGameDay();if(next&&next.g)return String(next.g[1]||'');}
     var now=Date.now();
     for(var i=0;i<dcScheduleRows.length;i++){
       var r=dcScheduleRows[i];
       if(['POSTPONED','CANCELLED'].includes(String(r.status||'').toUpperCase()))continue;
       if(!r.game_date||!r.game_time)continue;
       var t=new Date(String(r.game_date)+'T'+String(r.game_time).slice(0,8)).getTime();
-      if(t>now)return String(r.opponent||'');
+      if(t>now)return {opponent:String(r.opponent||''),game_date:String(r.game_date||'')};
     }
+  }catch(e){}
+  return null;
+}
+function currentNextOpponent(){
+  try{
+    if(typeof getNextGameForGameDay==='function'){var next=getNextGameForGameDay();if(next&&next.g)return String(next.g[1]||'');}
+    var target=currentNextGameRecordTarget();
+    if(target)return target.opponent;
   }catch(e){}
   return '';
 }
@@ -8669,15 +8676,36 @@ function renderMatchupRecords(){
 }
 async function loadOpponentRecord(){
   var opp=currentNextOpponent();
-  var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
-  if(official){
-    dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));
-  }else{
+  var target=currentNextGameRecordTarget();
+  var loadedFromGameFeed=false;
+
+  /* Home should get the opponent record from the same HockeyTech daily-schedule data path used by USHL. */
+  if(opp&&target&&target.game_date){
     try{
-      var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
-      if(r.error)throw r.error;
-      dcOpponentRecord=r.data||null;
-    }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+      var matchupUrl=DC_SUPABASE_URL+'/functions/v1/get-ushl-matchup-record?date='+encodeURIComponent(target.game_date)
+        +'&team='+encodeURIComponent('Youngstown Phantoms')
+        +'&opponent='+encodeURIComponent(opp)
+        +'&season_id=92';
+      var matchupRes=await fetch(matchupUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
+      var matchupData=await matchupRes.json();
+      if(matchupRes.ok&&matchupData&&matchupData.ok!==false&&matchupData.record){
+        dcOpponentRecord=Object.assign({opponent:opp},matchupData.record);
+        loadedFromGameFeed=true;
+      }
+    }catch(e){console.warn('USHL matchup record unavailable',e);}
+  }
+
+  if(!loadedFromGameFeed){
+    var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
+    if(official){
+      dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));
+    }else{
+      try{
+        var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+        if(r.error)throw r.error;
+        dcOpponentRecord=r.data||null;
+      }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+    }
   }
   renderMatchupRecords();
   if(typeof renderPublicGameDay==='function')renderPublicGameDay();
