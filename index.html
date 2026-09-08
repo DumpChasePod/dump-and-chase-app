@@ -5219,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v437</small>
+<header><small class="build-version build-version-corner">v438</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7780,6 +7780,7 @@ const DC_SUPABASE_KEY='sb_publishable_mDdTovsQOCm2WAZoh28Gxw_ISMEXfAJ';
 const dcSupabase=window.supabase.createClient(DC_SUPABASE_URL,DC_SUPABASE_KEY);
 let dcPhantomsRecord={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
 let dcOpponentRecord=null;
+let dcHomeOpponentRecordDirect=null;
 async function loadSupabaseSchedule(){
   try{
     var q=await dcSupabase.from('phantoms_schedule').select('*').order('game_date',{ascending:true}).order('game_time',{ascending:true});
@@ -7887,6 +7888,10 @@ async function dcBootSharedGameData(){
     renderMatchupRecords();
 
     await loadSupabaseSchedule();
+
+    /* V438 isolation: once the schedule identifies the exact next game, fetch and paint Home directly. */
+    await loadHomeOpponentRecordDirect();
+    renderMatchupRecords();
 
     /* Schedule can change the next opponent, so re-apply cached standings now. */
     applyOfficialMatchupRecords();
@@ -8671,8 +8676,31 @@ function setRecordPill(id,record){
 }
 function renderMatchupRecords(){
   setRecordPill('heroPhantomsRecord',dcPhantomsRecord);
-  var opp=currentNextOpponent();
-  setRecordPill('heroOpponentRecord',opponentRecordFor(opp));
+  var target=currentNextGameRecordTarget();
+  var opp=target&&target.opponent?target.opponent:currentNextOpponent();
+  var direct=dcHomeOpponentRecordDirect&&String(dcHomeOpponentRecordDirect.opponent||'').trim()===String(opp||'').trim()?dcHomeOpponentRecordDirect:null;
+  setRecordPill('heroOpponentRecord',direct||opponentRecordFor(opp));
+}
+async function loadHomeOpponentRecordDirect(){
+  var target=currentNextGameRecordTarget();
+  if(!target||!target.opponent||!target.game_date)return false;
+  try{
+    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-matchup-record?date='+encodeURIComponent(target.game_date)
+      +'&team='+encodeURIComponent('Youngstown Phantoms')
+      +'&opponent='+encodeURIComponent(target.opponent);
+    var res=await fetch(url,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
+    var data=await res.json();
+    if(!res.ok||!data||data.ok===false||!data.record)throw new Error((data&&data.error)||('HTTP '+res.status));
+    dcHomeOpponentRecordDirect=Object.assign({opponent:target.opponent},data.record);
+    dcOpponentRecord=Object.assign({},dcHomeOpponentRecordDirect);
+    /* Isolation path: paint the Home pill immediately, without standings/HQ/shared render state. */
+    setRecordPill('heroOpponentRecord',dcHomeOpponentRecordDirect);
+    return true;
+  }catch(e){
+    console.warn('Direct Home opponent record unavailable',e);
+    dcHomeOpponentRecordDirect=null;
+    return false;
+  }
 }
 async function loadOpponentRecord(){
   var opp=currentNextOpponent();
