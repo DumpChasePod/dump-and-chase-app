@@ -5219,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v431</small>
+<header><small class="build-version build-version-corner">v432</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7000,29 +7000,6 @@ function renderSelectedMonth(){
 
 
   var dcUshlStandingsRows=[];
-  var DC_USHL_STANDINGS_CACHE_KEY='dc_ushl_standings_cache_v1';
-  var DC_USHL_STANDINGS_CACHE_TTL=30*60*1000;
-  function gcStandingTeamKey(value){
-    var n=String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-    if(!n)return '';
-    var keys=['youngstown','muskegon','des moines','waterloo','fargo','dubuque','chicago','madison','cedar rapids','green bay','lincoln','omaha','sioux city','sioux falls','tri city'];
-    for(var i=0;i<keys.length;i++)if(n.indexOf(keys[i])!==-1)return keys[i];
-    if(n.indexOf('team usa')!==-1||n.indexOf('usa hockey')!==-1||n.indexOf('ntdp')!==-1)return 'team usa';
-    return n;
-  }
-  function loadCachedUshlStandings(){
-    try{
-      var raw=localStorage.getItem(DC_USHL_STANDINGS_CACHE_KEY);if(!raw)return false;
-      var cached=JSON.parse(raw),age=Date.now()-Number(cached&&cached.saved_at||0);
-      if(!cached||!Array.isArray(cached.rows)||!cached.rows.length||age<0||age>DC_USHL_STANDINGS_CACHE_TTL)return false;
-      dcUshlStandingsRows=cached.rows;
-      applyOfficialMatchupRecords();
-      return true;
-    }catch(e){return false;}
-  }
-  function saveCachedUshlStandings(rows){
-    try{localStorage.setItem(DC_USHL_STANDINGS_CACHE_KEY,JSON.stringify({saved_at:Date.now(),rows:rows||[]}));}catch(e){}
-  }
   var dcUshlStandingsConference='EAST';
 
   function gcStandingsTeamCode(row){
@@ -7118,14 +7095,23 @@ function renderSelectedMonth(){
       '</div>';
   }
 
+  function gcStandingTeamKey(value){
+    var name=String(value||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');
+    var aliases=[
+      ['youngstown','youngstown'],['cedar rapids','cedar rapids'],['chicago','chicago'],
+      ['dubuque','dubuque'],['green bay','green bay'],['madison','madison'],['muskegon','muskegon'],
+      ['des moines','des moines'],['fargo','fargo'],['lincoln','lincoln'],['omaha','omaha'],
+      ['sioux city','sioux city'],['sioux falls','sioux falls'],['tri city','tri city'],['waterloo','waterloo'],
+      ['usa hockey','team usa'],['ntdp','team usa'],['team usa','team usa']
+    ];
+    for(var i=0;i<aliases.length;i++)if(name.indexOf(aliases[i][0])!==-1)return aliases[i][1];
+    return name;
+  }
   function gcOfficialStandingFor(team){
     var target=gcStandingTeamKey(team);
     if(!target)return null;
     return (dcUshlStandingsRows||[]).find(function(row){
-      var name=gcStandingTeamKey(row&&row.team||'');
-      if(name===target)return true;
-      if(target==='youngstown'&&gcIsYoungstownStanding(row))return true;
-      return false;
+      return gcStandingTeamKey(row&&row.team||'')===target;
     })||null;
   }
   function gcRecordFromStanding(row){
@@ -7167,7 +7153,6 @@ function renderSelectedMonth(){
       if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
-      saveCachedUshlStandings(dcUshlStandingsRows);
       applyOfficialMatchupRecords();
       renderGCStandings();
       if(meta)meta.textContent='Official USHL data • Auto-updated';
@@ -7844,8 +7829,8 @@ function boxScoreButton(url,extraClass){
 (async function dcBootSharedGameData(){
   try{
     await loadSupabaseSchedule();
-    loadCachedUshlStandings();
-    await Promise.all([loadPhantomsRecord(),loadOpponentRecord(),loadUshlStandings()]);
+    await Promise.all([loadPhantomsRecord(),loadUshlStandings()]);
+    await loadOpponentRecord();
   }catch(e){
     console.warn('Shared game data boot failed',e);
   }
@@ -8598,10 +8583,10 @@ function currentNextOpponent(){
 }
 
 function opponentRecordFor(team){
+  var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(team):null;
+  if(official&&typeof gcRecordFromStanding==='function')return gcRecordFromStanding(official);
   if(!dcOpponentRecord)return null;
-  var saved=typeof gcStandingTeamKey==='function'?gcStandingTeamKey(dcOpponentRecord.opponent):String(dcOpponentRecord.opponent||'').trim().toLowerCase();
-  var target=typeof gcStandingTeamKey==='function'?gcStandingTeamKey(team):String(team||'').trim().toLowerCase();
-  return saved&&saved===target?dcOpponentRecord:null;
+  return String(dcOpponentRecord.opponent||'').trim()===String(team||'').trim()?dcOpponentRecord:null;
 }
 function setRecordPill(id,record){
   var el=document.getElementById(id);if(!el)return;
