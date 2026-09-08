@@ -3159,7 +3159,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .upcoming-team>b{display:none!important;}
 .upcoming-team .matchup-name-stack{min-height:27px;}
 .team-record-pill[hidden]{display:none!important;}
-.team-record-pill.record-diag-error{display:flex!important;max-width:170px;white-space:normal;text-align:center;line-height:1.25;color:#ff9d9d!important;border-color:rgba(255,98,98,.55)!important;background:rgba(255,98,98,.10)!important;font-size:8px!important;}
 .team-record-pill{
   display:inline-flex!important;align-items:center;justify-content:center;
   width:auto!important;max-width:100%;margin:5px auto 0;padding:3px 7px;border-radius:999px;
@@ -5220,7 +5219,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   }
 }
 </style>
-<header><small class="build-version build-version-corner">v435</small>
+<header><small class="build-version build-version-corner">v436</small>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
@@ -7175,9 +7174,15 @@ function renderSelectedMonth(){
     return !!(yng||oppRow);
   }
 
+  function syncUshlStandingsConsumers(){
+    /* One successful standings dataset should update every consumer immediately. */
+    applyOfficialMatchupRecords();
+    renderGCStandings();
+    renderMatchupRecords();
+    try{if(typeof renderPublicGameDay==='function')renderPublicGameDay();}catch(_){}
+  }
+
   async function loadUshlStandings(){
-    dcOpponentRecordDiag.standingsAttempted=true;
-    dcOpponentRecordDiag.lastError='';
     var host=document.getElementById('gcStandingsBody');
     var meta=document.getElementById('gcStandingsMeta');
     var hadCached=loadCachedUshlStandings();
@@ -7192,21 +7197,16 @@ function renderSelectedMonth(){
       var data=await res.json();
       if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
-      dcOpponentRecordDiag.standingsRows=dcUshlStandingsRows.length;
-      dcOpponentRecordDiag.standingsSucceeded=true;
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
       saveCachedUshlStandings(dcUshlStandingsRows);
-      applyOfficialMatchupRecords();
-      renderGCStandings();
+      syncUshlStandingsConsumers();
       if(meta)meta.textContent='Official USHL data • Auto-updated';
     }catch(e){
-      dcOpponentRecordDiag.standingsSucceeded=false;
-      dcOpponentRecordDiag.lastError=e&&e.message?e.message:String(e);
       console.warn('USHL standings unavailable',e);
-      if(hadCached){
-        applyOfficialMatchupRecords();
-        renderGCStandings();
-        if(meta)meta.textContent='Official USHL data • Last saved copy';
+      if(hadCached||(dcUshlStandingsRows&&dcUshlStandingsRows.length)){
+        /* Another concurrent standings request may already have succeeded. Never overwrite valid rows with an error. */
+        syncUshlStandingsConsumers();
+        if(meta)meta.textContent=hadCached?'Official USHL data • Last saved copy':'Official USHL data • Auto-updated';
       }else{
         if(host)host.innerHTML='<div class="gc-standings-error"><strong>Standings could not be loaded.</strong>Use the official USHL link below to view the current table.</div>';
         if(meta)meta.textContent='Official USHL data';
@@ -7292,6 +7292,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 });
 
     loadPhantomsRecord();
+    /* HQ may be created after standings already loaded during startup. Paint those rows immediately. */
+    if(dcUshlStandingsRows&&dcUshlStandingsRows.length)syncUshlStandingsConsumers();
     loadUshlStandings();
     loadOpponentRecord();
     return false;
@@ -8629,25 +8631,6 @@ function teamNameStack(team){
   var p=teamNameParts(team);
   return '<span class="matchup-name-city">'+escapeHtml(p[0])+'</span><span class="matchup-name-team">'+escapeHtml(p[1])+'</span>';
 }
-var dcOpponentRecordDiag={standingsAttempted:false,standingsSucceeded:false,standingsRows:0,opponent:'',matchFound:false,lastError:''};
-function dcOpponentDiagText(){
-  var d=dcOpponentRecordDiag||{};
-  var parts=[];
-  parts.push('OPP: '+(d.opponent||'NONE'));
-  parts.push('ROWS: '+String(d.standingsRows||0));
-  parts.push('MATCH: '+(d.matchFound?'YES':'NO'));
-  if(d.lastError)parts.push('ERR: '+String(d.lastError).slice(0,70));
-  else if(!d.standingsAttempted)parts.push('STANDINGS: NOT RUN');
-  else parts.push('STANDINGS: '+(d.standingsSucceeded?'OK':'FAILED'));
-  return parts.join(' • ');
-}
-function showOpponentRecordDiagnostic(){
-  var el=document.getElementById('heroOpponentRecord');
-  if(!el)return;
-  el.hidden=false;
-  el.classList.add('record-diag-error');
-  el.textContent=dcOpponentDiagText();
-}
 function formatRecordPill(record){
   record=record||{};
   function n(k){return Math.max(0,parseInt(record[k],10)||0);}
@@ -8682,22 +8665,11 @@ function setRecordPill(id,record){
 function renderMatchupRecords(){
   setRecordPill('heroPhantomsRecord',dcPhantomsRecord);
   var opp=currentNextOpponent();
-  dcOpponentRecordDiag.opponent=opp||'';
-  var rec=opponentRecordFor(opp);
-  var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
-  dcOpponentRecordDiag.standingsRows=(dcUshlStandingsRows||[]).length;
-  dcOpponentRecordDiag.matchFound=!!official;
-  var oppEl=document.getElementById('heroOpponentRecord');
-  if(oppEl)oppEl.classList.remove('record-diag-error');
-  setRecordPill('heroOpponentRecord',rec);
-  if(!rec)showOpponentRecordDiagnostic();
+  setRecordPill('heroOpponentRecord',opponentRecordFor(opp));
 }
 async function loadOpponentRecord(){
   var opp=currentNextOpponent();
-  dcOpponentRecordDiag.opponent=opp||'';
-  dcOpponentRecordDiag.standingsRows=(dcUshlStandingsRows||[]).length;
   var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
-  dcOpponentRecordDiag.matchFound=!!official;
   if(official){
     dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));
   }else{
@@ -8705,7 +8677,7 @@ async function loadOpponentRecord(){
       var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
       if(r.error)throw r.error;
       dcOpponentRecord=r.data||null;
-    }catch(e){dcOpponentRecordDiag.lastError=e&&e.message?e.message:String(e);console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
+    }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
   }
   renderMatchupRecords();
   if(typeof renderPublicGameDay==='function')renderPublicGameDay();
@@ -9493,7 +9465,7 @@ function gameDayTeam(team,label,homeAway){
    '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
    '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
    (homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+
-   (record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':(String(team||'').trim()!=='Youngstown Phantoms'?'<div class="team-record-pill record-diag-error">'+escapeHtml(dcOpponentDiagText())+'</div>':''))+
+   (record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+
   '</div>';
 }
 
