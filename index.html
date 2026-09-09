@@ -5245,6 +5245,66 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 .roster-list-captain{position:absolute!important;right:112px;top:50%;transform:translateY(-50%);width:30px!important;height:30px!important;margin:0!important;pointer-events:none;opacity:.96}
 .admin-roster-form{scroll-margin-top:92px}
 @media(max-width:420px){.player-profile-captain-role{width:60px;height:60px}.roster-list-captain{right:92px;width:28px!important;height:28px!important}}
+
+/* v450 Home visual synergy pass — preserve the established Home/HQ/Episodes language */
+#home{
+  --home-shell-radius:20px;
+  --home-shell-border:rgba(94,111,136,.34);
+  --home-inner-radius:12px;
+}
+#home #latestPodcastHero,
+#home .listen-platforms,
+#home .phan-qa-schedule-style,
+#home #nextGameHero,
+#home .host-compact-card{
+  border-width:1px;
+  border-style:solid;
+  border-radius:var(--home-shell-radius);
+}
+#home #latestPodcastHero{
+  border-color:rgba(139,82,255,.34);
+  background:linear-gradient(120deg,#171728,#0e141e 55%,#20143a);
+}
+#home .listen-platforms{
+  border-color:rgba(139,82,255,.34);
+  border-radius:var(--home-shell-radius);
+}
+#home .phan-qa-schedule-style{
+  border-color:rgba(255,148,74,.36);
+  border-radius:var(--home-shell-radius);
+}
+#home #nextGameHero{
+  border-color:rgba(139,82,255,.34);
+  border-radius:var(--home-shell-radius);
+}
+#home .host-compact-card{
+  border-color:var(--home-shell-border);
+  border-radius:var(--home-shell-radius);
+}
+#home .host-compact-card.open{border-color:rgba(139,82,255,.42)}
+#home .listen-platform,
+#home .countbox,
+#home .phan-qa-button,
+#home .next-game-hub-btn,
+#home .host-about-label{
+  border-radius:var(--home-inner-radius);
+}
+#home .listen-platform,
+#home .countbox{
+  border-color:rgba(94,111,136,.28);
+  background:rgba(17,25,37,.78);
+}
+#home .eyebrow,
+#home .listen-platforms-label,
+#home .phan-qa-schedule-style .mini,
+#home .gc-next-kicker,
+#home .home-section-title{
+  font-weight:950;
+  letter-spacing:.12em;
+}
+#home .listen-platforms-label{color:#9aa6b8}
+#home .home-section-title{margin:18px 0 9px}
+#home #meetHosts .hosts-compact{gap:10px}
 </style>
 <header>
   <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
@@ -7386,7 +7446,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v449</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v450</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
