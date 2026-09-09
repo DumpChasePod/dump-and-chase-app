@@ -4155,6 +4155,17 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style>
+/* v454: HockeyTech -> Game Center Preview bridge. Loads draft values only; Save & Publish remains authoritative. */
+#adminGameDayPanel .admin-ht-bridge{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(165,108,255,.28);border-radius:11px;background:rgba(165,108,255,.055)}
+#adminGameDayPanel .admin-ht-bridge-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+#adminGameDayPanel .admin-ht-bridge-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#b98cff;text-transform:uppercase}
+#adminGameDayPanel .admin-ht-bridge-badge{padding:3px 6px;border:1px solid rgba(143,224,170,.32);border-radius:999px;color:#8fe0aa;font-size:7px;font-weight:950;letter-spacing:.07em;white-space:nowrap}
+#adminGameDayPanel .admin-ht-bridge-status{font-size:9px;line-height:1.35;color:#aab5c5;margin-bottom:7px}
+#adminGameDayPanel .admin-ht-bridge-status strong{color:#eef2f7}
+#adminGameDayPanel .admin-ht-bridge .btn{width:100%;min-height:36px;padding:7px 10px;font-size:9px}
+#adminGameDayPanel .admin-ht-bridge .btn:disabled{opacity:.55;cursor:wait}
+#adminGameDayPanel .admin-ht-bridge-note{margin-top:5px;font-size:7.5px;line-height:1.35;color:#7f8b9c}
+
 /* v453: isolated HockeyTech live-feed investigation panel. Read-only; no Game Center writes. */
 .admin-live-test-warning{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid rgba(255,180,70,.28);border-radius:12px;background:rgba(255,180,70,.07);margin:0 0 14px}.admin-live-test-warning b{font-size:12px;letter-spacing:.08em}.admin-live-test-warning span{font-size:11px;color:#9aa6b5;line-height:1.45}
 .admin-live-test-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin-bottom:10px}.admin-live-test-toolbar .admin-field{margin:0}.admin-live-test-toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.admin-live-test-toolbar-actions button{white-space:nowrap}
@@ -7468,7 +7479,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v453</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v454</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -7483,6 +7494,12 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
       <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-chip-row admin-status-flow admin-status-flow-simple"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-chip" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
+      <div class="admin-ht-bridge" id="adminHtBridge">
+        <div class="admin-ht-bridge-head"><div class="admin-ht-bridge-title">HOCKEYTECH PREVIEW LOAD</div><div class="admin-ht-bridge-badge">NO AUTO-PUBLISH</div></div>
+        <div class="admin-ht-bridge-status" id="adminHtBridgeStatus">Ready to resolve the scheduled Youngstown game.</div>
+        <button class="btn secondary" id="adminHtBridgeButton" type="button" onclick="loadHockeyTechIntoGameCenter()">LOAD HOCKEYTECH DATA</button>
+        <div class="admin-ht-bridge-note">Loads the current HockeyTech state into this draft only. Review it, adjust manual controls if needed, then use Save &amp; Publish.</div>
+      </div>
       <input id="adminPeriod" type="hidden" value="">
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
@@ -9499,6 +9516,116 @@ async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
  catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
+/* v454: production bridge from HockeyTech into the existing Game Center draft.
+   Safety: this function only updates local Admin draft controls; publishing remains a separate explicit action. */
+function dcHtBridgeSetStatus(html){
+  var el=document.getElementById('adminHtBridgeStatus');
+  if(el)el.innerHTML=html;
+}
+function dcHtBridgeDateForRow(row){
+  return row&&/^\d{4}-\d{2}-\d{2}$/.test(String(row.game_date||''))?String(row.game_date):'';
+}
+function dcHtBridgeCurrentTarget(){
+  var next=null;
+  try{next=getNextGameForGameDay();}catch(_){next=null;}
+  if(!next||!next.g)return null;
+  var row=null;
+  try{row=typeof scheduleRowForGame==='function'?scheduleRowForGame(next.g):null;}catch(_){row=null;}
+  if(!row&&dcScheduleRows&&dcScheduleRows.length){
+    var key=String(next.g[0]||''),opp=String(next.g[1]||'').trim();
+    row=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===key&&String(r.opponent||'').trim()===opp;})||null;
+  }
+  if(!row)return null;
+  return {row:row,game:next.g,date:dcHtBridgeDateForRow(row),opponent:String(row.opponent||next.g[1]||'Opponent')};
+}
+function dcHtBridgeTeamIsYoungstown(team){
+  if(!team)return false;
+  var code=String(team.code||'').trim().toUpperCase();
+  var name=String(team.name||'').toLowerCase();
+  return code==='YNG'||name.includes('youngstown')||name.includes('phantoms');
+}
+function dcHtBridgePeriod(snapshot){
+  var g=snapshot&&snapshot.game||{};
+  var progress=String(g.progress||'').toLowerCase();
+  var label=String(g.period_label||'').toUpperCase();
+  var n=Number(g.period||0);
+  if(/intermission/.test(progress)){
+    if(n===1||/1ST|FIRST/.test(label))return {period:'1ST',clock:'INT'};
+    if(n===2||/2ND|SECOND/.test(label))return {period:'2ND',clock:'INT'};
+  }
+  if(g.shootout||/\bSO\b|SHOOTOUT/.test(label)||n>=5)return {period:'SO',clock:'0:00'};
+  if(/\bOT\b|OVERTIME/.test(label)||n===4)return {period:'OT',clock:String(g.clock_display||'5:00')};
+  if(n===1||/1ST|FIRST/.test(label))return {period:'1st',clock:String(g.clock_display||'20:00')};
+  if(n===2||/2ND|SECOND/.test(label))return {period:'2nd',clock:String(g.clock_display||'20:00')};
+  if(n===3||/3RD|THIRD/.test(label))return {period:'3rd',clock:String(g.clock_display||'20:00')};
+  return {period:'',clock:String(g.clock_display||'')};
+}
+function dcHtBridgeFinalResult(snapshot,yngScore,oppScore){
+  if(!(snapshot&&snapshot.game&&snapshot.game.final)||!Number.isFinite(yngScore)||!Number.isFinite(oppScore)||yngScore===oppScore)return '';
+  var win=yngScore>oppScore;
+  var g=snapshot.game||{};
+  var label=String(g.period_label||'').toUpperCase();
+  var n=Number(g.period||0);
+  if(g.shootout||/\bSO\b|SHOOTOUT/.test(label)||n>=5)return win?'W_SO':'L_SO';
+  if(/\bOT\b|OVERTIME/.test(label)||n===4)return win?'W_OT':'L_OT';
+  return win?'W':'L';
+}
+function dcHtBridgeApply(snapshot,gameId,target){
+  var teams=snapshot&&snapshot.teams||{};
+  var home=teams.home||{},visitor=teams.visitor||{};
+  var yngHome=dcHtBridgeTeamIsYoungstown(home),yngVisitor=dcHtBridgeTeamIsYoungstown(visitor);
+  if(yngHome===yngVisitor)throw new Error('HockeyTech game '+gameId+' is not a valid Youngstown matchup.');
+  var yng=yngHome?home:visitor,opp=yngHome?visitor:home;
+  var yngScore=Number(yng.score),oppScore=Number(opp.score);
+  if(!Number.isFinite(yngScore)||!Number.isFinite(oppScore))throw new Error('HockeyTech did not return both scores.');
+  var g=snapshot.game||{},status=g.final?'final':(g.started?'live':'upcoming');
+  var mapped=dcHtBridgePeriod(snapshot);
+  var statusEl=document.getElementById('adminGameStatus'),yEl=document.getElementById('adminPhantomsScore'),oEl=document.getElementById('adminOpponentScore'),pEl=document.getElementById('adminPeriod'),cEl=document.getElementById('adminClock'),rEl=document.getElementById('adminResult');
+  if(statusEl)statusEl.value=status;
+  if(yEl)yEl.value=String(Math.max(0,yngScore));
+  if(oEl)oEl.value=String(Math.max(0,oppScore));
+  if(pEl)pEl.value=status==='upcoming'?'':mapped.period;
+  if(cEl)cEl.value=status==='upcoming'?'':mapped.clock;
+  if(rEl&&status==='final')rEl.value=dcHtBridgeFinalResult(snapshot,yngScore,oppScore);
+  if(rEl&&status!=='final')rEl.value='';
+  syncAdminClockDigits(status==='upcoming'?'20:00':(mapped.clock==='INT'?'0:00':mapped.clock||'20:00'));
+  syncAdminQuickControls();
+  updateAdminGameDayPreview();
+  markGameDayDirty();
+  var state=status==='final'?'FINAL':(status==='live'?(mapped.clock==='INT'?'INTERMISSION':'LIVE'):'UPCOMING');
+  var oppName=String(opp.name||target.opponent||'Opponent');
+  dcHtBridgeSetStatus('<strong>Loaded game '+escapeHtml(String(gameId))+'</strong> · Youngstown '+yngScore+'–'+oppScore+' '+escapeHtml(oppName)+' · '+escapeHtml(state)+(mapped.period?' · '+escapeHtml(mapped.period):'')+(mapped.clock?' '+escapeHtml(mapped.clock):'')+'<br><span style="color:#8fe0aa">Draft updated — nothing published.</span>');
+  setAdminFeedback('adminSaveStatus','dirty','HockeyTech loaded into Preview — review, then Save & Publish');
+}
+async function loadHockeyTechIntoGameCenter(){
+  var btn=document.getElementById('adminHtBridgeButton');
+  if(btn){btn.disabled=true;btn.textContent='LOADING HOCKEYTECH…';}
+  try{
+    if(!dcScheduleRows.length)await loadSupabaseSchedule();
+    var target=dcHtBridgeCurrentTarget();
+    if(!target||!target.date)throw new Error('No scheduled Youngstown game could be resolved.');
+    dcHtBridgeSetStatus('Resolving <strong>'+escapeHtml(target.opponent)+'</strong> on '+escapeHtml(target.date)+'…');
+    var lookupUrl=DC_SUPABASE_URL+'/functions/v1/lookup-ushl-box-score?date='+encodeURIComponent(target.date)+'&opponent='+encodeURIComponent(target.opponent);
+    var lookupRes=await fetch(lookupUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
+    var lookup=await lookupRes.json();
+    if(!lookupRes.ok||!lookup||!lookup.match||!lookup.match.game_id)throw new Error((lookup&&lookup.error)||'Could not resolve the HockeyTech game ID.');
+    var gameId=String(lookup.match.game_id);
+    dcHtBridgeSetStatus('Game <strong>'+escapeHtml(gameId)+'</strong> found. Loading live HockeyTech state…');
+    var session=await dcGetSession();
+    if(!session||!(await dcVerifyAdminSession(session)))throw new Error('Admin session expired. Sign in again.');
+    var liveUrl=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-game?game_id='+encodeURIComponent(gameId);
+    var liveRes=await fetch(liveUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token}});
+    var live=await liveRes.json();
+    if(!liveRes.ok||!live||live.ok!==true||!live.interpreted)throw new Error((live&&live.error)||'HockeyTech live state was unavailable.');
+    dcHtBridgeApply(live.interpreted,gameId,target);
+  }catch(e){
+    dcHtBridgeSetStatus('<span style="color:#ff8f8f">'+escapeHtml(e&&e.message?e.message:String(e))+'</span><br>No Game Center values were published.');
+    setAdminFeedback('adminSaveStatus','error','HockeyTech load failed — existing draft retained');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='LOAD HOCKEYTECH DATA';}
+  }
+}
+
 async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
 function formatGameClock(input){
   if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
