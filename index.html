@@ -4169,11 +4169,12 @@ body.game-live #publicGameDayCard .gameday-period{
 /* v453: isolated HockeyTech live-feed investigation panel. Read-only; no Game Center writes. */
 .admin-live-test-warning{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid rgba(255,180,70,.28);border-radius:12px;background:rgba(255,180,70,.07);margin:0 0 14px}.admin-live-test-warning b{font-size:12px;letter-spacing:.08em}.admin-live-test-warning span{font-size:11px;color:#9aa6b5;line-height:1.45}
 .admin-live-test-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin-bottom:10px}.admin-live-test-toolbar .admin-field{margin:0}.admin-live-test-toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.admin-live-test-toolbar-actions button{white-space:nowrap}
+.admin-live-audio-test{margin:0 0 12px;padding:11px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.035)}.admin-live-audio-test-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.admin-live-audio-test-title{font-size:11px;font-weight:900;letter-spacing:.08em}.admin-live-audio-test-badge{font-size:9px;font-weight:900;letter-spacing:.05em;opacity:.7}.admin-live-audio-test-actions{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.admin-live-audio-test-status{font-size:11px;line-height:1.35;opacity:.78}.admin-live-audio-test-status.is-playing{opacity:1;font-weight:800}.admin-live-audio-test-status.is-error{opacity:1}.admin-live-audio-test button{min-width:145px}
 .admin-live-test-status{font-size:11px;color:#8f9bad;margin:8px 0 12px;min-height:16px}.admin-live-test-status.is-error{color:#ff8d8d}.admin-live-test-status.is-live{color:#7fe0a6}
 .admin-live-test-scoreboard{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:15px 12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);margin-bottom:12px}.admin-live-test-team{text-align:center;min-width:0}.admin-live-test-team span{display:block;font-size:10px;font-weight:850;letter-spacing:.055em;color:#a9b4c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.admin-live-test-team b{display:block;font-size:34px;line-height:1;margin-top:5px}.admin-live-test-center{text-align:center;min-width:72px}.admin-live-test-center strong{display:block;font-size:14px;letter-spacing:.08em}.admin-live-test-center span{display:block;font-size:20px;font-weight:900;margin-top:3px}.admin-live-test-center small{display:block;font-size:9px;color:#8591a1;margin-top:4px}
 .admin-live-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.admin-live-test-stat{padding:10px 11px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.02)}.admin-live-test-stat span{display:block;font-size:9px;color:#8491a2;text-transform:uppercase;letter-spacing:.065em}.admin-live-test-stat b{display:block;font-size:14px;margin-top:3px;overflow-wrap:anywhere}.admin-live-test-stat small{display:block;font-size:9px;color:#7e8998;margin-top:3px;line-height:1.35}
 .admin-live-test-section{margin-top:14px}.admin-live-test-section-title{font-size:10px;font-weight:900;letter-spacing:.09em;color:#aeb8c6;margin-bottom:7px}.admin-live-test-list{display:flex;flex-direction:column;gap:6px}.admin-live-test-row{padding:9px 10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.018);font-size:11px;line-height:1.4}.admin-live-test-row b{font-size:11px}.admin-live-test-row small{color:#8692a2}.admin-live-test-empty{font-size:11px;color:#7f8a98;padding:8px 0}.admin-live-test-good{color:#7fe0a6}.admin-live-test-warn{color:#f5c46b}.admin-live-test-bad{color:#ff8d8d}
-@media(max-width:560px){.admin-live-test-toolbar{grid-template-columns:1fr}.admin-live-test-toolbar-actions{display:grid;grid-template-columns:1fr 1fr}.admin-live-test-scoreboard{gap:5px;padding:13px 8px}.admin-live-test-team b{font-size:30px}.admin-live-test-team span{font-size:9px}.admin-live-test-center{min-width:60px}.admin-live-test-center span{font-size:18px}}
+@media(max-width:560px){.admin-live-test-toolbar{grid-template-columns:1fr}.admin-live-test-toolbar-actions{display:grid;grid-template-columns:1fr 1fr}.admin-live-audio-test-actions{grid-template-columns:1fr}.admin-live-audio-test button{width:100%}.admin-live-test-scoreboard{gap:5px;padding:13px 8px}.admin-live-test-team b{font-size:30px}.admin-live-test-team span{font-size:9px}.admin-live-test-center{min-width:60px}.admin-live-test-center span{font-size:18px}}
 </style>
 
 </head>
@@ -7479,7 +7480,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v454</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v455</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -7808,6 +7809,13 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-live-test-toolbar">
     <div class="admin-field"><label for="adminLiveTestGameId">HockeyTech Game ID</label><input id="adminLiveTestGameId" type="text" inputmode="numeric" value="13993" autocomplete="off"></div>
     <div class="admin-live-test-toolbar-actions"><button type="button" class="btn secondary" onclick="refreshAdminLiveTest(true)">REFRESH</button><button type="button" class="btn secondary" id="adminLiveTestAutoBtn" onclick="toggleAdminLiveTestAuto()">AUTO: OFF</button></div>
+  </div>
+  <div class="admin-live-audio-test">
+    <div class="admin-live-audio-test-head"><div class="admin-live-audio-test-title">WESTERN RESERVE RADIO AUDIO TEST</div><div class="admin-live-audio-test-badge">LIVE365</div></div>
+    <div class="admin-live-audio-test-actions">
+      <div class="admin-live-audio-test-status" id="adminLiveAudioTestStatus">Stopped · test only, nothing is published.</div>
+      <button type="button" class="btn secondary" id="adminLiveAudioTestBtn" onclick="toggleAdminLiveAudioTest()">TEST WRR AUDIO</button>
+    </div>
   </div>
   <div class="admin-live-test-status" id="adminLiveTestStatus">Open this tab to load the current HockeyTech snapshot.</div>
   <div id="adminLiveTestContent"></div>
@@ -8142,7 +8150,7 @@ function selectAdminTab(tab,skipDirtyCheck){
     if(btn){btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
   });
   refreshAdminQnaIndicator();
-  if(tab!=='live-test')stopAdminLiveTestAuto(false);
+  if(tab!=='live-test'){stopAdminLiveTestAuto(false);stopAdminLiveAudioTest();}
   if(tab==='qna'){dcAdminLoadedTabs.add('qna');loadAdminQna();return;}
   if(tab==='live-test'){dcAdminLoadedTabs.add('live-test');refreshAdminLiveTest(false);return;}
   if(tab==='game-day'||dcAdminLoadedTabs.has(tab))return;
@@ -8162,6 +8170,31 @@ let dcAdminLiveTestTimer=0;
 let dcAdminLiveTestBusy=false;
 let dcAdminLiveTestAuto=false;
 const DC_HOCKEYTECH_LIVE_TEST_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/hockeytech-live-test';
+const DC_WRR_LIVE365_STREAM='https://das-edge62-live365-dal03.cdnstream.com/a60106';
+let dcAdminLiveAudio=null;
+function setAdminLiveAudioTestState(state,message){
+  var btn=document.getElementById('adminLiveAudioTestBtn'),st=document.getElementById('adminLiveAudioTestStatus');
+  if(btn)btn.textContent=state==='playing'?'STOP AUDIO':'TEST WRR AUDIO';
+  if(st){st.className='admin-live-audio-test-status'+(state==='playing'?' is-playing':(state==='error'?' is-error':''));st.textContent=message||'Stopped · test only, nothing is published.';}
+}
+function stopAdminLiveAudioTest(){
+  if(dcAdminLiveAudio){try{dcAdminLiveAudio.pause();dcAdminLiveAudio.src='';dcAdminLiveAudio.load();}catch(_){}dcAdminLiveAudio=null;}
+  setAdminLiveAudioTestState('stopped','Stopped · test only, nothing is published.');
+}
+async function toggleAdminLiveAudioTest(){
+  if(dcAdminLiveAudio&&!dcAdminLiveAudio.paused){stopAdminLiveAudioTest();return;}
+  stopAdminLiveAudioTest();
+  try{
+    var audio=new Audio(DC_WRR_LIVE365_STREAM);
+    audio.preload='none';audio.playsInline=true;
+    audio.addEventListener('playing',function(){setAdminLiveAudioTestState('playing','Playing Western Reserve Radio live stream.');});
+    audio.addEventListener('waiting',function(){setAdminLiveAudioTestState('playing','Connecting to Western Reserve Radio…');});
+    audio.addEventListener('stalled',function(){setAdminLiveAudioTestState('playing','Stream stalled · attempting to reconnect…');});
+    audio.addEventListener('error',function(){setAdminLiveAudioTestState('error','Audio test could not connect to the WRR stream.');});
+    dcAdminLiveAudio=audio;setAdminLiveAudioTestState('playing','Connecting to Western Reserve Radio…');
+    await audio.play();
+  }catch(e){stopAdminLiveAudioTest();setAdminLiveAudioTestState('error','Audio test could not start: '+((e&&e.message)?e.message:String(e)));}
+}
 function adminLiveTestEsc(v){return escapeHtml(String(v==null?'':v));}
 function adminLiveTestNum(v,fallback){var n=Number(v);return Number.isFinite(n)?n:(fallback==null?'—':fallback);}
 function adminLiveTestStatusClass(ok){return ok?'admin-live-test-good':'admin-live-test-bad';}
@@ -9494,7 +9527,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 function scrollAdminToTop(){var panel=document.querySelector('#adminOverlay .admin-panel');if(panel)panel.scrollTo({top:0,behavior:'smooth'});}
 function syncAdminBackTop(){var panel=document.querySelector('#adminOverlay .admin-panel'),btn=document.getElementById('adminBackTop');if(panel&&btn)btn.classList.toggle('show',panel.scrollTop>420);}
 document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();syncAdminBackTop();},{passive:true});
-function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();stopAdminLiveTestAuto(false);const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
+function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();stopAdminLiveTestAuto(false);stopAdminLiveAudioTest();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
 async function adminLoginSubmit(){
  const st=document.getElementById('adminLoginStatus');
  const input=document.getElementById('adminEmail');
