@@ -2800,7 +2800,7 @@ body::after{
   color:#ffad70;
 }
 
-/* v458 Western Reserve Radio branded card in More. Hidden whenever the Game Day card is active. */
+/* v459 Western Reserve Radio branded card in More. Hidden during pregame/live and for 5 minutes after Final. */
 .more-wrr-card{
   position:relative;
   overflow:hidden;
@@ -2823,7 +2823,7 @@ body::after{
 .more-wrr-status{position:relative;z-index:1;min-height:14px;margin-top:7px;color:#8994a4;font-size:9px;line-height:1.35;text-align:center}
 .more-wrr-status.is-playing{color:#8de880}
 .more-wrr-status.is-error{color:#ff8a92}
-body.game-pregame #moreWrrCard,body.game-live #moreWrrCard,body.game-final #moreWrrCard{display:none!important}
+body.wrr-gameday-suppressed #moreWrrCard{display:none!important}
 @media(max-width:370px){.more-wrr-head{grid-template-columns:68px minmax(0,1fr);gap:10px}.more-wrr-logo{width:68px;max-height:58px}.more-wrr-button,.more-wrr-site-button{font-size:8px!important;padding-left:4px!important;padding-right:4px!important}}
 
 /* v289 compact Admin tabs + optional USHL box score links */
@@ -7507,7 +7507,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v458</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v459</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8200,7 +8200,15 @@ const DC_HOCKEYTECH_LIVE_TEST_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/hockeytech
 const DC_WRR_LIVE365_STREAM='https://das-edge62-live365-dal03.cdnstream.com/a60106';
 let dcMoreWrrAudio=null;
 let dcMoreWrrAudioRun=0;
+const DC_WRR_FINAL_GRACE_MS=5*60*1000;
 function dcGameDayCardActive(){return document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live')||document.body.classList.contains('game-final');}
+function dcWrrGameDaySuppressed(){
+  if(document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live'))return true;
+  if(!document.body.classList.contains('game-final'))return false;
+  var st=getAdminGameState(),stamp=Date.parse(String(st&&st.updatedAt||''));
+  if(!isFinite(stamp))return true;
+  return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
+}
 function syncMoreWrrAudioUi(state,message){
   var btn=document.getElementById('moreWrrButton'),st=document.getElementById('moreWrrStatus');
   var playing=dcMoreWrrAudio&&!dcMoreWrrAudio.paused;
@@ -8215,7 +8223,7 @@ function stopMoreWrrAudio(clearStatus){
   syncMoreWrrAudioUi('idle',clearStatus===false?'':'');
 }
 async function toggleMoreWrrAudio(){
-  if(dcGameDayCardActive()){stopMoreWrrAudio();return;}
+  if(dcWrrGameDaySuppressed()){stopMoreWrrAudio();return;}
   if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused){stopMoreWrrAudio();return;}
   stopMoreWrrAudio(false);
   var run=++dcMoreWrrAudioRun;
@@ -8235,7 +8243,11 @@ async function toggleMoreWrrAudio(){
     syncMoreWrrAudioUi('error','Could not start the Western Reserve Radio stream.');
   }
 }
-function syncMoreWrrForGameDay(){if(dcGameDayCardActive()&&dcMoreWrrAudio)stopMoreWrrAudio();}
+function syncMoreWrrForGameDay(){
+  var suppressed=dcWrrGameDaySuppressed();
+  document.body.classList.toggle('wrr-gameday-suppressed',suppressed);
+  if(suppressed&&dcMoreWrrAudio)stopMoreWrrAudio();
+}
 let dcAdminLiveAudio=null;
 let dcAdminLiveAudioRun=0;
 function setAdminLiveAudioTestState(state,message){
