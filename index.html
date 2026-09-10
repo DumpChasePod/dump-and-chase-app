@@ -7922,7 +7922,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v462</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v463</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11761,7 +11761,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerP
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
 
 </script><script>
-/* v462 isolated manual Game Day replica: hide stat strip during active shootout, restore at Final-SO. */
+/* v463 isolated manual Game Day replica: final-layout cleanup + shootout final scoring cleanup. */
 var dcGdTest={role:'AWAY',status:'live',period:'2nd',pp:'',en:'',four:false,timeout:'',stoppage:'',soFirst:'phantoms',soAttempts:[],soWinnerApplied:'',goalFx:null,goalFxTimer:null,goalFxHeight:0};
 var dcGdReplicaAudio=null;
 var dcGdReplicaAudioToken=0;
@@ -11778,18 +11778,19 @@ function stepGdTest(which,d){var id=which==='yTotal'?'gdTestYTotal':'gdTestOTota
 function dcGdClock(raw){raw=String(raw||'').trim();var m=raw.match(/^0(\d):(\d{2})$/);return m?m[1]+':'+m[2]:raw;}
 function dcGdReplicaTeam(team,label,role,attemptTeam){
  var html='';try{html=gameDayTeam(team,label,role);}catch(_){html='<div class="gameday-side">'+escapeHtml(label)+'</div>';}
- if(String(dcGdTest.period).toUpperCase()!=='SO'||!attemptTeam)return html;
+ if(String(dcGdTest.period).toUpperCase()!=='SO'||!attemptTeam||dcGdTest.status==='final')return html;
  var marks=gdSoPublicMarks(attemptTeam),next=gdSoNextTeam(),winner=gdSoDecision();
  var extras='<div class="dc-so-public-next '+(!winner&&next===attemptTeam?'show':'')+'">NEXT</div>'+marks;
  var ix=html.lastIndexOf('</div>');return ix>=0?html.slice(0,ix)+extras+html.slice(ix):html;
 }
-function dcGdSpecialHtml(team){var p=dcGdTest.pp===team&&!dcGdTest.four,e=dcGdTest.en===team,out='';if(p)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(e)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;}
+function dcGdSpecialHtml(team){if(dcGdTest.status==='final')return '';var p=dcGdTest.pp===team&&!dcGdTest.four,e=dcGdTest.en===team,out='';if(p)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(e)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;}
 function dcGdStatStrip(){
  var p=String(dcGdTest.period||'').toUpperCase(),showOt=(p==='OT'||p==='SO'||gdNum('gdYOT')||gdNum('gdOOT')),showSo=(p==='SO'||gdNum('gdYSO')||gdNum('gdOSO'));
  var cols=showSo?'cols-so':(showOt?'cols-ot':'cols-reg');
  var heads=['TEAM','1','2','3'];if(showOt)heads.push('OT');if(showSo)heads.push('SO');heads.push('T','PP','SOG');
- function row(team,ids,total,ppg,ppo,sog){var vals=[team,gdNum(ids[0]),gdNum(ids[1]),gdNum(ids[2])];if(showOt)vals.push(gdNum(ids[3]));if(showSo)vals.push(gdNum(ids[4]));vals.push(gdNum(total),gdNum(ppg)+'/'+gdNum(ppo),gdNum(sog));return '<div class="dc-live-stat-row '+cols+'">'+vals.map(function(v,i){var cl='dc-live-stat-cell';if(i===0)cl+=' dc-live-stat-team';var tIndex=heads.indexOf('T');var ppIndex=heads.indexOf('PP');if(i===tIndex)cl+=' dc-live-stat-total';if(i===ppIndex)cl+=' dc-live-stat-pp';return '<div class="'+cl+'">'+escapeHtml(String(v))+'</div>';}).join('')+'</div>';}
- return '<div class="dc-live-stat-strip"><div class="dc-live-stat-row header '+cols+'">'+heads.map(function(h,i){return '<div class="dc-live-stat-cell'+(h==='T'?' dc-live-stat-total':'')+'">'+h+'</div>';}).join('')+'</div>'+row('YNG',['gdY1','gdY2','gdY3','gdYOT','gdYSO'],'gdTestYTotal','gdYPPG','gdYPPO','gdYSOG')+row(gdTxt('gdTestOppAbbr','OPP').toUpperCase(),['gdO1','gdO2','gdO3','gdOOT','gdOSO'],'gdTestOTotal','gdOPPG','gdOPPO','gdOSOG')+'</div>';}
+ var soWinner=gdSoDecision(),soHasAttempts=dcGdTest.soAttempts.length>0;
+ function row(key,team,ids,total,ppg,ppo,sog){var vals=[team,gdNum(ids[0]),gdNum(ids[1]),gdNum(ids[2])];if(showOt)vals.push(gdNum(ids[3]));if(showSo){var soVal=soHasAttempts?(soWinner?(soWinner===key?1:0):0):gdNum(ids[4]);vals.push(soVal);}vals.push(gdNum(total),gdNum(ppg)+'/'+gdNum(ppo),gdNum(sog));return '<div class="dc-live-stat-row '+cols+'">'+vals.map(function(v,i){var cl='dc-live-stat-cell';if(i===0)cl+=' dc-live-stat-team';var tIndex=heads.indexOf('T');var ppIndex=heads.indexOf('PP');if(i===tIndex)cl+=' dc-live-stat-total';if(i===ppIndex)cl+=' dc-live-stat-pp';return '<div class="'+cl+'">'+escapeHtml(String(v))+'</div>';}).join('')+'</div>';}
+ return '<div class="dc-live-stat-strip"><div class="dc-live-stat-row header '+cols+'">'+heads.map(function(h,i){return '<div class="dc-live-stat-cell'+(h==='T'?' dc-live-stat-total':'')+'">'+h+'</div>';}).join('')+'</div>'+row('phantoms','YNG',['gdY1','gdY2','gdY3','gdYOT','gdYSO'],'gdTestYTotal','gdYPPG','gdYPPO','gdYSOG')+row('opponent',gdTxt('gdTestOppAbbr','OPP').toUpperCase(),['gdO1','gdO2','gdO3','gdOOT','gdOSO'],'gdTestOTotal','gdOPPG','gdOPPO','gdOSOG')+'</div>';}
 function dcGdReplicaPills(){var out='';if(dcGdTest.four)out+='<div class="dc-replica-pill">4-ON-4</div>';if(dcGdTest.timeout)out+='<div class="dc-replica-pill">'+escapeHtml(dcGdTest.timeout==='YNG'?'YNG TIMEOUT':gdTxt('gdTestOppAbbr','OPP').toUpperCase()+' TIMEOUT')+'</div>';if(dcGdTest.stoppage)out+='<div class="dc-replica-pill'+(dcGdTest.stoppage==='PLAY UNDER REVIEW'?' review':'')+'">'+escapeHtml(dcGdTest.stoppage)+'</div>';return out;}
 function gdReplicaBoxScoreTest(){alert('Replica Box Score button works. No test URL is assigned.');}
 function toggleGdReplicaAudio(){
@@ -11850,7 +11851,7 @@ function renderAdminGdReplica(){
  var box=document.getElementById('adminGdReplicaCard');if(!box)return;var stage=document.getElementById('adminGdTestStage');
  var st=dcGdTest.status,p=String(dcGdTest.period||''),opp=gdTxt('gdTestOpponent','Opponent'),abbr=gdTxt('gdTestOppAbbr','OPP').toUpperCase();var ed=document.getElementById('gdOppAbbrEditor');if(ed)ed.textContent=abbr;
  box.style.height='';box.style.minHeight='';if(gdRenderGoalFx(box,opp)){gdSoRenderControls();return;}
- if(stage)stage.className='admin-gd-test-stage '+(st==='final'?'final':(st==='live'?'live':'pregame'));
+ if(stage)stage.className='admin-gd-test-stage '+(st==='final'?'live final':(st==='live'?'live':'pregame'));
  var isHome=dcGdTest.role==='HOME',leftTeam=isHome?opp:'Youngstown Phantoms',rightTeam=isHome?'Youngstown Phantoms':opp,leftLabel=isHome?opp.toUpperCase():'YOUNGSTOWN PHANTOMS',rightLabel=isHome?'YOUNGSTOWN PHANTOMS':opp.toUpperCase(),leftRole=isHome?'AWAY':'AWAY',rightRole=isHome?'HOME':'HOME';
  if(!isHome){leftRole='AWAY';rightRole='HOME';} else {leftRole='AWAY';rightRole='HOME';}
  var y=gdNum('gdTestYTotal'),o=gdNum('gdTestOTotal'),leftScore=isHome?o:y,rightScore=isHome?y:o,leftKey=isHome?'opponent':'phantoms',rightKey=isHome?'phantoms':'opponent';
