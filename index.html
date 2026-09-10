@@ -4620,7 +4620,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v469: per-game WRR Game Day audio availability. */
+/* v470: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4662,6 +4662,26 @@ body.game-live #publicGameDayCard .gameday-period{
  #publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-score{font-size:31px}
  #publicGameDayCard.dc-gd-modern .gameday-special{font-size:5.8px;padding:3px 2px}
  #publicGameDayCard .dc-live-actions .btn,#publicGameDayCard .dc-live-actions .box-score-btn,#publicGameDayCard .dc-live-actions .dc-box-score-placeholder{font-size:8px!important;padding:9px 4px!important}
+}
+</style>
+
+<style id="v470-game-day-actions">
+/* v470: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+#publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+#publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#publicGameDayCard .dc-gd-secondary-actions .btn,
+#publicGameDayCard .dc-gd-secondary-actions .box-score-btn,
+#publicGameDayCard .dc-gd-secondary-actions .dc-box-score-placeholder,
+#publicGameDayCard .dc-gd-secondary-actions .dc-gd-action-placeholder{width:100%;min-width:0;min-height:44px;margin:0!important;display:flex;align-items:center;justify-content:center;box-sizing:border-box;font-size:13px!important;font-weight:950;letter-spacing:.045em;white-space:nowrap}
+#publicGameDayCard .dc-gd-action-placeholder{border:1px solid rgba(139,82,255,.34);border-radius:12px;background:rgba(139,82,255,.06);color:#758196;opacity:.7}
+#publicGameDayCard .dc-wrr-live-wide{width:100%!important;min-height:54px!important;margin:0!important;display:flex!important;align-items:center;justify-content:center;gap:10px;font-size:16px!important;font-weight:950;letter-spacing:.055em}
+#publicGameDayCard .dc-wrr-live-wide img{width:28px!important;height:28px!important;max-width:28px;max-height:28px;object-fit:contain;flex:0 0 28px}
+@media(max-width:390px){
+ #publicGameDayCard .dc-gd-secondary-actions .btn,
+ #publicGameDayCard .dc-gd-secondary-actions .box-score-btn,
+ #publicGameDayCard .dc-gd-secondary-actions .dc-box-score-placeholder,
+ #publicGameDayCard .dc-gd-secondary-actions .dc-gd-action-placeholder{font-size:11.5px!important}
+ #publicGameDayCard .dc-wrr-live-wide{font-size:15px!important}
 }
 </style>
 </head>
@@ -8008,7 +8028,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v469</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v470</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8887,10 +8907,7 @@ function openCurrentGameNotes(source){
   dcTrack('outbound_click','game_notes_pdf',{source:source||'unknown'});
   window.open(dcGameNotesCurrent.url,'_blank','noopener');
 }
-function dcGameNotesGameDayHtml(){
-  if(!dcGameNotesCurrent||!dcGameNotesCurrent.url)return '';
-  return '<div class="dc-game-notes-block"><button type="button" class="btn secondary dc-game-notes-btn" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button><div class="game-notes-courtesy">Courtesy of Voice of the Phantoms Matt Lipcsak</div></div>';
-}
+function dcGameNotesGameDayHtml(){ return ''; }
 async function loadAdminGameNotes(){
   var st=document.getElementById('adminGameNotesStatus');if(st){st.className='admin-status admin-feedback';st.textContent='Loading game notes…';}
   await loadPublicGameNotes(true);
@@ -12239,9 +12256,12 @@ function dcGameDayActions(g,effective,st){
   var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(g,effective,st);
   if(!audioOk&&dcGameDayWrrAudio)stopGameDayWrrAudio(false);
   var box=url?'<a class="btn secondary box-score-btn gameday-box-score" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>':'<span class="dc-box-score-placeholder">BOX SCORE</span>';
-  if(!audioOk)return '<div class="dc-live-actions single">'+box+'</div>';
+  var notes=(dcGameNotesCurrent&&dcGameNotesCurrent.url)?'<button type="button" class="btn secondary dc-gd-notes-btn" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>':'<span class="dc-gd-action-placeholder">GAME NOTES</span>';
+  var lower='<div class="dc-gd-secondary-actions">'+box+notes+'</div>';
+  if(!audioOk)return '<div class="dc-gd-actions">'+lower+'</div>';
   var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();
-  return '<div class="dc-live-actions">'+box+'<button type="button" class="btn secondary dc-wrr-live-btn" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button></div>';
+  var listen='<button type="button" class="btn secondary dc-wrr-live-btn dc-wrr-live-wide" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button>';
+  return '<div class="dc-gd-actions">'+listen+lower+'</div>';
 }
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
