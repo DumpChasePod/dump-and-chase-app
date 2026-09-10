@@ -5831,7 +5831,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 .dc-game-notes-block{margin-top:10px}.dc-game-notes-btn{display:flex!important;width:100%;justify-content:center;align-items:center;min-height:46px}.dc-game-notes-block .game-notes-courtesy{margin-top:7px}
 @media(max-width:420px){.admin-game-notes-actions{grid-template-columns:1fr}}
 
-/* v467: More card category color system and game-resource grouping. */
+/* v468: More card category color system and game-resource grouping. */
 .more-game-notes-card{
   border-color:rgba(139,82,255,.50)!important;
   background:linear-gradient(135deg,rgba(139,82,255,.15),#101722 60%)!important;
@@ -8000,7 +8000,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v467</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v468</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8787,6 +8787,47 @@ let dcAdminLiveTestBusy=false;
 let dcAdminLiveTestAuto=false;
 const DC_HOCKEYTECH_LIVE_TEST_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/hockeytech-live-test';
 const DC_WRR_LIVE365_STREAM='https://das-edge62-live365-dal03.cdnstream.com/a60106';
+
+function dcWrrMediaLogo(){
+  var img=document.querySelector('#moreWrrCard .more-wrr-logo');
+  return img&&img.src?img.src:'';
+}
+function dcWrrActiveAudio(){
+  if(typeof dcGameDayWrrAudio!=='undefined'&&dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused)return dcGameDayWrrAudio;
+  if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused)return dcMoreWrrAudio;
+  return null;
+}
+function dcSetWrrMediaSession(audio){
+  if(!('mediaSession' in navigator)||!audio)return;
+  try{
+    var art=dcWrrMediaLogo();
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:'Western Reserve Radio',
+      artist:'Youngstown Phantoms Hockey',
+      album:'Your broadcast home for Youngstown Phantoms hockey',
+      artwork:art?[{src:art,type:'image/png'}]:[]
+    });
+    navigator.mediaSession.playbackState=audio.paused?'paused':'playing';
+    navigator.mediaSession.setActionHandler('play',function(){
+      var a=dcWrrActiveAudio()||audio;
+      if(a){a.play().catch(function(){});try{navigator.mediaSession.playbackState='playing';}catch(_){}}
+    });
+    navigator.mediaSession.setActionHandler('pause',function(){
+      var a=dcWrrActiveAudio()||audio;
+      if(a){a.pause();try{navigator.mediaSession.playbackState='paused';}catch(_){}}
+    });
+  }catch(e){console.warn('WRR media session metadata unavailable',e);}
+}
+function dcClearWrrMediaSession(){
+  if(!('mediaSession' in navigator))return;
+  setTimeout(function(){
+    if(dcWrrActiveAudio())return;
+    try{navigator.mediaSession.metadata=null;}catch(_){}
+    try{navigator.mediaSession.playbackState='none';}catch(_){}
+    try{navigator.mediaSession.setActionHandler('play',null);}catch(_){}
+    try{navigator.mediaSession.setActionHandler('pause',null);}catch(_){}
+  },0);
+}
 let dcMoreWrrAudio=null;
 let dcMoreWrrAudioRun=0;
 const DC_WRR_FINAL_GRACE_MS=5*60*1000;
@@ -8891,6 +8932,7 @@ function stopMoreWrrAudio(clearStatus){
   dcMoreWrrAudioRun++;
   var audio=dcMoreWrrAudio;dcMoreWrrAudio=null;
   if(audio){try{audio.pause();audio.removeAttribute('src');audio.load();}catch(_){}}
+  dcClearWrrMediaSession();
   syncMoreWrrAudioUi('idle',clearStatus===false?'':'');
 }
 async function toggleMoreWrrAudio(){
@@ -8901,7 +8943,7 @@ async function toggleMoreWrrAudio(){
   try{
     var audio=new Audio();
     audio.preload='none';audio.playsInline=true;audio.src=DC_WRR_LIVE365_STREAM;
-    audio.addEventListener('playing',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Playing Western Reserve Radio live.');});
+    audio.addEventListener('playing',function(){if(run===dcMoreWrrAudioRun){dcSetWrrMediaSession(audio);syncMoreWrrAudioUi('playing','Playing Western Reserve Radio live.');}});
     audio.addEventListener('waiting',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Connecting to Western Reserve Radio…');});
     audio.addEventListener('stalled',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Stream stalled · reconnecting…');});
     audio.addEventListener('error',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('error','Could not connect to the Western Reserve Radio stream.');});
@@ -12151,11 +12193,11 @@ function dcGameDayActions(g,effective,st){
   var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();
   return '<div class="dc-live-actions">'+box+'<button type="button" class="btn secondary dc-wrr-live-btn" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button></div>';
 }
-function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}if(rerender!==false)refreshPublicGameDay();}
+function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
   if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);stopGameDayWrrAudio(false);var run=++dcGameDayWrrAudioRun;
-  try{var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM;a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun)refreshPublicGameDay();});a.addEventListener('error',function(){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not connect to Western Reserve Radio.');});dcGameDayWrrAudio=a;dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});await a.play();refreshPublicGameDay();}catch(e){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start Western Reserve Radio.');}
+  try{var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM;a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun){dcSetWrrMediaSession(a);refreshPublicGameDay();}});a.addEventListener('error',function(){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not connect to Western Reserve Radio.');});dcGameDayWrrAudio=a;dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});await a.play();refreshPublicGameDay();}catch(e){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start Western Reserve Radio.');}
 }
 function dcProductionSpecialHtml(team,st,effective){
   if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
