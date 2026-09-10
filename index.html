@@ -7960,7 +7960,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v464</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v465</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8479,10 +8479,18 @@ function dcOpenFacebook(){
   }
   return false;
 }
+function dcIsStandaloneApp(){
+  try{
+    return !!((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true);
+  }catch(_){return false;}
+}
 function dcTrackInitialView(){
-  dcTrack('app_view','home',{
-    display_mode:(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)?'standalone':'browser'
-  });
+  var standalone=dcIsStandaloneApp();
+  dcTrack('app_view','home',{display_mode:standalone?'standalone':'browser'});
+  // A standalone launch is stronger evidence of an installed PWA than the
+  // browser's appinstalled event, which is not consistently reported across
+  // install paths/platforms. Backend de-duplicates this by visitor_id.
+  if(standalone)dcTrack('installed_device','pwa',{display_mode:'standalone'});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',dcTrackInitialView,{once:true});
 else dcTrackInitialView();
@@ -9803,7 +9811,7 @@ async function loadAdminAnalytics(days){
       if(x.context==='phantoms_hub')hubCount=Number(x.count||0);
       if(x.context==='ushl_box_score')boxScoreClicks=Number(x.count||0);
     });
-    var installCount=Number(counts.app_installed||0);
+    var installedDevices=Number(body.installed_devices||0);
 
     var stats=[
       [visits,'App Views','Times the app was opened or viewed.'],
@@ -9811,7 +9819,7 @@ async function loadAdminAnalytics(days){
       [listens,'Episode Listens','Taps that started an episode.'],
       [hubCount,'HQ Opens','Times Phantoms HQ was opened.'],
       [boxScoreClicks,'Box Score Clicks','Taps on the USHL Box Score button.'],
-      [installCount,'App Installs','Times the app reported a successful install.']
+      [installedDevices,'Installed Devices','Known devices that have opened the installed app.']
     ];
 
     if(grid){
@@ -9821,7 +9829,7 @@ async function loadAdminAnalytics(days){
     }
 
     if(contexts){
-      contexts.textContent='Numbers cover the selected time range. Visitors are device-based, so one person using two devices can count twice.';
+      contexts.textContent='Most numbers cover the selected time range. Installed Devices is cumulative and grows as installed copies are opened. Visitors are device-based, so one person using two devices can count twice.';
     }
 
     if(st){
