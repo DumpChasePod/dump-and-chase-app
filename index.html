@@ -4620,6 +4620,14 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
+/* v469: per-game WRR Game Day audio availability. */
+#adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
+#adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+#adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
+#adminGameDayPanel .admin-game-audio-status{font-size:8.5px;line-height:1.35;color:#aab5c5;margin-bottom:7px}
+#adminGameDayPanel .admin-game-audio-toggle{width:100%;min-height:34px;font-size:9px}
+#adminGameDayPanel .admin-game-audio-toggle.is-on{border-color:rgba(97,194,80,.62)!important;background:rgba(97,194,80,.14)!important;color:#baf0b0!important}
+#adminGameDayPanel .admin-game-audio-note{margin-top:6px;font-size:7.5px;line-height:1.35;color:#7f8b9a}
 /* V464 production Game Day: tested stat strip, stable score alignment and WRR action. */
 #publicGameDayCard.dc-gd-modern .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);align-items:center}
 #publicGameDayCard.dc-gd-modern .gameday-scoreboard{min-width:0;display:flex;flex-direction:column;gap:6px}
@@ -8000,7 +8008,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v468</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v469</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8023,6 +8031,12 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
       <input id="adminPeriod" type="hidden" value="">
       <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
+      <div class="admin-game-audio-card" id="adminGameAudioCard">
+        <div class="admin-game-audio-head"><div class="admin-game-audio-title">WRR GAME AUDIO</div></div>
+        <div class="admin-game-audio-status" id="adminGameAudioStatus">Checking this game…</div>
+        <button class="btn secondary admin-game-audio-toggle" id="adminGameAudioToggle" type="button" onclick="toggleAdminGameAudio()">NOT AVAILABLE</button>
+        <div class="admin-game-audio-note">Home games default to available. Away games default to unavailable until you turn the feed on. This setting is saved to this game only.</div>
+      </div>
       <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
       <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div></div>
       <input id="adminStoppageStatus" type="hidden" value=""><input id="adminFourOnFour" type="hidden" value="false"><input id="adminTeamTimeout" type="hidden" value="">
@@ -10457,7 +10471,42 @@ async function loadHockeyTechIntoGameCenter(){
   }
 }
 
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();updateAdminGameDayPreview();}
+function dcGameAudioDefaultForRow(row){return !!row&&String(row.home_away||'').toUpperCase()==='HOME';}
+function dcGameAudioAvailableForRow(row){
+  if(!row)return false;
+  if(row.audio_available===true||String(row.audio_available).toLowerCase()==='true')return true;
+  if(row.audio_available===false||String(row.audio_available).toLowerCase()==='false')return false;
+  return dcGameAudioDefaultForRow(row);
+}
+function dcGameAudioAvailableForGame(g){
+  var row=null;try{row=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+  if(!row&&g&&Array.isArray(dcScheduleRows)){var key=String(g[0]||''),opp=String(g[1]||'').trim();row=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===key&&String(r.opponent||'').trim()===opp;})||null;}
+  return dcGameAudioAvailableForRow(row);
+}
+function syncAdminGameAudioControl(){
+  var btn=document.getElementById('adminGameAudioToggle'),status=document.getElementById('adminGameAudioStatus');if(!btn||!status)return;
+  var row=adminActiveScheduleRow();
+  if(!row){btn.disabled=true;btn.classList.remove('is-on');btn.textContent='NO ACTIVE GAME';status.textContent='No scheduled Game Day matchup is active.';return;}
+  var on=dcGameAudioAvailableForRow(row),explicit=row.audio_available===true||row.audio_available===false;
+  btn.disabled=false;btn.classList.toggle('is-on',on);btn.textContent=on?'AVAILABLE':'NOT AVAILABLE';
+  var role=String(row.home_away||'').toUpperCase()||'GAME';
+  status.textContent=(row.opponent||'Opponent')+' • '+role+' • '+(on?'WRR audio will appear on Game Day.':'No Game Day audio button.')+(explicit?'':' (default)');
+}
+async function toggleAdminGameAudio(){
+  var btn=document.getElementById('adminGameAudioToggle'),status=document.getElementById('adminGameAudioStatus');
+  if(!dcScheduleRows.length)await loadSupabaseSchedule();
+  var row=adminActiveScheduleRow();if(!row||!row.id){if(status)status.textContent='Could not match an active Schedule game.';return;}
+  var next=!dcGameAudioAvailableForRow(row);
+  if(btn){btn.disabled=true;btn.textContent='SAVING…';}
+  try{
+    var q=await dcSupabase.from('phantoms_schedule').update({audio_available:next,updated_at:new Date().toISOString()}).eq('id',row.id).select().single();if(q.error)throw q.error;
+    var saved=q.data||{};Object.assign(row,saved);var idx=dcScheduleRows.findIndex(function(r){return String(r.id)===String(row.id);});if(idx>=0)Object.assign(dcScheduleRows[idx],saved);
+    syncAdminGameAudioControl();if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();if(typeof syncMoreWrrForGameDay==='function')syncMoreWrrForGameDay();
+    if(typeof toast==='function')toast(next?'WRR Game Day audio available.':'WRR Game Day audio unavailable.');
+  }catch(e){if(status)status.textContent='Could not save audio availability: '+(e&&e.message?e.message:String(e));}
+  finally{if(btn)btn.disabled=false;}
+}
+async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();syncAdminGameAudioControl();updateAdminGameDayPreview();}
 function formatGameClock(input){
   if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
 }
@@ -12180,13 +12229,14 @@ function dcProductionStatStrip(g,effective,st){
   return '<div class="dc-live-stat-strip"><div class="dc-live-stat-row header '+cls+'">'+heads.map(function(h){return '<div class="dc-live-stat-cell'+(h==='T'?' dc-live-stat-total':'')+'">'+h+'</div>';}).join('')+'</div>'+row(sides.yng,'YNG',effective.phantoms,true)+row(sides.opp,oppAbbr,effective.opponent,false)+'</div>';
 }
 function dcWrrLogoSrc(){var img=document.querySelector('#moreWrrCard .more-wrr-logo');return img&&img.src?img.src:'';}
-function dcGameDayAudioVisible(effective,st){
+function dcGameDayAudioVisible(g,effective,st){
+  if(!dcGameAudioAvailableForGame(g))return false;
   if(effective.status!=='final')return true;
   if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;
   var stamp=Date.parse(String(st&&st.updatedAt||''));return !isFinite(stamp)||Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
 }
 function dcGameDayActions(g,effective,st){
-  var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(effective,st);
+  var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(g,effective,st);
   if(!audioOk&&dcGameDayWrrAudio)stopGameDayWrrAudio(false);
   var box=url?'<a class="btn secondary box-score-btn gameday-box-score" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>':'<span class="dc-box-score-placeholder">BOX SCORE</span>';
   if(!audioOk)return '<div class="dc-live-actions single">'+box+'</div>';
@@ -12238,6 +12288,8 @@ renderPublicGameDay=function(){
 
 /* More WRR returns five minutes after the operator-published final; feed-only Final stays safely suppressed until then. */
 dcWrrGameDaySuppressed=function(){
+  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  if(!active||!active.g||!dcGameAudioAvailableForGame(active.g))return false;
   if(document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live'))return true;
   if(!document.body.classList.contains('game-final'))return false;
   var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
