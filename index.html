@@ -4618,6 +4618,44 @@ body.game-live #publicGameDayCard .gameday-period{
 .gd-test-goalfx-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.gd-test-goalfx-actions .btn{width:100%;margin:0}
 @media(max-width:420px){.gd-test-so-grid{grid-template-columns:1fr}}
 </style>
+
+<style id="dc-v464-real-gameday">
+/* V464 production Game Day: tested stat strip, stable score alignment and WRR action. */
+#publicGameDayCard.dc-gd-modern .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);align-items:center}
+#publicGameDayCard.dc-gd-modern .gameday-scoreboard{min-width:0;display:flex;flex-direction:column;gap:6px}
+#publicGameDayCard.dc-gd-modern .gameday-score-pair{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#publicGameDayCard.dc-gd-modern .gameday-score-cell{position:relative;min-width:0;display:flex;flex-direction:column}
+#publicGameDayCard.dc-gd-modern .gameday-pp-slot{height:42px;min-height:42px;margin:0 0 4px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:3px}
+#publicGameDayCard.dc-gd-modern .gameday-special{flex:0 0 auto;width:100%;box-sizing:border-box;min-width:0;padding:4px 3px;border-radius:7px;font-size:6.5px;font-weight:950;letter-spacing:.04em;text-align:center;white-space:nowrap}
+#publicGameDayCard.dc-gd-modern .gameday-pp{background:rgba(69,210,122,.17);border:1px solid rgba(69,210,122,.55);color:#7cf0a6}
+#publicGameDayCard.dc-gd-modern .gameday-en{background:rgba(239,89,102,.16);border:1px solid rgba(239,89,102,.58);color:#ff7b86}
+#publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-score{padding:11px 3px 10px;border-radius:12px;background:#0a111b;border:1px solid #28374a;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);font-size:34px;line-height:1;text-align:center;white-space:nowrap}
+#publicGameDayCard.dc-gd-modern .gameday-periodbox{padding:7px 4px;border-radius:10px;background:#101927;border:1px solid #314057;text-align:center}
+#publicGameDayCard.dc-gd-modern .gameday-period{margin:0;font-size:11px;font-weight:950;letter-spacing:.055em;color:#d2d9e3}
+#publicGameDayCard .dc-live-stat-strip{margin-top:10px;border:1px solid #314057;border-radius:11px;overflow:hidden;background:#0d1520}
+#publicGameDayCard .dc-live-stat-row{display:grid;align-items:stretch;min-height:31px;text-align:center;font-size:10px;font-weight:900;color:#dce4ef}
+#publicGameDayCard .dc-live-stat-row.cols-reg{grid-template-columns:44px repeat(3,minmax(0,1fr)) 40px 54px 50px}
+#publicGameDayCard .dc-live-stat-row.cols-ot{grid-template-columns:44px repeat(4,minmax(0,1fr)) 40px 54px 50px}
+#publicGameDayCard .dc-live-stat-row.cols-so{grid-template-columns:40px repeat(5,minmax(0,1fr)) 36px 48px 46px}
+#publicGameDayCard .dc-live-stat-row+.dc-live-stat-row{border-top:1px solid rgba(49,64,87,.72)}
+#publicGameDayCard .dc-live-stat-row.header{min-height:24px;background:#111b29;color:#8994a4;font-size:8px;letter-spacing:.07em;font-weight:950}
+#publicGameDayCard .dc-live-stat-cell{padding:5px 2px;min-width:0;display:flex;align-items:center;justify-content:center}
+#publicGameDayCard .dc-live-stat-team{justify-content:flex-start;padding-left:9px;font-weight:950;color:#f3f6fa}
+#publicGameDayCard .dc-live-stat-total{background:rgba(126,89,190,.18);font-size:12px;color:#fff}
+#publicGameDayCard .dc-live-stat-pp{color:#7cf0a6}
+#publicGameDayCard .dc-live-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin-top:11px}
+#publicGameDayCard .dc-live-actions.single{grid-template-columns:1fr}
+#publicGameDayCard .dc-live-actions .btn,#publicGameDayCard .dc-live-actions .box-score-btn,#publicGameDayCard .dc-live-actions .dc-box-score-placeholder{margin:0!important;width:100%!important;min-width:0;box-sizing:border-box;padding:10px 6px!important;font-size:8.5px!important;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;min-height:39px}
+#publicGameDayCard .dc-live-actions .dc-box-score-placeholder{border:1px solid rgba(139,82,255,.34);border-radius:12px;background:rgba(139,82,255,.06);color:#758196;opacity:.7;font-weight:950;letter-spacing:.05em}
+#publicGameDayCard .dc-wrr-live-btn{border:1px solid rgba(97,194,80,.62)!important;background:linear-gradient(135deg,rgba(97,194,80,.12),rgba(124,16,154,.16))!important;color:#f4f6f8!important}
+#publicGameDayCard .dc-wrr-live-btn img{width:17px;height:17px;object-fit:contain;flex:0 0 auto}
+@media(max-width:390px){
+ #publicGameDayCard.dc-gd-modern .gameday-matchup-visual{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}
+ #publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-score{font-size:31px}
+ #publicGameDayCard.dc-gd-modern .gameday-special{font-size:5.8px;padding:3px 2px}
+ #publicGameDayCard .dc-live-actions .btn,#publicGameDayCard .dc-live-actions .box-score-btn,#publicGameDayCard .dc-live-actions .dc-box-score-placeholder{font-size:8px!important;padding:9px 4px!important}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
@@ -7922,7 +7960,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v463</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v464</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -7932,8 +7970,6 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-section-tab" id="adminTabSchedule" role="tab" aria-selected="false" aria-controls="adminSchedulePanel" onclick="selectAdminTab('schedule')">SCHEDULE</button>
         <button type="button" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
         <button type="button" class="admin-section-tab admin-qna-tab" id="adminTabQna" role="tab" aria-selected="false" aria-controls="adminQnaPanel" onclick="selectAdminTab('qna')"><span class="admin-qna-dot" id="adminQnaDot" aria-hidden="true"></span><span>Q&amp;A</span></button>
-        <button type="button" class="admin-section-tab" id="adminTabGdTest" role="tab" aria-selected="false" aria-controls="adminGdTestPanel" onclick="selectAdminTab('gd-test')">GD TEST</button>
-        <button type="button" class="admin-section-tab" id="adminTabLiveTest" role="tab" aria-selected="false" aria-controls="adminLiveTestPanel" onclick="selectAdminTab('live-test')">LIVE TEST</button>
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
@@ -8652,10 +8688,10 @@ let dcAdminLoadedTabs=new Set();
 function selectAdminTab(tab,skipDirtyCheck){
   if(!skipDirtyCheck&&!confirmDiscardAdminChanges())return;
   rememberAdminScroll();
-  tab=['game-day','roster','record','schedule','news','qna','gd-test','live-test','analytics'].includes(tab)?tab:'game-day';
+  tab=['game-day','roster','record','schedule','news','qna','analytics'].includes(tab)?tab:'game-day';
   try{localStorage.setItem('dcAdminLastTab',tab);}catch(_){}
-  ['game-day','roster','record','schedule','news','qna','gd-test','live-test','analytics'].forEach(function(name){
-    var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':(name==='gd-test'?'GdTest':(name==='live-test'?'LiveTest':name.charAt(0).toUpperCase()+name.slice(1))));
+  ['game-day','roster','record','schedule','news','qna','analytics'].forEach(function(name){
+    var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':name.charAt(0).toUpperCase()+name.slice(1));
     var panel=document.getElementById('admin'+cap+'Panel');
     var btn=document.getElementById('adminTab'+cap);
     var active=name===tab;
@@ -8663,10 +8699,8 @@ function selectAdminTab(tab,skipDirtyCheck){
     if(btn){btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
   });
   refreshAdminQnaIndicator();
-  if(tab!=='live-test'){stopAdminLiveTestAuto(false);stopAdminLiveAudioTest();} if(tab!=='gd-test')stopAdminGdReplicaAudio();
+  stopAdminLiveTestAuto(false);stopAdminLiveAudioTest();stopAdminGdReplicaAudio();
   if(tab==='qna'){dcAdminLoadedTabs.add('qna');loadAdminQna();return;}
-  if(tab==='live-test'){dcAdminLoadedTabs.add('live-test');refreshAdminLiveTest(false);return;}
-  if(tab==='gd-test'){dcAdminLoadedTabs.add('gd-test');renderAdminGdReplica();return;}
   if(tab==='game-day'||dcAdminLoadedTabs.has(tab))return;
   dcAdminLoadedTabs.add(tab);
   if(tab==='analytics')loadAdminAnalytics(Number(document.querySelector('[data-analytics-days].active')?.getAttribute('data-analytics-days')||1));
@@ -11864,6 +11898,161 @@ function renderAdminGdReplica(){
  gdSoRenderControls();
 }
 (function(){var ids=['gdY1','gdY2','gdY3','gdYOT','gdYSO','gdYPPG','gdYPPO','gdYSOG','gdO1','gdO2','gdO3','gdOOT','gdOSO','gdOPPG','gdOPPO','gdOSOG'];document.addEventListener('input',function(e){if(ids.indexOf(e.target&&e.target.id)>=0)renderAdminGdReplica();});})();
+</script>
+
+<script id="dc-v464-real-gameday-script">
+/* V464: production HockeyTech live stats + tested Game Day presentation.
+   HockeyTech supplies score/period/PP/SOG/period scoring; operator clock and shootout remain authoritative. */
+const DC_USHL_LIVE_STATS_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-stats';
+var dcLiveStatsState={key:'',gameId:'',snapshot:null,fetchedAt:0,busy:false,lastResolve:0};
+var dcGameDayWrrAudio=null,dcGameDayWrrAudioRun=0;
+
+function dcLiveGameKey(g){return g?String(g[0]||'')+'|'+String(g[1]||''):'';}
+function dcLiveStatsSnapshot(g){return g&&dcLiveStatsState.key===dcLiveGameKey(g)&&dcLiveStatsState.snapshot&&Date.now()-dcLiveStatsState.fetchedAt<300000?dcLiveStatsState.snapshot:null;}
+async function dcResolveLiveGameId(g){
+  var key=autoBoxScoreKeyForGame(g),entry=key&&dcAutoBoxScoreCache[key];
+  if(entry&&/^\d+$/.test(String(entry.game_id||'')))return String(entry.game_id);
+  var date='';try{date=easternScheduleDateStringForGame(g)||'';}catch(_){}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return '';
+  var url=DC_SUPABASE_URL+'/functions/v1/lookup-ushl-box-score?date='+encodeURIComponent(date)+'&opponent='+encodeURIComponent(String(g[1]||''));
+  var res=await fetch(url,{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});
+  var body=await res.json().catch(function(){return {};});
+  if(!res.ok||!body||!body.match||!/^\d+$/.test(String(body.match.game_id||'')))return '';
+  var id=String(body.match.game_id);
+  dcAutoBoxScoreCache[key]=Object.assign({},entry||{}, {game_id:id,url:String(body.match.box_score_url||entry&&entry.url||''),checked_at:new Date().toISOString()});saveAutoBoxScoreCache();
+  return id;
+}
+async function dcSyncLiveStats(force){
+  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  if(!active||!active.g)return;
+  var key=dcLiveGameKey(active.g);
+  if(dcLiveStatsState.busy)return;
+  if(!force&&dcLiveStatsState.key===key&&Date.now()-dcLiveStatsState.fetchedAt<8000)return;
+  dcLiveStatsState.busy=true;
+  try{
+    var gameId=dcLiveStatsState.key===key&&dcLiveStatsState.gameId?dcLiveStatsState.gameId:await dcResolveLiveGameId(active.g);
+    if(!gameId){dcLiveStatsState.busy=false;return;}
+    var res=await fetch(DC_USHL_LIVE_STATS_ENDPOINT+'?game_id='+encodeURIComponent(gameId),{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});
+    var body=await res.json().catch(function(){return {};});
+    if(!res.ok||!body||body.ok!==true||!body.interpreted)throw new Error(body&&body.error||'Live stats unavailable');
+    dcLiveStatsState={key:key,gameId:gameId,snapshot:body.interpreted,fetchedAt:Date.now(),busy:false,lastResolve:Date.now()};
+    refreshPublicGameDay();
+  }catch(e){dcLiveStatsState.busy=false;console.warn('Live USHL stats temporarily unavailable.',e);}
+}
+
+function dcLiveSides(snapshot){
+  if(!snapshot||!snapshot.teams)return null;var h=snapshot.teams.home||{},v=snapshot.teams.visitor||{};
+  var yh=dcHtBridgeTeamIsYoungstown(h),yv=dcHtBridgeTeamIsYoungstown(v);if(yh===yv)return null;
+  return {yng:yh?h:v,opp:yh?v:h};
+}
+function dcFeedPeriod(snapshot){
+  var g=snapshot&&snapshot.game||{},n=Number(g.period||0),label=String(g.period_label||'').toUpperCase();
+  if(g.shootout||/SHOOTOUT|\bSO\b/.test(label)||n>=5)return 'SO';
+  if(/OVERTIME|\bOT\b/.test(label)||n===4)return 'OT';
+  if(n===1||/1ST|FIRST/.test(label))return '1st';if(n===2||/2ND|SECOND/.test(label))return '2nd';if(n===3||/3RD|THIRD/.test(label))return '3rd';return '';
+}
+function dcFinalLabel(st,period,snapshot){
+  var raw=String(st&&st.adminResult||'').toUpperCase();
+  if(raw.indexOf('_SO')>0||String(period).toUpperCase()==='SO')return 'FINAL-SO';
+  if(raw.indexOf('_OT')>0||String(period).toUpperCase()==='OT'||Number(snapshot&&snapshot.game&&snapshot.game.period||0)===4)return 'FINAL-OT';
+  return 'FINAL';
+}
+function dcEffectivePublicState(g,st){
+  st=st||{};var snap=dcLiveStatsSnapshot(g),sides=dcLiveSides(snap),manualSO=String(st.adminPeriod||'').toUpperCase()==='SO';
+  var status=String(st.adminGameStatus||'upcoming').toLowerCase();
+  if(!manualSO&&snap&&snap.game){if(snap.game.final)status='final';else if(snap.game.started)status='live';}
+  if(String(st.adminGameStatus||'').toLowerCase()==='final')status='final';
+  var ph=st.adminPhantomsScore!==undefined&&st.adminPhantomsScore!==''?Number(st.adminPhantomsScore):null;
+  var op=st.adminOpponentScore!==undefined&&st.adminOpponentScore!==''?Number(st.adminOpponentScore):null;
+  if(!manualSO&&sides&&(status==='live'||status==='final')){if(Number.isFinite(Number(sides.yng.score)))ph=Number(sides.yng.score);if(Number.isFinite(Number(sides.opp.score)))op=Number(sides.opp.score);}
+  var period=String(st.adminPeriod||'');
+  if(!manualSO&&snap&&snap.game&&String(st.adminClock||'')!=='INT'){var fp=dcFeedPeriod(snap);if(fp&&fp!=='SO')period=fp;}
+  return {status:status,period:period,phantoms:Number.isFinite(ph)?ph:'—',opponent:Number.isFinite(op)?op:'—',snapshot:snap,sides:sides,manualSO:manualSO};
+}
+function dcTeamAbbr(name){
+  var map={'Youngstown Phantoms':'YNG','Green Bay Gamblers':'GB','Chicago Steel':'CHI','Cedar Rapids RoughRiders':'CR','Des Moines Buccaneers':'DM','Dubuque Fighting Saints':'DBQ','Fargo Force':'FGO','Lincoln Stars':'LIN','Madison Capitols':'MAD','Muskegon Lumberjacks':'MUS','Omaha Lancers':'OMA','Sioux City Musketeers':'SC','Sioux Falls Stampede':'SF','Tri-City Storm':'TC','Waterloo Black Hawks':'WAT','USA Hockey NTDP':'USA'};
+  return map[String(name||'').trim()]||String(name||'OPP').trim().split(/\s+/).map(function(x){return x[0]||'';}).join('').slice(0,4).toUpperCase()||'OPP';
+}
+function dcPeriodGoals(team,p){var x=team&&team.period_goals||{};var n=Number(x[String(p)]);return Number.isFinite(n)?n:0;}
+function dcPpText(team){var g=Number(team&&team.pp_goals),o=Number(team&&team.pp_opportunities);return Number.isFinite(g)&&Number.isFinite(o)?g+'/'+o:'—';}
+function dcSogText(team){var n=Number(team&&team.shots);return Number.isFinite(n)?String(n):'—';}
+function dcProductionStatStrip(g,effective,st){
+  var snap=effective.snapshot,sides=effective.sides;if(!snap||!sides)return '';
+  var state=dcNormalizeShootoutState(st&&st.adminShootoutState),soWinner=dcShootoutDecision(state);
+  var finalSO=effective.status==='final'&&(String(st&&st.adminResult||'').toUpperCase().indexOf('_SO')>0||effective.manualSO);
+  var showOT=String(effective.period).toUpperCase()==='OT'||effective.manualSO||finalSO||dcPeriodGoals(sides.yng,4)>0||dcPeriodGoals(sides.opp,4)>0;
+  var showSO=finalSO;var heads=['TEAM','1','2','3'];if(showOT)heads.push('OT');if(showSO)heads.push('SO');heads.push('T','PP','SOG');
+  var cls=showSO?'cols-so':(showOT?'cols-ot':'cols-reg');
+  var oppAbbr=String(sides.opp.code||dcTeamAbbr(g&&g[1])).trim().toUpperCase()||dcTeamAbbr(g&&g[1]);
+  function row(team,label,total,isY){var vals=[dcPeriodGoals(team,1),dcPeriodGoals(team,2),dcPeriodGoals(team,3)];if(showOT)vals.push(dcPeriodGoals(team,4));if(showSO)vals.push(soWinner?(soWinner===(isY?'phantoms':'opponent')?1:0):0);vals.push(total,dcPpText(team),dcSogText(team));return '<div class="dc-live-stat-row '+cls+'"><div class="dc-live-stat-cell dc-live-stat-team">'+escapeHtml(label)+'</div>'+vals.map(function(v,i){var totalIndex=(showOT?4:3)+(showSO?1:0);var c='dc-live-stat-cell';if(i===totalIndex)c+=' dc-live-stat-total';if(i===totalIndex+1)c+=' dc-live-stat-pp';return '<div class="'+c+'">'+escapeHtml(String(v))+'</div>';}).join('')+'</div>';}
+  return '<div class="dc-live-stat-strip"><div class="dc-live-stat-row header '+cls+'">'+heads.map(function(h){return '<div class="dc-live-stat-cell'+(h==='T'?' dc-live-stat-total':'')+'">'+h+'</div>';}).join('')+'</div>'+row(sides.yng,'YNG',effective.phantoms,true)+row(sides.opp,oppAbbr,effective.opponent,false)+'</div>';
+}
+function dcWrrLogoSrc(){var img=document.querySelector('#moreWrrCard .more-wrr-logo');return img&&img.src?img.src:'';}
+function dcGameDayAudioVisible(effective,st){
+  if(effective.status!=='final')return true;
+  if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;
+  var stamp=Date.parse(String(st&&st.updatedAt||''));return !isFinite(stamp)||Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
+}
+function dcGameDayActions(g,effective,st){
+  var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(effective,st);
+  if(!audioOk&&dcGameDayWrrAudio)stopGameDayWrrAudio(false);
+  var box=url?'<a class="btn secondary box-score-btn gameday-box-score" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>':'<span class="dc-box-score-placeholder">BOX SCORE</span>';
+  if(!audioOk)return '<div class="dc-live-actions single">'+box+'</div>';
+  var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();
+  return '<div class="dc-live-actions">'+box+'<button type="button" class="btn secondary dc-wrr-live-btn" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button></div>';
+}
+function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}if(rerender!==false)refreshPublicGameDay();}
+async function toggleGameDayWrrAudio(){
+  if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
+  if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);stopGameDayWrrAudio(false);var run=++dcGameDayWrrAudioRun;
+  try{var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM;a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun)refreshPublicGameDay();});a.addEventListener('error',function(){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not connect to Western Reserve Radio.');});dcGameDayWrrAudio=a;dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});await a.play();refreshPublicGameDay();}catch(e){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start Western Reserve Radio.');}
+}
+function dcProductionSpecialHtml(team,st,effective){
+  if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
+}
+function dcProductionShootoutTeam(team,homeAway,attemptTeam,state,next){
+  var record=String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team);return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
+}
+function dcRenderProductionActiveGame(box,g,st,effective){
+  var phRole=featuredHomeAwayRole(g),isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME',opp=String(g[1]||'Opponent').toUpperCase();
+  var leftTeam=isHome?g[1]:'Youngstown Phantoms',rightTeam=isHome?'Youngstown Phantoms':g[1],leftRole=isHome?oppRole:phRole,rightRole=isHome?phRole:oppRole;
+  var leftKey=isHome?'opponent':'phantoms',rightKey=isHome?'phantoms':'opponent',leftScore=isHome?effective.opponent:effective.phantoms,rightScore=isHome?effective.phantoms:effective.opponent;
+  var state=dcNormalizeShootoutState(st.adminShootoutState),activeSO=effective.manualSO&&effective.status!=='final',next=dcShootoutNext(state);
+  var finalLabel=dcFinalLabel(st,effective.period,effective.snapshot),statusText=effective.status==='final'?finalLabel:'LIVE',statusClass=effective.status==='final'?'gameday-final':'gameday-live';
+  var periodText='';if(effective.status==='final')periodText=finalLabel;else if(activeSO)periodText='SHOOTOUT';else if(String(st.adminClock||'')==='INT')periodText=(String(st.adminPeriod||'')+' INT').trim();else periodText=(effective.period+(effective.period&&st.adminClock?' • ':'')+displayGameClock(st.adminClock||'')).trim();
+  function standardTeam(team,role){return gameDayTeam(team,String(team).toUpperCase(),role);}
+  var leftTeamHtml=activeSO?dcProductionShootoutTeam(leftTeam,leftRole,leftKey,state,next):standardTeam(leftTeam,leftRole);
+  var rightTeamHtml=activeSO?dcProductionShootoutTeam(rightTeam,rightRole,rightKey,state,next):standardTeam(rightTeam,rightRole);
+  var middle='<div class="gameday-matchup gameday-matchup-visual">'+leftTeamHtml+'<div class="gameday-scoreboard"><div class="gameday-score-pair"><div class="gameday-score-cell"><div class="gameday-pp-slot">'+dcProductionSpecialHtml(leftKey,st,effective)+'</div><div class="gameday-score">'+escapeHtml(String(leftScore))+'</div></div><div class="gameday-score-cell"><div class="gameday-pp-slot">'+dcProductionSpecialHtml(rightKey,st,effective)+'</div><div class="gameday-score">'+escapeHtml(String(rightScore))+'</div></div></div><div class="gameday-periodbox"><div class="gameday-period">'+escapeHtml(periodText)+'</div></div></div>'+rightTeamHtml+'</div>';
+  var venue={arena:'',city:g[2]};try{if(typeof scheduleVenue==='function')venue=scheduleVenue(g);}catch(_){}var arena=venue.arena||'Arena TBA',city=venue.city||g[2]||'';
+  box.className='card gameday-card dc-gd-modern';box.style.cssText='';
+  box.innerHTML='<div class="gameday-status '+statusClass+'">'+statusText+'</div>'+middle+(activeSO?'':dcProductionStatStrip(g,effective,st))+'<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+dcGameDayActions(g,effective,st);
+  document.body.classList.remove('game-pregame','game-live','game-final','game-upcoming');document.body.classList.add(effective.status==='final'?'game-final':'game-live');
+  if(effective.status==='live'){dcApplyFourOnFourPill(box,st);dcApplyTeamTimeoutPill(box,st,g);dcApplyStoppagePill(box,st);}
+}
+function dcUpgradePregameActions(box,g,st){
+  var old=box.querySelector('.gameday-box-score');if(old)old.remove();var eff={status:'upcoming'};box.insertAdjacentHTML('beforeend',dcGameDayActions(g,eff,st));
+}
+
+var dcV463RenderPublicGameDay=renderPublicGameDay;
+renderPublicGameDay=function(){
+  dcV463RenderPublicGameDay();
+  var box=document.getElementById('publicGameDayCard');if(!box)return;var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}if(!active||!active.g)return;
+  if(dcPublicGoalFx)return;
+  var st=getAdminGameState(),effective=dcEffectivePublicState(active.g,st);
+  if(effective.status==='upcoming'){dcUpgradePregameActions(box,active.g,st);syncMoreWrrForGameDay();return;}
+  dcRenderProductionActiveGame(box,active.g,st,effective);syncMoreWrrForGameDay();syncGameDayHomePriority();
+};
+
+/* More WRR returns five minutes after the operator-published final; feed-only Final stays safely suppressed until then. */
+dcWrrGameDaySuppressed=function(){
+  if(document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live'))return true;
+  if(!document.body.classList.contains('game-final'))return false;
+  var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
+};
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcSyncLiveStats(true);},{once:true});else dcSyncLiveStats(true);
+setInterval(function(){dcSyncLiveStats(false);},10000);
 </script>
 </body>
 </html>
