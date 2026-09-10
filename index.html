@@ -7480,7 +7480,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v455</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v456</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -7813,7 +7813,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-live-audio-test">
     <div class="admin-live-audio-test-head"><div class="admin-live-audio-test-title">WESTERN RESERVE RADIO AUDIO TEST</div><div class="admin-live-audio-test-badge">LIVE365</div></div>
     <div class="admin-live-audio-test-actions">
-      <div class="admin-live-audio-test-status" id="adminLiveAudioTestStatus">Stopped · test only, nothing is published.</div>
+      <div class="admin-live-audio-test-status" id="adminLiveAudioTestStatus">Ready · tap to test the WRR live stream.</div>
       <button type="button" class="btn secondary" id="adminLiveAudioTestBtn" onclick="toggleAdminLiveAudioTest()">TEST WRR AUDIO</button>
     </div>
   </div>
@@ -8172,28 +8172,36 @@ let dcAdminLiveTestAuto=false;
 const DC_HOCKEYTECH_LIVE_TEST_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/hockeytech-live-test';
 const DC_WRR_LIVE365_STREAM='https://das-edge62-live365-dal03.cdnstream.com/a60106';
 let dcAdminLiveAudio=null;
+let dcAdminLiveAudioRun=0;
 function setAdminLiveAudioTestState(state,message){
   var btn=document.getElementById('adminLiveAudioTestBtn'),st=document.getElementById('adminLiveAudioTestStatus');
   if(btn)btn.textContent=state==='playing'?'STOP AUDIO':'TEST WRR AUDIO';
-  if(st){st.className='admin-live-audio-test-status'+(state==='playing'?' is-playing':(state==='error'?' is-error':''));st.textContent=message||'Stopped · test only, nothing is published.';}
+  if(st){st.className='admin-live-audio-test-status'+(state==='playing'?' is-playing':(state==='error'?' is-error':''));st.textContent=message||'Ready · tap to test the WRR live stream.';}
 }
-function stopAdminLiveAudioTest(){
-  if(dcAdminLiveAudio){try{dcAdminLiveAudio.pause();dcAdminLiveAudio.src='';dcAdminLiveAudio.load();}catch(_){}dcAdminLiveAudio=null;}
-  setAdminLiveAudioTestState('stopped','Stopped · test only, nothing is published.');
+function stopAdminLiveAudioTest(showStopped){
+  dcAdminLiveAudioRun++;
+  var audio=dcAdminLiveAudio;dcAdminLiveAudio=null;
+  if(audio){try{audio.pause();audio.removeAttribute('src');}catch(_){}}
+  setAdminLiveAudioTestState('stopped',showStopped===false?'Ready · tap to test the WRR live stream.':'Stopped · test only, nothing is published.');
 }
 async function toggleAdminLiveAudioTest(){
   if(dcAdminLiveAudio&&!dcAdminLiveAudio.paused){stopAdminLiveAudioTest();return;}
-  stopAdminLiveAudioTest();
+  stopAdminLiveAudioTest(false);
+  var run=++dcAdminLiveAudioRun;
   try{
-    var audio=new Audio(DC_WRR_LIVE365_STREAM);
-    audio.preload='none';audio.playsInline=true;
-    audio.addEventListener('playing',function(){setAdminLiveAudioTestState('playing','Playing Western Reserve Radio live stream.');});
-    audio.addEventListener('waiting',function(){setAdminLiveAudioTestState('playing','Connecting to Western Reserve Radio…');});
-    audio.addEventListener('stalled',function(){setAdminLiveAudioTestState('playing','Stream stalled · attempting to reconnect…');});
-    audio.addEventListener('error',function(){setAdminLiveAudioTestState('error','Audio test could not connect to the WRR stream.');});
+    var audio=new Audio();
+    audio.preload='none';audio.playsInline=true;audio.src=DC_WRR_LIVE365_STREAM;
+    audio.addEventListener('playing',function(){if(run===dcAdminLiveAudioRun)setAdminLiveAudioTestState('playing','Connected · playing Western Reserve Radio live stream.');});
+    audio.addEventListener('waiting',function(){if(run===dcAdminLiveAudioRun)setAdminLiveAudioTestState('playing','Connecting to Western Reserve Radio…');});
+    audio.addEventListener('stalled',function(){if(run===dcAdminLiveAudioRun)setAdminLiveAudioTestState('playing','Stream stalled · attempting to reconnect…');});
+    audio.addEventListener('error',function(){if(run===dcAdminLiveAudioRun)setAdminLiveAudioTestState('error','Audio test could not connect to the WRR stream.');});
     dcAdminLiveAudio=audio;setAdminLiveAudioTestState('playing','Connecting to Western Reserve Radio…');
     await audio.play();
-  }catch(e){stopAdminLiveAudioTest();setAdminLiveAudioTestState('error','Audio test could not start: '+((e&&e.message)?e.message:String(e)));}
+  }catch(e){
+    if(run!==dcAdminLiveAudioRun)return;
+    dcAdminLiveAudio=null;
+    setAdminLiveAudioTestState('error','Audio test could not start: '+((e&&e.message)?e.message:String(e)));
+  }
 }
 function adminLiveTestEsc(v){return escapeHtml(String(v==null?'':v));}
 function adminLiveTestNum(v,fallback){var n=Number(v);return Number.isFinite(n)?n:(fallback==null?'—':fallback);}
