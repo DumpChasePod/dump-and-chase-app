@@ -4620,7 +4620,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v470: per-game WRR Game Day audio availability. */
+/* v471: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4665,8 +4665,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v470-game-day-actions">
-/* v470: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v471-game-day-actions">
+/* v471: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4682,6 +4682,39 @@ body.game-live #publicGameDayCard .gameday-period{
  #publicGameDayCard .dc-gd-secondary-actions .dc-box-score-placeholder,
  #publicGameDayCard .dc-gd-secondary-actions .dc-gd-action-placeholder{font-size:11.5px!important}
  #publicGameDayCard .dc-wrr-live-wide{font-size:15px!important}
+}
+</style>
+
+<style id="v471-admin-game-flow">
+/* V471 — numbered Game Center workflow */
+#adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
+#adminGameDayPanel .admin-gameday-step{
+  border:1px solid rgba(139,82,255,.22);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(139,82,255,.055),rgba(13,20,30,.72));
+  padding:12px;
+  box-shadow:inset 3px 0 0 rgba(139,82,255,.45);
+}
+#adminGameDayPanel .admin-gameday-step-1{box-shadow:inset 3px 0 0 rgba(86,168,255,.66)}
+#adminGameDayPanel .admin-gameday-step-2{box-shadow:inset 3px 0 0 rgba(97,194,80,.72)}
+#adminGameDayPanel .admin-gameday-step-3{box-shadow:inset 3px 0 0 rgba(165,108,255,.72)}
+#adminGameDayPanel .admin-gameday-step-4{box-shadow:inset 3px 0 0 rgba(242,137,44,.72)}
+#adminGameDayPanel .admin-gameday-step-5{box-shadow:inset 3px 0 0 rgba(239,90,90,.72)}
+#adminGameDayPanel .admin-gameday-step-head{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;margin-bottom:11px}
+#adminGameDayPanel .admin-gameday-step-num{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(139,82,255,.17);border:1px solid rgba(139,82,255,.38);font-size:15px;font-weight:950;color:#e8ddff}
+#adminGameDayPanel .admin-gameday-step-head b{display:block;font-size:11px;letter-spacing:.08em}
+#adminGameDayPanel .admin-gameday-step-head small{display:block;margin-top:2px;color:var(--muted);font-size:9px;line-height:1.35}
+#adminGameDayPanel .admin-step-status-row{display:grid;grid-template-columns:1fr;margin-bottom:8px}
+#adminGameDayPanel .admin-step-status-row .admin-chip{width:100%}
+#adminGameDayPanel .admin-step-primary-action{display:grid;grid-template-columns:1fr}
+#adminGameDayPanel .admin-start-game-wide,#adminGameDayPanel .admin-final-game-wide{width:100%;min-height:44px}
+#adminGameDayPanel .admin-extra-time-flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+#adminGameDayPanel .admin-gameday-step .admin-group-title:first-child{margin-top:0}
+#adminGameDayPanel .admin-publish-bar{margin-top:0}
+@media(max-width:390px){
+ #adminGameDayPanel .admin-gameday-step{padding:10px}
+ #adminGameDayPanel .admin-gameday-step-head{grid-template-columns:30px minmax(0,1fr);gap:8px}
+ #adminGameDayPanel .admin-gameday-step-num{width:28px;height:28px;font-size:13px}
 }
 </style>
 </head>
@@ -8028,7 +8061,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v470</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v471</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8042,23 +8075,34 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-section-tab" id="adminTabAnalytics" role="tab" aria-selected="false" aria-controls="adminAnalyticsPanel" onclick="selectAdminTab('analytics')">ANALYTICS</button>
       </div>
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
-      <div class="admin-group-title">GAME STATUS</div><input id="adminGameStatus" type="hidden" value="upcoming"><div class="admin-quick-section admin-quick-section-first"><div class="admin-chip-row admin-status-flow admin-status-flow-simple"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button><button type="button" class="admin-chip" data-admin-status="live" onclick="startAdminGame()">START GAME</button><button type="button" class="admin-chip" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div></div>
-      <div class="admin-ht-bridge" id="adminHtBridge">
+<input id="adminGameStatus" type="hidden" value="upcoming">
+<input id="adminPeriod" type="hidden" value="">
+<section class="admin-gameday-step admin-gameday-step-1">
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">1</span><div><b>PREGAME SETUP</b><small>Prepare the game before the Game Day card goes live.</small></div></div>
+  <div class="admin-step-status-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button></div>
+  <div class="admin-ht-bridge" id="adminHtBridge">
         <div class="admin-ht-bridge-head"><div class="admin-ht-bridge-title">HOCKEYTECH PREVIEW LOAD</div><div class="admin-ht-bridge-badge">NO AUTO-PUBLISH</div></div>
         <div class="admin-ht-bridge-status" id="adminHtBridgeStatus">Ready to resolve the scheduled Youngstown game.</div>
         <button class="btn secondary" id="adminHtBridgeButton" type="button" onclick="loadHockeyTechIntoGameCenter()">LOAD HOCKEYTECH DATA</button>
         <div class="admin-ht-bridge-note">Loads the current HockeyTech state into this draft only. Review it, adjust manual controls if needed, then use Save &amp; Publish.</div>
       </div>
-      <input id="adminPeriod" type="hidden" value="">
-      <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
+  <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
       <div class="admin-game-audio-card" id="adminGameAudioCard">
         <div class="admin-game-audio-head"><div class="admin-game-audio-title">WRR GAME AUDIO</div></div>
         <div class="admin-game-audio-status" id="adminGameAudioStatus">Checking this game…</div>
         <button class="btn secondary admin-game-audio-toggle" id="adminGameAudioToggle" type="button" onclick="toggleAdminGameAudio()">NOT AVAILABLE</button>
         <div class="admin-game-audio-note">Home games default to available. Away games default to unavailable until you turn the feed on. This setting is saved to this game only.</div>
       </div>
-      <div class="admin-group-title admin-status-group admin-live-controls">GAME CONTROLS</div>
-      <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SO</button></div></div>
+</section>
+
+<section class="admin-gameday-step admin-gameday-step-2">
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">2</span><div><b>START GAME</b><small>When the game begins, switch Game Day from pregame to live.</small></div></div>
+  <div class="admin-step-primary-action"><button type="button" class="btn primary admin-start-game-wide" data-admin-status="live" onclick="startAdminGame()">START GAME</button></div>
+</section>
+
+<section class="admin-gameday-step admin-gameday-step-3 admin-status-group admin-live-controls">
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">3</span><div><b>LIVE GAME</b><small>Run regulation, score and special game situations.</small></div></div>
+  <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button></div></div>
       <input id="adminStoppageStatus" type="hidden" value=""><input id="adminFourOnFour" type="hidden" value="false"><input id="adminTeamTimeout" type="hidden" value="">
       <input id="adminPowerPlay" type="hidden" value="">
       <input id="adminEmptyNet" type="hidden" value="">
@@ -8066,7 +8110,13 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="phantoms" onclick="setAdminEmptyNet('phantoms')">EMPTY NET</button></div></div>
         <div class="admin-score-team"><label for="adminOpponentScore" id="adminOpponentScoreLabel">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
       </div>
-      <div class="admin-shootout-live" id="adminShootoutLive" hidden>
+  <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-readout" id="adminClockReadout" aria-live="polite">20:00</div><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-stoppage-inline"><div class="admin-quick-label">Game Stoppage</div><div class="admin-stoppage-row"><button type="button" class="admin-chip" data-admin-stoppage="official_timeout" onclick="setAdminStoppageDraft('official_timeout')">OFFICIAL TIMEOUT</button><button type="button" class="admin-chip" data-admin-stoppage="under_review" onclick="setAdminStoppageDraft('under_review')">PLAY UNDER REVIEW</button><button type="button" class="admin-chip" data-admin-stoppage="injury_timeout" onclick="setAdminStoppageDraft('injury_timeout')">INJURY TIMEOUT</button></div></div><div class="admin-onice-inline"><div class="admin-quick-label">On-Ice Situation</div><div class="admin-onice-row"><button type="button" class="admin-chip" id="adminFourOnFourButton" onclick="toggleAdminFourOnFour()">4 ON 4</button><button type="button" class="admin-chip" id="adminYoungstownTimeoutButton" data-admin-team-timeout="phantoms" onclick="toggleAdminTeamTimeout('phantoms')">YNG TIMEOUT</button><button type="button" class="admin-chip" id="adminOpponentTimeoutButton" data-admin-team-timeout="opponent" onclick="toggleAdminTeamTimeout('opponent')">OPPONENT TIMEOUT</button></div></div></div>
+</section>
+
+<section class="admin-gameday-step admin-gameday-step-4 admin-status-group admin-live-controls">
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">4</span><div><b>OVERTIME / SHOOTOUT</b><small>Use only if the game continues beyond regulation.</small></div></div>
+  <div class="admin-quick-section"><div class="admin-quick-label">Extra Time</div><div class="admin-chip-row admin-extra-time-flow"><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SHOOTOUT</button></div></div>
+  <div class="admin-shootout-live" id="adminShootoutLive" hidden>
         <div class="admin-group-title">SHOOTOUT TRACKER</div>
         <div class="admin-so-live-first">
           <span>FIRST SHOOTER</span>
@@ -8101,10 +8151,15 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="btn secondary admin-so-live-undo" id="adminShootoutUndo" onclick="adminShootoutUndo()">UNDO LAST</button>
         <div class="admin-status admin-feedback" id="adminShootoutFeedback"></div>
       </div>
-      <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-readout" id="adminClockReadout" aria-live="polite">20:00</div><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-stoppage-inline"><div class="admin-quick-label">Game Stoppage</div><div class="admin-stoppage-row"><button type="button" class="admin-chip" data-admin-stoppage="official_timeout" onclick="setAdminStoppageDraft('official_timeout')">OFFICIAL TIMEOUT</button><button type="button" class="admin-chip" data-admin-stoppage="under_review" onclick="setAdminStoppageDraft('under_review')">PLAY UNDER REVIEW</button><button type="button" class="admin-chip" data-admin-stoppage="injury_timeout" onclick="setAdminStoppageDraft('injury_timeout')">INJURY TIMEOUT</button></div></div><div class="admin-onice-inline"><div class="admin-quick-label">On-Ice Situation</div><div class="admin-onice-row"><button type="button" class="admin-chip" id="adminFourOnFourButton" onclick="toggleAdminFourOnFour()">4 ON 4</button><button type="button" class="admin-chip" id="adminYoungstownTimeoutButton" data-admin-team-timeout="phantoms" onclick="toggleAdminTeamTimeout('phantoms')">YNG TIMEOUT</button><button type="button" class="admin-chip" id="adminOpponentTimeoutButton" data-admin-team-timeout="opponent" onclick="toggleAdminTeamTimeout('opponent')">OPPONENT TIMEOUT</button></div></div></div>
-      <div class="admin-group-title admin-status-group admin-final-controls">FINAL RESULT</div><div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
+</section>
+
+<section class="admin-gameday-step admin-gameday-step-5">
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">5</span><div><b>FINALIZE GAME</b><small>Set the result and close out Game Day.</small></div></div>
+  <div class="admin-step-primary-action admin-status-group admin-live-controls"><button type="button" class="btn primary admin-final-game-wide" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div>
+  <div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div><div class="admin-group-title">RECENT RESULTS</div>
       <div id="adminRecentResults" class="admin-results-list"><div class="admin-muted">No saved results.</div></div>
-      
+</section>
+
 <div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div><div class="admin-publish-bar">
   <div class="admin-live-preview" id="adminGameDayPreview" aria-live="polite">
     <div class="admin-live-preview-label">LIVE PREVIEW</div>
