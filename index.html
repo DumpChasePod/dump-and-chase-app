@@ -2800,6 +2800,19 @@ body::after{
   color:#ffad70;
 }
 
+/* v457 Western Reserve Radio card in More. Hidden whenever the Game Day card is active. */
+.more-wrr-card{
+  border-color:rgba(165,108,255,.38);
+  background:linear-gradient(135deg,rgba(165,108,255,.11),#101722 58%);
+  box-shadow:none;
+}
+.more-wrr-card p{margin:0 0 10px;color:#9ca7b6;font-size:10px;line-height:1.45}
+.more-wrr-button{width:100%;min-height:42px;border-color:rgba(165,108,255,.55)!important;background:rgba(165,108,255,.13)!important;color:#d8c7ff!important}
+.more-wrr-status{min-height:14px;margin-top:7px;color:#8994a4;font-size:9px;line-height:1.35;text-align:center}
+.more-wrr-status.is-playing{color:#7cf0a6}
+.more-wrr-status.is-error{color:#ff8a92}
+body.game-pregame #moreWrrCard,body.game-live #moreWrrCard,body.game-final #moreWrrCard{display:none!important}
+
 /* v289 compact Admin tabs + optional USHL box score links */
 .admin-section-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding-bottom:6px}
 .admin-section-tab{min-height:32px;padding:6px 4px;border-radius:9px;font-size:8.5px;letter-spacing:.025em}
@@ -6004,6 +6017,7 @@ function openSheet(type){
      
      <div class="more-card more-qna-card"><h3>Phan Q&amp;A</h3><p>Send in a question for a future episode.</p><div class="more-actions"><button type="button" class="btn secondary more-qna-button" onclick="openPhanQaForm()">SUBMIT A QUESTION</button></div></div>
       <div class="more-card more-shop-card"><h3>Dump &amp; Chase Merch Store</h3><div class="more-actions"><button type="button" class="btn secondary more-shop-button" onclick="dcTrackedOpen('https://www.dcpodshop.com/','shop')">VISIT THE SHOP</button></div></div>
+     <div class="more-card more-wrr-card" id="moreWrrCard"><h3>Western Reserve Radio</h3><p>Listen live without leaving Dump &amp; Chase.</p><div class="more-actions"><button type="button" class="btn secondary more-wrr-button" id="moreWrrButton" onclick="toggleMoreWrrAudio()">LISTEN TO WESTERN RESERVE RADIO</button></div><div class="more-wrr-status" id="moreWrrStatus" aria-live="polite"></div></div>
      <div class="more-card social-follow-card"><h3>Follow the Podcast</h3><div class="more-actions">
        <button type="button" class="btn secondary social-brand-btn facebook" onclick="return dcOpenFacebook()" aria-label="Follow Dump &amp; Chase Podcast on Facebook"><svg viewBox="0 0 320 512" aria-hidden="true"><path fill="#1877F2" d="M279.14 288l14.22-92.66h-88.91V135.2c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H143V288h81.45v224h100.17V288z"/></svg><span>FACEBOOK</span></button>
        <button type="button" class="btn secondary social-brand-btn instagram" onclick="dcTrackedOpen('https://www.instagram.com/dumpchasepodcast/','instagram')" aria-label="Follow Dump &amp; Chase Podcast on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradient308" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FEDA75"/><stop offset=".28" stop-color="#FA7E1E"/><stop offset=".52" stop-color="#D62976"/><stop offset=".76" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="none" stroke="url(#igGradient308)" stroke-width="2.7"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="url(#igGradient308)" stroke-width="2.5"/><circle cx="17.7" cy="6.4" r="1.25" fill="#D62976"/></svg><span>INSTAGRAM</span></button>
@@ -6016,7 +6030,7 @@ function openSheet(type){
  }
  if(modal)modal.classList.add('show');
  if(type==='episodes')requestAnimationFrame(dcResetAppViewScroll);
- if(type!=='episodes')setTimeout(refreshInstallCard,0);
+ if(type!=='episodes'){setTimeout(refreshInstallCard,0);setTimeout(syncMoreWrrAudioUi,0);}
 }
 
 
@@ -7480,7 +7494,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v456</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v457</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8171,6 +8185,44 @@ let dcAdminLiveTestBusy=false;
 let dcAdminLiveTestAuto=false;
 const DC_HOCKEYTECH_LIVE_TEST_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/hockeytech-live-test';
 const DC_WRR_LIVE365_STREAM='https://das-edge62-live365-dal03.cdnstream.com/a60106';
+let dcMoreWrrAudio=null;
+let dcMoreWrrAudioRun=0;
+function dcGameDayCardActive(){return document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live')||document.body.classList.contains('game-final');}
+function syncMoreWrrAudioUi(state,message){
+  var btn=document.getElementById('moreWrrButton'),st=document.getElementById('moreWrrStatus');
+  var playing=dcMoreWrrAudio&&!dcMoreWrrAudio.paused;
+  var effective=state||(playing?'playing':'idle');
+  if(btn)btn.textContent=effective==='playing'?'STOP WESTERN RESERVE RADIO':'LISTEN TO WESTERN RESERVE RADIO';
+  if(st){st.className='more-wrr-status'+(effective==='playing'?' is-playing':(effective==='error'?' is-error':''));st.textContent=message||(effective==='playing'?'Playing Western Reserve Radio live.':'');}
+}
+function stopMoreWrrAudio(clearStatus){
+  dcMoreWrrAudioRun++;
+  var audio=dcMoreWrrAudio;dcMoreWrrAudio=null;
+  if(audio){try{audio.pause();audio.removeAttribute('src');audio.load();}catch(_){}}
+  syncMoreWrrAudioUi('idle',clearStatus===false?'':'');
+}
+async function toggleMoreWrrAudio(){
+  if(dcGameDayCardActive()){stopMoreWrrAudio();return;}
+  if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused){stopMoreWrrAudio();return;}
+  stopMoreWrrAudio(false);
+  var run=++dcMoreWrrAudioRun;
+  try{
+    var audio=new Audio();
+    audio.preload='none';audio.playsInline=true;audio.src=DC_WRR_LIVE365_STREAM;
+    audio.addEventListener('playing',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Playing Western Reserve Radio live.');});
+    audio.addEventListener('waiting',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Connecting to Western Reserve Radio…');});
+    audio.addEventListener('stalled',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Stream stalled · reconnecting…');});
+    audio.addEventListener('error',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('error','Could not connect to the Western Reserve Radio stream.');});
+    dcMoreWrrAudio=audio;syncMoreWrrAudioUi('playing','Connecting to Western Reserve Radio…');
+    dcTrack('outbound_click','wrr_live_stream',{source:'more'});
+    await audio.play();
+  }catch(e){
+    if(run!==dcMoreWrrAudioRun)return;
+    dcMoreWrrAudio=null;
+    syncMoreWrrAudioUi('error','Could not start the Western Reserve Radio stream.');
+  }
+}
+function syncMoreWrrForGameDay(){if(dcGameDayCardActive()&&dcMoreWrrAudio)stopMoreWrrAudio();}
 let dcAdminLiveAudio=null;
 let dcAdminLiveAudioRun=0;
 function setAdminLiveAudioTestState(state,message){
@@ -11051,6 +11103,7 @@ renderPublicGameDay=function(){
     preBox.style.cssText='';
   }
   dcBaseRenderPublicGameDay();
+  syncMoreWrrForGameDay();
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
   var st=getAdminGameState();
