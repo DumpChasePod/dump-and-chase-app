@@ -845,17 +845,17 @@ button,a,select,input{touch-action:manipulation}
 .app-launch-screen img{
   width:min(48vw,220px);
   height:auto;
-  opacity:1;
+  opacity:0;
   transform:scale(1);
   transform-origin:50% 50%;
   will-change:transform,opacity;
   filter:drop-shadow(0 14px 30px rgba(0,0,0,.42));
 }
 .app-launch-screen.play{
-  animation:dcLaunchScreenOut .78s ease-out 2.22s forwards;
+  animation:dcLaunchScreenOut .90s ease-out 1.95s forwards;
 }
 .app-launch-screen.play img{
-  animation:dcLaunchLogo 3.00s cubic-bezier(.32,.02,.20,1) forwards;
+  animation:dcLaunchLogo 2.85s cubic-bezier(.24,.04,.34,1) forwards;
 }
 .app-launch-screen.skip{
   transition:opacity .28s ease;
@@ -863,8 +863,9 @@ button,a,select,input{touch-action:manipulation}
   pointer-events:none;
 }
 @keyframes dcLaunchLogo{
-  0%,32%{opacity:1;transform:scale(1)}
-  100%{opacity:1;transform:scale(9.25)}
+  0%{opacity:0;transform:scale(1)}
+  4%{opacity:1;transform:scale(1.01)}
+  100%{opacity:1;transform:scale(10.5)}
 }
 @keyframes dcLaunchScreenOut{
   0%{opacity:1}
@@ -4661,7 +4662,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v481: per-game WRR Game Day audio availability. */
+/* v483: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4706,8 +4707,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-game-day-actions">
-/* v481: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v483-game-day-actions">
+/* v483: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4726,8 +4727,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-admin-game-flow">
-/* V481 — numbered Game Center workflow */
+<style id="v483-admin-game-flow">
+/* V483 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4759,8 +4760,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-nav-icon-states">
-/* V481 — nav labels stay neutral; icons carry active state. */
+<style id="v483-nav-icon-states">
+/* V483 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4788,8 +4789,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-more-fullscreen">
-/* V481 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v483-more-fullscreen">
+/* V483 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4846,8 +4847,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-header-refresh">
-/* V481 — stronger full-screen page headers, no taglines. */
+<style id="v483-header-refresh">
+/* V483 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4925,8 +4926,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-more-plus">
-/* V481 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v483-more-plus">
+/* V483 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4947,8 +4948,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v481-home-masthead">
-/* V481 — restrained Home masthead. Version remains Admin-only. */
+<style id="v483-home-masthead">
+/* V483 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -8393,7 +8394,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v481</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v483</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11488,9 +11489,12 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
           removeSplash(splash,320);
         },180);
       }else{
-        requestAnimationFrame(function(){
-          requestAnimationFrame(function(){splash.classList.add('play');});
-        });
+        setTimeout(function(){
+          if(!splash||removed)return;
+          requestAnimationFrame(function(){
+            requestAnimationFrame(function(){splash.classList.add('play');});
+          });
+        },150);
         setTimeout(function(){removeSplash(splash,0);},3150);
       }
     }
