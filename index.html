@@ -4661,7 +4661,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v486: per-game WRR Game Day audio availability. */
+/* v487: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4706,8 +4706,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-game-day-actions">
-/* v486: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v487-game-day-actions">
+/* v487: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4726,8 +4726,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-admin-game-flow">
-/* V486 — numbered Game Center workflow */
+<style id="v487-admin-game-flow">
+/* V487 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4759,8 +4759,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-nav-icon-states">
-/* V486 — nav labels stay neutral; icons carry active state. */
+<style id="v487-nav-icon-states">
+/* V487 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4788,8 +4788,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-more-fullscreen">
-/* V486 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v487-more-fullscreen">
+/* V487 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4846,8 +4846,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-header-refresh">
-/* V486 — stronger full-screen page headers, no taglines. */
+<style id="v487-header-refresh">
+/* V487 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4925,8 +4925,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-more-plus">
-/* V486 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v487-more-plus">
+/* V487 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4947,8 +4947,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v486-home-masthead">
-/* V486 — restrained Home masthead. Version remains Admin-only. */
+<style id="v487-home-masthead">
+/* V487 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -5038,7 +5038,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v486-home-masthead-refine">
+<style id="v487-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -5090,7 +5090,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v486-episode-artwork">
+<style id="v487-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -5103,6 +5103,39 @@ header.home-masthead{
   height:100%!important;
   object-fit:cover!important;
   display:block;
+}
+</style>
+
+<style id="v487-episode-season-pill">
+.episode-card{
+  cursor:default;
+}
+.episode-title-row{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-top:6px;
+}
+.episode-title-row .episode-title{
+  margin:0;
+  min-width:0;
+}
+.episode-se-pill{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:22px;
+  padding:4px 7px;
+  border-radius:999px;
+  border:1px solid rgba(165,108,255,.42);
+  background:rgba(139,82,255,.11);
+  color:#d9c8ff;
+  font-size:9px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.045em;
+  white-space:nowrap;
 }
 </style>
 </head>
@@ -7034,12 +7067,15 @@ function episodeCard(e,isLatest){
  const desc=escapeHtml(e.desc||'');
  const hasDesc=String(e.desc||'').trim().length>0;
  const audioSrc=escapeHtml((e.enclosure&&(e.enclosure.link||e.enclosure.url))||e.audio||'');
- return `<article class="card episode-card${isLatest?' episode-featured':''}" data-episode-audio="${audioSrc}" role="button" tabindex="0" onclick="openEpisodeDetail('${payload}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEpisodeDetail('${payload}')}">
+ const season=String(e.season||'').trim();
+ const episode=String(e.n||e.episode||'').trim();
+ const sePill=(season&&episode)?'<span class="episode-se-pill">S'+escapeHtml(season)+'E'+escapeHtml(episode)+'</span>':'';
+ return `<article class="card episode-card${isLatest?' episode-featured':''}" data-episode-audio="${audioSrc}">
    <div class="episode-card-top">
      <div class="episode-card-meta">${isLatest?'<span class="episode-latest">LATEST</span>':''}<span class="episode-date">${date}</span></div>
      <span class="episode-duration episode-duration-top">${duration}</span>
    </div>
-   <h3 class="episode-title">${escapeHtml(e.title||'Dump & Chase Podcast')}</h3>
+   <div class="episode-title-row">${sePill}<h3 class="episode-title">${escapeHtml(e.title||'Dump & Chase Podcast')}</h3></div>
    <div class="episode-card-footer">
      <button class="btn episode-listen" onclick="event.stopPropagation();listenEpisode('${payload}')">▶ LISTEN</button>
      ${hasDesc?'<button type="button" class="episode-description-toggle" aria-expanded="false" onclick="toggleEpisodeDescription(this,event)">DESCRIPTION</button>':''}
@@ -7091,28 +7127,6 @@ function listenEpisode(payload){
      toast('Episode audio is still loading. Please try again in a moment.');
    }
  }catch(e){toast('Could not load episode.')}
-}
-function openEpisodeDetail(payload){
- try{
-   const item=decodeEpisodePayload(payload);
-   const modal=document.getElementById('modal'),title=document.getElementById('sheetTitle'),body=document.getElementById('sheetBody');
-   if(!modal||!title||!body)return;
-   title.textContent='Episode';
-   const detailAudio=(item.enclosure&&(item.enclosure.link||item.enclosure.url))||item.audio||'';
-   const listenLabel=detailAudio?'▶ LISTEN IN APP':'OPEN EPISODE';
-   const external=item.link?`<button class="btn secondary" onclick="openEpisode('${encodeURIComponent(item.link)}')">OPEN EPISODE PAGE</button>`:'';
-   body.innerHTML=`<div class="episode-detail">
-     <div class="episode-detail-date">${escapeHtml(item.date||'')}</div>
-     <h2>${escapeHtml(item.title||'Dump & Chase Podcast')}</h2>
-     <div class="episode-detail-meta">${escapeHtml(formatEpisodeDuration(item.duration))}</div>
-     <div class="episode-detail-desc">${escapeHtml(item.desc||'')}</div>
-     <div class="episode-detail-actions">
-       <button class="btn primary" onclick="listenEpisode('${payload}')">${listenLabel}</button>
-       ${external}
-     </div>
-   </div>`;
-   modal.classList.add('show');
- }catch(e){toast('Could not open episode.')}
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function openEpisode(link){
@@ -7236,6 +7250,7 @@ async function refreshFeed(){
      const enc=Array.isArray(x.enclosure)?(x.enclosure[0]||{}):(x.enclosure||{});
      const audio=enc.link || enc.url || x.audio || '';
      return {
+       season:x.season||'',
        n:x.episode||'',
        title:x.title||'Dump & Chase Podcast',
        pubDateRaw:x.pubDate||'',
@@ -7293,6 +7308,7 @@ async function getFeed(){
        link:x.link||'',
        audio:x.audio||'',
        duration:x.duration||'',
+       season:x.season||'',
        episode:x.episode||'',
        image:x.image||'',
        enclosure:{link:x.audio||''}
@@ -8506,7 +8522,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v486</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v487</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
