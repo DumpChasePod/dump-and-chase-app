@@ -4661,7 +4661,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v484: per-game WRR Game Day audio availability. */
+/* v485: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4706,8 +4706,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-game-day-actions">
-/* v484: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v485-game-day-actions">
+/* v485: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4726,8 +4726,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-admin-game-flow">
-/* V484 — numbered Game Center workflow */
+<style id="v485-admin-game-flow">
+/* V485 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4759,8 +4759,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-nav-icon-states">
-/* V484 — nav labels stay neutral; icons carry active state. */
+<style id="v485-nav-icon-states">
+/* V485 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4788,8 +4788,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-more-fullscreen">
-/* V484 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v485-more-fullscreen">
+/* V485 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4846,8 +4846,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-header-refresh">
-/* V484 — stronger full-screen page headers, no taglines. */
+<style id="v485-header-refresh">
+/* V485 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4925,8 +4925,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-more-plus">
-/* V484 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v485-more-plus">
+/* V485 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4947,8 +4947,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v484-home-masthead">
-/* V484 — restrained Home masthead. Version remains Admin-only. */
+<style id="v485-home-masthead">
+/* V485 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -5035,6 +5035,58 @@ header.home-masthead::after{
 @media(max-width:355px){
   .home-brand-copy b{font-size:14px}
   .home-brand .brandlogo{width:47px;height:41px;flex-basis:47px}
+}
+</style>
+
+<style id="v485-home-masthead-refine">
+header.home-masthead{
+  padding-top:15px;
+  padding-bottom:14px;
+  background:
+    linear-gradient(105deg,rgba(139,82,255,.085) 0%,rgba(139,82,255,.035) 42%,rgba(255,148,74,.045) 100%),
+    linear-gradient(#070b11f7,#070b11eb 74%,rgba(7,11,17,.88));
+}
+.home-brand{
+  gap:12px;
+}
+.home-brand .brandlogo{
+  width:57px;
+  height:49px;
+  flex:0 0 57px;
+}
+.home-brand-copy b{
+  font-size:clamp(17px,3vw,23px);
+}
+.home-brand-copy span{
+  margin-top:6px;
+  font-size:11.5px;
+  line-height:1.3;
+  color:#929daf;
+}
+@media(max-width:600px){
+  header.home-masthead{
+    padding:12px 14px 12px;
+  }
+  .home-brand{
+    gap:9px;
+  }
+  .home-brand .brandlogo{
+    width:47px;
+    height:41px;
+    flex-basis:47px;
+  }
+  .home-brand-copy b{
+    font-size:clamp(14.5px,4.15vw,18px);
+  }
+  .home-brand-copy span{
+    margin-top:4px;
+    font-size:10px;
+  }
+}
+@media(max-width:355px){
+  .home-brand-copy b{font-size:13.5px}
+  .home-brand .brandlogo{width:44px;height:38px;flex-basis:44px}
+  .home-brand-copy span{font-size:9.5px}
 }
 </style>
 </head>
@@ -8393,7 +8445,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v484</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v485</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
