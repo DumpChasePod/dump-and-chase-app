@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v491: per-game WRR Game Day audio availability. */
+/* v492: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-game-day-actions">
-/* v491: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v492-game-day-actions">
+/* v492: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-admin-game-flow">
-/* V491 — numbered Game Center workflow */
+<style id="v492-admin-game-flow">
+/* V492 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-nav-icon-states">
-/* V491 — nav labels stay neutral; icons carry active state. */
+<style id="v492-nav-icon-states">
+/* V492 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-more-fullscreen">
-/* V491 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v492-more-fullscreen">
+/* V492 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-header-refresh">
-/* V491 — stronger full-screen page headers, no taglines. */
+<style id="v492-header-refresh">
+/* V492 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-more-plus">
-/* V491 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v492-more-plus">
+/* V492 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v491-home-masthead">
-/* V491 — restrained Home masthead. Version remains Admin-only. */
+<style id="v492-home-masthead">
+/* V492 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v491-home-masthead-refine">
+<style id="v492-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v491-episode-artwork">
+<style id="v492-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v491-episode-season-pill">
+<style id="v492-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -4260,6 +4260,62 @@ header.home-masthead{
   font-weight:950;
   letter-spacing:.045em;
   white-space:nowrap;
+}
+</style>
+
+<style id="v492-mini-player-layout">
+.audio-player{
+  grid-template-columns:44px minmax(0,1fr) 34px!important;
+  grid-template-rows:auto auto auto!important;
+  column-gap:10px!important;
+  row-gap:7px!important;
+  align-items:center!important;
+}
+.audio-player .audio-art{grid-column:1;grid-row:1}
+.audio-player .audio-info{grid-column:2;grid-row:1}
+.audio-player .secondary-audio{
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end;
+  align-self:start;
+  width:30px;
+  height:30px;
+}
+.audio-player .audio-range{
+  grid-column:1/-1!important;
+  grid-row:2;
+  margin:0;
+}
+.audio-player .reopen-audio{
+  grid-column:1;
+  grid-row:3;
+  justify-self:start;
+  width:38px;
+  height:38px;
+  font-size:19px;
+  font-weight:950;
+  background:rgba(139,77,255,.16);
+  border:1px solid rgba(165,108,255,.38);
+  color:#cbb4ff;
+}
+.audio-player #audioPlay{
+  grid-column:2;
+  grid-row:3;
+  justify-self:center;
+  width:42px;
+  height:42px;
+  font-size:17px;
+}
+.audio-player .audio-control-spacer{
+  grid-column:3;
+  grid-row:3;
+  width:38px;
+  height:38px;
+}
+@media(max-width:600px){
+  .audio-player{
+    grid-template-columns:44px minmax(0,1fr) 34px!important;
+  }
 }
 </style>
 </head>
@@ -5605,9 +5661,11 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
     <div class="audio-title" id="audioTitle">Dump & Chase Podcast</div>
     <div class="audio-time"><span id="audioCurrent">0:00</span> / <span id="audioDuration">0:00</span></div>
   </button>
-  <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
-  <button class="audio-btn" id="audioPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button><button class="audio-btn reopen-audio" onclick="openFullPlayer()" aria-label="Open full player">↗</button>
   <button class="audio-btn secondary-audio" onclick="closePlayer()" aria-label="Close player">✕</button>
+  <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
+  <button class="audio-btn reopen-audio" onclick="openFullPlayer()" aria-label="Open full player">↗</button>
+  <button class="audio-btn" id="audioPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
+  <span class="audio-control-spacer" aria-hidden="true"></span>
   <audio id="audio" preload="metadata"></audio>
 </div>
 
@@ -7737,7 +7795,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v491</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v492</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
