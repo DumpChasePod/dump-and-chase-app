@@ -4661,7 +4661,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v487: per-game WRR Game Day audio availability. */
+/* v488: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4706,8 +4706,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-game-day-actions">
-/* v487: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v488-game-day-actions">
+/* v488: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4726,8 +4726,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-admin-game-flow">
-/* V487 — numbered Game Center workflow */
+<style id="v488-admin-game-flow">
+/* V488 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4759,8 +4759,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-nav-icon-states">
-/* V487 — nav labels stay neutral; icons carry active state. */
+<style id="v488-nav-icon-states">
+/* V488 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4788,8 +4788,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-more-fullscreen">
-/* V487 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v488-more-fullscreen">
+/* V488 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4846,8 +4846,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-header-refresh">
-/* V487 — stronger full-screen page headers, no taglines. */
+<style id="v488-header-refresh">
+/* V488 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4925,8 +4925,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-more-plus">
-/* V487 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v488-more-plus">
+/* V488 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4947,8 +4947,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v487-home-masthead">
-/* V487 — restrained Home masthead. Version remains Admin-only. */
+<style id="v488-home-masthead">
+/* V488 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -5038,7 +5038,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v487-home-masthead-refine">
+<style id="v488-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -5090,7 +5090,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v487-episode-artwork">
+<style id="v488-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -5106,7 +5106,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v487-episode-season-pill">
+<style id="v488-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -7009,7 +7009,8 @@ function openSheet(type){
      </div>
      <div id="episodeList"><div class="card feed-state-card" role="status" aria-live="polite"><p><span class="feed-loading-dot"></span>Loading the Dump &amp; Chase archive…</p></div></div>
    </div>`;
-   setTimeout(refreshFeed,50);
+   requestAnimationFrame(dcResetAppViewScroll);
+   setTimeout(function(){dcResetAppViewScroll();refreshFeed();},50);
  }else{
    title.innerHTML=dcAppViewHeaderHtml('more','More');
    body.innerHTML=`
@@ -7233,8 +7234,14 @@ function selectEpisodeYear(year){
   if(input)input.value='';
   renderEpisodeArchive(Number(year));
   syncEpisodeSearchClear();
+  var sheet=document.querySelector('#modal.app-view-episodes .sheet');
   var body=document.getElementById('sheetBody');
-  if(body)body.scrollTo({top:0,behavior:'smooth'});
+  if(sheet)sheet.scrollTop=0;
+  if(body)body.scrollTop=0;
+  requestAnimationFrame(function(){
+    if(sheet)sheet.scrollTop=0;
+    if(body)body.scrollTop=0;
+  });
 }
 async function refreshFeed(){
  const list=document.getElementById('episodeList'); if(!list){return}
@@ -8522,7 +8529,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v487</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v488</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
