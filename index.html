@@ -830,9 +830,53 @@ button,a,select,input{touch-action:manipulation}
 .install-card{display:none}
 .install-card.show{display:block}
 .install-hint{font-size:10px;color:#7f8b9c;margin-top:7px;line-height:1.45}
-.app-launch-screen{position:fixed;inset:0;z-index:5000;background:#070b11;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease}
-.app-launch-screen.hide{opacity:0;pointer-events:none}
-.app-launch-screen img{width:min(42vw,190px);height:auto;filter:drop-shadow(0 14px 30px #000)}
+.app-launch-screen{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#4b4f55;
+  opacity:1;
+  pointer-events:auto;
+}
+.app-launch-screen img{
+  width:min(48vw,220px);
+  height:auto;
+  opacity:0;
+  transform:scale(.025);
+  transform-origin:50% 50%;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 14px 30px rgba(0,0,0,.42));
+}
+.app-launch-screen.play{
+  animation:dcLaunchScreenOut .62s cubic-bezier(.7,0,.95,.4) 1.48s forwards;
+}
+.app-launch-screen.play img{
+  animation:dcLaunchLogo 2.10s cubic-bezier(.2,.76,.23,1) forwards;
+}
+.app-launch-screen.skip{
+  transition:opacity .28s ease;
+  opacity:0;
+  pointer-events:none;
+}
+@keyframes dcLaunchLogo{
+  0%{opacity:0;transform:scale(.025)}
+  7%{opacity:1}
+  28%{opacity:1;transform:scale(1)}
+  67%{opacity:1;transform:scale(1)}
+  100%{opacity:1;transform:scale(8.5)}
+}
+@keyframes dcLaunchScreenOut{
+  0%{opacity:1}
+  100%{opacity:0;pointer-events:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .app-launch-screen.play{animation:none}
+  .app-launch-screen.play img{animation:none;opacity:1;transform:scale(1)}
+}
 
 
 .roster-position-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
@@ -4620,7 +4664,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v476: per-game WRR Game Day audio availability. */
+/* v477: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4665,8 +4709,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-game-day-actions">
-/* v476: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v477-game-day-actions">
+/* v477: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4685,8 +4729,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-admin-game-flow">
-/* V476 — numbered Game Center workflow */
+<style id="v477-admin-game-flow">
+/* V477 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4718,8 +4762,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-nav-icon-states">
-/* V476 — nav labels stay neutral; icons carry active state. */
+<style id="v477-nav-icon-states">
+/* V477 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4747,8 +4791,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-more-fullscreen">
-/* V476 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v477-more-fullscreen">
+/* V477 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4805,8 +4849,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-header-refresh">
-/* V476 — stronger full-screen page headers, no taglines. */
+<style id="v477-header-refresh">
+/* V477 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4884,8 +4928,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-more-plus">
-/* V476 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v477-more-plus">
+/* V477 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4906,8 +4950,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v476-home-masthead">
-/* V476 — restrained Home masthead. Version remains Admin-only. */
+<style id="v477-home-masthead">
+/* V477 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4998,7 +5042,7 @@ header.home-masthead::after{
 </style>
 </head>
 <body>
-<div class="app-launch-screen" id="appLaunchScreen"><img src="dump-chase-logo.png" alt=""></div>
+<div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
 <style>
 /* v332: streamlined live operator controls + clearer public scoreboard. */
@@ -8352,7 +8396,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v476</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v477</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11427,11 +11471,43 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
 </script>
 
 <script>
-window.addEventListener('load',function(){
-  var splash=document.getElementById('appLaunchScreen');
-  if(splash){setTimeout(function(){splash.classList.add('hide');setTimeout(function(){splash.remove();},300);},120);}
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){ });}
-});
+(function(){
+  var removed=false;
+  function removeSplash(splash,delay){
+    if(!splash||removed)return;
+    removed=true;
+    setTimeout(function(){
+      try{splash.remove();}catch(_){}
+    },Math.max(0,delay||0));
+  }
+  window.addEventListener('load',function(){
+    var splash=document.getElementById('appLaunchScreen');
+    if(splash){
+      var reduced=false;
+      try{reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(_){}
+      if(reduced){
+        setTimeout(function(){
+          splash.classList.add('skip');
+          removeSplash(splash,320);
+        },180);
+      }else{
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){splash.classList.add('play');});
+        });
+        setTimeout(function(){removeSplash(splash,0);},2250);
+      }
+    }
+    if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){ });}
+  });
+  // Failsafe: never let the launch layer trap the app if load/animation misbehaves.
+  setTimeout(function(){
+    var splash=document.getElementById('appLaunchScreen');
+    if(splash){
+      splash.classList.add('skip');
+      removeSplash(splash,320);
+    }
+  },4000);
+})();
 </script>
 
 <script>
