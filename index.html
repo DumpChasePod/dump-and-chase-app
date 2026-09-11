@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v489: per-game WRR Game Day audio availability. */
+/* v490: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-game-day-actions">
-/* v489: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v490-game-day-actions">
+/* v490: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-admin-game-flow">
-/* V489 — numbered Game Center workflow */
+<style id="v490-admin-game-flow">
+/* V490 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-nav-icon-states">
-/* V489 — nav labels stay neutral; icons carry active state. */
+<style id="v490-nav-icon-states">
+/* V490 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-more-fullscreen">
-/* V489 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v490-more-fullscreen">
+/* V490 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-header-refresh">
-/* V489 — stronger full-screen page headers, no taglines. */
+<style id="v490-header-refresh">
+/* V490 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-more-plus">
-/* V489 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v490-more-plus">
+/* V490 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v489-home-masthead">
-/* V489 — restrained Home masthead. Version remains Admin-only. */
+<style id="v490-home-masthead">
+/* V490 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v489-home-masthead-refine">
+<style id="v490-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v489-episode-artwork">
+<style id="v490-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v489-episode-season-pill">
+<style id="v490-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -6780,6 +6780,7 @@ function dcSetEpisodeMediaSession(item,audio){
 }
 
 function startAudio(item){
+ dcStopAllWrrAudioForPodcast();
  const audio=document.getElementById('audio');
  const src=item.enclosure?.link || item.enclosure?.url || item.audio;
  if(!src){toast('Audio URL was not available.');return}
@@ -6813,6 +6814,7 @@ function toggleAudio(){
  if(!a.src){toast('Choose an episode first.');return}
  var status=document.getElementById('playerStatus'),screen=document.getElementById('playerScreen');
  if(a.paused){
+   dcStopAllWrrAudioForPodcast();
    a.play().then(function(){
      document.getElementById('audioPlay').textContent='❚❚';document.getElementById('bigPlay').textContent='❚❚';
      if(status)status.textContent='NOW PLAYING';if(screen)screen.classList.remove('loaded-paused');
@@ -7653,7 +7655,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v489</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v490</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8279,6 +8281,29 @@ function dcWrrActiveAudio(){
   if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused)return dcMoreWrrAudio;
   return null;
 }
+
+function dcStopAllWrrAudioForPodcast(){
+  try{
+    if(typeof dcGameDayWrrAudio!=='undefined'&&dcGameDayWrrAudio){
+      try{dcGameDayWrrAudio.pause();dcGameDayWrrAudio.removeAttribute('src');dcGameDayWrrAudio.load();}catch(_){}
+      dcGameDayWrrAudio=null;
+    }
+  }catch(_){}
+  try{
+    if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);
+  }catch(_){}
+}
+function dcPausePodcastForWrr(){
+  var a=document.getElementById('audio');
+  if(!a||!a.src)return;
+  try{a.pause();}catch(_){}
+  var play=document.getElementById('audioPlay'),big=document.getElementById('bigPlay'),status=document.getElementById('playerStatus'),screen=document.getElementById('playerScreen');
+  if(play)play.textContent='▶';
+  if(big)big.textContent='▶';
+  if(status)status.textContent='PAUSED';
+  if(screen)screen.classList.add('loaded-paused');
+  try{if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';}catch(_){}
+}
 function dcSetWrrMediaSession(audio){
   if(!('mediaSession' in navigator)||!audio)return;
   try{
@@ -8304,6 +8329,23 @@ function dcClearWrrMediaSession(){
   if(!('mediaSession' in navigator))return;
   setTimeout(function(){
     if(dcWrrActiveAudio())return;
+    var podcast=document.getElementById('audio');
+    if(podcast&&podcast.src){
+      var titleEl=document.getElementById('audioTitle');
+      var artEl=document.getElementById('audioArtwork');
+      try{
+        navigator.mediaSession.metadata=new MediaMetadata({
+          title:titleEl&&titleEl.textContent?titleEl.textContent:'Dump & Chase Podcast',
+          artist:'Dump & Chase Podcast',
+          album:'Dump & Chase Podcast',
+          artwork:artEl&&artEl.src?[{src:artEl.src}]:[]
+        });
+        navigator.mediaSession.playbackState=podcast.paused?'paused':'playing';
+        navigator.mediaSession.setActionHandler('play',function(){podcast.play().catch(function(){});});
+        navigator.mediaSession.setActionHandler('pause',function(){podcast.pause();});
+        return;
+      }catch(_){}
+    }
     try{navigator.mediaSession.metadata=null;}catch(_){}
     try{navigator.mediaSession.playbackState='none';}catch(_){}
     try{navigator.mediaSession.setActionHandler('play',null);}catch(_){}
@@ -8416,6 +8458,7 @@ function stopMoreWrrAudio(clearStatus){
 }
 async function toggleMoreWrrAudio(){
   if(dcWrrGameDaySuppressed()){stopMoreWrrAudio();return;}
+  dcPausePodcastForWrr();
   if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused){stopMoreWrrAudio();return;}
   stopMoreWrrAudio(false);
   var run=++dcMoreWrrAudioRun;
@@ -9420,7 +9463,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 function scrollAdminToTop(){var panel=document.querySelector('#adminOverlay .admin-panel');if(panel)panel.scrollTo({top:0,behavior:'smooth'});}
 function syncAdminBackTop(){var panel=document.querySelector('#adminOverlay .admin-panel'),btn=document.getElementById('adminBackTop');if(panel&&btn)btn.classList.toggle('show',panel.scrollTop>420);}
 document.querySelector('#adminOverlay .admin-panel')?.addEventListener('scroll',function(){if(document.getElementById('adminOverlay')?.classList.contains('show'))rememberAdminScroll();syncAdminBackTop();},{passive:true});
-function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();stopAdminLiveTestAuto(false);stopAdminLiveAudioTest();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
+function closeAdmin(){if(!confirmDiscardAdminChanges())return;rememberAdminScroll();saveNewsDraft();stopAdminQnaWatch();const o=document.getElementById('adminOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true');}}
 async function adminLoginSubmit(){
  const st=document.getElementById('adminLoginStatus');
  const input=document.getElementById('adminEmail');
@@ -11257,6 +11300,7 @@ function dcGameDayActions(g,effective,st){
 }
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
+  dcPausePodcastForWrr();
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
   if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);stopGameDayWrrAudio(false);var run=++dcGameDayWrrAudioRun;
   try{var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM;a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun){dcSetWrrMediaSession(a);refreshPublicGameDay();}});a.addEventListener('error',function(){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not connect to Western Reserve Radio.');});dcGameDayWrrAudio=a;dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});await a.play();refreshPublicGameDay();}catch(e){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start Western Reserve Radio.');}
