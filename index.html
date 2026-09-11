@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v493: per-game WRR Game Day audio availability. */
+/* v494: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-game-day-actions">
-/* v493: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v494-game-day-actions">
+/* v494: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-admin-game-flow">
-/* V493 — numbered Game Center workflow */
+<style id="v494-admin-game-flow">
+/* V494 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-nav-icon-states">
-/* V493 — nav labels stay neutral; icons carry active state. */
+<style id="v494-nav-icon-states">
+/* V494 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-more-fullscreen">
-/* V493 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v494-more-fullscreen">
+/* V494 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-header-refresh">
-/* V493 — stronger full-screen page headers, no taglines. */
+<style id="v494-header-refresh">
+/* V494 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-more-plus">
-/* V493 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v494-more-plus">
+/* V494 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v493-home-masthead">
-/* V493 — restrained Home masthead. Version remains Admin-only. */
+<style id="v494-home-masthead">
+/* V494 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v493-home-masthead-refine">
+<style id="v494-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v493-episode-artwork">
+<style id="v494-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v493-episode-season-pill">
+<style id="v494-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -4263,7 +4263,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v493-mini-player-layout">
+<style id="v494-mini-player-layout">
 .audio-player{
   grid-template-columns:44px minmax(0,1fr) 34px!important;
   grid-template-rows:auto auto auto!important;
@@ -4319,7 +4319,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v493-player-minimize-icon">
+<style id="v494-player-minimize-icon">
 .player-minimize-icon{
   position:relative;
   display:block;
@@ -4338,6 +4338,54 @@ header.home-masthead{
 .player-minimize-icon .min-arrow-b{
   right:8px;
   bottom:7px;
+}
+</style>
+
+<style id="v494-app-view-pull-refresh">
+.modal.app-view .sheet{position:relative}
+.dc-ptr-indicator{
+  position:fixed;
+  left:50%;
+  top:70px;
+  z-index:29;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:32px;
+  padding:6px 10px;
+  border:1px solid rgba(165,108,255,.28);
+  border-radius:999px;
+  background:rgba(17,25,37,.96);
+  color:#aeb8c8;
+  box-shadow:0 8px 20px rgba(0,0,0,.28);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.045em;
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,-22px) scale(.94);
+  transition:opacity .14s ease,transform .14s ease;
+}
+.dc-ptr-indicator.show{opacity:1}
+.dc-ptr-indicator.ready{color:#d7c7ff;border-color:rgba(165,108,255,.48)}
+.dc-ptr-indicator.refreshing{
+  opacity:1;
+  transform:translate(-50%,8px) scale(1);
+}
+.dc-ptr-icon{
+  display:inline-grid;
+  place-items:center;
+  width:15px;
+  height:15px;
+  font-size:15px;
+  line-height:1;
+}
+.dc-ptr-indicator.refreshing .dc-ptr-icon{
+  animation:dcPtrSpin .8s linear infinite;
+}
+@keyframes dcPtrSpin{to{transform:rotate(360deg)}}
+@media(min-width:760px){
+  .dc-ptr-indicator{top:78px}
 }
 </style>
 </head>
@@ -5774,6 +5822,133 @@ function dcResetAppViewScroll(){
   sheet.style.webkitOverflowScrolling='touch';
   requestAnimationFrame(function(){sheet.scrollTop=0;});
 }
+
+
+let dcPtrStartY=0;
+let dcPtrDistance=0;
+let dcPtrTracking=false;
+let dcPtrRefreshing=false;
+const DC_PTR_THRESHOLD=64;
+
+function dcPtrView(){
+  var modal=document.getElementById('modal');
+  if(!modal||!modal.classList.contains('show')||!modal.classList.contains('app-view'))return '';
+  if(modal.classList.contains('app-view-episodes'))return 'episodes';
+  if(modal.classList.contains('app-view-hq'))return 'hq';
+  if(modal.classList.contains('app-view-more'))return 'more';
+  return '';
+}
+function dcPtrSheet(){
+  var modal=document.getElementById('modal');
+  return modal&&modal.classList.contains('app-view')?modal.querySelector('.sheet'):null;
+}
+function dcPtrIndicator(){
+  var el=document.getElementById('dcPtrIndicator');
+  if(el)return el;
+  el=document.createElement('div');
+  el.id='dcPtrIndicator';
+  el.className='dc-ptr-indicator';
+  el.setAttribute('aria-hidden','true');
+  el.innerHTML='<span class="dc-ptr-icon">↻</span><span class="dc-ptr-label">Pull to refresh</span>';
+  document.body.appendChild(el);
+  return el;
+}
+function dcPtrPaint(distance){
+  var el=dcPtrIndicator(),label=el.querySelector('.dc-ptr-label');
+  var d=Math.max(0,Math.min(92,distance||0));
+  var ready=d>=DC_PTR_THRESHOLD;
+  el.classList.add('show');
+  el.classList.toggle('ready',ready);
+  el.classList.remove('refreshing');
+  el.style.transform='translate(-50%,'+(-18+Math.min(32,d*.52))+'px) scale('+(0.94+Math.min(.06,d/1000))+')';
+  if(label)label.textContent=ready?'Release to refresh':'Pull to refresh';
+}
+function dcPtrHide(){
+  var el=document.getElementById('dcPtrIndicator');
+  if(!el)return;
+  el.classList.remove('show','ready','refreshing');
+  el.style.transform='';
+}
+async function dcRefreshCurrentAppView(){
+  var view=dcPtrView();
+  if(!view)return;
+  if(view==='episodes'){
+    await refreshFeed();
+    return;
+  }
+  if(view==='more'){
+    await loadPublicGameNotes(true);
+    try{syncMoreWrrForGameDay();}catch(_){}
+    return;
+  }
+  if(view==='hq'){
+    var tasks=[];
+    try{tasks.push(Promise.resolve(loadSupabaseSchedule()));}catch(_){}
+    try{tasks.push(Promise.resolve(syncCompletedResults(true)));}catch(_){}
+    try{tasks.push(Promise.resolve(loadUshlStandings()));}catch(_){}
+    try{tasks.push(Promise.resolve(loadPhantomsRecord()));}catch(_){}
+    try{tasks.push(Promise.resolve(loadOpponentRecord()));}catch(_){}
+    try{if(typeof syncPublicRoster==='function')tasks.push(Promise.resolve(syncPublicRoster()));}catch(_){}
+    await Promise.allSettled(tasks);
+    try{renderRecentResults();}catch(_){}
+    try{renderSelectedMonth();}catch(_){}
+    try{renderNextGame();}catch(_){}
+  }
+}
+async function dcPtrRunRefresh(){
+  if(dcPtrRefreshing)return;
+  dcPtrRefreshing=true;
+  var el=dcPtrIndicator(),label=el.querySelector('.dc-ptr-label');
+  el.classList.add('show','refreshing');
+  el.classList.remove('ready');
+  el.style.transform='';
+  if(label)label.textContent='Refreshing…';
+  try{
+    await dcRefreshCurrentAppView();
+    if(label)label.textContent='Updated';
+    await new Promise(function(resolve){setTimeout(resolve,280);});
+  }catch(e){
+    console.warn('Pull to refresh failed',e);
+    if(label)label.textContent='Could not refresh';
+    await new Promise(function(resolve){setTimeout(resolve,650);});
+  }finally{
+    dcPtrRefreshing=false;
+    dcPtrHide();
+  }
+}
+document.addEventListener('touchstart',function(event){
+  if(dcPtrRefreshing||event.touches.length!==1||!dcPtrView())return;
+  var sheet=dcPtrSheet();
+  if(!sheet||sheet.scrollTop>0)return;
+  var target=event.target;
+  if(target&&target.closest&&target.closest('input,textarea,select,button,a'))return;
+  dcPtrStartY=event.touches[0].clientY;
+  dcPtrDistance=0;
+  dcPtrTracking=true;
+},{passive:true});
+document.addEventListener('touchmove',function(event){
+  if(!dcPtrTracking||dcPtrRefreshing||event.touches.length!==1)return;
+  var sheet=dcPtrSheet();
+  if(!sheet||sheet.scrollTop>0){dcPtrTracking=false;dcPtrHide();return;}
+  var dy=event.touches[0].clientY-dcPtrStartY;
+  if(dy<=0){dcPtrDistance=0;dcPtrHide();return;}
+  dcPtrDistance=Math.min(92,dy*.55);
+  if(dcPtrDistance>5){
+    event.preventDefault();
+    dcPtrPaint(dcPtrDistance);
+  }
+},{passive:false});
+document.addEventListener('touchend',function(){
+  if(!dcPtrTracking)return;
+  var shouldRefresh=dcPtrDistance>=DC_PTR_THRESHOLD;
+  dcPtrTracking=false;
+  dcPtrDistance=0;
+  if(shouldRefresh)dcPtrRunRefresh();
+  else dcPtrHide();
+},{passive:true});
+document.addEventListener('touchcancel',function(){
+  dcPtrTracking=false;dcPtrDistance=0;dcPtrHide();
+},{passive:true});
 
 let dcHistoryHandling=false;
 let dcPlayerBackAction='';
@@ -7817,7 +7992,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v493</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v494</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
