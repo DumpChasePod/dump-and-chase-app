@@ -4620,7 +4620,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v475: per-game WRR Game Day audio availability. */
+/* v476: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4665,8 +4665,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-game-day-actions">
-/* v475: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v476-game-day-actions">
+/* v476: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4685,8 +4685,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-admin-game-flow">
-/* V475 — numbered Game Center workflow */
+<style id="v476-admin-game-flow">
+/* V476 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4718,8 +4718,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-nav-icon-states">
-/* V475 — nav labels stay neutral; icons carry active state. */
+<style id="v476-nav-icon-states">
+/* V476 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4747,8 +4747,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-more-fullscreen">
-/* V475 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v476-more-fullscreen">
+/* V476 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -4805,8 +4805,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-header-refresh">
-/* V475 — stronger full-screen page headers, no taglines. */
+<style id="v476-header-refresh">
+/* V476 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4884,8 +4884,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v475-more-plus">
-/* V475 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v476-more-plus">
+/* V476 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4903,6 +4903,97 @@ body.game-live #publicGameDayCard .gameday-period{
 .app-view-head-more .more-plus-shape{
   fill:currentColor;
   stroke:none;
+}
+</style>
+
+<style id="v476-home-masthead">
+/* V476 — restrained Home masthead. Version remains Admin-only. */
+header.home-masthead{
+  position:sticky;
+  overflow:hidden;
+  padding-top:20px;
+  padding-bottom:17px;
+  background:
+    radial-gradient(circle at 13% -35%,rgba(139,82,255,.15),transparent 48%),
+    radial-gradient(circle at 92% -30%,rgba(255,148,74,.055),transparent 40%),
+    linear-gradient(#070b11fa,#070b11ed 72%,rgba(7,11,17,.86));
+  backdrop-filter:blur(12px);
+}
+header.home-masthead::after{
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:4px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#8b52ff 0%,#a56cff 72%,rgba(255,148,74,.88) 100%);
+  opacity:.72;
+  pointer-events:none;
+}
+.home-brand{
+  min-width:0;
+  gap:14px;
+}
+.home-brand .brandlogo{
+  width:64px;
+  height:54px;
+  flex:0 0 64px;
+  filter:drop-shadow(0 5px 12px rgba(0,0,0,.52));
+}
+.home-brand-copy{
+  min-width:0;
+}
+.home-brand-copy b{
+  display:block;
+  margin:0;
+  color:#f5f7fb;
+  font-family:"Arial Narrow","Roboto Condensed","Segoe UI",sans-serif;
+  font-size:clamp(18px,3.2vw,25px);
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.015em;
+  white-space:nowrap;
+}
+.home-brand-copy b em{
+  color:#a56cff;
+  font-style:normal;
+}
+.home-brand-copy span{
+  margin-top:7px;
+  color:#7f8b9d;
+  font-size:10.5px;
+  line-height:1.25;
+}
+@media(max-width:600px){
+  header.home-masthead{
+    padding:15px 14px 14px;
+  }
+  header.home-masthead::after{
+    left:14px;
+    right:14px;
+    bottom:3px;
+  }
+  .home-brand{
+    gap:10px;
+  }
+  .home-brand .brandlogo{
+    width:52px;
+    height:45px;
+    flex-basis:52px;
+  }
+  .home-brand-copy b{
+    font-size:clamp(15px,4.4vw,19px);
+    letter-spacing:0;
+  }
+  .home-brand-copy span{
+    margin-top:5px;
+    font-size:9px;
+  }
+}
+@media(max-width:355px){
+  .home-brand-copy b{font-size:14px}
+  .home-brand .brandlogo{width:47px;height:41px;flex-basis:47px}
 }
 </style>
 </head>
@@ -6107,8 +6198,8 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   box-shadow:inset 3px 0 0 rgba(255,148,74,.58)!important;
 }
 </style>
-<header>
-  <div class="brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div><b>DUMP &amp; CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
+<header class="home-masthead">
+  <div class="brand home-brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div class="home-brand-copy"><b>DUMP <em>&amp;</em> CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
 <div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
 
 <div class="home-headlines" id="homeHeadlines" aria-live="polite"><span class="home-headline-badge" id="homeHeadlineBadge">NEWS</span><div class="home-headline-copy" id="homeHeadlineCopy"></div></div>
@@ -8261,7 +8352,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v475</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v476</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
