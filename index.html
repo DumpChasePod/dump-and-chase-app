@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v492: per-game WRR Game Day audio availability. */
+/* v493: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-game-day-actions">
-/* v492: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v493-game-day-actions">
+/* v493: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-admin-game-flow">
-/* V492 — numbered Game Center workflow */
+<style id="v493-admin-game-flow">
+/* V493 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-nav-icon-states">
-/* V492 — nav labels stay neutral; icons carry active state. */
+<style id="v493-nav-icon-states">
+/* V493 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-more-fullscreen">
-/* V492 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v493-more-fullscreen">
+/* V493 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-header-refresh">
-/* V492 — stronger full-screen page headers, no taglines. */
+<style id="v493-header-refresh">
+/* V493 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-more-plus">
-/* V492 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v493-more-plus">
+/* V493 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v492-home-masthead">
-/* V492 — restrained Home masthead. Version remains Admin-only. */
+<style id="v493-home-masthead">
+/* V493 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v492-home-masthead-refine">
+<style id="v493-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v492-episode-artwork">
+<style id="v493-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v492-episode-season-pill">
+<style id="v493-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -4263,7 +4263,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v492-mini-player-layout">
+<style id="v493-mini-player-layout">
 .audio-player{
   grid-template-columns:44px minmax(0,1fr) 34px!important;
   grid-template-rows:auto auto auto!important;
@@ -4316,6 +4316,28 @@ header.home-masthead{
   .audio-player{
     grid-template-columns:44px minmax(0,1fr) 34px!important;
   }
+}
+</style>
+
+<style id="v493-player-minimize-icon">
+.player-minimize-icon{
+  position:relative;
+  display:block;
+  padding:0;
+}
+.player-minimize-icon .min-arrow{
+  position:absolute;
+  font-size:15px;
+  line-height:1;
+  font-weight:900;
+}
+.player-minimize-icon .min-arrow-a{
+  left:8px;
+  top:7px;
+}
+.player-minimize-icon .min-arrow-b{
+  right:8px;
+  bottom:7px;
 }
 </style>
 </head>
@@ -5672,7 +5694,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 
 <div class="player-screen" id="playerScreen">
   <div class="player-top">
-    <button class="player-back" onclick="minimizePlayer()" aria-label="Minimize player">⌄</button>
+    <button class="player-back player-minimize-icon" onclick="minimizePlayer()" aria-label="Minimize player"><span class="min-arrow min-arrow-a">↘</span><span class="min-arrow min-arrow-b">↖</span></button>
     <span>NOW PLAYING</span>
     <button class="player-back" onclick="closePlayer()" aria-label="Close player">✕</button>
   </div>
@@ -7795,7 +7817,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v492</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v493</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
