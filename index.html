@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v490: per-game WRR Game Day audio availability. */
+/* v491: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-game-day-actions">
-/* v490: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v491-game-day-actions">
+/* v491: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-admin-game-flow">
-/* V490 — numbered Game Center workflow */
+<style id="v491-admin-game-flow">
+/* V491 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-nav-icon-states">
-/* V490 — nav labels stay neutral; icons carry active state. */
+<style id="v491-nav-icon-states">
+/* V491 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-more-fullscreen">
-/* V490 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v491-more-fullscreen">
+/* V491 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-header-refresh">
-/* V490 — stronger full-screen page headers, no taglines. */
+<style id="v491-header-refresh">
+/* V491 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-more-plus">
-/* V490 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v491-more-plus">
+/* V491 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v490-home-masthead">
-/* V490 — restrained Home masthead. Version remains Admin-only. */
+<style id="v491-home-masthead">
+/* V491 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v490-home-masthead-refine">
+<style id="v491-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v490-episode-artwork">
+<style id="v491-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v490-episode-season-pill">
+<style id="v491-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -5694,15 +5694,80 @@ function dcResetAppViewScroll(){
   sheet.style.webkitOverflowScrolling='touch';
   requestAnimationFrame(function(){sheet.scrollTop=0;});
 }
-function goHome(el){
-  setActive(el);
+
+let dcHistoryHandling=false;
+let dcPlayerBackAction='';
+
+function dcHistoryBase(){
+  try{
+    if(!history.state||!history.state.dcView){
+      history.replaceState({dcView:'home'},'',location.href);
+    }
+  }catch(_){}
+}
+function dcHistoryEnterSection(){
+  try{
+    dcHistoryBase();
+    var cur=history.state&&history.state.dcView;
+    if(cur==='home')history.pushState({dcView:'section'},'',location.href);
+    else if(cur!=='player')history.replaceState({dcView:'section'},'',location.href);
+  }catch(_){}
+}
+function dcHistoryEnterPlayer(){
+  try{
+    dcHistoryBase();
+    if(!history.state||history.state.dcView!=='player'){
+      history.pushState({dcView:'player'},'',location.href);
+    }
+  }catch(_){}
+}
+function dcVisualHome(){
   var modal=document.getElementById('modal');
   if(modal&&modal.classList.contains('app-view')){
     modal.classList.remove('show','app-view','app-view-episodes','app-view-hq','app-view-more');
     var body=document.getElementById('sheetBody');if(body)body.innerHTML='';
     dcUnlockPageScroll();
   }
+  var homeBtn=document.querySelector('.bottomnav .navitem[aria-label="Home"]');
+  if(homeBtn)setActive(homeBtn);
   window.scrollTo({top:0,behavior:'smooth'});
+}
+function dcVisualMinimizePlayer(closeCompletely){
+  var screen=document.getElementById('playerScreen');
+  var mini=document.getElementById('audioPlayer');
+  if(screen)screen.classList.remove('show');
+  if(mini)mini.classList.toggle('show',!closeCompletely);
+}
+window.addEventListener('popstate',function(){
+  dcHistoryHandling=true;
+  try{
+    var screen=document.getElementById('playerScreen');
+    if(screen&&screen.classList.contains('show')){
+      var closeIt=dcPlayerBackAction==='close';
+      dcPlayerBackAction='';
+      dcVisualMinimizePlayer(closeIt);
+      return;
+    }
+    var modal=document.getElementById('modal');
+    if(modal&&modal.classList.contains('app-view')&&modal.classList.contains('show')){
+      dcVisualHome();
+      return;
+    }
+  }finally{
+    setTimeout(function(){dcHistoryHandling=false;},0);
+  }
+});
+dcHistoryBase();
+
+function goHome(el){
+  if(el)setActive(el);
+  var modal=document.getElementById('modal');
+  if(!dcHistoryHandling&&modal&&modal.classList.contains('app-view')&&modal.classList.contains('show')&&history.state&&history.state.dcView==='section'){
+    history.back();
+    return;
+  }
+  dcVisualHome();
+  try{if(!dcHistoryHandling)history.replaceState({dcView:'home'},'',location.href);}catch(_){}
 }
 
 let deferredInstallPrompt=null;
@@ -6109,6 +6174,7 @@ function dcAppViewHeaderHtml(type,label){
 
 function openSheet(type){
  dcTrack('section_open',type==='episodes'?'episodes':'more');
+ dcHistoryEnterSection();
  dcLockPageScroll(type==='episodes'||type==='more');
  const modal=document.getElementById('modal'), title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
  if(modal){
@@ -6806,6 +6872,7 @@ function startAudio(item){
  var screen=document.getElementById('playerScreen');
  if(screen)screen.classList.add('loaded-paused');
  document.getElementById('audioPlayer').classList.remove('show');
+ dcHistoryEnterPlayer();
  document.getElementById('playerScreen').classList.add('show');
  if(typeof syncEpisodeNowPlaying==='function')syncEpisodeNowPlaying();
 }
@@ -6826,12 +6893,17 @@ function toggleAudio(){
  }
 }
 function minimizePlayer(){
- document.getElementById('playerScreen').classList.remove('show');
- document.getElementById('audioPlayer').classList.add('show');
+ if(!dcHistoryHandling&&history.state&&history.state.dcView==='player'){
+   dcPlayerBackAction='minimize';
+   history.back();
+   return;
+ }
+ dcVisualMinimizePlayer(false);
 }
 function openFullPlayer(){
  const a=document.getElementById('audio');
  if(!a.src){toast('Choose an episode first.');return}
+ dcHistoryEnterPlayer();
  document.getElementById('playerScreen').classList.add('show');
  document.getElementById('audioPlayer').classList.remove('show');
 }
@@ -6892,7 +6964,16 @@ function seekAudio(seconds){
   if(!a||!a.src)return;
   seekAudioToSeconds(effectiveAudioCurrent()+Number(seconds||0));
 }
-function closePlayer(){document.getElementById('audio').pause();document.getElementById('audioPlayer').classList.remove('show');document.getElementById('playerScreen').classList.remove('show');}
+function closePlayer(){
+ document.getElementById('audio').pause();
+ if(!dcHistoryHandling&&document.getElementById('playerScreen').classList.contains('show')&&history.state&&history.state.dcView==='player'){
+   dcPlayerBackAction='close';
+   history.back();
+   return;
+ }
+ document.getElementById('audioPlayer').classList.remove('show');
+ document.getElementById('playerScreen').classList.remove('show');
+}
 const audioEl=document.getElementById('audio');
 let dcAudioProgressTimer=0;
 
@@ -7512,6 +7593,7 @@ function renderSelectedMonth(){
 
   window.openGameCenter=function(){
     dcTrack('section_open','phantoms_hub');
+    dcHistoryEnterSection();
     dcLockPageScroll(true);
     var modal=document.getElementById('modal'),title=document.getElementById('sheetTitle'),body=document.getElementById('sheetBody');
     if(!modal||!title||!body)return false;
@@ -7655,7 +7737,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v490</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v491</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
