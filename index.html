@@ -4620,7 +4620,7 @@ body.game-live #publicGameDayCard .gameday-period{
 </style>
 
 <style id="dc-v464-real-gameday">
-/* v472: per-game WRR Game Day audio availability. */
+/* v473: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -4665,8 +4665,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v472-game-day-actions">
-/* v472: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v473-game-day-actions">
+/* v473: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -4685,8 +4685,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v472-admin-game-flow">
-/* V472 — numbered Game Center workflow */
+<style id="v473-admin-game-flow">
+/* V473 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -4718,8 +4718,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v472-nav-icon-states">
-/* V472 — nav labels stay neutral; icons carry active state. */
+<style id="v473-nav-icon-states">
+/* V473 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -4742,6 +4742,64 @@ body.game-live #publicGameDayCard .gameday-period{
   stroke:currentColor!important;
 }
 .bottomnav.nav-v200 .navicon-compass svg circle:last-child{
+  fill:currentColor!important;
+  stroke:none!important;
+}
+</style>
+
+<style id="v473-more-fullscreen">
+/* V473 — More is a full-screen app destination; bottom nav remains visible. */
+.modal.app-view.app-view-more{
+  inset:0 0 78px;
+  z-index:18;
+  background:#070b11;
+}
+.modal.app-view.app-view-more .sheet{
+  width:100%;
+  height:100%;
+  max-height:none;
+  margin:0;
+  padding-bottom:30px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+  border:0;
+  border-radius:0;
+  background:#070b11;
+}
+.modal.app-view.app-view-more #sheetBody{
+  width:min(700px,100%);
+  margin:0 auto;
+}
+.modal.app-view.app-view-more .sheethead{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:#070b11;
+}
+.modal.app-view.app-view-more .more-stack{
+  padding-bottom:4px;
+}
+
+/* Four-point compass rose for More. */
+.bottomnav.nav-v200 .navicon-compass-rose svg{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.45;
+  stroke-linejoin:round;
+}
+.bottomnav.nav-v200 .navicon-compass-rose .compass-rose-main{
+  fill:currentColor;
+  fill-opacity:.13;
+}
+.bottomnav.nav-v200 .navicon-compass-rose .compass-rose-inner{
+  fill:currentColor;
+  fill-opacity:.42;
+  stroke:none;
+}
+.bottomnav.nav-v200 .navicon-compass-rose svg circle{
   fill:currentColor!important;
   stroke:none!important;
 }
@@ -6122,7 +6180,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
   <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 7 4h10l3 1.5v5.2c0 4.5-2.8 7.9-8 10.3-5.2-2.4-8-5.8-8-10.3V5.5Z"/><path d="M7 4v2h10V4"/><text x="12" y="13.2" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
-  <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon navicon-compass"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2.2 5.1-4.8 1.9 2.2-5.1 4.8-1.9Z"/><circle cx="12" cy="12" r=".9"/></svg></span>More</button>
+  <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon navicon-compass-rose"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="compass-rose-main" d="M12 2.5 14.15 9.85 21.5 12 14.15 14.15 12 21.5 9.85 14.15 2.5 12 9.85 9.85 12 2.5Z"/><path class="compass-rose-inner" d="M12 7.25 13 11 16.75 12 13 13 12 16.75 11 13 7.25 12 11 11 12 7.25Z"/><circle cx="12" cy="12" r=".85"/></svg></span>More</button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -6182,7 +6240,7 @@ function goHome(el){
   setActive(el);
   var modal=document.getElementById('modal');
   if(modal&&modal.classList.contains('app-view')){
-    modal.classList.remove('show','app-view','app-view-episodes','app-view-hq');
+    modal.classList.remove('show','app-view','app-view-episodes','app-view-hq','app-view-more');
     var body=document.getElementById('sheetBody');if(body)body.innerHTML='';
     dcUnlockPageScroll();
   }
@@ -6479,7 +6537,7 @@ function resetNavHome(){
 function closeSheet(){
   var modal=document.getElementById('modal');
   if(!modal)return;
-  modal.classList.remove('show','app-view','app-view-episodes','app-view-hq');
+  modal.classList.remove('show','app-view','app-view-episodes','app-view-hq','app-view-more');
   dcUnlockPageScroll();
   resetNavHome();
 }
@@ -6514,9 +6572,10 @@ document.addEventListener('keydown',function(e){
 
 function openPhanQaForm(){
   dcTrack('section_open','phan_qa');
+  if(document.body.classList.contains('dc-app-view-open'))dcUnlockPageScroll();
   dcLockPageScroll();
   var modal=document.getElementById('modal');
-  if(modal)modal.classList.remove('app-view','app-view-episodes','app-view-hq');
+  if(modal)modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');
   var title=document.getElementById('sheetTitle');
   var body=document.getElementById('sheetBody');
   if(!modal||!title||!body)return;
@@ -6581,11 +6640,12 @@ async function submitPhanQa(event){
 
 function openSheet(type){
  dcTrack('section_open',type==='episodes'?'episodes':'more');
- dcLockPageScroll(type==='episodes');
+ dcLockPageScroll(type==='episodes'||type==='more');
  const modal=document.getElementById('modal'), title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
  if(modal){
-   modal.classList.remove('app-view','app-view-episodes','app-view-hq');
+   modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more','app-view-more');
    if(type==='episodes')modal.classList.add('app-view','app-view-episodes');
+   if(type==='more')modal.classList.add('app-view','app-view-more');
  }
  if(type==='episodes'){
    title.textContent='Episodes';
@@ -6625,7 +6685,7 @@ function openSheet(type){
    <div class="more-disclaimer">The Dump &amp; Chase Podcast is an independent, non-commercial fan production and is not affiliated with, employed by, or compensated by the Youngstown Phantoms, the United States Hockey League, or any affiliated league, club, or team.</div>`;
  }
  if(modal)modal.classList.add('show');
- if(type==='episodes')requestAnimationFrame(dcResetAppViewScroll);
+ if(type==='episodes'||type==='more')requestAnimationFrame(dcResetAppViewScroll);
  if(type!=='episodes'){setTimeout(refreshInstallCard,0);setTimeout(syncMoreWrrAudioUi,0);setTimeout(function(){renderMoreGameNotes();loadPublicGameNotes(false);},0);}
 }
 
@@ -8006,7 +8066,7 @@ function renderSelectedMonth(){
       '<div class="card gc-news-card gc-news-card-compact"><p>Latest news and updates from the Youngstown Phantoms.</p><button type="button" class="btn secondary" onclick="window.open(\'https://youngstownphantoms.com/sports/news\',\'_blank\',\'noopener\')">VISIT PHANTOMS WEBSITE</button></div>'+
       '';
 
-    modal.classList.remove('app-view','app-view-episodes','app-view-hq');
+    modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');
     modal.classList.add('app-view','app-view-hq','show');
     requestAnimationFrame(dcResetAppViewScroll);
     renderNextGame();
@@ -8090,7 +8150,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v472</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v473</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
