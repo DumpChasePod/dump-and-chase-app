@@ -4411,6 +4411,7 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
+<!-- v497: semantic accessibility pass for app views, HQ tabs, focus, and toast announcements. -->
 <style id="v496-touch-target-test">
 /* Accessibility test: 44px minimum touch targets on compact public selectors. */
 .episode-year-btn,
@@ -5801,10 +5802,10 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 7 4h10l3 1.5v5.2c0 4.5-2.8 7.9-8 10.3-5.2-2.4-8-5.8-8-10.3V5.5Z"/><path d="M7 4v2h10V4"/><text x="12" y="13.2" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
   <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon navicon-more-plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.15 3.75h3.7v6.4h6.4v3.7h-6.4v6.4h-3.7v-6.4h-6.4v-3.7h6.4v-6.4Z"/></svg></span>More</button>
 </nav>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Dump and Chase" onclick="if(event.target===this)closeSheet()"><div class="sheet">
-  <div class="sheethead"><h2 id="sheetTitle"></h2><button class="close" type="button" aria-label="Close panel" title="Close" onclick="closeSheet()">✕</button></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" onclick="if(event.target===this)closeSheet()"><div class="sheet">
+  <div class="sheethead"><h2 id="sheetTitle" tabindex="-1"></h2><button class="close" type="button" aria-label="Close panel" title="Close" onclick="closeSheet()">✕</button></div>
   <div id="sheetBody"></div>
 </div></div>
 
@@ -5844,7 +5845,24 @@ function dcUpdateOfflineUi(){
   note.textContent=offline?dcOfflineText(dcOfflineViewScope()):'';
 }
 
-function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
+function toast(t){const x=document.getElementById('toast');x.textContent='';requestAnimationFrame(function(){x.textContent=t;x.classList.add('show');});setTimeout(()=>x.classList.remove('show'),2200)}
+function dcConfigureSharedSurface(appView){
+  var modal=document.getElementById('modal');
+  if(!modal)return;
+  if(appView){
+    modal.setAttribute('role','region');
+    modal.removeAttribute('aria-modal');
+    modal.setAttribute('aria-labelledby','sheetTitle');
+  }else{
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    modal.setAttribute('aria-labelledby','sheetTitle');
+  }
+}
+function dcFocusAppViewHeading(){
+  var title=document.getElementById('sheetTitle');
+  if(title)setTimeout(function(){try{title.focus({preventScroll:true});}catch(_){title.focus();}},0);
+}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
 var dcModalPageScrollY=0;
 function dcLockPageScroll(appView){
@@ -6420,7 +6438,7 @@ function openPhanQaForm(){
   if(document.body.classList.contains('dc-app-view-open'))dcUnlockPageScroll();
   dcLockPageScroll();
   var modal=document.getElementById('modal');
-  if(modal)modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');
+  if(modal){dcConfigureSharedSurface(false);modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');}
   var title=document.getElementById('sheetTitle');
   var body=document.getElementById('sheetBody');
   if(!modal||!title||!body)return;
@@ -6500,6 +6518,7 @@ function openSheet(type){
  dcLockPageScroll(type==='episodes'||type==='more');
  const modal=document.getElementById('modal'), title=document.getElementById('sheetTitle'), body=document.getElementById('sheetBody');
  if(modal){
+   dcConfigureSharedSurface(type==='episodes'||type==='more');
    modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more','app-view-more');
    if(type==='episodes')modal.classList.add('app-view','app-view-episodes');
    if(type==='more')modal.classList.add('app-view','app-view-more');
@@ -6543,7 +6562,7 @@ function openSheet(type){
    <div class="more-disclaimer">The Dump &amp; Chase Podcast is an independent, non-commercial fan production and is not affiliated with, employed by, or compensated by the Youngstown Phantoms, the United States Hockey League, or any affiliated league, club, or team.</div>`;
  }
  if(modal)modal.classList.add('show');
- if(type==='episodes'||type==='more')requestAnimationFrame(dcResetAppViewScroll);
+ if(type==='episodes'||type==='more'){requestAnimationFrame(dcResetAppViewScroll);dcFocusAppViewHeading();}
  if(type!=='episodes'){setTimeout(refreshInstallCard,0);setTimeout(syncMoreWrrAudioUi,0);setTimeout(function(){renderMoreGameNotes();loadPublicGameNotes(false);},0);}
 }
 
@@ -7752,7 +7771,10 @@ function renderSelectedMonth(){
   function setGCHQView(view){
     if(['standings','schedule','roster'].indexOf(view)===-1)return;
     document.querySelectorAll('[data-gc-hq-view]').forEach(function(btn){
-      btn.classList.toggle('active',btn.getAttribute('data-gc-hq-view')===view);
+      var active=btn.getAttribute('data-gc-hq-view')===view;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+      btn.setAttribute('tabindex',active?'0':'-1');
     });
     document.querySelectorAll('[data-gc-hq-panel]').forEach(function(panel){
       var active=panel.getAttribute('data-gc-hq-panel')===view;
@@ -7767,8 +7789,13 @@ function renderSelectedMonth(){
     if(conf!=='EAST'&&conf!=='WEST')return;
     dcUshlStandingsConference=conf;
     document.querySelectorAll('[data-gc-standings-conf]').forEach(function(btn){
-      btn.classList.toggle('active',btn.getAttribute('data-gc-standings-conf')===conf);
+      var active=btn.getAttribute('data-gc-standings-conf')===conf;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+      btn.setAttribute('tabindex',active?'0':'-1');
     });
+    var panel=document.getElementById('gcStandingsBody');
+    if(panel)panel.setAttribute('aria-labelledby',conf==='WEST'?'gcStandingsTabWest':'gcStandingsTabEast');
     renderGCStandings();
   }
   window.setGCStandingsConference=setGCStandingsConference;
@@ -7941,11 +7968,11 @@ function renderSelectedMonth(){
       '<div class="section-title gc-hub-section-title">RECENT RESULTS</div>'+
       '<div class="card"><div class="results-list" id="recentResultsList"><div class="result-empty">No completed games yet. Results will appear here after each game.</div></div></div>'+
       '<div class="gc-hq-switcher" role="tablist" aria-label="Phantoms HQ section">'+
-'<button type="button" class="gc-hq-switch active" data-gc-hq-view="standings" onclick="setGCHQView(\'standings\')">STANDINGS</button>'+
-'<button type="button" class="gc-hq-switch" data-gc-hq-view="schedule" onclick="setGCHQView(\'schedule\')">SCHEDULE</button>'+
-'<button type="button" class="gc-hq-switch" data-gc-hq-view="roster" onclick="setGCHQView(\'roster\')">ROSTER</button>'+
+'<button type="button" class="gc-hq-switch active" id="gcTabStandings" role="tab" aria-selected="true" aria-controls="gcPanelStandings" data-gc-hq-view="standings" onclick="setGCHQView(\'standings\')">STANDINGS</button>'+
+'<button type="button" class="gc-hq-switch" id="gcTabSchedule" role="tab" aria-selected="false" tabindex="-1" aria-controls="gcPanelSchedule" data-gc-hq-view="schedule" onclick="setGCHQView(\'schedule\')">SCHEDULE</button>'+
+'<button type="button" class="gc-hq-switch" id="gcTabRoster" role="tab" aria-selected="false" tabindex="-1" aria-controls="gcPanelRoster" data-gc-hq-view="roster" onclick="setGCHQView(\'roster\')">ROSTER</button>'+
 '</div>'+
-'<div class="gc-hq-panel active" data-gc-hq-panel="standings">'+
+'<div class="gc-hq-panel active" id="gcPanelStandings" role="tabpanel" aria-labelledby="gcTabStandings" data-gc-hq-panel="standings">'+
 
       `<section class="card gc-standings-card gc-module-card">
         <div class="gc-standings-head">
@@ -7954,11 +7981,11 @@ function renderSelectedMonth(){
             <div class="gc-module-title">Conference Standings</div>
           </div>
           <div class="gc-standings-tabs" role="tablist" aria-label="USHL conference">
-            <button type="button" class="gc-standings-tab active" data-gc-standings-conf="EAST" onclick="setGCStandingsConference('EAST')">EAST</button>
-            <button type="button" class="gc-standings-tab" data-gc-standings-conf="WEST" onclick="setGCStandingsConference('WEST')">WEST</button>
+            <button type="button" class="gc-standings-tab active" id="gcStandingsTabEast" role="tab" aria-selected="true" aria-controls="gcStandingsBody" data-gc-standings-conf="EAST" onclick="setGCStandingsConference('EAST')">EAST</button>
+            <button type="button" class="gc-standings-tab" id="gcStandingsTabWest" role="tab" aria-selected="false" tabindex="-1" aria-controls="gcStandingsBody" data-gc-standings-conf="WEST" onclick="setGCStandingsConference('WEST')">WEST</button>
           </div>
         </div>
-        <div id="gcStandingsBody"><div class="gc-standings-loading">Loading official USHL standings…</div></div>
+        <div id="gcStandingsBody" role="tabpanel" aria-labelledby="gcStandingsTabEast"><div class="gc-standings-loading">Loading official USHL standings…</div></div>
         <div class="gc-standings-foot">
           <span id="gcStandingsMeta">Official USHL data</span>
           <a href="https://ushl.com/ht/#/team-stats" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','standings',{url:'https://ushl.com/ht/#/team-stats'})">USHL.COM ↗</a>
@@ -7966,11 +7993,11 @@ function renderSelectedMonth(){
       </section>`+
 
       '</div>'+
-'<div class="gc-hq-panel" data-gc-hq-panel="schedule" hidden>'+
+'<div class="gc-hq-panel" id="gcPanelSchedule" role="tabpanel" aria-labelledby="gcTabSchedule" data-gc-hq-panel="schedule" hidden>'+
 
       '<div class="card gc-module-card" id="gcScheduleCard"><div class="gc-module-head"><div><div class="gc-module-kicker">2026–27 SEASON</div><div class="gc-module-title">Phantoms Schedule</div></div></div><div class="gc-schedule-body" id="gcScheduleBody"><div class="gc-month-buttons" id="gcMonthButtons">'+months.map(function(x){return '<button type="button" class="gc-month-btn'+(x.index===defaultMonth?' active':'')+'" data-gc-month="'+x.index+'" onclick="selectGCMonth('+x.index+')">'+x.name+'</button>';}).join('')+'</div><input type="hidden" id="gcMonthSelect" value="'+defaultMonth+'"><div class="gc-inline-schedule"><div class="gc-inline-title gc-module-subtitle">GAMES</div><div id="gameCenterMonthList"></div></div></div></div>'+
         '</div>'+
-'<div class="gc-hq-panel" data-gc-hq-panel="roster" hidden>'+
+'<div class="gc-hq-panel" id="gcPanelRoster" role="tabpanel" aria-labelledby="gcTabRoster" data-gc-hq-panel="roster" hidden>'+
  "<div class=\"card roster-card gamecenter-roster-card gc-module-card\">\n      <div class=\"gc-module-head\"><div><div class=\"gc-module-kicker\">2026–27 ROSTER</div><div class=\"gc-module-title\">Youngstown Phantoms</div></div></div>\n      <div class=\"roster-position-buttons\" aria-label=\"Roster position\">\n        <button type=\"button\" class=\"roster-position-btn active\" data-roster-position=\"FORWARDS\" onclick=\"showRosterGroup('FORWARDS')\">FORWARDS</button>\n        <button type=\"button\" class=\"roster-position-btn\" data-roster-position=\"DEFENSEMEN\" onclick=\"showRosterGroup('DEFENSEMEN')\">DEFENSEMEN</button>\n        <button type=\"button\" class=\"roster-position-btn\" data-roster-position=\"GOALTENDERS\" onclick=\"showRosterGroup('GOALTENDERS')\">GOALTENDERS</button>\n      </div>\n      <div id=\"rosterGroups\">\n<div class=\"roster-group\" data-roster-group=\"GOALTENDERS\"><div class=\"roster-group-title gc-module-subtitle\">GOALTENDERS</div><div class=\"roster-list\"><article class=\"roster-player\">\n          <div class=\"roster-number\">30</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Nikita Oleksiienko</div><div class=\"roster-player-meta\">G \u2022 Catches L \u2022 Dnipro, Ukraine</div><div class=\"roster-player-meta roster-birth\">5/24/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">31</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Cole Brindley</div><div class=\"roster-player-meta\">G \u2022 Catches L \u2022 Fort Myers, FL, United States</div><div class=\"roster-player-meta roster-birth\">11/11/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">35</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Bor Glavic</div><div class=\"roster-player-meta\">G \u2022 Catches L \u2022 Lesce, Slovenia</div><div class=\"roster-player-meta roster-birth\">8/26/2006</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">70</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Owen Lepak</div><div class=\"roster-player-meta\">G \u2022 Catches L \u2022 Clarkston, MI, United States</div><div class=\"roster-player-meta roster-birth\">2/20/2006</div></div>\n        </article></div></div><div class=\"roster-group\" data-roster-group=\"DEFENSEMEN\"><div class=\"roster-group-title gc-module-subtitle\">DEFENSEMEN</div><div class=\"roster-list\"><article class=\"roster-player\">\n          <div class=\"roster-number\">2</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Henri Giroux</div><div class=\"roster-player-meta\">D \u2022 Shoots R \u2022 Clark's Summit, PA</div><div class=\"roster-player-meta roster-birth\">6/27/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">5</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Royce Pietila</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Howell, MI</div><div class=\"roster-player-meta roster-birth\">7/21/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">6</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Tyler Rothstein</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Woodcliff, NJ</div><div class=\"roster-player-meta roster-birth\">6/14/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">16</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Luke Pilkington</div><div class=\"roster-player-meta\">D \u2022 Shoots R \u2022 North Vancouver, BC</div><div class=\"roster-player-meta roster-birth\">5/5/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">21</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Noah Drouin</div><div class=\"roster-player-meta\">D \u2022 Shoots R \u2022 Fort Wayne, IN</div><div class=\"roster-player-meta roster-birth\">1/13/2010</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">34</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Brody Berard</div><div class=\"roster-player-meta\">D \u2022 Shoots R \u2022 Cumberland, RI</div><div class=\"roster-player-meta roster-birth\">9/2/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">36</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Brayden Thompson</div><div class=\"roster-player-meta\">D \u2022 Shoots R \u2022 Winnipeg, Manitoba</div><div class=\"roster-player-meta roster-birth\">5/6/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">38</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Axel Brongel-Larsson</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Oslo, Norway</div><div class=\"roster-player-meta roster-birth\">1/11/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">42</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Jackson Adams</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Bemus Point, NY</div><div class=\"roster-player-meta roster-birth\">7/17/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">44</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Wilhelm Hasselhuhn</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Stockholm, Sweden</div><div class=\"roster-player-meta roster-birth\">1/8/2006</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">48</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Jack Hair</div><div class=\"roster-player-meta\">D \u2022 Shoots L \u2022 Edina, MN</div><div class=\"roster-player-meta roster-birth\">5/28/2010</div></div>\n        </article></div></div><div class=\"roster-group\" data-roster-group=\"FORWARDS\"><div class=\"roster-group-title gc-module-subtitle\">FORWARDS</div><div class=\"roster-list\"><article class=\"roster-player\">\n          <div class=\"roster-number\">3</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Mitchell Mars</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Portage, MI</div><div class=\"roster-player-meta roster-birth\">1/3/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">4</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Jesse Orlowsky</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Brooklyn, NY</div><div class=\"roster-player-meta roster-birth\">3/27/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">7</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Owen Rhett</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Baldwinsville, NY</div><div class=\"roster-player-meta roster-birth\">5/10/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">8</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Caden Lindsay</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Minnetonka, MN</div><div class=\"roster-player-meta roster-birth\">9/9/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">9</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Matyas Jonak</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Pilsen, Czechia</div><div class=\"roster-player-meta roster-birth\">11/8/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">10</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Linus Rudslatt</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Jarfalla, Sweden</div><div class=\"roster-player-meta roster-birth\">1/28/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">11</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Brady Guolla</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Rochester Hills, MI</div><div class=\"roster-player-meta roster-birth\">12/26/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">12</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Kamden Kaiser</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Northfield, MN</div><div class=\"roster-player-meta roster-birth\">6/23/2006</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">13</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Wyatt Finkenkeller</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Zionsville, IN</div><div class=\"roster-player-meta roster-birth\">11/17/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">14</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Nikita Kolstov</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Ufa, Russia</div><div class=\"roster-player-meta roster-birth\">10/15/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">15</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Alexander Svitov</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Miramar, FL</div><div class=\"roster-player-meta roster-birth\">11/17/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">17</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Austin Hall</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Livonia, MI</div><div class=\"roster-player-meta roster-birth\">7/27/2010</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">19</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Lukas Zajic</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Plainfield, IL</div><div class=\"roster-player-meta roster-birth\">1/19/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">20</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Matej Mikes</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Karlovy Vary</div><div class=\"roster-player-meta roster-birth\">2/17/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">27</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Logan Anderson</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Fort Myers, FL</div><div class=\"roster-player-meta roster-birth\">2/12/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">37</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Sean Miller</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Wexford, PA</div><div class=\"roster-player-meta roster-birth\">12/17/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">38</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Dylan Sampair</div><div class=\"roster-player-meta\">F \u2022 Shoots R \u2022 Mahtomedi, MN</div><div class=\"roster-player-meta roster-birth\">9/13/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">71</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Connor Schubert</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Rosemount, MN</div><div class=\"roster-player-meta roster-birth\">11/27/2008</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">88</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Oliver Raimovaara</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Kangasala, Finland</div><div class=\"roster-player-meta roster-birth\">1/16/2009</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">91</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Malachi McKinnon</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Forest Lake, MN</div><div class=\"roster-player-meta roster-birth\">1/18/2007</div></div>\n        </article><article class=\"roster-player\">\n          <div class=\"roster-number\">98</div>\n          <div class=\"roster-player-main\"><div class=\"roster-player-name\">Jackson Conroy</div><div class=\"roster-player-meta\">F \u2022 Shoots L \u2022 Dorval, Quebec</div><div class=\"roster-player-meta roster-birth\">8/13/2010</div></div>\n        </article></div></div>      </div>\n      <p class=\"roster-source\">Roster data checked August 29, 2026.</p>\n    </div>"+
         ''+
       '</div>'+
@@ -7978,8 +8005,10 @@ function renderSelectedMonth(){
       '<div class="card gc-news-card gc-news-card-compact"><p>Latest news and updates from the Youngstown Phantoms.</p><button type="button" class="btn secondary" onclick="window.open(\'https://youngstownphantoms.com/sports/news\',\'_blank\',\'noopener\')">VISIT PHANTOMS WEBSITE</button></div>'+
       '';
 
+    dcConfigureSharedSurface(true);
     modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');
     modal.classList.add('app-view','app-view-hq','show');setTimeout(dcUpdateOfflineUi,0);
+    dcFocusAppViewHeading();
     requestAnimationFrame(dcResetAppViewScroll);
     renderNextGame();
     setTimeout(function(){
@@ -8062,7 +8091,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v496</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v497</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
