@@ -3146,6 +3146,43 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 
 
 
+
+/* v501: targeted public readability pass; no structural layout changes. */
+/* Episodes */
+.episode-date,.episode-detail-date{font-size:11px}
+.episode-desc{font-size:13px}
+.episode-duration{font-size:11px}
+.episode-detail-meta{font-size:12px}
+
+/* Podcast player */
+.audio-kicker{font-size:10px}
+.audio-time{font-size:11px}
+.player-status,.listen-platforms-label{font-size:10px}
+.player-controls button small{font-size:10px}
+.listen-platform span{font-size:10px}
+@media(max-width:520px){.listen-platform span{font-size:9.5px}}
+
+/* Home / Game Day secondary information */
+.countbox span,.stat-box span{font-size:10px}
+.game-note,.official-note,.news-date,.news-rss,.result-date,.result-meta,.result-win{font-size:11px}
+.result-date small,.result-event{font-size:10px}
+#publicGameDayCard .gameday-status{font-size:10px}
+#publicGameDayCard .gameday-period{font-size:11px}
+@media(max-width:420px){.gameday-team-name{font-size:10px;min-height:24px}}
+
+/* Phantoms HQ roster / schedule */
+#sheetBody .gamecenter-roster-card .roster-player-name{font-size:14px}
+#sheetBody .gamecenter-roster-card .roster-player-meta{font-size:12px}
+#sheetBody .gamecenter-roster-card .roster-source{font-size:11px}
+#sheetBody #gcScheduleCard .sched-weekday,#sheetBody #gcScheduleCard .sched-month{font-size:11px}
+#sheetBody #gcScheduleCard .sched-event{font-size:11px}
+#sheetBody #gcScheduleCard .schedule-arena{font-size:12px}
+#sheetBody #gcScheduleCard .schedule-city{font-size:11px}
+#sheetBody #gcScheduleCard .sched-role{font-size:11px}
+#gameCenterMonthList .sched-right .sched-role{font-size:11px !important}
+
+/* More */
+.more-card p{font-size:13px}
 </style>
 
 
@@ -4419,7 +4456,7 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
-<!-- v500: standings typography enlarged for better readability while preserving full city names and compact columns. -->
+<!-- v501: targeted public readability pass; preserves v500 standings layout and typography. -->
 <style id="v496-touch-target-test">
 /* Accessibility test: 44px minimum touch targets on compact public selectors. */
 .episode-year-btn,
@@ -8109,7 +8146,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v500</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v501</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
