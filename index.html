@@ -1913,18 +1913,18 @@ body.game-final #gameDaySection .sectionhead{
   white-space:nowrap;
 }
 .gc-standings-table tr:last-child td{border-bottom:0}
-.gc-standings-table .gc-st-rk{width:25px}
+.gc-standings-table .gc-st-rk{width:22px}
 .gc-standings-table .gc-st-team{
-  width:52px;
+  width:82px;
   text-align:left;
   font-weight:950;
-  letter-spacing:.03em;
+  letter-spacing:.015em;
 }
-.gc-standings-table .gc-st-narrow{width:25px}
-.gc-standings-table .gc-st-loss{width:29px}
-.gc-standings-table .gc-st-pts{width:29px;color:#f2f4f7;font-weight:950}
-.gc-standings-table .gc-st-pct{width:35px}
-.gc-standings-table .gc-st-row{width:31px}
+.gc-standings-table .gc-st-narrow{width:22px}
+.gc-standings-table .gc-st-loss{width:24px}
+.gc-standings-table .gc-st-pts{width:25px;color:#f2f4f7;font-weight:950}
+.gc-standings-table .gc-st-pct{width:30px}
+.gc-standings-table .gc-st-row{width:27px}
 .gc-standings-table tr.is-youngstown{
   background:linear-gradient(90deg,rgba(139,82,255,.16),rgba(139,82,255,.07));
 }
@@ -4416,7 +4416,7 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
-<!-- v498: simplified Youngstown standings highlight to one continuous row treatment. -->
+<!-- v499: standings now use full city names (NTDP retained) with rebalanced stat columns. -->
 <style id="v496-touch-target-test">
 /* Accessibility test: 44px minimum touch targets on compact public selectors. */
 .episode-year-btn,
@@ -7753,19 +7753,29 @@ function renderSelectedMonth(){
     }
   }
 
-  function gcStandingsTeamCode(row){
-    var code=String(row&&row.team_code||'').trim().toUpperCase();
-    if(code&&code.length<=5)return code;
-    var name=String(row&&row.team||'').toLowerCase();
-    var map=[
-      ['youngstown','YNG'],['cedar rapids','CRR'],['chicago','CHI'],['dubuque','DBQ'],
-      ['green bay','GB'],['madison','MAD'],['muskegon','MUS'],['usa hockey','USA'],
-      ['ntdp','USA'],['des moines','DM'],['fargo','FAR'],['lincoln','LIN'],['omaha','OMA'],
-      ['sioux city','SC'],['sioux falls','SF'],['tri-city','TC'],['tri city','TC'],['waterloo','WLO']
-    ];
-    for(var i=0;i<map.length;i++)if(name.indexOf(map[i][0])!==-1)return map[i][1];
-    var words=name.split(/\s+/).filter(Boolean);
-    return words.map(function(x){return x.charAt(0)}).join('').slice(0,4).toUpperCase()||'—';
+  function gcStandingsTeamName(row){
+    var key=gcStandingTeamKey((row&&row.team)||'')||gcStandingTeamKey((row&&row.team_code)||'');
+    var cities={
+      'youngstown':'Youngstown',
+      'cedar rapids':'Cedar Rapids',
+      'chicago':'Chicago',
+      'dubuque':'Dubuque',
+      'green bay':'Green Bay',
+      'madison':'Madison',
+      'muskegon':'Muskegon',
+      'des moines':'Des Moines',
+      'fargo':'Fargo',
+      'lincoln':'Lincoln',
+      'omaha':'Omaha',
+      'sioux city':'Sioux City',
+      'sioux falls':'Sioux Falls',
+      'tri city':'Tri-City',
+      'waterloo':'Waterloo',
+      'team usa':'NTDP'
+    };
+    if(cities[key])return cities[key];
+    var raw=String(row&&row.team||row&&row.team_code||'').trim();
+    return raw||'—';
   }
 
   function gcIsYoungstownStanding(row){
@@ -7834,7 +7844,7 @@ function renderSelectedMonth(){
           rows.map(function(row,index){
             var isYng=gcIsYoungstownStanding(row);
             var rank=String(index+1);
-            var team=gcStandingsTeamCode(row);
+            var team=gcStandingsTeamName(row);
             var full=String(row.team||team);
             return '<tr'+(isYng?' class="is-youngstown"':'')+'>'+
               '<td class="gc-st-rk">'+escapeHtml(rank)+'</td>'+
@@ -8096,7 +8106,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v498</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v499</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
