@@ -4257,6 +4257,29 @@ header.home-masthead{
   .home-brand .brandlogo{width:44px;height:38px;flex-basis:44px}
   .home-brand-copy span{font-size:9.5px}
 }
+.home-qna-alert{
+  display:none;
+  position:absolute;
+  top:10px;
+  right:14px;
+  z-index:3;
+  padding:6px 9px;
+  border:1px solid rgba(72,209,122,.42);
+  border-radius:999px;
+  background:rgba(72,209,122,.14);
+  color:#7bea9f;
+  box-shadow:0 0 0 1px rgba(72,209,122,.06),0 5px 16px rgba(0,0,0,.22);
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.015em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.home-qna-alert.show{display:block}
+@media(max-width:600px){
+  .home-qna-alert{top:7px;right:10px;padding:5px 8px;font-size:9px}
+}
 </style>
 
 <style id="v496-episode-artwork">
@@ -5671,7 +5694,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </style>
 <header class="home-masthead">
   <div class="brand home-brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div class="home-brand-copy"><b>DUMP <em>&amp;</em> CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
-<div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div></header>
+<div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div><div class="home-qna-alert" id="homeQnaAlert" role="status" aria-live="polite" aria-atomic="true"></div></header>
 
 <div class="home-headlines" id="homeHeadlines" aria-live="polite"><span class="home-headline-badge" id="homeHeadlineBadge">NEWS</span><div class="home-headline-copy" id="homeHeadlineCopy"></div></div>
 
@@ -8146,7 +8169,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v503</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v504</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8667,6 +8690,41 @@ async function dcBootSharedGameData(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',dcBootSharedGameData,{once:true});
 else dcBootSharedGameData();
+
+let dcHomeQnaAuthorized=false;
+let dcHomeQnaTimer=null;
+function setHomeQnaIndicator(count){
+  var pill=document.getElementById('homeQnaAlert');
+  if(!pill)return;
+  count=Math.max(0,Number(count)||0);
+  if(!count){pill.classList.remove('show');pill.textContent='';return;}
+  pill.textContent=count+' New '+(count===1?'Message':'Messages');
+  pill.classList.add('show');
+}
+async function refreshHomeQnaIndicator(){
+  try{
+    if(!dcHomeQnaAuthorized){
+      var session=await dcGetSession();
+      if(!session){setHomeQnaIndicator(0);return;}
+      dcHomeQnaAuthorized=await dcVerifyAdminSession(session);
+      if(!dcHomeQnaAuthorized){setHomeQnaIndicator(0);return;}
+    }
+    var r=await dcSupabase.from('phan_qa_submissions').select('id',{count:'exact',head:true}).eq('status','new');
+    if(r.error)throw r.error;
+    setHomeQnaIndicator(Number(r.count)||0);
+  }catch(e){
+    console.warn('Home Q&A indicator unavailable.',e);
+    setHomeQnaIndicator(0);
+  }
+}
+function startHomeQnaWatch(){
+  if(dcHomeQnaTimer)clearInterval(dcHomeQnaTimer);
+  refreshHomeQnaIndicator();
+  dcHomeQnaTimer=setInterval(refreshHomeQnaIndicator,60000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHomeQnaWatch,{once:true});
+else startHomeQnaWatch();
+
 var dcAdminSecretTapCount=0,dcAdminSecretTapTimer=null;
 async function dcAdminSecretTap(){
  if(await dcIsAdmin()){dcAdminSecretTapCount=0;clearTimeout(dcAdminSecretTapTimer);openAdmin();return;}
@@ -9006,6 +9064,7 @@ async function refreshAdminQnaIndicator(){
     dot.classList.toggle('show',count>0);
     var btn=document.getElementById('adminTabQna');
     if(btn)btn.setAttribute('aria-label',count>0?'Q&A, new submissions waiting':'Q&A');
+    if(dcHomeQnaAuthorized)setHomeQnaIndicator(count);
   }catch(e){console.warn('Q&A indicator unavailable:',e);}
 }
 function formatQnaDate(value){
@@ -9998,7 +10057,7 @@ async function adminLoginSubmit(){
   if(st)st.textContent='Could not reach the sign-in service. Try again.';
  }
 }
-async function adminLogout(){stopAdminQnaWatch();await dcSupabase.auth.signOut();document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';}
+async function adminLogout(){stopAdminQnaWatch();await dcSupabase.auth.signOut();dcHomeQnaAuthorized=false;setHomeQnaIndicator(0);document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';}
 function mapRemoteState(r){r=r||{};return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminEmptyNet:r.empty_net||'',updatedAt:r.updated_at||''};}
 async function fetchRemoteGameState(){
  try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
