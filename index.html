@@ -489,7 +489,10 @@ button:active:not(:disabled){
   content:"";
   position:absolute;
   z-index:0;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
   width:52%;
   height:180%;
   right:-12%;
@@ -506,7 +509,10 @@ button:active:not(:disabled){
   content:"";
   position:absolute;
   z-index:0;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
   right:0;
   top:0;
   bottom:0;
@@ -860,7 +866,10 @@ button,a,select,input{touch-action:manipulation}
 .app-launch-screen.skip{
   transition:opacity .28s ease;
   opacity:0;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 @keyframes dcLaunchLogo{
   0%,21%{opacity:1;transform:scale(1)}
@@ -2576,7 +2585,10 @@ body::after{
   right:0;
   bottom:0;
   height:98px;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
   z-index:19;
   background:linear-gradient(to bottom,rgba(7,11,17,0),#070b11 46%,#070b11 100%);
 }
@@ -2607,7 +2619,10 @@ body::after{
   bottom:-6px;
   height:7px;
   background:#101722;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 .admin-section-tabs{
   top:52px;
@@ -2630,7 +2645,10 @@ body::after{
   top:-7px;
   height:8px;
   background:#101722;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 
 /* v282 structural Admin sticky-chrome fix */
@@ -2659,7 +2677,10 @@ body::after{
   bottom:-2px;
   height:3px;
   background:#101722;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 .admin-dashboard-actions{
   display:flex;
@@ -2725,7 +2746,10 @@ body::after{
   top:-4px;
   height:5px;
   background:#101722;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 #adminGameDayPanel .admin-publish-bar::after{
   content:"";
@@ -2735,7 +2759,10 @@ body::after{
   bottom:-28px;
   height:29px;
   background:#101722;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 
 /* v283 Record tab cleanup
@@ -4139,7 +4166,10 @@ header.home-masthead::after{
   border-radius:999px;
   background:linear-gradient(90deg,#8b52ff 0%,#a56cff 72%,rgba(255,148,74,.88) 100%);
   opacity:.72;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 .home-brand{
   min-width:0;
@@ -4260,7 +4290,7 @@ header.home-masthead{
 .home-qna-alert{
   display:none;
   position:absolute;
-  top:10px;
+  top:18px;
   right:14px;
   z-index:3;
   padding:6px 9px;
@@ -4274,11 +4304,14 @@ header.home-masthead{
   font-weight:950;
   letter-spacing:.015em;
   white-space:nowrap;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 .home-qna-alert.show{display:block}
 @media(max-width:600px){
-  .home-qna-alert{top:7px;right:10px;padding:5px 8px;font-size:9px}
+  .home-qna-alert{top:15px;right:10px;padding:5px 8px;font-size:9px}
 }
 </style>
 
@@ -4430,7 +4463,10 @@ header.home-masthead{
   font-weight:900;
   letter-spacing:.045em;
   opacity:0;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
   transform:translate(-50%,-22px) scale(.94);
   transition:opacity .14s ease,transform .14s ease;
 }
@@ -5249,7 +5285,10 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   bottom:-15px;
   height:15px;
   background:#070b11;
-  pointer-events:none;
+  pointer-events:auto;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
   z-index:-1;
 }
 
@@ -5694,7 +5733,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </style>
 <header class="home-masthead">
   <div class="brand home-brand"><img class="brandlogo" src="dump-chase-logo.png" alt="Dump & Chase Podcast logo"><div class="home-brand-copy"><b>DUMP <em>&amp;</em> CHASE PODCAST</b><span>Unofficial Youngstown Phantoms Fan Podcast</span></div></div>
-<div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div><div class="home-qna-alert" id="homeQnaAlert" role="status" aria-live="polite" aria-atomic="true"></div></header>
+<div class="dc-offline-note" id="dcOfflineNote" role="status" aria-live="polite">Offline — showing saved app content.</div><button type="button" class="home-qna-alert" id="homeQnaAlert" aria-live="polite" aria-atomic="true" aria-label="Open new Phan Q&amp;A messages in Admin" onclick="openHomeQnaAdmin()"></button></header>
 
 <div class="home-headlines" id="homeHeadlines" aria-live="polite"><span class="home-headline-badge" id="homeHeadlineBadge">NEWS</span><div class="home-headline-copy" id="homeHeadlineCopy"></div></div>
 
@@ -8169,7 +8208,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v504</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v505</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8721,6 +8760,11 @@ function startHomeQnaWatch(){
   if(dcHomeQnaTimer)clearInterval(dcHomeQnaTimer);
   refreshHomeQnaIndicator();
   dcHomeQnaTimer=setInterval(refreshHomeQnaIndicator,60000);
+}
+async function openHomeQnaAdmin(){
+  if(!dcHomeQnaAuthorized)return;
+  await openAdmin();
+  selectAdminTab('qna',true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHomeQnaWatch,{once:true});
 else startHomeQnaWatch();
