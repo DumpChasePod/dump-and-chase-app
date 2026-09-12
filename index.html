@@ -3785,7 +3785,7 @@ body.game-live #publicGameDayCard .gameday-period{
 
 
 <style id="dc-v464-real-gameday">
-/* v494: per-game WRR Game Day audio availability. */
+/* v495: per-game WRR Game Day audio availability. */
 #adminGameDayPanel .admin-game-audio-card{margin:8px 0 10px;padding:9px 10px;border:1px solid rgba(97,194,80,.24);border-radius:11px;background:rgba(97,194,80,.045)}
 #adminGameDayPanel .admin-game-audio-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 #adminGameDayPanel .admin-game-audio-title{font-size:8px;font-weight:950;letter-spacing:.12em;color:#8de880;text-transform:uppercase}
@@ -3830,8 +3830,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-game-day-actions">
-/* v494: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
+<style id="v495-game-day-actions">
+/* v495: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
@@ -3850,8 +3850,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-admin-game-flow">
-/* V494 — numbered Game Center workflow */
+<style id="v495-admin-game-flow">
+/* V495 — numbered Game Center workflow */
 #adminGameDayPanel{display:flex;flex-direction:column;gap:12px}
 #adminGameDayPanel .admin-gameday-step{
   border:1px solid rgba(139,82,255,.22);
@@ -3883,8 +3883,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-nav-icon-states">
-/* V494 — nav labels stay neutral; icons carry active state. */
+<style id="v495-nav-icon-states">
+/* V495 — nav labels stay neutral; icons carry active state. */
 .bottomnav.nav-v200 .navitem{
   color:#8290a2;
 }
@@ -3912,8 +3912,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-more-fullscreen">
-/* V494 — More is a full-screen app destination; bottom nav remains visible. */
+<style id="v495-more-fullscreen">
+/* V495 — More is a full-screen app destination; bottom nav remains visible. */
 .modal.app-view.app-view-more{
   inset:0 0 78px;
   z-index:18;
@@ -3970,8 +3970,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-header-refresh">
-/* V494 — stronger full-screen page headers, no taglines. */
+<style id="v495-header-refresh">
+/* V495 — stronger full-screen page headers, no taglines. */
 .modal.app-view .sheethead{
   min-height:62px;
   align-items:center;
@@ -4049,8 +4049,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-more-plus">
-/* V494 — More uses a simple stylized plus. Header icon matches other page headers. */
+<style id="v495-more-plus">
+/* V495 — More uses a simple stylized plus. Header icon matches other page headers. */
 .bottomnav.nav-v200 .navicon-more-plus svg{
   fill:currentColor;
   stroke:none;
@@ -4071,8 +4071,8 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 </style>
 
-<style id="v494-home-masthead">
-/* V494 — restrained Home masthead. Version remains Admin-only. */
+<style id="v495-home-masthead">
+/* V495 — restrained Home masthead. Version remains Admin-only. */
 header.home-masthead{
   position:sticky;
   overflow:hidden;
@@ -4162,7 +4162,7 @@ header.home-masthead::after{
 }
 </style>
 
-<style id="v494-home-masthead-refine">
+<style id="v495-home-masthead-refine">
 header.home-masthead{
   padding-top:15px;
   padding-bottom:14px;
@@ -4214,7 +4214,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v494-episode-artwork">
+<style id="v495-episode-artwork">
 .audio-art{overflow:hidden}
 .audio-art img{
   width:100%;
@@ -4230,7 +4230,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v494-episode-season-pill">
+<style id="v495-episode-season-pill">
 .episode-card{
   cursor:default;
 }
@@ -4263,7 +4263,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v494-mini-player-layout">
+<style id="v495-mini-player-layout">
 .audio-player{
   grid-template-columns:44px minmax(0,1fr) 34px!important;
   grid-template-rows:auto auto auto!important;
@@ -4319,7 +4319,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v494-player-minimize-icon">
+<style id="v495-player-minimize-icon">
 .player-minimize-icon{
   position:relative;
   display:block;
@@ -4341,7 +4341,7 @@ header.home-masthead{
 }
 </style>
 
-<style id="v494-app-view-pull-refresh">
+<style id="v495-app-view-pull-refresh">
 .modal.app-view .sheet{position:relative}
 .dc-ptr-indicator{
   position:fixed;
@@ -4386,6 +4386,28 @@ header.home-masthead{
 @keyframes dcPtrSpin{to{transform:rotate(360deg)}}
 @media(min-width:760px){
   .dc-ptr-indicator{top:78px}
+}
+</style>
+
+<style id="v495-offline-resilience">
+.dc-app-offline-note{
+  display:none;
+  position:sticky;
+  top:62px;
+  z-index:28;
+  margin:0 -16px 12px;
+  padding:7px 12px;
+  border-bottom:1px solid rgba(165,108,255,.20);
+  background:rgba(12,17,26,.96);
+  color:#919daf;
+  text-align:center;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.025em;
+}
+body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
+@media(min-width:760px){
+  .dc-app-offline-note{margin-left:-28px;margin-right:-28px}
 }
 </style>
 </head>
@@ -5777,6 +5799,40 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 
 <script>
 const PODCAST_FEED_ENDPOINT='https://halnzstinpginidcefts.supabase.co/functions/v1/get-podcast-feed';
+
+const DC_OFFLINE_META_KEY='dc_offline_meta_v1';
+function dcOfflineMeta(){
+  try{var x=JSON.parse(localStorage.getItem(DC_OFFLINE_META_KEY)||'{}');return x&&typeof x==='object'?x:{};}catch(_){return {};}
+}
+function dcOfflineMarkSync(scope){
+  try{var now=Date.now(),m=dcOfflineMeta();m.last_any=now;if(scope)m[String(scope)]=now;localStorage.setItem(DC_OFFLINE_META_KEY,JSON.stringify(m));}catch(_){}
+  try{dcUpdateOfflineUi();}catch(_){}
+}
+function dcOfflineStamp(scope){var m=dcOfflineMeta();return Number((scope&&m[scope])||m.last_any||0)||0;}
+function dcOfflineStampLabel(scope){
+  var ts=dcOfflineStamp(scope);if(!ts)return '';
+  var d=new Date(ts),now=new Date(),same=d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate();
+  try{return same?d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});}catch(_){return '';}
+}
+function dcOfflineViewScope(){
+  var modal=document.getElementById('modal');
+  if(!modal||!modal.classList.contains('show')||!modal.classList.contains('app-view'))return 'home';
+  if(modal.classList.contains('app-view-episodes'))return 'episodes';
+  if(modal.classList.contains('app-view-hq'))return 'hq';
+  if(modal.classList.contains('app-view-more'))return 'more';
+  return 'home';
+}
+function dcOfflineText(scope){var stamp=dcOfflineStampLabel(scope);return 'Offline • Showing saved data'+(stamp?' • Last sync '+stamp:'');}
+function dcUpdateOfflineUi(){
+  var offline=navigator.onLine===false;document.body.classList.toggle('dc-offline',offline);
+  var home=document.getElementById('dcOfflineNote');if(home)home.textContent=offline?dcOfflineText('home'):'';
+  var modal=document.getElementById('modal');if(!modal)return;
+  var sheet=modal.querySelector('.sheet'),head=sheet&&sheet.querySelector('.sheethead');if(!sheet||!head)return;
+  var note=document.getElementById('dcAppOfflineNote');
+  if(!note){note=document.createElement('div');note.id='dcAppOfflineNote';note.className='dc-app-offline-note';note.setAttribute('role','status');note.setAttribute('aria-live','polite');head.insertAdjacentElement('afterend',note);}
+  note.textContent=offline?dcOfflineText(dcOfflineViewScope()):'';
+}
+
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
 var dcModalPageScrollY=0;
@@ -6436,6 +6492,7 @@ function openSheet(type){
    modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more','app-view-more');
    if(type==='episodes')modal.classList.add('app-view','app-view-episodes');
    if(type==='more')modal.classList.add('app-view','app-view-more');
+   setTimeout(dcUpdateOfflineUi,0);
  }
  if(type==='episodes'){
    title.innerHTML=dcAppViewHeaderHtml('episodes','Episodes');
@@ -6717,7 +6774,7 @@ async function refreshFeed(){
    }).filter(function(x){return x.title;});
 
    dcEpisodeArchive=parsed;
-   try{localStorage.setItem('dc_episode_feed_v2',JSON.stringify(parsed));}catch(cacheError){}
+   try{localStorage.setItem('dc_episode_feed_v2',JSON.stringify(parsed));}catch(cacheError){} dcOfflineMarkSync('episodes');
    renderEpisodeArchive();
  }catch(e){
    var saved=[];
@@ -6732,7 +6789,7 @@ async function refreshFeed(){
      var note=document.createElement('div');
      note.className='card feed-state-card episode-cache-note';
      note.setAttribute('role','status');
-     note.innerHTML='<p><strong>Couldn’t refresh Buzzsprout right now.</strong><br>Showing the most recently saved episode archive.</p>';
+     var savedLabel=dcOfflineStampLabel('episodes');note.innerHTML='<p><strong>Couldn’t refresh Buzzsprout right now.</strong><br>Showing the saved episode archive'+(savedLabel?' from '+escapeHtml(savedLabel):'')+'.</p>';
      list.parentNode.insertBefore(note,list);
    }else{
      list.innerHTML='<div class="card feed-state-card" role="status"><p><strong>Couldn’t load episodes right now.</strong><br>Please try again when you’re back online.</p></div>';
@@ -6890,6 +6947,7 @@ async function syncCompletedResults(strict){
     if(!res.ok||body.ok===false)throw new Error(body.error||('HTTP '+res.status));
     const rows=(Array.isArray(body.data)?body.data:[]).map(mapRemoteResult);
     cacheCompletedResults(rows);
+    dcOfflineMarkSync('hq');
     return rows;
   }catch(e){
     if(timer)clearTimeout(timer);
@@ -7831,6 +7889,7 @@ function renderSelectedMonth(){
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
       saveCachedUshlStandings(dcUshlStandingsRows);
+      dcOfflineMarkSync('hq');
       syncUshlStandingsConsumers();
       if(meta)meta.textContent='Official USHL data • Auto-updated';
     }catch(e){
@@ -7838,7 +7897,7 @@ function renderSelectedMonth(){
       if(hadCached||(dcUshlStandingsRows&&dcUshlStandingsRows.length)){
         /* Another concurrent standings request may already have succeeded. Never overwrite valid rows with an error. */
         syncUshlStandingsConsumers();
-        if(meta)meta.textContent=hadCached?'Official USHL data • Last saved copy':'Official USHL data • Auto-updated';
+        if(meta){var saved=dcOfflineStampLabel('hq');meta.textContent=hadCached?('Official USHL data • Saved copy'+(saved?' • '+saved:'')):'Official USHL data • Auto-updated';}
       }else{
         if(host)host.innerHTML='<div class="gc-standings-error"><strong>Standings could not be loaded.</strong>Use the official USHL link below to view the current table.</div>';
         if(meta)meta.textContent='Official USHL data';
@@ -7909,7 +7968,7 @@ function renderSelectedMonth(){
       '';
 
     modal.classList.remove('app-view','app-view-episodes','app-view-hq','app-view-more');
-    modal.classList.add('app-view','app-view-hq','show');
+    modal.classList.add('app-view','app-view-hq','show');setTimeout(dcUpdateOfflineUi,0);
     requestAnimationFrame(dcResetAppViewScroll);
     renderNextGame();
     setTimeout(function(){
@@ -7992,7 +8051,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v494</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v495</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8391,7 +8450,7 @@ async function loadSupabaseSchedule(){
     if(q.error)throw q.error;
     if(q.data&&q.data.length){
       rebuildScheduleFromSupabase(q.data);
-      try{localStorage.setItem(DC_SCHEDULE_CACHE_KEY,JSON.stringify(q.data));}catch(_){}
+      try{localStorage.setItem(DC_SCHEDULE_CACHE_KEY,JSON.stringify(q.data));}catch(_){} dcOfflineMarkSync('hq');
       try{renderSelectedMonth();}catch(_){}
       try{renderNextGame();}catch(_){}
     }
@@ -8693,6 +8752,7 @@ let dcMoreWrrAudio=null;
 let dcMoreWrrAudioRun=0;
 const DC_WRR_FINAL_GRACE_MS=5*60*1000;
 const DC_GAME_NOTES_PUBLIC_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/get-game-notes';
+const DC_GAME_NOTES_CACHE_KEY='dc_game_notes_public_v1';
 const DC_GAME_NOTES_MANAGE_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/manage-game-notes';
 let dcGameNotesCurrent=null;
 let dcGameNotesLoaded=false;
@@ -8722,7 +8782,14 @@ async function loadPublicGameNotes(force){
       var res=await fetch(DC_GAME_NOTES_PUBLIC_ENDPOINT+'?ts='+Date.now(),{cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
       var body=await res.json();if(!res.ok||body.ok===false)throw new Error(body.error||('HTTP '+res.status));
       dcGameNotesCurrent=body.current||null;dcGameNotesLoaded=true;
-    }catch(e){console.warn('Game notes unavailable',e);if(!dcGameNotesLoaded)dcGameNotesCurrent=null;}
+      try{localStorage.setItem(DC_GAME_NOTES_CACHE_KEY,JSON.stringify({saved_at:Date.now(),current:dcGameNotesCurrent}));}catch(_){}
+      dcOfflineMarkSync('more');
+    }catch(e){
+      console.warn('Game notes unavailable',e);
+      if(!dcGameNotesLoaded){
+        try{var cached=JSON.parse(localStorage.getItem(DC_GAME_NOTES_CACHE_KEY)||'null');dcGameNotesCurrent=cached?cached.current:null;dcGameNotesLoaded=!!cached;}catch(_){dcGameNotesCurrent=null;}
+      }
+    }
     renderMoreGameNotes();renderAdminGameNotes();
     try{if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();}catch(_){}
     dcGameNotesLoading=null;return dcGameNotesCurrent;
@@ -8730,6 +8797,7 @@ async function loadPublicGameNotes(force){
   return dcGameNotesLoading;
 }
 function openCurrentGameNotes(source){
+  if(navigator.onLine===false){if(typeof toast==='function')toast('Game Notes PDF requires an internet connection.');return;}
   if(!dcGameNotesCurrent||!dcGameNotesCurrent.url){if(typeof toast==='function')toast('No game notes are available.');return;}
   dcTrack('outbound_click','game_notes_pdf',{source:source||'unknown'});
   window.open(dcGameNotesCurrent.url,'_blank','noopener');
@@ -8794,6 +8862,7 @@ function stopMoreWrrAudio(clearStatus){
   syncMoreWrrAudioUi('idle',clearStatus===false?'':'');
 }
 async function toggleMoreWrrAudio(){
+  if(navigator.onLine===false){syncMoreWrrAudioUi('error','Live audio requires an internet connection.');return;}
   if(dcWrrGameDaySuppressed()){stopMoreWrrAudio();return;}
   dcPausePodcastForWrr();
   if(dcMoreWrrAudio&&!dcMoreWrrAudio.paused){stopMoreWrrAudio();return;}
@@ -9783,9 +9852,14 @@ function renderPublicRosterNow(players){
   var activeBtn=document.querySelector('.gamecenter-roster-card [data-roster-position].active');
   showRosterGroup(activeBtn?activeBtn.getAttribute('data-roster-position'):'GOALTENDERS');
 }
+
+const DC_PUBLIC_ROSTER_CACHE_KEY='dc_public_roster_v1';
+function dcCachedPublicRoster(){try{var x=JSON.parse(localStorage.getItem(DC_PUBLIC_ROSTER_CACHE_KEY)||'null');return x&&Array.isArray(x.players)&&x.players.length?x:null;}catch(_){return null;}}
+function dcSavePublicRoster(data){try{if(data&&Array.isArray(data.players)&&data.players.length)localStorage.setItem(DC_PUBLIC_ROSTER_CACHE_KEY,JSON.stringify({saved_at:Date.now(),players:data.players,meta:data.meta||null}));}catch(_){}}
+
 async function syncPublicRoster(){
   try{
-    var data=await fetchRosterData();if(!data.players.length)return;window.dcRosterPlayers=data.players;
+    var data=await fetchRosterData();if(!data.players.length)return;window.dcRosterPlayers=data.players;dcSavePublicRoster(data);dcOfflineMarkSync('hq');
     document.querySelectorAll('.gamecenter-roster-card').forEach(function(card){
       var groups=card.querySelector('#rosterGroups'),source=card.querySelector('.roster-source');
       if(groups)groups.innerHTML=publicRosterMarkup(data.players,data.meta);
@@ -9793,7 +9867,20 @@ async function syncPublicRoster(){
     });
     var activeBtn=document.querySelector('.gamecenter-roster-card [data-roster-position].active');
     showRosterGroup(activeBtn?activeBtn.getAttribute('data-roster-position'):'GOALTENDERS');
-  }catch(e){console.warn('Using built-in roster fallback.',e);}
+  }catch(e){
+    console.warn('Public roster network refresh unavailable.',e);
+    var cached=dcCachedPublicRoster();
+    if(cached){
+      window.dcRosterPlayers=cached.players;
+      document.querySelectorAll('.gamecenter-roster-card').forEach(function(card){
+        var groups=card.querySelector('#rosterGroups'),source=card.querySelector('.roster-source');
+        if(groups)groups.innerHTML=publicRosterMarkup(cached.players,cached.meta);
+        if(source){var saved=dcOfflineStampLabel('hq');source.textContent='Saved roster'+(saved?' • '+saved:'')+'.';}
+      });
+      var activeBtn=document.querySelector('.gamecenter-roster-card [data-roster-position].active');
+      showRosterGroup(activeBtn?activeBtn.getAttribute('data-roster-position'):'GOALTENDERS');
+    }
+  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncPublicRoster);else syncPublicRoster();
 
@@ -10482,7 +10569,7 @@ async function refreshLatestEpisode(){
         link:x.link||'',audio:enc.link||enc.url||x.audio||''
       };
       populateLatestEpisode(latest);
-      try{localStorage.setItem('dc_latest_episode_v1',JSON.stringify(latest));}catch(cacheError){}
+      try{localStorage.setItem('dc_latest_episode_v1',JSON.stringify(latest));}catch(cacheError){} dcOfflineMarkSync('home');
     }
   }catch(e){
     try{
@@ -10511,7 +10598,11 @@ function renderHomeHeadline(index){
   setTimeout(function(){badge.textContent=item.category;badge.className='home-headline-badge '+newsBadgeClass(item.category);copy.textContent=item.headline;copy.className='home-headline-copy'+(item.link_url?' home-headline-link':'');copy.onclick=item.link_url?function(){window.open(item.link_url,'_blank','noopener');}:null;requestAnimationFrame(function(){copy.classList.remove('fade');});},330);
 }
 async function loadHomeNews(){
-  try{var r=await dcSupabase.from('home_news_items').select('id,category,headline,link_url,created_at').order('created_at',{ascending:false});if(r.error)throw r.error;dcHomeNewsItems=r.data||[];var box=document.getElementById('homeHeadlines');if(!box)return;if(!dcHomeNewsItems.length){box.classList.remove('show');return;}box.classList.add('show');renderHomeHeadline(0);if(dcHomeNewsTimer)clearInterval(dcHomeNewsTimer);if(dcHomeNewsItems.length>1)dcHomeNewsTimer=setInterval(function(){renderHomeHeadline(dcHomeNewsIndex+1);},7000);}catch(e){console.warn('Headlines unavailable',e);}
+  try{
+    var r=await dcSupabase.from('home_news_items').select('id,category,headline,link_url,created_at').order('created_at',{ascending:false});if(r.error)throw r.error;
+    dcHomeNewsItems=r.data||[];try{localStorage.setItem('dc_home_news_v1',JSON.stringify({saved_at:Date.now(),items:dcHomeNewsItems}));}catch(_){}dcOfflineMarkSync('home');
+  }catch(e){console.warn('Headlines unavailable',e);try{var cached=JSON.parse(localStorage.getItem('dc_home_news_v1')||'null');dcHomeNewsItems=cached&&Array.isArray(cached.items)?cached.items:[];}catch(_){dcHomeNewsItems=[];}}
+  var box=document.getElementById('homeHeadlines');if(!box)return;if(!dcHomeNewsItems.length){box.classList.remove('show');return;}box.classList.add('show');renderHomeHeadline(0);if(dcHomeNewsTimer)clearInterval(dcHomeNewsTimer);if(dcHomeNewsItems.length>1)dcHomeNewsTimer=setInterval(function(){renderHomeHeadline(dcHomeNewsIndex+1);},7000);
 }
 function updateNewsCount(){var el=document.getElementById('adminNewsHeadline'),count=document.getElementById('adminNewsCount'),n=(el&&el.value||'').length;if(!count)return;count.textContent=n+' / 100';count.className='admin-news-count'+(n>=100?' max':n>=90?' warn':'');}
 function setNewsCategory(category){var el=document.getElementById('adminNewsCategory');if(el)el.value=category;document.querySelectorAll('.admin-news-category-btn').forEach(function(btn){btn.classList.toggle('active',btn.dataset.category===category);});if(document.getElementById('adminNewsForm')?.classList.contains('show')){markAdminDirty('News draft');saveNewsDraft();}}
@@ -10566,9 +10657,7 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
 
 <script>
 (function(){
-  function updateConnectionState(){
-    document.body.classList.toggle('dc-offline',navigator.onLine===false);
-  }
+  function updateConnectionState(){dcUpdateOfflineUi();}
   window.addEventListener('online',updateConnectionState);
   window.addEventListener('offline',updateConnectionState);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateConnectionState);
@@ -11637,6 +11726,7 @@ function dcGameDayActions(g,effective,st){
 }
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
+  if(navigator.onLine===false){if(typeof toast==='function')toast('Live audio requires an internet connection.');return;}
   dcPausePodcastForWrr();
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
   if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);stopGameDayWrrAudio(false);var run=++dcGameDayWrrAudioRun;
