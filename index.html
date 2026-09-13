@@ -3852,6 +3852,22 @@ body.game-live #publicGameDayCard .gameday-period{
 #adminGameDayPanel .admin-ht-bridge .btn{width:100%;min-height:36px;padding:7px 10px;font-size:9px}
 #adminGameDayPanel .admin-ht-bridge .btn:disabled{opacity:.55;cursor:wait}
 #adminGameDayPanel .admin-ht-bridge-note{margin-top:5px;font-size:7.5px;line-height:1.35;color:#7f8b9c}
+
+/* v506: read-only live HockeyTech strip for hybrid Game Center operation. */
+#adminGameDayPanel .admin-ht-live-strip{margin:0 0 10px;padding:10px 11px;border:1px solid rgba(143,224,170,.27);border-radius:11px;background:linear-gradient(180deg,rgba(143,224,170,.055),rgba(14,21,31,.88))}
+#adminGameDayPanel .admin-ht-live-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+#adminGameDayPanel .admin-ht-live-title{display:flex;align-items:center;gap:6px;color:#8fe0aa;font-size:8px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+#adminGameDayPanel .admin-ht-live-dot{width:7px;height:7px;border-radius:999px;background:#566274;box-shadow:none;flex:0 0 auto}
+#adminGameDayPanel .admin-ht-live-strip.is-live .admin-ht-live-dot{background:#63d987;box-shadow:0 0 0 3px rgba(99,217,135,.10),0 0 10px rgba(99,217,135,.38)}
+#adminGameDayPanel .admin-ht-live-strip.is-final .admin-ht-live-dot{background:#a98cff;box-shadow:0 0 0 3px rgba(169,140,255,.10)}
+#adminGameDayPanel .admin-ht-live-fresh{color:#7f8b9c;font-size:7.5px;font-weight:850;white-space:nowrap}
+#adminGameDayPanel .admin-ht-live-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+#adminGameDayPanel .admin-ht-live-score{min-width:0;color:#f2f5f8;font-size:14px;font-weight:950;line-height:1.25}
+#adminGameDayPanel .admin-ht-live-score strong{color:#fff}
+#adminGameDayPanel .admin-ht-live-state{padding:5px 8px;border:1px solid rgba(255,255,255,.11);border-radius:8px;background:#101824;color:#cbd3df;font-size:8px;font-weight:950;letter-spacing:.05em;white-space:nowrap;text-transform:uppercase}
+#adminGameDayPanel .admin-ht-live-meta{margin-top:5px;color:#8d98a8;font-size:8.5px;line-height:1.35}
+#adminGameDayPanel .admin-ht-live-meta strong{color:#bac4d2}
+#adminGameDayPanel .admin-ht-live-empty{color:#8d98a8;font-size:9px;line-height:1.4}
 </style>
 
 
@@ -8208,7 +8224,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v505</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v506</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8224,6 +8240,10 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <div class="admin-section-panel active" id="adminGameDayPanel" role="tabpanel" aria-labelledby="adminTabGameDay">
 <input id="adminGameStatus" type="hidden" value="upcoming">
 <input id="adminPeriod" type="hidden" value="">
+<div class="admin-ht-live-strip" id="adminHtLiveStrip" aria-live="polite">
+  <div class="admin-ht-live-head"><div class="admin-ht-live-title"><span class="admin-ht-live-dot" aria-hidden="true"></span>LIVE HOCKEYTECH</div><div class="admin-ht-live-fresh" id="adminHtLiveFresh">Waiting…</div></div>
+  <div id="adminHtLiveBody" class="admin-ht-live-empty">Waiting for the current game feed.</div>
+</div>
 <section class="admin-gameday-step admin-gameday-step-1">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">1</span><div><b>PREGAME SETUP</b><small>Prepare the game before the Game Day card goes live.</small></div></div>
   <div class="admin-step-status-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button></div>
@@ -11826,6 +11846,36 @@ var dcGameDayWrrAudio=null,dcGameDayWrrAudioRun=0;
 
 function dcLiveGameKey(g){return g?String(g[0]||'')+'|'+String(g[1]||''):'';}
 function dcLiveStatsSnapshot(g){return g&&dcLiveStatsState.key===dcLiveGameKey(g)&&dcLiveStatsState.snapshot&&Date.now()-dcLiveStatsState.fetchedAt<300000?dcLiveStatsState.snapshot:null;}
+function dcAdminHtAgeText(ts){
+  if(!ts)return 'Waiting…';
+  var sec=Math.max(0,Math.floor((Date.now()-ts)/1000));
+  if(sec<5)return 'Updated now';
+  if(sec<60)return 'Updated '+sec+'s ago';
+  var min=Math.floor(sec/60);return 'Updated '+min+'m ago';
+}
+function dcRenderAdminHtLiveStrip(){
+  var strip=document.getElementById('adminHtLiveStrip'),body=document.getElementById('adminHtLiveBody'),fresh=document.getElementById('adminHtLiveFresh');
+  if(!strip||!body||!fresh)return;
+  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  strip.classList.remove('is-live','is-final');
+  if(!active||!active.g){fresh.textContent='No active game';body.className='admin-ht-live-empty';body.textContent='HockeyTech live data will appear here during the Game Day window.';return;}
+  var snap=dcLiveStatsState.key===dcLiveGameKey(active.g)?dcLiveStatsState.snapshot:null;
+  fresh.textContent=dcAdminHtAgeText(dcLiveStatsState.fetchedAt);
+  if(!snap){body.className='admin-ht-live-empty';body.textContent=dcLiveStatsState.busy?'Connecting to HockeyTech…':'Waiting for HockeyTech data for this game.';return;}
+  var sides=dcLiveSides(snap),game=snap.game||{};
+  if(!sides){body.className='admin-ht-live-empty';body.textContent='HockeyTech returned a game state, but Youngstown could not be identified.';return;}
+  var ys=Number(sides.yng.score),os=Number(sides.opp.score);
+  var yn=Number.isFinite(ys)?ys:'—',on=Number.isFinite(os)?os:'—';
+  var opp=String(sides.opp.code||dcTeamAbbr(active.g&&active.g[1])||'OPP').toUpperCase();
+  var period=dcFeedPeriod(snap),clock=String(game.clock||game.time_remaining||game.time||'').trim();
+  var status=game.final?'FINAL':(game.started?'LIVE':'UPCOMING');
+  if(game.final)strip.classList.add('is-final');else if(game.started)strip.classList.add('is-live');
+  var stateText=status;
+  if(period)stateText+=(status==='LIVE'||status==='FINAL'?' • ':' • ')+period;
+  if(clock&&status==='LIVE')stateText+=' • '+clock;
+  body.className='';
+  body.innerHTML='<div class="admin-ht-live-main"><div class="admin-ht-live-score"><strong>YNG '+escapeHtml(String(yn))+'</strong> — '+escapeHtml(String(on))+' '+escapeHtml(opp)+'</div><div class="admin-ht-live-state">'+escapeHtml(stateText)+'</div></div><div class="admin-ht-live-meta">Read-only feed • Game <strong>'+escapeHtml(String(dcLiveStatsState.gameId||'—'))+'</strong> • Your manual Game Center controls remain separate.</div>';
+}
 async function dcResolveLiveGameId(g){
   var key=autoBoxScoreKeyForGame(g),entry=key&&dcAutoBoxScoreCache[key];
   if(entry&&/^\d+$/.test(String(entry.game_id||'')))return String(entry.game_id);
@@ -11841,11 +11891,11 @@ async function dcResolveLiveGameId(g){
 }
 async function dcSyncLiveStats(force){
   var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
-  if(!active||!active.g)return;
+  if(!active||!active.g){dcRenderAdminHtLiveStrip();return;}
   var key=dcLiveGameKey(active.g);
-  if(dcLiveStatsState.busy)return;
+  if(dcLiveStatsState.busy){dcRenderAdminHtLiveStrip();return;}
   if(!force&&dcLiveStatsState.key===key&&Date.now()-dcLiveStatsState.fetchedAt<8000)return;
-  dcLiveStatsState.busy=true;
+  dcLiveStatsState.busy=true;dcRenderAdminHtLiveStrip();
   try{
     var gameId=dcLiveStatsState.key===key&&dcLiveStatsState.gameId?dcLiveStatsState.gameId:await dcResolveLiveGameId(active.g);
     if(!gameId){dcLiveStatsState.busy=false;return;}
@@ -11853,8 +11903,9 @@ async function dcSyncLiveStats(force){
     var body=await res.json().catch(function(){return {};});
     if(!res.ok||!body||body.ok!==true||!body.interpreted)throw new Error(body&&body.error||'Live stats unavailable');
     dcLiveStatsState={key:key,gameId:gameId,snapshot:body.interpreted,fetchedAt:Date.now(),busy:false,lastResolve:Date.now()};
+    dcRenderAdminHtLiveStrip();
     refreshPublicGameDay();
-  }catch(e){dcLiveStatsState.busy=false;console.warn('Live USHL stats temporarily unavailable.',e);}
+  }catch(e){dcLiveStatsState.busy=false;dcRenderAdminHtLiveStrip();console.warn('Live USHL stats temporarily unavailable.',e);}
 }
 
 function dcLiveSides(snapshot){
@@ -11976,8 +12027,9 @@ dcWrrGameDaySuppressed=function(){
   var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
 };
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcSyncLiveStats(true);},{once:true});else dcSyncLiveStats(true);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);}
 setInterval(function(){dcSyncLiveStats(false);},10000);
+setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 </script>
 </body>
 </html>
