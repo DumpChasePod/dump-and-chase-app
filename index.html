@@ -8224,7 +8224,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v506</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v507</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8243,6 +8243,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <div class="admin-ht-live-strip" id="adminHtLiveStrip" aria-live="polite">
   <div class="admin-ht-live-head"><div class="admin-ht-live-title"><span class="admin-ht-live-dot" aria-hidden="true"></span>LIVE HOCKEYTECH</div><div class="admin-ht-live-fresh" id="adminHtLiveFresh">Waiting…</div></div>
   <div id="adminHtLiveBody" class="admin-ht-live-empty">Waiting for the current game feed.</div>
+  <button class="btn secondary" id="adminPrivateLiveTestToggle" type="button" onclick="togglePrivateLiveTest()" style="width:100%;margin-top:8px">PRIVATE HOME TEST: OFF</button>
 </div>
 <section class="admin-gameday-step admin-gameday-step-1">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">1</span><div><b>PREGAME SETUP</b><small>Prepare the game before the Game Day card goes live.</small></div></div>
@@ -11841,6 +11842,32 @@ document.addEventListener('click',function(e){var c=e.target.closest&&e.target.c
 /* V464: production HockeyTech live stats + tested Game Day presentation.
    HockeyTech supplies score/period/PP/SOG/period scoring; operator clock and shootout remain authoritative. */
 const DC_USHL_LIVE_STATS_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-stats';
+/* v507: device-local private Home Game Day test. Never publishes test state. */
+const DC_PRIVATE_LIVE_TEST_KEY='dcPrivateLiveTestV1';
+const DC_PRIVATE_LIVE_TEST_GAME_ID='14004';
+function dcPrivateLiveTestEnabled(){try{return localStorage.getItem(DC_PRIVATE_LIVE_TEST_KEY)==='1';}catch(_){return false;}}
+function dcPrivateTestGame(){
+  if(typeof phantomsSchedule==='undefined'||!phantomsSchedule.length)return null;
+  var now=Date.now(),best=null,bestDiff=Infinity;
+  phantomsSchedule.forEach(function(g){var d=easternScheduleDateForGame(g);if(!d)return;var diff=Math.abs(d.getTime()-now);if(diff<bestDiff){bestDiff=diff;best=g;}});
+  return best;
+}
+function dcPrivateTestActive(){
+  if(!dcPrivateLiveTestEnabled())return null;
+  var g=dcPrivateTestGame();if(!g)return null;
+  return {g:g,d:easternScheduleDateForGame(g)||new Date(),privateTest:true};
+}
+function dcSyncPrivateLiveTestUi(){
+  var b=document.getElementById('adminPrivateLiveTestToggle');if(!b)return;
+  var on=dcPrivateLiveTestEnabled();b.textContent='PRIVATE HOME TEST: '+(on?'ON • GAME 14004':'OFF');b.classList.toggle('is-on',on);
+}
+async function togglePrivateLiveTest(){
+  if(!(await dcIsAdmin()))return;
+  try{localStorage.setItem(DC_PRIVATE_LIVE_TEST_KEY,dcPrivateLiveTestEnabled()?'0':'1');}catch(_){}
+  dcSyncPrivateLiveTestUi();dcLiveStatsState={key:'',gameId:'',snapshot:null,fetchedAt:0,busy:false,lastResolve:0};
+  await dcSyncLiveStats(true);refreshPublicGameDay();
+}
+
 var dcLiveStatsState={key:'',gameId:'',snapshot:null,fetchedAt:0,busy:false,lastResolve:0};
 var dcGameDayWrrAudio=null,dcGameDayWrrAudioRun=0;
 
@@ -11856,7 +11883,7 @@ function dcAdminHtAgeText(ts){
 function dcRenderAdminHtLiveStrip(){
   var strip=document.getElementById('adminHtLiveStrip'),body=document.getElementById('adminHtLiveBody'),fresh=document.getElementById('adminHtLiveFresh');
   if(!strip||!body||!fresh)return;
-  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  var active=null;try{active=dcPrivateTestActive()||gameDayAutomationWindow(new Date());}catch(_){}
   strip.classList.remove('is-live','is-final');
   if(!active||!active.g){fresh.textContent='No active game';body.className='admin-ht-live-empty';body.textContent='HockeyTech live data will appear here during the Game Day window.';return;}
   var snap=dcLiveStatsState.key===dcLiveGameKey(active.g)?dcLiveStatsState.snapshot:null;
@@ -11890,14 +11917,14 @@ async function dcResolveLiveGameId(g){
   return id;
 }
 async function dcSyncLiveStats(force){
-  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  var active=null;try{active=dcPrivateTestActive()||gameDayAutomationWindow(new Date());}catch(_){}
   if(!active||!active.g){dcRenderAdminHtLiveStrip();return;}
   var key=dcLiveGameKey(active.g);
   if(dcLiveStatsState.busy){dcRenderAdminHtLiveStrip();return;}
   if(!force&&dcLiveStatsState.key===key&&Date.now()-dcLiveStatsState.fetchedAt<8000)return;
   dcLiveStatsState.busy=true;dcRenderAdminHtLiveStrip();
   try{
-    var gameId=dcLiveStatsState.key===key&&dcLiveStatsState.gameId?dcLiveStatsState.gameId:await dcResolveLiveGameId(active.g);
+    var gameId=dcPrivateLiveTestEnabled()?DC_PRIVATE_LIVE_TEST_GAME_ID:(dcLiveStatsState.key===key&&dcLiveStatsState.gameId?dcLiveStatsState.gameId:await dcResolveLiveGameId(active.g));
     if(!gameId){dcLiveStatsState.busy=false;return;}
     var res=await fetch(DC_USHL_LIVE_STATS_ENDPOINT+'?game_id='+encodeURIComponent(gameId),{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});
     var body=await res.json().catch(function(){return {};});
@@ -12011,11 +12038,11 @@ function dcUpgradePregameActions(box,g,st){
 var dcV463RenderPublicGameDay=renderPublicGameDay;
 renderPublicGameDay=function(){
   dcV463RenderPublicGameDay();
-  var box=document.getElementById('publicGameDayCard');if(!box)return;var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}if(!active||!active.g)return;
+  var box=document.getElementById('publicGameDayCard');if(!box)return;var active=null;try{active=dcPrivateTestActive()||gameDayAutomationWindow(new Date());}catch(_){}if(!active||!active.g)return;
   if(dcPublicGoalFx)return;
   var st=getAdminGameState(),effective=dcEffectivePublicState(active.g,st);
   if(effective.status==='upcoming'){dcUpgradePregameActions(box,active.g,st);syncMoreWrrForGameDay();return;}
-  dcRenderProductionActiveGame(box,active.g,st,effective);syncMoreWrrForGameDay();syncGameDayHomePriority();
+  dcRenderProductionActiveGame(box,active.g,st,effective);if(active.privateTest)box.insertAdjacentHTML('afterbegin','<div style="display:table;margin:0 auto 7px;padding:4px 8px;border-radius:999px;background:#244d35;border:1px solid #63d987;color:#8fe0aa;font-size:8px;font-weight:950;letter-spacing:.08em">PRIVATE TEST • GAME 14004</div>');syncMoreWrrForGameDay();syncGameDayHomePriority();
 };
 
 /* More WRR returns five minutes after the operator-published final; feed-only Final stays safely suppressed until then. */
@@ -12027,7 +12054,7 @@ dcWrrGameDaySuppressed=function(){
   var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
 };
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcSyncPrivateLiveTestUi();dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);},{once:true});else{dcSyncPrivateLiveTestUi();dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);}
 setInterval(function(){dcSyncLiveStats(false);},10000);
 setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 </script>
