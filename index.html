@@ -3867,6 +3867,11 @@ body.game-live #publicGameDayCard .gameday-period{
 #adminGameDayPanel .admin-ht-live-state{padding:5px 8px;border:1px solid rgba(255,255,255,.11);border-radius:8px;background:#101824;color:#cbd3df;font-size:8px;font-weight:950;letter-spacing:.05em;white-space:nowrap;text-transform:uppercase}
 #adminGameDayPanel .admin-ht-live-meta{margin-top:5px;color:#8d98a8;font-size:8.5px;line-height:1.35}
 #adminGameDayPanel .admin-ht-live-meta strong{color:#bac4d2}
+#adminGameDayPanel .admin-ht-live-controls{display:flex;justify-content:flex-end;margin:7px 0 2px}
+#adminGameDayPanel .admin-ht-manual-toggle{min-height:32px;padding:6px 10px;border:1px solid rgba(255,255,255,.13);border-radius:9px;background:#111a27;color:#aeb8c6;font-size:8px;font-weight:950;letter-spacing:.055em;text-transform:uppercase}
+#adminGameDayPanel .admin-ht-manual-toggle.is-on{border-color:rgba(255,158,72,.58);background:rgba(255,139,48,.13);color:#ffb06c;box-shadow:0 0 0 1px rgba(255,139,48,.08) inset}
+#adminGameDayPanel .admin-ht-manual-toggle:disabled{opacity:.55;cursor:wait}
+#adminGameDayPanel .admin-ht-live-strip.manual-override{border-color:rgba(255,158,72,.36);background:linear-gradient(180deg,rgba(255,139,48,.05),rgba(14,21,31,.90))}
 #adminGameDayPanel .admin-ht-live-empty{color:#8d98a8;font-size:9px;line-height:1.4}
 </style>
 
@@ -8224,7 +8229,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v510</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v511</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8242,6 +8247,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <input id="adminPeriod" type="hidden" value="">
 <div class="admin-ht-live-strip" id="adminHtLiveStrip" aria-live="polite">
   <div class="admin-ht-live-head"><div class="admin-ht-live-title"><span class="admin-ht-live-dot" aria-hidden="true"></span>LIVE HOCKEYTECH</div><div class="admin-ht-live-fresh" id="adminHtLiveFresh">Waiting…</div></div>
+  <div class="admin-ht-live-controls"><button type="button" class="admin-ht-manual-toggle" id="adminHtManualOverride" aria-pressed="false" onclick="dcToggleManualOverride()">MANUAL OVERRIDE: OFF</button></div>
   <div id="adminHtLiveBody" class="admin-ht-live-empty">Waiting for the current game feed.</div>
   </div>
 <section class="admin-gameday-step admin-gameday-step-1">
@@ -10198,7 +10204,7 @@ function dcHtBridgeApply(snapshot,gameId,target){
   if(pEl)pEl.value=status==='upcoming'?'':mapped.period;
   if(cEl)cEl.value=status==='upcoming'?'':mapped.clock;
   if(rEl&&status==='final')rEl.value=dcHtBridgeFinalResult(snapshot,yngScore,oppScore);
-  if(rEl&&status!=='final')rEl.value='';
+  if(rEl&&status!=='final')rEl.value=dcManualOverrideActive(getAdminGameState())?'MANUAL':'';
   syncAdminClockDigits(status==='upcoming'?'20:00':(mapped.clock==='INT'?'0:00':mapped.clock||'20:00'));
   syncAdminQuickControls();
   updateAdminGameDayPreview();
@@ -11841,7 +11847,7 @@ document.addEventListener('click',function(e){var c=e.target.closest&&e.target.c
 /* V464: production HockeyTech live stats + tested Game Day presentation.
    HockeyTech supplies score/period/PP/SOG/period scoring; operator clock and shootout remain authoritative. */
 const DC_USHL_LIVE_STATS_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-stats';
-/* v510: private Home HockeyTech test removed after successful live validation. Production feed remains Youngstown-only. */
+/* v511: emergency manual score/period override added; HockeyTech continues polling in the background. */
 var dcLiveStatsState={key:'',gameId:'',snapshot:null,fetchedAt:0,busy:false,lastResolve:0,error:'',errorDetail:'',errorAt:0,httpStatus:0};
 var dcGameDayWrrAudio=null,dcGameDayWrrAudioRun=0;
 
@@ -11854,9 +11860,30 @@ function dcAdminHtAgeText(ts){
   if(sec<60)return 'Updated '+sec+'s ago';
   var min=Math.floor(sec/60);return 'Updated '+min+'m ago';
 }
+function dcManualOverrideActive(st){return String(st&&st.adminResult||'').toUpperCase()==='MANUAL';}
+function dcSyncManualOverrideControl(st){
+  var btn=document.getElementById('adminHtManualOverride');if(!btn)return;var on=dcManualOverrideActive(st||getAdminGameState());
+  btn.classList.toggle('is-on',on);btn.textContent='MANUAL OVERRIDE: '+(on?'ON':'OFF');btn.setAttribute('aria-pressed',on?'true':'false');
+  var strip=document.getElementById('adminHtLiveStrip');if(strip)strip.classList.toggle('manual-override',on);
+}
+async function dcToggleManualOverride(){
+  var btn=document.getElementById('adminHtManualOverride');if(btn)btn.disabled=true;
+  try{
+    var session=await dcGetSession();if(!session||!(await dcVerifyAdminSession(session)))throw new Error('Admin session expired. Sign in again.');
+    var remote=await fetchRemoteGameState(),turnOn=!dcManualOverrideActive(remote),period=String(remote.adminPeriod||'');
+    var payload={status:remote.adminGameStatus||'upcoming',phantoms_score:remote.adminPhantomsScore??0,opponent_score:remote.adminOpponentScore??0,period:period||null,clock:remote.adminClock||null,result:turnOn?'MANUAL':null,power_play:remote.adminPowerPlay||null,empty_net:remote.adminEmptyNet||null,stoppage_status:remote.adminStoppageStatus||null,four_on_four:!!remote.adminFourOnFour,team_timeout:remote.adminTeamTimeout||null,shootout_state:period.toUpperCase()==='SO'?dcNormalizeShootoutState(remote.adminShootoutState):null};
+    var res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
+    var out=await res.json();if(!res.ok)throw new Error(out.error||'Could not change manual override.');
+    var mapped=mapRemoteState(out.data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
+    var resultEl=document.getElementById('adminResult');if(resultEl)resultEl.value=mapped.adminResult||'';
+    dcSyncManualOverrideControl(mapped);syncAdminQuickControls();updateAdminGameDayPreview();refreshPublicGameDay();
+    if(typeof toast==='function')toast(turnOn?'Manual override ON — public score and period now use Game Center.':'Manual override OFF — HockeyTech score and period restored.');
+  }catch(e){if(typeof toast==='function')toast(e&&e.message?e.message:String(e));}
+  finally{if(btn)btn.disabled=false;}
+}
 function dcRenderAdminHtLiveStrip(){
   var strip=document.getElementById('adminHtLiveStrip'),body=document.getElementById('adminHtLiveBody'),fresh=document.getElementById('adminHtLiveFresh');
-  if(!strip||!body||!fresh)return;
+  if(!strip||!body||!fresh)return;dcSyncManualOverrideControl();
   var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
   strip.classList.remove('is-live','is-final');
   if(!active||!active.g){fresh.textContent='No active game';body.className='admin-ht-live-empty';body.textContent='HockeyTech live data will appear here during the Game Day window.';return;}
@@ -11882,7 +11909,8 @@ function dcRenderAdminHtLiveStrip(){
   var sides=dcLiveSides(snap);if(!sides){body.className='admin-ht-live-empty';body.textContent='HockeyTech returned a game state, but Youngstown could not be identified.';return;}
   var ys=Number(sides.yng.score),os=Number(sides.opp.score),yn=Number.isFinite(ys)?ys:'—',on=Number.isFinite(os)?os:'—';
   var opp=String(sides.opp.code||dcTeamAbbr(active.g&&active.g[1])||'OPP').toUpperCase();
-  body.innerHTML='<div class="admin-ht-live-main"><div class="admin-ht-live-score"><strong>YNG '+escapeHtml(String(yn))+'</strong> — '+escapeHtml(String(on))+' '+escapeHtml(opp)+'</div><div class="admin-ht-live-state">'+escapeHtml(stateText)+'</div></div><div class="admin-ht-live-meta">Read-only feed • Game <strong>'+escapeHtml(String(dcLiveStatsState.gameId||'—'))+'</strong> • Your manual Game Center controls remain separate.</div>';
+  var overrideNote=dcManualOverrideActive(getAdminGameState())?' • <strong>MANUAL OVERRIDE ACTIVE</strong> — public score + period use Game Center; HockeyTech keeps refreshing.':' • Your manual Game Center controls remain separate.';
+  body.innerHTML='<div class="admin-ht-live-main"><div class="admin-ht-live-score"><strong>YNG '+escapeHtml(String(yn))+'</strong> — '+escapeHtml(String(on))+' '+escapeHtml(opp)+'</div><div class="admin-ht-live-state">'+escapeHtml(stateText)+'</div></div><div class="admin-ht-live-meta">Read-only feed • Game <strong>'+escapeHtml(String(dcLiveStatsState.gameId||'—'))+'</strong>'+overrideNote+'</div>';
 }
 
 async function dcResolveLiveGameId(g){
@@ -11957,16 +11985,16 @@ function dcFinalLabel(st,period,snapshot){
   return 'FINAL';
 }
 function dcEffectivePublicState(g,st){
-  st=st||{};var snap=dcLiveStatsSnapshot(g),sides=dcLiveSides(snap),manualSO=String(st.adminPeriod||'').toUpperCase()==='SO';
+  st=st||{};var snap=dcLiveStatsSnapshot(g),sides=dcLiveSides(snap),manualSO=String(st.adminPeriod||'').toUpperCase()==='SO',manualOverride=dcManualOverrideActive(st);
   var status=String(st.adminGameStatus||'upcoming').toLowerCase();
   if(!manualSO&&snap&&snap.game){if(snap.game.final)status='final';else if(snap.game.started)status='live';}
   if(String(st.adminGameStatus||'').toLowerCase()==='final')status='final';
   var ph=st.adminPhantomsScore!==undefined&&st.adminPhantomsScore!==''?Number(st.adminPhantomsScore):null;
   var op=st.adminOpponentScore!==undefined&&st.adminOpponentScore!==''?Number(st.adminOpponentScore):null;
-  if(!manualSO&&sides&&(status==='live'||status==='final')){if(Number.isFinite(Number(sides.yng.score)))ph=Number(sides.yng.score);if(Number.isFinite(Number(sides.opp.score)))op=Number(sides.opp.score);}
+  if(!manualOverride&&!manualSO&&sides&&(status==='live'||status==='final')){if(Number.isFinite(Number(sides.yng.score)))ph=Number(sides.yng.score);if(Number.isFinite(Number(sides.opp.score)))op=Number(sides.opp.score);}
   var period=String(st.adminPeriod||'');
-  if(!manualSO&&snap&&snap.game&&String(st.adminClock||'')!=='INT'){var fp=dcFeedPeriod(snap);if(fp&&fp!=='SO')period=fp;}
-  return {status:status,period:period,phantoms:Number.isFinite(ph)?ph:'—',opponent:Number.isFinite(op)?op:'—',snapshot:snap,sides:sides,manualSO:manualSO};
+  if(!manualOverride&&!manualSO&&snap&&snap.game&&String(st.adminClock||'')!=='INT'){var fp=dcFeedPeriod(snap);if(fp&&fp!=='SO')period=fp;}
+  return {status:status,period:period,phantoms:Number.isFinite(ph)?ph:'—',opponent:Number.isFinite(op)?op:'—',snapshot:snap,sides:sides,manualSO:manualSO,manualOverride:manualOverride};
 }
 function dcTeamAbbr(name){
   var map={'Youngstown Phantoms':'YNG','Green Bay Gamblers':'GB','Chicago Steel':'CHI','Cedar Rapids RoughRiders':'CR','Des Moines Buccaneers':'DM','Dubuque Fighting Saints':'DBQ','Fargo Force':'FGO','Lincoln Stars':'LIN','Madison Capitols':'MAD','Muskegon Lumberjacks':'MUS','Omaha Lancers':'OMA','Sioux City Musketeers':'SC','Sioux Falls Stampede':'SF','Tri-City Storm':'TC','Waterloo Black Hawks':'WAT','USA Hockey NTDP':'USA'};
