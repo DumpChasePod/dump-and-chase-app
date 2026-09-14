@@ -4547,8 +4547,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   min-height:44px!important;
 }
 </style>
-<style id="v517-hq-fixes">
-/* v517: anchor-based box-score cards + tighter HQ schedule spacing. */
+<style id="v518-hq-fixes">
+/* v518: anchor-based box-score cards + tighter HQ schedule spacing; early Recent Results helper fix. */
 .gc-hq-panel[data-gc-hq-panel="schedule"] .gc-month-btn{font-size:10px!important;}
 .gc-hq-panel[data-gc-hq-panel="schedule"] .gc-module-head{padding-bottom:7px!important;}
 .gc-hq-panel[data-gc-hq-panel="schedule"] .gc-schedule-body{padding:2px 12px 9px!important;}
@@ -7076,6 +7076,36 @@ function resultClass(result){
 function resultLabel(result){
   return ({W:'W',L:'L',OTL:'OTL',SOL:'SOL'})[result]||result;
 }
+
+// v518: Recent Results helpers must exist before any early renderRecentResults() call.
+function dcBoxScoreKeyFromDateOpponent(dateValue,opponent){
+  var d=String(dateValue||'').trim();
+  var key='';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    var dt=new Date(d+'T12:00:00');
+    if(!isNaN(dt))key=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][dt.getMonth()]+' '+dt.getDate();
+  }else key=d.toUpperCase();
+  return key+'|'+String(opponent||'').trim().toLowerCase();
+}
+function dcScheduleRowForResult(g){
+  var target=dcBoxScoreKeyFromDateOpponent(g&&g.date,g&&g.opponent);
+  return dcScheduleRows.find(function(r){
+    return dcBoxScoreKeyFromDateOpponent(r.game_date,r.opponent)===target;
+  })||null;
+}
+function dcKnownBoxScoreUrl(dateValue,opponent){
+  var key=dcBoxScoreKeyFromDateOpponent(dateValue,opponent);
+  var known={
+    'SEP 5|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13988',
+    'SEP 6|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13991'
+  };
+  return known[key]||'';
+}
+function dcBoxScoreCardHtml(inner,url,label){
+  url=String(url||'').trim();
+  if(!url)return '<div class="gc-series-row v306-game-row v308-schedule-row">'+inner+'</div>';
+  return '<a class="gc-series-row v306-game-row v308-schedule-row dc-box-score-card" href="'+escapeHtml(url)+'" onclick="dcPrepareHqBoxScoreOpen()" aria-label="Open USHL box score for '+escapeHtml(label||'game')+'">'+inner+'</a>';
+}
 function renderRecentResults(){
   const boxes=['recentResultsList','homeRecentResultsList'].map(id=>document.getElementById(id)).filter(Boolean);
   if(!boxes.length)return;
@@ -7741,37 +7771,6 @@ function dcOpenHqBoxScore(url){
   }catch(_){window.location.href=url;}
   return false;
 }
-function dcBoxScoreKeyFromDateOpponent(dateValue,opponent){
-  var d=String(dateValue||'').trim();
-  var key='';
-  if(/^\d{4}-\d{2}-\d{2}$/.test(d)){
-    var dt=new Date(d+'T12:00:00');
-    if(!isNaN(dt))key=dcScheduleKeyFromRow({game_date:d});
-  }else key=d.toUpperCase();
-  return key+'|'+String(opponent||'').trim().toLowerCase();
-}
-function dcScheduleRowForResult(g){
-  var target=dcBoxScoreKeyFromDateOpponent(g&&g.date,g&&g.opponent);
-  return dcScheduleRows.find(function(r){
-    return dcBoxScoreKeyFromDateOpponent(r.game_date,r.opponent)===target;
-  })||null;
-}
-function dcKnownBoxScoreUrl(dateValue,opponent){
-  var key=dcBoxScoreKeyFromDateOpponent(dateValue,opponent);
-  var known={
-    'SEP 5|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13988',
-    'SEP 6|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13991'
-  };
-  return known[key]||'';
-}
-function dcBoxScoreCardHtml(inner,url,label){
-  url=String(url||'').trim();
-  if(!url)return '<div class="gc-series-row v306-game-row v308-schedule-row">'+inner+'</div>';
-  return '<a class="gc-series-row v306-game-row v308-schedule-row dc-box-score-card" href="'+escapeHtml(url)+'" onclick="dcPrepareHqBoxScoreOpen()" aria-label="Open USHL box score for '+escapeHtml(label||'game')+'">'+inner+'</a>';
-}
-function dcScheduleRowForResults(g){return dcScheduleRowForResult(g);}
-
-  
 function scheduleHTML(monthIndex){
     var rows=scheduleForMonth(monthIndex);
     if(!rows.length)return '<div class="card"><p>No games scheduled for this month.</p></div>';
@@ -8326,7 +8325,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v517</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v518</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
