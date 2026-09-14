@@ -4566,8 +4566,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .dc-box-score-card.dc-link-opening{background:rgba(117,72,170,.28)!important;border-color:rgba(168,116,230,.72)!important;transform:scale(.995)}
 </style>
 
-<style id="v523-admin-final-schedule">
-/* v523: finalized Admin Schedule games are reference-only with a simple FINAL state pill. */
+<style id="v524-admin-final-schedule">
+/* v524: finalized Admin Schedule games are reference-only with a simple FINAL state pill. */
 .admin-schedule-game-final{
   cursor:default;opacity:.78;background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075)
 }
@@ -4582,6 +4582,24 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 @media(max-width:420px){
   .admin-schedule-game-final{align-items:flex-start}
   .admin-schedule-game-final .admin-schedule-final-side{gap:4px}
+}
+</style>
+
+<style id="v524-admin-home-schedule">
+/* v524: subtle home-game emphasis in Admin Schedule. */
+.admin-schedule-game.admin-schedule-home{
+  background:linear-gradient(100deg,rgba(255,145,45,.10) 0%,rgba(255,145,45,.045) 44%,rgba(255,255,255,.022) 100%);
+  border-color:rgba(255,145,45,.20);
+}
+.admin-schedule-game.admin-schedule-home.active{
+  background:linear-gradient(100deg,rgba(255,145,45,.12) 0%,rgba(139,92,246,.11) 100%);
+  border-color:var(--purple);
+}
+.admin-schedule-home-word{
+  display:inline!important;color:#b792ff!important;font-weight:900!important;letter-spacing:.045em;
+}
+.admin-schedule-game-final.admin-schedule-home{
+  background:linear-gradient(100deg,rgba(255,145,45,.075) 0%,rgba(255,145,45,.028) 50%,rgba(255,255,255,.016) 100%);
 }
 </style>
 </head>
@@ -8389,7 +8407,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v523</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v524</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9436,10 +9454,13 @@ function renderAdminScheduleList(){
   var box=document.getElementById('adminScheduleList');if(!box)return;
   var rows=dcScheduleRows.filter(function(r){return adminScheduleMonthForRow(r)===adminScheduleMonth;});
   box.innerHTML=rows.map(function(r){
+    var isHome=String(r.home_away||'').toUpperCase()==='HOME';
+    var cardClass='admin-schedule-game'+(isHome?' admin-schedule-home':'');
+    var roleHtml=isHome?'<span class="admin-schedule-home-word">HOME</span>':escapeHtml(r.home_away||'');
     if(adminScheduleIsFinal(r)){
-      return '<div class="admin-schedule-game admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD'))+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">FINAL</span></div></div>';
+      return '<div class="'+cardClass+' admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+roleHtml+' · '+escapeHtml(r.time_label||'TBD')+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">FINAL</span></div></div>';
     }
-    return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
+    return '<button type="button" class="'+cardClass+'" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+roleHtml+' · '+escapeHtml((r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
   }).join('');
   document.querySelectorAll('[data-admin-schedule-month]').forEach(function(b){b.classList.toggle('active',b.dataset.adminScheduleMonth===adminScheduleMonth);});
 }
