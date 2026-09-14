@@ -4560,8 +4560,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .dc-box-score-card:focus-visible{outline:2px solid #a56cff;outline-offset:2px;}
 </style>
 
-<style id="v519-box-score-flow">
-/* v519: brief pressed-state feedback before completed-game box score navigation. */
+<style id="v520-box-score-flow">
+/* v520: brief pressed-state feedback before completed-game box score navigation. */
 .dc-box-score-card{transition:background-color .14s ease,border-color .14s ease,transform .14s ease}
 .dc-box-score-card.dc-link-opening{background:rgba(117,72,170,.28)!important;border-color:rgba(168,116,230,.72)!important;transform:scale(.995)}
 </style>
@@ -7114,8 +7114,13 @@ function dcDelayedBoxScoreOpen(event,url){
   var card=event&&event.currentTarget?event.currentTarget:null;
   if(card&&card.dataset.dcOpening==='1')return false;
   if(card){card.dataset.dcOpening='1';card.classList.add('dc-link-opening');}
-  dcPrepareHqBoxScoreOpen();
-  setTimeout(function(){window.location.href=url;},200);
+  try{
+    var hqNav=document.querySelector('.bottomnav .navitem[aria-label="Phantoms HQ"]');
+    if(hqNav)setActive(hqNav);
+  }catch(_){}
+  var destination=url;
+  try{destination=new URL(url,window.location.href).href;}catch(_){}
+  setTimeout(function(){window.location.assign(destination);},200);
   return false;
 }
 function dcBoxScoreCardHtml(inner,url,label,extraClass){
@@ -8352,7 +8357,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v519</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v520</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
