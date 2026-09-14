@@ -108,13 +108,9 @@ html.dc-app-view-open,body.dc-app-view-open{overflow:hidden!important;overscroll
 
 .hero .actions{display:flex;flex-direction:row;align-items:center;gap:8px;flex-wrap:nowrap}
 .hero .actions .btn{width:auto;flex:0 0 auto;padding:10px 13px;font-size:12px;white-space:nowrap}
-.hero .actions .hero-archive-link{background:transparent;border:0;box-shadow:none;color:#a98aff;padding:9px 4px;text-decoration:underline;text-decoration-color:rgba(169,138,255,.45);text-underline-offset:3px;font-weight:850}
-.hero .actions .hero-archive-link:hover{background:transparent;color:#c6adff;border:0}
-.hero .actions .hero-archive-link:active{transform:none;background:transparent}
 @media(max-width:430px){
   .hero .actions{gap:6px}
   .hero .actions .btn{padding:9px 10px;font-size:10px}
-  .hero .actions .hero-archive-link{padding:9px 2px;font-size:10px}
 }
 
 .phan-qa-card{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -5779,7 +5775,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
     <div class="meta" id="heroLatestEpisodeMeta"></div>
     <div class="actions" style="margin-top:18px">
       <button class="btn primary" id="heroLatestEpisodePlay">▶ LISTEN TO LATEST EPISODE</button>
-      <button class="btn hero-archive-link" onclick="openSheet('episodes')">VIEW ALL EPISODES</button>
+      <button class="btn secondary" onclick="openSheet('episodes')">VIEW ALL EPISODES</button>
     </div>
   </div>
 
@@ -8241,7 +8237,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v513</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v514</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
