@@ -4560,8 +4560,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .dc-box-score-card:focus-visible{outline:2px solid #a56cff;outline-offset:2px;}
 </style>
 
-<style id="v520-box-score-flow">
-/* v520: brief pressed-state feedback before completed-game box score navigation. */
+<style id="v521-box-score-flow">
+/* v521: clear completed-game pressed state before navigation and after page restore. */
 .dc-box-score-card{transition:background-color .14s ease,border-color .14s ease,transform .14s ease}
 .dc-box-score-card.dc-link-opening{background:rgba(117,72,170,.28)!important;border-color:rgba(168,116,230,.72)!important;transform:scale(.995)}
 </style>
@@ -7107,6 +7107,14 @@ function dcKnownBoxScoreUrl(dateValue,opponent){
   };
   return known[key]||'';
 }
+function dcClearBoxScoreOpening(card){
+  if(!card)return;
+  try{delete card.dataset.dcOpening;}catch(_){card.removeAttribute('data-dc-opening');}
+  card.classList.remove('dc-link-opening');
+}
+function dcClearAllBoxScoreOpening(){
+  document.querySelectorAll('.dc-box-score-card.dc-link-opening, .dc-box-score-card[data-dc-opening]').forEach(dcClearBoxScoreOpening);
+}
 function dcDelayedBoxScoreOpen(event,url){
   url=String(url||'').trim();
   if(!url)return true;
@@ -7120,9 +7128,14 @@ function dcDelayedBoxScoreOpen(event,url){
   }catch(_){}
   var destination=url;
   try{destination=new URL(url,window.location.href).href;}catch(_){}
-  setTimeout(function(){window.location.assign(destination);},200);
+  setTimeout(function(){dcClearBoxScoreOpening(card);},170);
+  setTimeout(function(){
+    dcClearBoxScoreOpening(card);
+    window.location.assign(destination);
+  },210);
   return false;
 }
+window.addEventListener('pageshow',function(){dcClearAllBoxScoreOpening();});
 function dcBoxScoreCardHtml(inner,url,label,extraClass){
   url=String(url||'').trim();
   var cls='gc-series-row v306-game-row v308-schedule-row'+(extraClass?' '+extraClass:'');
@@ -8357,7 +8370,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v520</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v521</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
