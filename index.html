@@ -4547,9 +4547,13 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   min-height:44px!important;
 }
 </style>
-<style id="v515-hq-fixes">
-/* v515: HQ navigation/schedule polish and tappable USHL box-score cards. */
+<style id="v516-hq-fixes">
+/* v516: reliable tappable box-score cards + tighter HQ schedule spacing. */
 .gc-hq-panel[data-gc-hq-panel="schedule"] .gc-month-btn{font-size:10px!important;}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .gc-schedule-body{padding:5px 12px 10px!important;}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .gc-month-buttons{margin:0 0 4px!important;}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .gc-inline-schedule{margin-top:0!important;}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .gc-inline-title{margin:6px 2px 5px!important;}
 .dc-box-score-card{color:inherit!important;text-decoration:none!important;cursor:pointer;-webkit-tap-highlight-color:rgba(165,108,255,.12);}
 .dc-box-score-card:active{transform:translateY(1px);border-color:rgba(165,108,255,.52)!important;background:rgba(139,77,255,.08)!important;}
 .dc-box-score-card:focus-visible{outline:2px solid #a56cff;outline-offset:2px;}
@@ -7081,17 +7085,16 @@ function renderRecentResults(){
         const dt=g.iso?new Date(g.iso):null;
         const wd=dt&&!isNaN(dt)?['SUN','MON','TUES','WED','THURS','FRI','SAT'][dt.getDay()]:'';
         const dateHtml=wd?'<small>'+escapeHtml(wd)+'</small><span>'+escapeHtml((parts[0]||'')+' '+(parts[1]||''))+'</span>':escapeHtml(g.date||'');
-        const scheduleMatch=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===String(g.date||'').trim().toUpperCase()&&String(r.opponent||'').trim()===String(g.opponent||'').trim();});
+        const scheduleMatch=dcScheduleRowForResult(g);
         const role=String((scheduleMatch&&scheduleMatch.home_away)||g.homeAway||'').toUpperCase();
         const eventLabel=String((scheduleMatch&&scheduleMatch.event_label)||'').trim();
         const tagHtml=eventLabel?'<span class="gc-series-event-pill '+(eventLabel.toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(eventLabel)+'</span>':'';
         const arena=(scheduleMatch&&scheduleMatch.arena)||g.arena||'';
         const city=(scheduleMatch&&scheduleMatch.location)||g.city||'';
         const venue=[arena,city].filter(Boolean).join(' — ');
-        const boxUrl=scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'';
+        const boxUrl=(scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'')||dcKnownBoxScoreUrl(g.date,g.opponent);
         const inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+'</div>'+escapeHtml(arena||city)+'</div><div class="gc-series-status">'+tagHtml+'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span class="schedule-final-score">'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span></span></div>';
-        if(boxUrl)return '<a class="gc-series-row v306-game-row v308-schedule-row dc-box-score-card" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcPrepareHqBoxScoreOpen()" aria-label="Open USHL box score for '+escapeHtml(g.opponent||'Opponent')+'">'+inner+'</a>';
-        return '<div class="gc-series-row v306-game-row v308-schedule-row">'+inner+'</div>';
+        return dcBoxScoreCardHtml(inner,boxUrl,g.opponent||'Opponent');
       }).join('')+'</div>';
   boxes.forEach(function(box){box.innerHTML=html;});
 }
@@ -7727,6 +7730,45 @@ function dcPrepareHqBoxScoreOpen(){
   return true;
 }
 
+function dcOpenHqBoxScore(url){
+  url=String(url||'').trim();
+  if(!url)return false;
+  dcPrepareHqBoxScoreOpen();
+  try{
+    var opened=window.open(url,'_blank','noopener');
+    if(!opened)window.location.href=url;
+  }catch(_){window.location.href=url;}
+  return false;
+}
+function dcBoxScoreKeyFromDateOpponent(dateValue,opponent){
+  var d=String(dateValue||'').trim();
+  var key='';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    var dt=new Date(d+'T12:00:00');
+    if(!isNaN(dt))key=dcScheduleKeyFromRow({game_date:d});
+  }else key=d.toUpperCase();
+  return key+'|'+String(opponent||'').trim().toLowerCase();
+}
+function dcScheduleRowForResult(g){
+  var target=dcBoxScoreKeyFromDateOpponent(g&&g.date,g&&g.opponent);
+  return dcScheduleRows.find(function(r){
+    return dcBoxScoreKeyFromDateOpponent(r.game_date,r.opponent)===target;
+  })||null;
+}
+function dcKnownBoxScoreUrl(dateValue,opponent){
+  var key=dcBoxScoreKeyFromDateOpponent(dateValue,opponent);
+  var known={
+    'SEP 5|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13988',
+    'SEP 6|muskegon lumberjacks':'https://ushl.com/ht/#/game-summary/13991'
+  };
+  return known[key]||'';
+}
+function dcBoxScoreCardHtml(inner,url,label){
+  url=String(url||'').trim();
+  if(!url)return '<div class="gc-series-row v306-game-row v308-schedule-row">'+inner+'</div>';
+  return '<div class="gc-series-row v306-game-row v308-schedule-row dc-box-score-card" role="link" tabindex="0" data-box-score-url="'+escapeHtml(url)+'" onclick="return dcOpenHqBoxScore(this.getAttribute(\'data-box-score-url\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();dcOpenHqBoxScore(this.getAttribute(\'data-box-score-url\'));}" aria-label="Open USHL box score for '+escapeHtml(label||'game')+'">'+inner+'</div>';
+}
+
   
 function scheduleHTML(monthIndex){
     var rows=scheduleForMonth(monthIndex);
@@ -7756,10 +7798,9 @@ function scheduleHTML(monthIndex){
       }else{
         statusHtml='<span class="gc-series-upcoming">'+escapeHtml((db&&db.time_label)||g[3]||'UPCOMING')+'</span>';
       }
-      var boxUrl=db&&db.box_score_url?String(db.box_score_url).trim():'';
+      var boxUrl=(db&&db.box_score_url?String(db.box_score_url).trim():'')||dcKnownBoxScoreUrl((db&&db.game_date)||g[0],g[1]);
       var inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b></div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+tagHtml+statusHtml+'</div>';
-      if(boxUrl)return '<a class="gc-series-row v306-game-row v308-schedule-row dc-box-score-card" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcPrepareHqBoxScoreOpen()" aria-label="Open USHL box score for '+escapeHtml(g[1])+'">'+inner+'</a>';
-      return '<div class="gc-series-row v306-game-row v308-schedule-row">'+inner+'</div>';
+      return dcBoxScoreCardHtml(inner,boxUrl,g[1]);
     }).join('')+'</div>';
   }
 
@@ -8283,7 +8324,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v515</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v516</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
