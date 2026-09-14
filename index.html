@@ -4565,6 +4565,30 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .dc-box-score-card{transition:background-color .14s ease,border-color .14s ease,transform .14s ease}
 .dc-box-score-card.dc-link-opening{background:rgba(117,72,170,.28)!important;border-color:rgba(168,116,230,.72)!important;transform:scale(.995)}
 </style>
+
+<style id="v522-admin-final-schedule">
+/* v522: finalized Admin Schedule games are reference-only, with score-first completed styling. */
+.admin-schedule-game-final{
+  cursor:default;opacity:.78;background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075)
+}
+.admin-schedule-game-final .admin-schedule-final-main{min-width:0;flex:1}
+.admin-schedule-game-final .admin-schedule-final-side{
+  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px;flex:0 0 auto
+}
+.admin-schedule-game-final .admin-schedule-final-pill{
+  display:inline-flex;align-items:center;justify-content:center;margin:0;padding:4px 7px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#c7d0dc;
+  font-size:8px;font-weight:950;letter-spacing:.08em;line-height:1
+}
+.admin-schedule-game-final .admin-schedule-final-score{
+  display:block;color:#f0f3f7;font-size:11px;font-weight:900;line-height:1.15;white-space:nowrap
+}
+@media(max-width:420px){
+  .admin-schedule-game-final{align-items:flex-start}
+  .admin-schedule-game-final .admin-schedule-final-side{gap:4px}
+  .admin-schedule-game-final .admin-schedule-final-score{font-size:10px}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -8370,7 +8394,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v521</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v522</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9407,10 +9431,21 @@ function defaultAdminScheduleMonth(){
   var upcoming=dcScheduleRows.find(function(r){return String(r.game_date||'')>=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());});
   return upcoming?adminScheduleMonthForRow(upcoming):(dcScheduleRows[0]?adminScheduleMonthForRow(dcScheduleRows[0]):'SEP');
 }
+function adminScheduleIsFinal(r){
+  return ['FINAL','FINAL-OT','FINAL-SO'].includes(String(r&&r.status||'').toUpperCase());
+}
+function adminScheduleFinalLabel(r){
+  var status=String(r&&r.status||'FINAL').toUpperCase();
+  return status==='FINAL-OT'?'FINAL OT':status==='FINAL-SO'?'FINAL SO':'FINAL';
+}
 function renderAdminScheduleList(){
   var box=document.getElementById('adminScheduleList');if(!box)return;
   var rows=dcScheduleRows.filter(function(r){return adminScheduleMonthForRow(r)===adminScheduleMonth;});
   box.innerHTML=rows.map(function(r){
+    if(adminScheduleIsFinal(r)){
+      var ph=r.phantoms_score==null?'—':r.phantoms_score,op=r.opponent_score==null?'—':r.opponent_score;
+      return '<div class="admin-schedule-game admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD'))+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">'+escapeHtml(adminScheduleFinalLabel(r))+'</span><strong class="admin-schedule-final-score">YNG '+escapeHtml(String(ph))+'–'+escapeHtml(String(op))+' '+escapeHtml(String(r.opponent||''))+'</strong></div></div>';
+    }
     return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
   }).join('');
   document.querySelectorAll('[data-admin-schedule-month]').forEach(function(b){b.classList.toggle('active',b.dataset.adminScheduleMonth===adminScheduleMonth);});
@@ -9462,6 +9497,7 @@ async function editNextScheduleGame(){
 function editScheduleGame(id,restoring){
   if(!restoring&&!confirmDiscardAdminChanges())return;
   var r=dcScheduleRows.find(function(x){return Number(x.id)===Number(id);});if(!r)return;
+  if(adminScheduleIsFinal(r)&&!restoring)return;
   rememberAdminSelection('schedule',r.id);
   document.getElementById('adminScheduleId').value=r.id;
   document.getElementById('adminScheduleDate').value=r.game_date||'';
@@ -9514,7 +9550,9 @@ async function saveScheduleGame(){
   var r=await dcSupabase.from('phantoms_schedule').update(update).eq('id',id).select().single();
   if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
   clearAdminDirty();
-  await loadAdminSchedule();editScheduleGame(id,true);
+  await loadAdminSchedule();
+  var savedRow=dcScheduleRows.find(function(x){return Number(x.id)===Number(id);});
+  if(savedRow&&!adminScheduleIsFinal(savedRow))editScheduleGame(id,true);
   var monthEl=document.getElementById('gcMonthSelect');if(monthEl&&typeof window.selectGCMonth==='function')window.selectGCMonth(Number(monthEl.value));
   clearAdminDirty();setAdminFeedback(st,'saved','Schedule updated • '+adminTimeStamp());
 }
