@@ -4566,8 +4566,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .dc-box-score-card.dc-link-opening{background:rgba(117,72,170,.28)!important;border-color:rgba(168,116,230,.72)!important;transform:scale(.995)}
 </style>
 
-<style id="v522-admin-final-schedule">
-/* v522: finalized Admin Schedule games are reference-only, with score-first completed styling. */
+<style id="v523-admin-final-schedule">
+/* v523: finalized Admin Schedule games are reference-only with a simple FINAL state pill. */
 .admin-schedule-game-final{
   cursor:default;opacity:.78;background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075)
 }
@@ -4576,17 +4576,12 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px;flex:0 0 auto
 }
 .admin-schedule-game-final .admin-schedule-final-pill{
-  display:inline-flex;align-items:center;justify-content:center;margin:0;padding:4px 7px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#c7d0dc;
-  font-size:8px;font-weight:950;letter-spacing:.08em;line-height:1
-}
-.admin-schedule-game-final .admin-schedule-final-score{
-  display:block;color:#f0f3f7;font-size:11px;font-weight:900;line-height:1.15;white-space:nowrap
+  display:inline-flex;align-items:center;justify-content:center;padding:4px 9px;border-radius:999px;
+  background:rgba(34,197,94,.18);border:1px solid rgba(74,222,128,.55);color:#86efac;font-size:10px;font-weight:900;letter-spacing:.08em;
 }
 @media(max-width:420px){
   .admin-schedule-game-final{align-items:flex-start}
   .admin-schedule-game-final .admin-schedule-final-side{gap:4px}
-  .admin-schedule-game-final .admin-schedule-final-score{font-size:10px}
 }
 </style>
 </head>
@@ -8394,7 +8389,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v522</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v523</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9435,16 +9430,14 @@ function adminScheduleIsFinal(r){
   return ['FINAL','FINAL-OT','FINAL-SO'].includes(String(r&&r.status||'').toUpperCase());
 }
 function adminScheduleFinalLabel(r){
-  var status=String(r&&r.status||'FINAL').toUpperCase();
-  return status==='FINAL-OT'?'FINAL OT':status==='FINAL-SO'?'FINAL SO':'FINAL';
+  return 'FINAL';
 }
 function renderAdminScheduleList(){
   var box=document.getElementById('adminScheduleList');if(!box)return;
   var rows=dcScheduleRows.filter(function(r){return adminScheduleMonthForRow(r)===adminScheduleMonth;});
   box.innerHTML=rows.map(function(r){
     if(adminScheduleIsFinal(r)){
-      var ph=r.phantoms_score==null?'—':r.phantoms_score,op=r.opponent_score==null?'—':r.opponent_score;
-      return '<div class="admin-schedule-game admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD'))+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">'+escapeHtml(adminScheduleFinalLabel(r))+'</span><strong class="admin-schedule-final-score">YNG '+escapeHtml(String(ph))+'–'+escapeHtml(String(op))+' '+escapeHtml(String(r.opponent||''))+'</strong></div></div>';
+      return '<div class="admin-schedule-game admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD'))+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">FINAL</span></div></div>';
     }
     return '<button type="button" class="admin-schedule-game" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+escapeHtml((r.home_away||'')+' · '+(r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
   }).join('');
