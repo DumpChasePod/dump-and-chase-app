@@ -8408,7 +8408,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v526</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v527</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12312,6 +12312,22 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(function(){dcSyncLiveStats(false);},5000);
 setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 </script>
+
+<style id="v527-hq-home-schedule-override">
+/* v527: ensure HQ Schedule home-game orange treatment wins over legacy !important card backgrounds. */
+.gc-hq-panel[data-gc-hq-panel="schedule"] .v306-game-list > .gc-series-row.hq-schedule-home{
+  background:linear-gradient(100deg,rgba(255,145,45,.34) 0%,rgba(255,145,45,.20) 38%,rgba(255,145,45,.08) 72%,rgba(24,33,46,.86) 100%)!important;
+  border-color:rgba(255,145,45,.46)!important;
+}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .v306-game-list > .gc-series-row.hq-schedule-home .gc-series-role-line b{
+  color:#b792ff!important;
+  font-weight:950!important;
+}
+.gc-hq-panel[data-gc-hq-panel="schedule"] .v306-game-list > .gc-series-row.hq-schedule-home.dc-link-opening{
+  background:rgba(117,72,170,.28)!important;
+  border-color:rgba(168,116,230,.72)!important;
+}
+</style>
 </body>
 </html>
 
