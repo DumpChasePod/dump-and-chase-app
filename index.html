@@ -4612,7 +4612,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .roster-staff-card{padding:10px 12px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:linear-gradient(145deg,rgba(28,37,51,.92),rgba(17,24,36,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
 .roster-staff-title{font-size:9px;line-height:1.2;font-weight:950;letter-spacing:.09em;color:#b88cff;text-transform:uppercase}
 .roster-staff-name{margin-top:4px;font-size:13px;line-height:1.25;font-weight:900;color:#eef2f7}
-.admin-roster-staff-row{grid-template-columns:1fr auto!important}
+.admin-roster-staff-row{grid-template-columns:auto 1fr auto!important}
+.admin-roster-staff-order{min-width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#ffffff0b;border:1px solid #ffffff14;color:#9aa7b7;font-size:11px;font-weight:950;font-variant-numeric:tabular-nums}
 .admin-roster-staff-row .admin-roster-meta{color:#b88cff;text-transform:uppercase;letter-spacing:.05em;font-weight:900}
 .admin-roster-staff-form{display:none;margin-top:12px;padding:12px;border:1px solid #ffffff18;border-radius:12px;background:#111925}
 .admin-roster-staff-form.show{display:block}
@@ -8425,7 +8426,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v529</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v531</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8579,6 +8580,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <div class="admin-roster-staff-form" id="adminRosterStaffForm">
           <input type="hidden" id="rosterStaffEditId">
           <div class="admin-roster-grid">
+            <div class="admin-field"><label for="rosterStaffOrder">Order</label><input id="rosterStaffOrder" inputmode="numeric" pattern="[0-9]*" min="1" placeholder="1"></div>
             <div class="admin-field wide"><label for="rosterStaffTitle">Title</label><input id="rosterStaffTitle" placeholder="Head Coach"></div>
             <div class="admin-field wide"><label for="rosterStaffName">Name</label><input id="rosterStaffName"></div>
           </div>
@@ -8587,8 +8589,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
           <div class="admin-roster-remove-row" id="adminRosterStaffRemoveRow" hidden><button class="admin-mini-btn delete" type="button" onclick="deleteRosterStaff()">REMOVE STAFF</button></div>
         </div>
         <div class="admin-roster-maintenance">
-          <div class="admin-field"><label for="adminRosterLabel">Roster Label</label><input id="adminRosterLabel" placeholder="Youngstown Phantoms Roster"></div>
-          <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="saveRosterLabel()">SAVE LABEL</button><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
+          <div class="admin-roster-maintenance-actions"><button class="btn secondary" type="button" onclick="verifyRosterToday()">VERIFIED TODAY</button></div>
           <div class="admin-muted" id="adminRosterVerified"></div>
         </div>
       </div>
@@ -10095,7 +10096,7 @@ function rosterBirthdateForDisplay(value){
 async function fetchRosterData(){
   var results=await Promise.all([
     dcSupabase.from('roster_players').select('id,position_group,number,name,position,shoots_catches,hometown,birthdate,height_weight,height_feet,height_inches,weight_lbs,youth_team,college_commitment,captain_role,pronunciation_guide,sort_order').order('position_group').order('sort_order').order('number'),
-    dcSupabase.from('roster_meta').select('roster_label,checked_date').eq('id','current').maybeSingle(),
+    dcSupabase.from('roster_meta').select('checked_date').eq('id','current').maybeSingle(),
     dcSupabase.from('roster_staff').select('id,title,name,sort_order').order('sort_order').order('title').order('name')
   ]);
   if(results[0].error)throw results[0].error;
@@ -10110,7 +10111,7 @@ function renderAdminRosterList(){
   if(staffEditor&&list.contains(staffEditor)&&list.parentNode)list.insertAdjacentElement('afterend',staffEditor);
   if(adminRosterGroup==='STAFF'){
     list.innerHTML=adminRosterStaff.map(function(p){
-      return '<div class="admin-roster-row admin-roster-staff-row" data-staff-id="'+p.id+'"><div><div class="admin-roster-meta">'+escapeHtml(p.title||'')+'</div><div class="admin-roster-name">'+escapeHtml(p.name||'')+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterStaffEditor('+p.id+')">EDIT</button></div>';
+      return '<div class="admin-roster-row admin-roster-staff-row" data-staff-id="'+p.id+'"><div class="admin-roster-staff-order">'+escapeHtml(p.sort_order||'')+'</div><div><div class="admin-roster-meta">'+escapeHtml(p.title||'')+'</div><div class="admin-roster-name">'+escapeHtml(p.name||'')+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterStaffEditor('+p.id+')">EDIT</button></div>';
     }).join('');
   }else{
     var players=adminRosterPlayers.filter(function(p){return String(p.position_group||rosterGroupForPosition(p.position||'')).toUpperCase()===adminRosterGroup;});
@@ -10123,7 +10124,7 @@ function renderAdminRosterList(){
 }
 function setAdminRosterGroup(group){
   if(!confirmDiscardAdminChanges())return;
-  adminRosterGroup=group;rememberAdminSelection('roster','');
+  adminRosterGroup=group;rememberAdminSelection('roster',group==='STAFF'?'__STAFF__':'');
   var f=document.getElementById('adminRosterForm'),sf=document.getElementById('adminRosterStaffForm');
   if(f)f.classList.remove('show','inline-add');
   if(sf)sf.classList.remove('show');
@@ -10137,12 +10138,11 @@ async function loadAdminRoster(){
   if(st)st.textContent='Loading roster…';
   try{
     var data=await fetchRosterData();adminRosterPlayers=data.players;adminRosterStaff=data.staff||[];
-    var labelInput=document.getElementById('adminRosterLabel'),verified=document.getElementById('adminRosterVerified');
-    if(labelInput)labelInput.value=(data.meta&&data.meta.roster_label)||'';
+    var verified=document.getElementById('adminRosterVerified');
     if(verified)verified.textContent=data.meta&&data.meta.checked_date?'Last verified '+formatRosterCheckedDate(data.meta.checked_date):'';
     if(st)st.textContent=adminRosterPlayers.length+' players • '+adminRosterStaff.length+' staff';
-    var remembered=recalledAdminSelection('roster'),rememberedPlayer=remembered?adminRosterPlayers.find(function(x){return String(x.id)===String(remembered);}):null;
-    adminRosterGroup=rememberedPlayer?String(rememberedPlayer.position_group||rosterGroupForPosition(rememberedPlayer.position||'F')).toUpperCase():'FORWARDS';
+    var remembered=recalledAdminSelection('roster'),rememberedPlayer=remembered&&remembered!=='__STAFF__'?adminRosterPlayers.find(function(x){return String(x.id)===String(remembered);}):null;
+    adminRosterGroup=remembered==='__STAFF__'?'STAFF':(rememberedPlayer?String(rememberedPlayer.position_group||rosterGroupForPosition(rememberedPlayer.position||'F')).toUpperCase():'FORWARDS');
     renderAdminRosterList();
     if(rememberedPlayer)setTimeout(function(){openRosterEditor(remembered,true);},40);
   }catch(e){if(st)st.textContent='Roster could not be loaded.';if(list)list.innerHTML='';}
@@ -10272,7 +10272,9 @@ function openRosterStaffEditor(id){
   var p=id?adminRosterStaff.find(function(x){return Number(x.id)===Number(id);}):null;
   var f=document.getElementById('adminRosterStaffForm'),list=document.getElementById('adminRosterList');
   document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
+  rememberAdminSelection('roster','__STAFF__');
   document.getElementById('rosterStaffEditId').value=p?p.id:'';
+  document.getElementById('rosterStaffOrder').value=p?(Number(p.sort_order)||1):(adminRosterStaff.length+1);
   document.getElementById('rosterStaffTitle').value=p?p.title:'';
   document.getElementById('rosterStaffName').value=p?p.name:'';
   if(p){
@@ -10292,37 +10294,50 @@ function closeRosterStaffEditor(force){
   if(remove)remove.hidden=true;
   if(f){f.classList.remove('show');if(list&&list.parentNode)list.insertAdjacentElement('afterend',f);}
 }
+async function normalizeRosterStaffOrder(ordered){
+  var updates=ordered.map(function(p,index){
+    var next=index+1;
+    if(Number(p.sort_order)===next)return Promise.resolve({error:null});
+    return dcSupabase.from('roster_staff').update({sort_order:next,updated_at:new Date().toISOString()}).eq('id',p.id);
+  });
+  var results=await Promise.all(updates);
+  var failed=results.find(function(r){return r&&r.error;});
+  if(failed)throw failed.error;
+}
 async function saveRosterStaff(){
   var session=await dcGetSession(),st=document.getElementById('adminRosterStaffStatus');
   if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired.';return;}
   var id=document.getElementById('rosterStaffEditId').value;
   var title=document.getElementById('rosterStaffTitle').value.trim(),name=document.getElementById('rosterStaffName').value.trim();
+  var requested=Number(document.getElementById('rosterStaffOrder').value);
+  var maxPosition=adminRosterStaff.length+(id?0:1);
   if(!title||!name){if(st)st.textContent='Title and name are required.';return;}
-  var nextOrder=adminRosterStaff.reduce(function(m,x){return Math.max(m,Number(x.sort_order)||0);},0)+1;
-  var payload={title:title,name:name,sort_order:id?(adminRosterStaff.find(function(x){return String(x.id)===String(id);})||{}).sort_order||nextOrder:nextOrder,updated_at:new Date().toISOString()};
+  if(!Number.isInteger(requested)||requested<1||requested>Math.max(1,maxPosition)){if(st)st.textContent='Order must be between 1 and '+Math.max(1,maxPosition)+'.';return;}
   setAdminFeedback(st,'saving','Saving…');
-  var q=id?dcSupabase.from('roster_staff').update(payload).eq('id',id).select('id,title,name,sort_order').single():dcSupabase.from('roster_staff').insert(payload).select('id,title,name,sort_order').single();
-  var r=await q;if(r.error){setAdminFeedback(st,'error','Could not save: '+r.error.message);return;}
-  clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
-  setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
+  try{
+    var payload={title:title,name:name,sort_order:requested,updated_at:new Date().toISOString()};
+    var q=id?dcSupabase.from('roster_staff').update(payload).eq('id',id).select('id,title,name,sort_order').single():dcSupabase.from('roster_staff').insert(payload).select('id,title,name,sort_order').single();
+    var r=await q;if(r.error)throw r.error;
+    var saved=r.data;
+    var ordered=adminRosterStaff.filter(function(x){return String(x.id)!==String(saved.id);}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+    ordered.splice(Math.min(requested-1,ordered.length),0,saved);
+    await normalizeRosterStaffOrder(ordered);
+    rememberAdminSelection('roster','__STAFF__');
+    clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
+    setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
+  }catch(err){setAdminFeedback(st,'error','Could not save: '+(err&&err.message?err.message:String(err)));}
 }
 async function deleteRosterStaff(){
   var id=document.getElementById('rosterStaffEditId').value,st=document.getElementById('adminRosterStaffStatus');if(!id)return;
   var p=adminRosterStaff.find(function(x){return String(x.id)===String(id);});
   if(!confirm('Remove '+(p?p.name:'this staff member')+' from Staff? This cannot be undone.'))return;
   var r=await dcSupabase.from('roster_staff').delete().eq('id',id);if(r.error){if(st)st.textContent='Could not remove staff: '+r.error.message;return;}
-  clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
-}
-async function saveRosterLabel(){
-  var input=document.getElementById('adminRosterLabel'),st=document.getElementById('adminRosterStatus');
-  var label=String(input&&input.value||'').trim();
-  if(!label){if(st)st.textContent='Enter a roster label first.';return;}
-  if(st)st.textContent='Saving roster label…';
-  var r=await dcSupabase.from('roster_meta').update({roster_label:label,updated_at:new Date().toISOString()}).eq('id','current');
-  if(r.error){if(st)st.textContent='Could not save roster label: '+r.error.message;return;}
-  if(st)st.textContent=adminRosterPlayers.length+' players • '+adminRosterStaff.length+' staff';
-  setAdminFeedback('adminRosterFeedback','saved','Roster label saved • '+adminTimeStamp());
-  await syncPublicRoster();
+  try{
+    var remaining=adminRosterStaff.filter(function(x){return String(x.id)!==String(id);}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+    await normalizeRosterStaffOrder(remaining);
+    rememberAdminSelection('roster','__STAFF__');
+    clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
+  }catch(err){if(st)st.textContent='Staff removed, but order could not be normalized: '+(err&&err.message?err.message:String(err));}
 }
 async function verifyRosterToday(){
   var st=document.getElementById('adminRosterStatus');
@@ -10761,7 +10776,6 @@ document.addEventListener('input',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
   if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
   if(e.target&&e.target.closest&&e.target.closest('#adminRecordPanel'))markAdminDirty('Record changes');
-  if(e.target&&e.target.id==='adminRosterLabel'){markAdminDirty('Roster label');setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');}
 });
 document.addEventListener('change',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel')){markGameDayDirty();updateAdminGameDayPreview();}
@@ -10769,7 +10783,6 @@ document.addEventListener('change',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminScheduleForm'))markAdminDirty('Schedule changes');
   if(e.target&&e.target.closest&&e.target.closest('#adminNewsForm')){markAdminDirty('News draft');saveNewsDraft();}
   if(e.target&&e.target.closest&&e.target.closest('#adminRecordPanel'))markAdminDirty('Record changes');
-  if(e.target&&e.target.id==='adminRosterLabel'){markAdminDirty('Roster label');setAdminFeedback('adminRosterFeedback','dirty','Unsaved roster label');}
 });
 </script>
 <script>
