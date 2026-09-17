@@ -3927,6 +3927,7 @@ body.game-live #publicGameDayCard .gameday-period{
 /* v496: Game Day actions — WRR full width; Box Score + Game Notes equal row. */
 #publicGameDayCard .dc-gd-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 #publicGameDayCard .dc-gd-secondary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#publicGameDayCard .dc-gd-secondary-actions.single{grid-template-columns:1fr}
 #publicGameDayCard .dc-gd-secondary-actions .btn,
 #publicGameDayCard .dc-gd-secondary-actions .box-score-btn,
 #publicGameDayCard .dc-gd-secondary-actions .dc-box-score-placeholder,
@@ -8426,7 +8427,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v531</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v532</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12358,8 +12359,9 @@ function dcGameDayActions(g,effective,st){
   var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(g,effective,st);
   if(!audioOk&&dcGameDayWrrAudio)stopGameDayWrrAudio(false);
   var box=url?'<a class="btn secondary box-score-btn gameday-box-score" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>':'<span class="dc-box-score-placeholder">BOX SCORE</span>';
-  var notes=(dcGameNotesCurrent&&dcGameNotesCurrent.url)?'<button type="button" class="btn secondary dc-gd-notes-btn" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>':'<span class="dc-gd-action-placeholder">GAME NOTES</span>';
-  var lower='<div class="dc-gd-secondary-actions">'+box+notes+'</div>';
+  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);
+  var notes=hasNotes?'<button type="button" class="btn secondary dc-gd-notes-btn" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>':'';
+  var lower='<div class="dc-gd-secondary-actions'+(hasNotes?'':' single')+'">'+box+notes+'</div>';
   if(!audioOk)return '<div class="dc-gd-actions">'+lower+'</div>';
   var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();
   var listen='<button type="button" class="btn secondary dc-wrr-live-btn dc-wrr-live-wide" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button>';
