@@ -8433,7 +8433,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v535</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v536</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12180,6 +12180,7 @@ document.addEventListener('click',function(e){var c=e.target.closest&&e.target.c
 </script>
 
 <script id="dc-v464-real-gameday-script">
+/* V536: Game Center HockeyTech binding follows the next scheduled game immediately after the 6 a.m. reset. */
 /* V534: intermission safety — HockeyTech 0:00 in 1st/2nd is treated as INT. */
 /* V533: HockeyTech-first Game Day presentation.
    HockeyTech supplies score, period, clock, PP, SOG and period scoring; manual Game Center remains the emergency fallback. */
@@ -12227,12 +12228,20 @@ async function dcToggleManualOverride(){
   }catch(e){if(typeof toast==='function')toast(e&&e.message?e.message:String(e));}
   finally{if(btn)btn.disabled=false;}
 }
+function dcGameCenterHockeyTechTarget(nowValue){
+  var now=nowValue instanceof Date?nowValue:new Date(nowValue||Date.now());
+  var active=null;try{active=gameDayAutomationWindow(now);}catch(_){}
+  if(active&&active.g)return {g:active.g,d:active.d,row:active.row||null,isActive:true,window:active};
+  var next=null;try{next=getNextGameForGameDay();}catch(_){}
+  if(next&&next.g)return {g:next.g,d:next.d,row:null,isActive:false,window:null};
+  return null;
+}
 function dcRenderAdminHtLiveStrip(){
   var strip=document.getElementById('adminHtLiveStrip'),body=document.getElementById('adminHtLiveBody'),fresh=document.getElementById('adminHtLiveFresh');
   if(!strip||!body||!fresh)return;dcSyncManualOverrideControl();
-  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  var active=dcGameCenterHockeyTechTarget(new Date());
   strip.classList.remove('is-live','is-final');
-  if(!active||!active.g){fresh.textContent='No active game';body.className='admin-ht-live-empty';body.textContent='HockeyTech live data will appear here during the Game Day window.';return;}
+  if(!active||!active.g){fresh.textContent='No upcoming game';body.className='admin-ht-live-empty';body.textContent='No upcoming Youngstown game is available for HockeyTech.';return;}
   var snap=dcLiveStatsState.key===dcLiveGameKey(active.g)?dcLiveStatsState.snapshot:null;
   fresh.textContent=dcAdminHtAgeText(dcLiveStatsState.fetchedAt);
   if(!snap){
@@ -12245,10 +12254,11 @@ function dcRenderAdminHtLiveStrip(){
       body.innerHTML='<div style="color:#ff9b9b;font-weight:900;margin-bottom:4px">HOCKEYTECH TEST FAILED</div><div>'+escapeHtml(statusPart+dcLiveStatsState.error)+'</div>'+(dcLiveStatsState.errorDetail?'<div style="margin-top:5px;color:#7f8b9c;font-size:8px;word-break:break-word">'+escapeHtml(dcLiveStatsState.errorDetail)+'</div>':'')+'<div style="margin-top:5px;color:#8d98a8;font-size:8px">Game <strong style="color:#bac4d2">'+escapeHtml(String(dcLiveStatsState.gameId||'—'))+'</strong></div>';
       return;
     }
-    body.textContent='Waiting for HockeyTech data for this game.';return;
+    body.textContent=active.isActive?'Waiting for HockeyTech data for this game.':'Next game selected. Waiting for HockeyTech matchup data.';return;
   }
   var game=snap.game||{},period=dcFeedPeriod(snap),clock=String(game.clock_display||game.clock||game.time_remaining||game.time||'').trim();
   var status=game.final?'FINAL':(game.started?'LIVE':'UPCOMING');
+  if(!active.isActive&&!game.started&&!game.final)status='NEXT GAME';
   if(game.final)strip.classList.add('is-final');else if(game.started)strip.classList.add('is-live');
   var stateText=status;if(period)stateText+=' • '+period;if(clock&&status==='LIVE')stateText+=' • '+clock;
   body.className='';
@@ -12275,11 +12285,15 @@ async function dcResolveLiveGameId(g){
   return id;
 }
 async function dcSyncLiveStats(force){
-  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
+  var active=dcGameCenterHockeyTechTarget(new Date());
   if(!active||!active.g){dcRenderAdminHtLiveStrip();return;}
   var key=dcLiveGameKey(active.g);
   if(dcLiveStatsState.busy){dcRenderAdminHtLiveStrip();return;}
-  if(!force&&dcLiveStatsState.key===key&&Date.now()-dcLiveStatsState.fetchedAt<4000)return;
+  var minAge=active.isActive?4000:60000;
+  if(!force&&dcLiveStatsState.key===key&&Date.now()-dcLiveStatsState.fetchedAt<minAge)return;
+  if(dcLiveStatsState.key&&dcLiveStatsState.key!==key){
+    dcLiveStatsState={key:key,gameId:'',snapshot:null,fetchedAt:0,busy:false,lastResolve:0,error:'',errorDetail:'',errorAt:0,httpStatus:0};
+  }else if(!dcLiveStatsState.key){dcLiveStatsState.key=key;}
   dcLiveStatsState.busy=true;dcRenderAdminHtLiveStrip();
   try{
     var gameId=dcLiveStatsState.key===key&&dcLiveStatsState.gameId?dcLiveStatsState.gameId:await dcResolveLiveGameId(active.g);
