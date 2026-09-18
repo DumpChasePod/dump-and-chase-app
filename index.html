@@ -8353,6 +8353,18 @@ function renderSelectedMonth(){
     dcFocusAppViewHeading();
     requestAnimationFrame(dcResetAppViewScroll);
     renderNextGame();
+    // v538: every HQ open refreshes the schedule from Supabase so newly-bound
+    // box-score URLs become tappable immediately in Schedule/Recent Results/Series.
+    Promise.resolve().then(function(){
+      return typeof loadSupabaseSchedule==='function'?loadSupabaseSchedule():null;
+    }).then(function(){
+      try{renderSelectedMonth();}catch(_){}
+      try{renderNextGame();}catch(_){}
+      try{renderRecentResults();}catch(_){}
+      try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
+    }).catch(function(e){
+      console.warn('HQ schedule refresh failed; keeping current cached schedule.',e);
+    });
     setTimeout(function(){
       showRosterGroup('FORWARDS');
       if(typeof syncPublicRoster==='function')syncPublicRoster();
@@ -8433,7 +8445,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v536</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v538</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10652,16 +10664,36 @@ async function persistAdminGameDayBoxScore(){
   var input=document.getElementById('adminGameDayBoxScore');if(!input)return false;
   var status=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
   if(status!=='live'&&status!=='final')return false;
-  var row=adminActiveScheduleRow(),url=String(input.value||'').trim();
+  var row=adminActiveScheduleRow(),g=null;
+  try{var active=typeof gameDayAutomationWindow==='function'?gameDayAutomationWindow(new Date()):null;if(active&&active.g)g=active.g;}catch(_){}
+  var url=String(input.value||'').trim();
   if(url&&!/^https?:\/\//i.test(url))throw new Error('Box Score URL must start with http:// or https://');
   if(!row){if(url)throw new Error('Could not match the box score link to the active Schedule game.');return false;}
+
+  // v537: when FINAL is published, bind the exact box-score link already being used
+  // by Game Day to the matching Schedule row. Only look it up again if Game Day
+  // somehow does not already have one.
+  if(status==='final'&&!url&&g){
+    url=String(boxScoreUrlForGame(g)||'').trim();
+    if(!url){try{url=String(await ensureAutoBoxScoreForGame(g)||'').trim();}catch(_){}}
+    if(url&&input)input.value=url;
+  }
   var current=String(row.box_score_url||'').trim();
+  if(!url){
+    // Never erase an existing Schedule box score merely because the Admin field is blank.
+    return false;
+  }
   if(current===url)return false;
-  var q=await dcSupabase.from('phantoms_schedule').update({box_score_url:url||null,updated_at:new Date().toISOString()}).eq('id',row.id).select().single();
+  var q=await dcSupabase.from('phantoms_schedule').update({box_score_url:url,updated_at:new Date().toISOString()}).eq('id',row.id).select().single();
   if(q.error)throw q.error;
-  row.box_score_url=url||null;
-  input.dataset.scheduleId=String(row.id||'');
+  var saved=q.data||{};Object.assign(row,saved);
+  var idx=dcScheduleRows.findIndex(function(r){return String(r.id)===String(row.id);});
+  if(idx>=0)Object.assign(dcScheduleRows[idx],saved);
+  input.dataset.scheduleId=String(row.id||'');input.value=url;
   syncAdminGameDayBoxScoreControl(false);
+  try{renderSelectedMonth();}catch(_){}
+  try{renderRecentResults();}catch(_){}
+  try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
   return true;
 }
 
@@ -12180,7 +12212,7 @@ document.addEventListener('click',function(e){var c=e.target.closest&&e.target.c
 </script>
 
 <script id="dc-v464-real-gameday-script">
-/* V536: Game Center HockeyTech binding follows the next scheduled game immediately after the 6 a.m. reset. */
+/* V537: Game Center HockeyTech binding follows the next scheduled game immediately after the 6 a.m. reset. */
 /* V534: intermission safety — HockeyTech 0:00 in 1st/2nd is treated as INT. */
 /* V533: HockeyTech-first Game Day presentation.
    HockeyTech supplies score, period, clock, PP, SOG and period scoring; manual Game Center remains the emergency fallback. */
