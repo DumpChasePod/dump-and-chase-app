@@ -8461,7 +8461,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v549</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v550</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9830,9 +9830,12 @@ function setRecordPill(id,record){
   el.hidden=false;el.textContent=formatRecordPill(record);
 }
 function renderMatchupRecords(){
-  setRecordPill('heroPhantomsRecord',dcPhantomsRecord);
+  var yngOfficial=typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord('Youngstown Phantoms'):null;
+  setRecordPill('heroPhantomsRecord',yngOfficial||dcPhantomsRecord);
+  /* v550: during Game Day, resolve the active matchup first. */
+  var opp=currentNextOpponent();
   var target=currentNextGameRecordTarget();
-  var opp=target&&target.opponent?target.opponent:currentNextOpponent();
+  if(!opp&&target&&target.opponent)opp=target.opponent;
   var direct=dcHomeOpponentRecordDirect&&String(dcHomeOpponentRecordDirect.opponent||'').trim()===String(opp||'').trim()?dcHomeOpponentRecordDirect:null;
   setRecordPill('heroOpponentRecord',direct||opponentRecordFor(opp));
 }
@@ -9962,6 +9965,10 @@ function formatPhantomsPct(record){
 }
 function renderPhantomsRecord(record){
   record=record||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+  /* v550: never let a late empty/zero calculation erase a real season record already loaded. */
+  var incomingTotal=['gp','w','l','otl','sol','pts'].reduce(function(sum,k){return sum+(Math.max(0,parseInt(record[k],10)||0));},0);
+  var currentTotal=['gp','w','l','otl','sol','pts'].reduce(function(sum,k){return sum+(Math.max(0,parseInt(dcPhantomsRecord&&dcPhantomsRecord[k],10)||0));},0);
+  if(incomingTotal===0&&currentTotal>0)record=dcPhantomsRecord;
   dcPhantomsRecord=record;
   renderMatchupRecords();
   var map={recordGp:'gp',recordW:'w',recordL:'l',recordOtl:'otl',recordSol:'sol',recordPts:'pts'};
@@ -9992,7 +9999,7 @@ async function loadPhantomsRecord(){
   try{
     var officialNow=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor('Youngstown Phantoms'):null;
     if(officialNow&&typeof gcRecordFromStanding==='function'){var officialRecord=gcRecordFromStanding(officialNow);renderPhantomsRecord(officialRecord);return officialRecord;}
-    /* v549: Game Day uses a dedicated authoritative standings snapshot so async record loaders cannot overwrite it. */
+    /* v550: Game Day uses a dedicated authoritative standings snapshot so async record loaders cannot overwrite it. */
     var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
     if(r.error)throw r.error;
     if(r.data){renderPhantomsRecord(r.data);return r.data;}
