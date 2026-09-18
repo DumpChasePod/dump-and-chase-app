@@ -8445,7 +8445,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v547</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v548</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9956,10 +9956,29 @@ function renderPhantomsRecord(record){
   var pct=document.getElementById('recordPct');
   if(pct)pct.textContent=formatPhantomsPct(record);
 }
+async function dcHydrateGameDayRecordsFromServer(){
+  try{
+    var r=await dcSupabase.from('ushl_standings_cache').select('response').eq('season_id','91').maybeSingle();
+    if(r.error||!r.data||!r.data.response)return false;
+    var rows=Array.isArray(r.data.response.rows)?r.data.response.rows:[];
+    if(!rows.length)return false;
+    dcUshlStandingsRows=rows;
+    saveCachedUshlStandings(rows);
+    var yng=gcOfficialStandingFor('Youngstown Phantoms');
+    if(yng)renderPhantomsRecord(gcRecordFromStanding(yng));
+    if(typeof renderPublicGameDay==='function')renderPublicGameDay();
+    return true;
+  }catch(e){console.warn('Game Day record hydration unavailable',e);return false;}
+}
+
 async function loadPhantomsRecord(){
   try{
     var officialNow=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor('Youngstown Phantoms'):null;
     if(officialNow&&typeof gcRecordFromStanding==='function'){var officialRecord=gcRecordFromStanding(officialNow);renderPhantomsRecord(officialRecord);return officialRecord;}
+    /* v548: During Game Day, never let an incomplete completed-results rebuild overwrite the saved season record. */
+    var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
+    if(r.error)throw r.error;
+    if(r.data){renderPhantomsRecord(r.data);return r.data;}
     if(!dcScheduleRows.length)await loadSupabaseSchedule();
     var results=null;
     try{results=await syncCompletedResults(true);}catch(_){}
@@ -9968,9 +9987,7 @@ async function loadPhantomsRecord(){
       renderPhantomsRecord(automatic);
       return automatic;
     }
-    var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
-    if(r.error)throw r.error;
-    var fallback=r.data||{gp:0,w:0,l:0,otl:0,sol:0,pts:0};
+    var fallback={gp:0,w:0,l:0,otl:0,sol:0,pts:0};
     renderPhantomsRecord(fallback);
     return fallback;
   }catch(e){
@@ -12615,7 +12632,7 @@ dcWrrGameDaySuppressed=function(){
   var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
 };
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();}
 setInterval(function(){dcSyncLiveStats(false);},5000);
 setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 </script>
