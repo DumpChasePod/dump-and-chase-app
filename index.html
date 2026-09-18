@@ -8427,7 +8427,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v533</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v534</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10498,7 +10498,10 @@ function dcHtBridgePeriod(snapshot){
   var progress=String(g.progress||'').toLowerCase();
   var label=String(g.period_label||'').toUpperCase();
   var n=Number(g.period||0);
-  if(/intermission/.test(progress)){
+  var rawClock=String(g.clock_display||g.clock||g.time_remaining||g.time||'').trim();
+  var zeroClock=/^(?:00:)?0{1,2}:00$/.test(rawClock);
+  var firstOrSecond=n===1||n===2||/1ST|FIRST|2ND|SECOND/.test(label);
+  if(/intermission/.test(progress)||(g.started&&!g.final&&firstOrSecond&&zeroClock)){
     if(n===1||/1ST|FIRST/.test(label))return {period:'1ST',clock:'INT'};
     if(n===2||/2ND|SECOND/.test(label))return {period:'2ND',clock:'INT'};
   }
@@ -12176,6 +12179,7 @@ document.addEventListener('click',function(e){var c=e.target.closest&&e.target.c
 </script>
 
 <script id="dc-v464-real-gameday-script">
+/* V534: intermission safety — HockeyTech 0:00 in 1st/2nd is treated as INT. */
 /* V533: HockeyTech-first Game Day presentation.
    HockeyTech supplies score, period, clock, PP, SOG and period scoring; manual Game Center remains the emergency fallback. */
 const DC_USHL_LIVE_STATS_ENDPOINT=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-stats';
@@ -12317,7 +12321,12 @@ function dcFeedPeriod(snapshot){
 }
 function dcFeedIsIntermission(snapshot){
   var g=snapshot&&snapshot.game||{},blob=[g.period_label,g.raw_status,g.progress].filter(Boolean).join(' ').toUpperCase();
-  return /INTERMISSION|END OF (?:THE )?(?:1ST|FIRST|2ND|SECOND)|END (?:1ST|FIRST|2ND|SECOND)/.test(blob);
+  if(/INTERMISSION|END OF (?:THE )?(?:1ST|FIRST|2ND|SECOND)|END (?:1ST|FIRST|2ND|SECOND)/.test(blob))return true;
+  var n=Number(g.period||0),label=String(g.period_label||'').toUpperCase();
+  var raw=String(g.clock_display||g.clock||g.time_remaining||g.time||'').trim();
+  var zeroClock=/^(?:00:)?0{1,2}:00$/.test(raw);
+  var firstOrSecond=n===1||n===2||/1ST|FIRST|2ND|SECOND/.test(label);
+  return !!(g.started&&!g.final&&firstOrSecond&&zeroClock);
 }
 function dcFeedClock(snapshot){
   var g=snapshot&&snapshot.game||{};
