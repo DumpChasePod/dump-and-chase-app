@@ -6420,6 +6420,12 @@ function updateAdminGameDayPreview(){
   var clock=String(document.getElementById('adminClock')?.value||'');
   var ph=Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0);
   var op=Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0);
+  var publishedState=null;try{publishedState=getAdminGameState();}catch(_){}
+  var manualAuthority=typeof dcManualOverrideActive==='function'&&dcManualOverrideActive(publishedState||{});
+  if(!manualAuthority&&typeof dcEffectivePublicState==='function'){
+    try{var activePreview=gameDayAutomationWindow(new Date());if(activePreview&&activePreview.g){var eff=dcEffectivePublicState(activePreview.g,publishedState||{});st=String(eff.status||st).toLowerCase();period=String(eff.period||period).toUpperCase();clock=String(eff.clock||clock);if(Number.isFinite(Number(eff.phantoms)))ph=Number(eff.phantoms);if(Number.isFinite(Number(eff.opponent)))op=Number(eff.opponent);}}catch(_){}
+  }
+  var previewLabel=document.getElementById('adminPreviewLabel');if(previewLabel)previewLabel.textContent='PUBLIC GAME DAY PREVIEW • '+(manualAuthority?'MANUAL':'HOCKEYTECH');
   var row=null;try{if(typeof adminActiveScheduleRow==='function')row=adminActiveScheduleRow();}catch(_){}
   var opponent=adminPreviewCityName(row&&row.opponent||'Opponent');
   var oppTimeoutBtn=document.getElementById('adminOpponentTimeoutButton');if(oppTimeoutBtn)oppTimeoutBtn.textContent=opponent.toUpperCase()+' TIMEOUT';
@@ -8427,7 +8433,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v534</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v535</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8444,19 +8450,13 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <input id="adminGameStatus" type="hidden" value="upcoming">
 <input id="adminPeriod" type="hidden" value="">
 <div class="admin-ht-live-strip" id="adminHtLiveStrip" aria-live="polite">
-  <div class="admin-ht-live-head"><div class="admin-ht-live-title"><span class="admin-ht-live-dot" aria-hidden="true"></span>LIVE HOCKEYTECH</div><div class="admin-ht-live-fresh" id="adminHtLiveFresh">Waiting…</div></div>
-  <div class="admin-ht-live-controls"><button type="button" class="admin-ht-manual-toggle" id="adminHtManualOverride" aria-pressed="false" onclick="dcToggleManualOverride()">MANUAL OVERRIDE: OFF</button></div>
+  <div class="admin-ht-live-head"><div class="admin-ht-live-title" id="adminHtLiveTitle"><span class="admin-ht-live-dot" aria-hidden="true"></span>PUBLIC SOURCE: HOCKEYTECH</div><div class="admin-ht-live-fresh" id="adminHtLiveFresh">Waiting…</div></div>
+  <div class="admin-ht-live-controls"><button type="button" class="admin-ht-manual-toggle" id="adminHtManualOverride" aria-pressed="false" onclick="dcToggleManualOverride()">EMERGENCY OVERRIDE: OFF</button></div>
   <div id="adminHtLiveBody" class="admin-ht-live-empty">Waiting for the current game feed.</div>
   </div>
 <section class="admin-gameday-step admin-gameday-step-1">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">1</span><div><b>PREGAME SETUP</b><small>Prepare the game before the Game Day card goes live.</small></div></div>
   <div class="admin-step-status-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button></div>
-  <div class="admin-ht-bridge" id="adminHtBridge">
-        <div class="admin-ht-bridge-head"><div class="admin-ht-bridge-title">HOCKEYTECH PREVIEW LOAD</div><div class="admin-ht-bridge-badge">NO AUTO-PUBLISH</div></div>
-        <div class="admin-ht-bridge-status" id="adminHtBridgeStatus">Ready to resolve the scheduled Youngstown game.</div>
-        <button class="btn secondary" id="adminHtBridgeButton" type="button" onclick="loadHockeyTechIntoGameCenter()">LOAD HOCKEYTECH DATA</button>
-        <div class="admin-ht-bridge-note">Loads the current HockeyTech state into this draft only. Review it, adjust manual controls if needed, then use Save &amp; Publish.</div>
-      </div>
   <div class="admin-field admin-box-score-controls" id="adminGameDayBoxScoreControls"><label for="adminGameDayBoxScore">Box Score</label><input id="adminGameDayBoxScore" type="url" inputmode="url" autocomplete="off" placeholder="Paste once the box score is available"><button class="admin-mini-btn admin-box-score-done" id="adminGameDayBoxScoreDone" type="button" onclick="doneAdminGameDayBoxScore()" hidden>DONE</button><button class="admin-mini-btn admin-box-score-edit" id="adminGameDayBoxScoreEdit" type="button" onclick="editAdminGameDayBoxScore()" hidden>BOX SCORE ✓ &nbsp; EDIT</button></div>
       <div class="admin-game-audio-card" id="adminGameAudioCard">
         <div class="admin-game-audio-head"><div class="admin-game-audio-title">WRR GAME AUDIO</div></div>
@@ -8472,7 +8472,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 </section>
 
 <section class="admin-gameday-step admin-gameday-step-3 admin-status-group admin-live-controls">
-  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">3</span><div><b>LIVE GAME</b><small>Run regulation, score and special game situations.</small></div></div>
+  <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">3</span><div><b>LIVE GAME</b><small>HockeyTech runs score, period and clock. You run game situations.</small></div></div>
+  <div class="admin-authority-note" id="adminAuthorityNote">AUTO MODE — score, period and clock follow HockeyTech. Turn on Emergency Override only if the feed fails.</div>
   <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button></div></div>
       <input id="adminStoppageStatus" type="hidden" value=""><input id="adminFourOnFour" type="hidden" value="false"><input id="adminTeamTimeout" type="hidden" value="">
       <input id="adminPowerPlay" type="hidden" value="">
@@ -8533,7 +8534,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 
 <div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div><div class="admin-publish-bar">
   <div class="admin-live-preview" id="adminGameDayPreview" aria-live="polite">
-    <div class="admin-live-preview-label">LIVE PREVIEW</div>
+    <div class="admin-live-preview-label" id="adminPreviewLabel">PUBLIC GAME DAY PREVIEW • HOCKEYTECH</div>
     <div class="admin-live-preview-teams"><span class="admin-live-preview-team" id="adminPreviewLeftTeam">Opponent</span><span class="admin-live-preview-team" id="adminPreviewRightTeam">Youngstown</span></div><div class="admin-live-preview-score"><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewLeftPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewLeftEN" hidden>EN</span></span><span class="admin-live-preview-num" id="adminPreviewLeftScore">0</span><span class="admin-live-preview-sep">–</span><span class="admin-live-preview-num" id="adminPreviewRightScore">0</span><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewRightPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewRightEN" hidden>EN</span></span></div>
     <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div><div class="admin-live-preview-four" id="adminPreviewFourOnFour" hidden>4 ON 4</div><div class="admin-live-preview-timeout" id="adminPreviewTeamTimeout" hidden></div><div class="admin-live-preview-stoppage" id="adminPreviewStoppage" hidden></div>
   </div>
@@ -12199,8 +12200,17 @@ function dcAdminHtAgeText(ts){
 function dcManualOverrideActive(st){return String(st&&st.adminResult||'').toUpperCase()==='MANUAL';}
 function dcSyncManualOverrideControl(st){
   var btn=document.getElementById('adminHtManualOverride');if(!btn)return;var on=dcManualOverrideActive(st||getAdminGameState());
-  btn.classList.toggle('is-on',on);btn.textContent='MANUAL OVERRIDE: '+(on?'ON':'OFF');btn.setAttribute('aria-pressed',on?'true':'false');
+  btn.classList.toggle('is-on',on);btn.textContent='EMERGENCY OVERRIDE: '+(on?'ON':'OFF');btn.setAttribute('aria-pressed',on?'true':'false');
   var strip=document.getElementById('adminHtLiveStrip');if(strip)strip.classList.toggle('manual-override',on);
+  var title=document.getElementById('adminHtLiveTitle');if(title)title.innerHTML='<span class="admin-ht-live-dot" aria-hidden="true"></span>PUBLIC SOURCE: '+(on?'MANUAL':'HOCKEYTECH');
+  dcSyncManualAuthorityUi(on);
+}
+function dcSyncManualAuthorityUi(forceOn){
+  var on=typeof forceOn==='boolean'?forceOn:dcManualOverrideActive(getAdminGameState());
+  var panel=document.getElementById('adminGameDayPanel');if(panel)panel.classList.toggle('manual-authority',on);
+  var note=document.getElementById('adminAuthorityNote');if(note)note.textContent=on?'EMERGENCY OVERRIDE ACTIVE — manual score, period and clock are controlling the public Game Day card.':'AUTO MODE — score, period and clock follow HockeyTech. Turn on Emergency Override only if the feed fails.';
+  var selectors=['.admin-score-stepper button','#adminPhantomsScore','#adminOpponentScore','.admin-clock-digits button','.admin-period-flow button','.admin-extra-time-flow [data-admin-period="OT"]'];
+  selectors.forEach(function(sel){document.querySelectorAll('#adminGameDayPanel '+sel).forEach(function(el){el.disabled=!on;});});
 }
 async function dcToggleManualOverride(){
   var btn=document.getElementById('adminHtManualOverride');if(btn)btn.disabled=true;
@@ -12213,7 +12223,7 @@ async function dcToggleManualOverride(){
     var mapped=mapRemoteState(out.data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
     var resultEl=document.getElementById('adminResult');if(resultEl)resultEl.value=mapped.adminResult||'';
     dcSyncManualOverrideControl(mapped);syncAdminQuickControls();updateAdminGameDayPreview();refreshPublicGameDay();
-    if(typeof toast==='function')toast(turnOn?'Manual override ON — public score, period and clock now use Game Center.':'Manual override OFF — HockeyTech score, period and clock restored.');
+    if(typeof toast==='function')toast(turnOn?'Emergency Override ON — manual score, period and clock now control Game Day.':'Emergency Override OFF — HockeyTech score, period and clock restored.');
   }catch(e){if(typeof toast==='function')toast(e&&e.message?e.message:String(e));}
   finally{if(btn)btn.disabled=false;}
 }
@@ -12245,7 +12255,7 @@ function dcRenderAdminHtLiveStrip(){
   var sides=dcLiveSides(snap);if(!sides){body.className='admin-ht-live-empty';body.textContent='HockeyTech returned a game state, but Youngstown could not be identified.';return;}
   var ys=Number(sides.yng.score),os=Number(sides.opp.score),yn=Number.isFinite(ys)?ys:'—',on=Number.isFinite(os)?os:'—';
   var opp=String(sides.opp.code||dcTeamAbbr(active.g&&active.g[1])||'OPP').toUpperCase();
-  var overrideNote=dcManualOverrideActive(getAdminGameState())?' • <strong>MANUAL OVERRIDE ACTIVE</strong> — public score + period + clock use Game Center; HockeyTech keeps refreshing.':' • Your manual Game Center controls remain separate.';
+  var overrideNote=dcManualOverrideActive(getAdminGameState())?' • <strong>EMERGENCY OVERRIDE ACTIVE</strong> — public score + period + clock use Game Center; HockeyTech keeps refreshing.':' • <strong>AUTO MODE</strong> — public score + period + clock follow this feed.';
   body.innerHTML='<div class="admin-ht-live-main"><div class="admin-ht-live-score"><strong>YNG '+escapeHtml(String(yn))+'</strong> — '+escapeHtml(String(on))+' '+escapeHtml(opp)+'</div><div class="admin-ht-live-state">'+escapeHtml(stateText)+'</div></div><div class="admin-ht-live-meta">Read-only feed • Game <strong>'+escapeHtml(String(dcLiveStatsState.gameId||'—'))+'</strong>'+overrideNote+'</div>';
 }
 
@@ -12291,12 +12301,13 @@ async function dcSyncLiveStats(force){
     var snapshot=body.interpreted;
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
     dcRenderAdminHtLiveStrip();
+    updateAdminGameDayPreview();
     refreshPublicGameDay();
   }catch(e){
     var keepLastGood=dcLiveStatsState.key===key&&dcLiveStatsState.snapshot&&Date.now()-dcLiveStatsState.fetchedAt<30000;
     dcLiveStatsState.key=key;dcLiveStatsState.busy=false;dcLiveStatsState.error=(e&&e.message)||'Live stats unavailable';dcLiveStatsState.errorDetail=(e&&e.dcDetail)||'';dcLiveStatsState.errorAt=Date.now();dcLiveStatsState.httpStatus=(e&&e.dcHttpStatus)||0;
     if(!keepLastGood){dcLiveStatsState.snapshot=null;dcLiveStatsState.fetchedAt=0;}
-    dcRenderAdminHtLiveStrip();if(keepLastGood)refreshPublicGameDay();console.warn('Live USHL stats temporarily unavailable.',e);
+    dcRenderAdminHtLiveStrip();updateAdminGameDayPreview();if(keepLastGood)refreshPublicGameDay();console.warn('Live USHL stats temporarily unavailable.',e);
   }
 }
 
@@ -12469,6 +12480,22 @@ setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
   background:rgba(117,72,170,.28)!important;
   border-color:rgba(168,116,230,.72)!important;
 }
+</style>
+
+<style id="v535-game-center-authority">
+/* V535: HockeyTech-first Game Center. Manual score/period/clock are emergency-only. */
+#adminGameDayPanel .admin-authority-note{margin:0 0 9px;padding:8px 10px;border:1px solid rgba(143,224,170,.24);border-radius:9px;background:rgba(143,224,170,.055);color:#a9dcbc;font-size:8px;font-weight:850;line-height:1.4;text-align:center}
+#adminGameDayPanel.manual-authority .admin-authority-note{border-color:rgba(255,158,72,.42);background:rgba(255,139,48,.08);color:#ffc18c}
+#adminGameDayPanel:not(.manual-authority) .admin-score-stepper button:disabled,
+#adminGameDayPanel:not(.manual-authority) #adminPhantomsScore:disabled,
+#adminGameDayPanel:not(.manual-authority) #adminOpponentScore:disabled,
+#adminGameDayPanel:not(.manual-authority) .admin-clock-digits button:disabled,
+#adminGameDayPanel:not(.manual-authority) .admin-period-flow button:disabled,
+#adminGameDayPanel:not(.manual-authority) .admin-extra-time-flow [data-admin-period="OT"]:disabled{opacity:.30;filter:saturate(.55);cursor:not-allowed}
+#adminGameDayPanel:not(.manual-authority) #adminPhantomsScore:disabled,
+#adminGameDayPanel:not(.manual-authority) #adminOpponentScore:disabled{color:#8a95a4;-webkit-text-fill-color:#8a95a4}
+#adminGameDayPanel:not(.manual-authority) .admin-clock-digits{opacity:.52}
+#adminGameDayPanel .admin-live-preview-label{white-space:normal;line-height:1.3}
 </style>
 </body>
 </html>
