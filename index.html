@@ -8050,6 +8050,7 @@ function renderSelectedMonth(){
 
 
   var dcUshlStandingsRows=[];
+  var dcGameDayOfficialRecords={};
   var dcUshlStandingsConference='EAST';
   var DC_USHL_STANDINGS_CACHE_KEY='dc_ushl_standings_v1';
 
@@ -8061,6 +8062,7 @@ function renderSelectedMonth(){
       var rows=Array.isArray(cached&&cached.rows)?cached.rows:[];
       if(!rows.length)return false;
       dcUshlStandingsRows=rows;
+      dcSetGameDayOfficialRecords(rows);
       applyOfficialMatchupRecords();
       renderGCStandings();
       return true;
@@ -8217,6 +8219,19 @@ function renderSelectedMonth(){
       return gcStandingTeamKey(row&&row.team||'')===target||gcStandingTeamKey(row&&row.team_code||'')===target;
     })||null;
   }
+  function gcGameDayOfficialRecord(team){
+    var key=gcStandingTeamKey(team);
+    return key&&dcGameDayOfficialRecords[key]?dcGameDayOfficialRecords[key]:null;
+  }
+  function dcSetGameDayOfficialRecords(rows){
+    var next={};
+    (Array.isArray(rows)?rows:[]).forEach(function(row){
+      var key=gcStandingTeamKey(row&&row.team||row&&row.team_code||'');
+      var rec=gcRecordFromStanding(row);
+      if(key&&rec)next[key]=rec;
+    });
+    if(Object.keys(next).length)dcGameDayOfficialRecords=next;
+  }
   function gcRecordFromStanding(row){
     if(!row)return null;
     return {
@@ -8265,6 +8280,7 @@ function renderSelectedMonth(){
       var data=await res.json();
       if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
       dcUshlStandingsRows=Array.isArray(data.rows)?data.rows:[];
+      dcSetGameDayOfficialRecords(dcUshlStandingsRows);
       if(!dcUshlStandingsRows.length)throw new Error('No standings rows returned.');
       saveCachedUshlStandings(dcUshlStandingsRows);
       dcOfflineMarkSync('hq');
@@ -8445,7 +8461,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v548</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v549</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9963,6 +9979,7 @@ async function dcHydrateGameDayRecordsFromServer(){
     var rows=Array.isArray(r.data.response.rows)?r.data.response.rows:[];
     if(!rows.length)return false;
     dcUshlStandingsRows=rows;
+    dcSetGameDayOfficialRecords(rows);
     saveCachedUshlStandings(rows);
     var yng=gcOfficialStandingFor('Youngstown Phantoms');
     if(yng)renderPhantomsRecord(gcRecordFromStanding(yng));
@@ -9975,7 +9992,7 @@ async function loadPhantomsRecord(){
   try{
     var officialNow=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor('Youngstown Phantoms'):null;
     if(officialNow&&typeof gcRecordFromStanding==='function'){var officialRecord=gcRecordFromStanding(officialNow);renderPhantomsRecord(officialRecord);return officialRecord;}
-    /* v548: During Game Day, never let an incomplete completed-results rebuild overwrite the saved season record. */
+    /* v549: Game Day uses a dedicated authoritative standings snapshot so async record loaders cannot overwrite it. */
     var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
     if(r.error)throw r.error;
     if(r.data){renderPhantomsRecord(r.data);return r.data;}
@@ -11016,8 +11033,9 @@ function latestCompletedResult(){
  return completedResults&&completedResults.length?completedResults[0]:null;
 }
 function gameDayTeam(team,label,homeAway){
+ var officialRecord=typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null;
  var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(team):null;
- var record=official&&typeof gcRecordFromStanding==='function'?gcRecordFromStanding(official):(String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team));
+ var record=officialRecord||(official&&typeof gcRecordFromStanding==='function'?gcRecordFromStanding(official):null)||(String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team));
  return '<div class="gameday-team">'+
    '<div class="gameday-logo-wrap">'+matchupLogo(team)+'</div>'+
    '<div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+
@@ -12589,7 +12607,7 @@ function dcProductionSpecialHtml(team,st,effective){
   if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
 }
 function dcProductionShootoutTeam(team,homeAway,attemptTeam,state,next){
-  var record=String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team);return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
+  var record=(typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null)||(String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team));return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
 }
 function dcRenderProductionActiveGame(box,g,st,effective){
   var phRole=featuredHomeAwayRole(g),isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME',opp=String(g[1]||'Opponent').toUpperCase();
