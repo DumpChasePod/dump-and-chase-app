@@ -8445,7 +8445,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v544</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v546</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9795,11 +9795,18 @@ function currentNextOpponent(){
   return '';
 }
 
+function dcRememberOpponentRecord(record){
+  if(!record||!record.opponent)return;
+  try{var all=JSON.parse(localStorage.getItem('dc_opponent_record_cache_v1')||'{}');all[String(record.opponent).trim()]=record;localStorage.setItem('dc_opponent_record_cache_v1',JSON.stringify(all));}catch(_){}
+}
 function opponentRecordFor(team){
+  var key=String(team||'').trim();
   var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(team):null;
-  if(official&&typeof gcRecordFromStanding==='function')return gcRecordFromStanding(official);
-  if(!dcOpponentRecord)return null;
-  return String(dcOpponentRecord.opponent||'').trim()===String(team||'').trim()?dcOpponentRecord:null;
+  if(official&&typeof gcRecordFromStanding==='function'){var off=gcRecordFromStanding(official);dcRememberOpponentRecord(Object.assign({opponent:key},off));return off;}
+  if(dcOpponentRecord&&String(dcOpponentRecord.opponent||'').trim()===key){dcRememberOpponentRecord(dcOpponentRecord);return dcOpponentRecord;}
+  if(dcHomeOpponentRecordDirect&&String(dcHomeOpponentRecordDirect.opponent||'').trim()===key){dcRememberOpponentRecord(dcHomeOpponentRecordDirect);return dcHomeOpponentRecordDirect;}
+  try{var all=JSON.parse(localStorage.getItem('dc_opponent_record_cache_v1')||'{}');if(all&&all[key])return all[key];}catch(_){}
+  return null;
 }
 function setRecordPill(id,record){
   var el=document.getElementById(id);if(!el)return;
@@ -9824,7 +9831,7 @@ async function loadHomeOpponentRecordDirect(){
     var data=await res.json();
     if(!res.ok||!data||data.ok===false||!data.record)throw new Error((data&&data.error)||('HTTP '+res.status));
     dcHomeOpponentRecordDirect=Object.assign({opponent:target.opponent},data.record);
-    dcOpponentRecord=Object.assign({},dcHomeOpponentRecordDirect);
+    dcOpponentRecord=Object.assign({},dcHomeOpponentRecordDirect);dcRememberOpponentRecord(dcOpponentRecord);
     /* Isolation path: paint the Home pill immediately, without standings/HQ/shared render state. */
     setRecordPill('heroOpponentRecord',dcHomeOpponentRecordDirect);
     return true;
@@ -9873,7 +9880,7 @@ async function loadOpponentRecord(){
       var matchupRes=await fetch(matchupUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
       var matchupData=await matchupRes.json();
       if(matchupRes.ok&&matchupData&&matchupData.ok!==false&&matchupData.record){
-        dcOpponentRecord=Object.assign({opponent:opp},matchupData.record);
+        dcOpponentRecord=Object.assign({opponent:opp},matchupData.record);dcRememberOpponentRecord(dcOpponentRecord);
         loadedFromGameFeed=true;
       }
     }catch(e){console.warn('USHL matchup record unavailable',e);}
@@ -9882,12 +9889,12 @@ async function loadOpponentRecord(){
   if(!loadedFromGameFeed){
     var official=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(opp):null;
     if(official){
-      dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));
+      dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(official));dcRememberOpponentRecord(dcOpponentRecord);
     }else{
       try{
         var r=await dcSupabase.from('next_opponent_record').select('opponent,w,l,otl,sol,pts').eq('id',1).maybeSingle();
         if(r.error)throw r.error;
-        dcOpponentRecord=r.data||null;
+        dcOpponentRecord=r.data||null;if(dcOpponentRecord)dcRememberOpponentRecord(dcOpponentRecord);
       }catch(e){console.warn('Opponent record unavailable',e);dcOpponentRecord=null;}
     }
   }
@@ -12405,6 +12412,19 @@ async function dcSyncLiveStats(force){
       var err=new Error(msg);err.dcHttpStatus=res.status||0;err.dcDetail=detail;throw err;
     }
     var snapshot=body.interpreted;
+    var priorSnapshot=dcLiveStatsState.key===key?dcLiveStatsState.snapshot:null;
+    if(priorSnapshot){
+      var priorSides=dcLiveSides(priorSnapshot),nextSides=dcLiveSides(snapshot);
+      if(priorSides&&nextSides){
+        var oldY=Number(priorSides.yng.score),oldO=Number(priorSides.opp.score),newY=Number(nextSides.yng.score),newO=Number(nextSides.opp.score);
+        var goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
+        if(goalTeam){
+          if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
+          dcPublicGoalFx={team:goalTeam,source:'regulation'};
+          dcPublicGoalFxTimer=setTimeout(function(){dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();},goalTeam==='phantoms'?5000:3000);
+        }
+      }
+    }
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
     dcRenderAdminHtLiveStrip();
     updateAdminGameDayPreview();
@@ -12530,7 +12550,19 @@ async function toggleGameDayWrrAudio(){
   dcPausePodcastForWrr();
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
   if(typeof stopMoreWrrAudio==='function')stopMoreWrrAudio(false);stopGameDayWrrAudio(false);var run=++dcGameDayWrrAudioRun;
-  try{var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM;a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun){dcSetWrrMediaSession(a);refreshPublicGameDay();}});a.addEventListener('error',function(){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not connect to Western Reserve Radio.');});dcGameDayWrrAudio=a;dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});await a.play();refreshPublicGameDay();}catch(e){if(run!==dcGameDayWrrAudioRun)return;dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start Western Reserve Radio.');}
+  dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});
+  async function connect(attempt){
+    if(run!==dcGameDayWrrAudioRun)return;
+    var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM+(attempt?'?dc='+Date.now():'');
+    var retrying=false;
+    async function retry(){if(retrying||run!==dcGameDayWrrAudioRun)return;retrying=true;try{a.pause();a.removeAttribute('src');a.load();}catch(_){}if(attempt<2){setTimeout(function(){connect(attempt+1);},650);}else{dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start the Western Reserve Radio stream.');}}
+    a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun){dcSetWrrMediaSession(a);refreshPublicGameDay();}});
+    a.addEventListener('stalled',function(){if(run===dcGameDayWrrAudioRun)retry();},{once:true});
+    a.addEventListener('error',function(){if(run===dcGameDayWrrAudioRun)retry();},{once:true});
+    dcGameDayWrrAudio=a;
+    try{await a.play();refreshPublicGameDay();}catch(_){retry();}
+  }
+  connect(0);
 }
 function dcProductionSpecialHtml(team,st,effective){
   if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
@@ -12614,6 +12646,13 @@ setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 #adminGameDayPanel:not(.manual-authority) #adminOpponentScore:disabled{color:#8a95a4;-webkit-text-fill-color:#8a95a4}
 #adminGameDayPanel:not(.manual-authority) .admin-clock-digits{opacity:.52}
 #adminGameDayPanel .admin-live-preview-label{white-space:normal;line-height:1.3}
+</style>
+<style id="v546-intermission-fixes">
+/* v546: compact PP indicator; both home/away share the same treatment. */
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot{height:22px;min-height:22px;margin:0 0 3px;display:flex;align-items:center;justify-content:center;gap:3px}
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-special{flex:0 0 auto!important;width:auto!important;max-width:100%;padding:3px 6px!important;border-radius:999px!important;font-size:6.5px!important;line-height:1!important}
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special){height:22px!important;min-height:22px!important;flex-direction:row!important;align-items:center!important;justify-content:center!important}
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special) .gameday-special{width:auto!important}
 </style>
 <style id="v540-live-chat">
 #publicGameDayCard .dc-gd-actions{display:grid;gap:8px;margin-top:10px}
