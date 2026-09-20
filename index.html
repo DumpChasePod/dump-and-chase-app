@@ -8738,7 +8738,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v595</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v596</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13067,6 +13067,110 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 }
 </style>
 
+
+<style id="liveChatAdminPolishV596">
+#adminLiveChatPanel .live-chat-admin-groups{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:10px 0 8px!important
+}
+#adminLiveChatPanel .live-chat-admin-groups .admin-mini-btn{
+  width:100%!important;
+  min-height:38px!important;
+  padding:8px 6px!important;
+  border-radius:10px!important;
+  font-size:10px!important
+}
+#adminLiveChatPanel .live-chat-admin-subtabs{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  padding:5px!important;
+  margin:0 0 12px!important
+}
+#adminLiveChatPanel .live-chat-admin-subtabs .admin-mini-btn{
+  width:100%!important;
+  min-height:32px!important;
+  padding:6px 8px!important;
+  border-radius:9px!important;
+  font-size:10px!important
+}
+#adminLiveChatPanel .live-chat-admin-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important
+}
+#adminLiveChatPanel .live-chat-admin-actions .btn{
+  width:100%!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:9px 8px!important;
+  font-size:10px!important
+}
+#adminLiveChatPanel .live-chat-admin-actions .btn:last-child{grid-column:auto!important}
+#adminLiveChatPanel .live-chat-admin-row-actions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-top:8px!important
+}
+#adminLiveChatPanel .live-chat-admin-row-actions .admin-mini-btn{
+  width:100%!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:7px 6px!important;
+  font-size:9px!important
+}
+#adminLiveChatPanel [data-lc-pane="hosts"] .live-chat-admin-row-actions{
+  grid-template-columns:1fr!important
+}
+#adminLiveChatPanel [data-lc-pane="settings"] .admin-actions{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:7px!important
+}
+#adminLiveChatPanel [data-lc-pane="settings"] .admin-actions .btn{
+  width:100%!important;
+  min-height:42px!important;
+  margin:0!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-controls{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-controls .btn{
+  width:100%!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:8px 7px!important;
+  font-size:9px!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-controls .btn:first-child{
+  grid-column:1/-1!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-speed{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5px!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-speed .admin-mini-btn{
+  width:100%!important;
+  min-height:32px!important;
+  margin:0!important;
+  padding:6px 4px!important;
+  font-size:9px!important
+}
+#adminLiveChatPanel [data-lc-pane="test"] .live-chat-test-card>.btn{
+  width:100%!important;
+  min-height:40px!important;
+  margin:0!important
+}
+@media(max-width:420px){
+  #adminLiveChatPanel .live-chat-admin-actions,
+  #adminLiveChatPanel .live-chat-admin-row-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important
+  }
+}
+</style>
 <div class="live-chat-overlay" id="liveChatOverlay" aria-hidden="true">
   <div class="live-chat-header"><h2>LIVE CHAT</h2><button type="button" class="live-chat-close" aria-label="Close Live Chat" onclick="closeLiveChat()">×</button></div>
   <div class="live-chat-body" id="liveChatBody">
