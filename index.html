@@ -6546,8 +6546,20 @@ function dcVisualMinimizePlayer(closeCompletely){
 window.addEventListener('popstate',function(){
   dcHistoryHandling=true;
   try{
+    var liveChatOverlay=document.getElementById('liveChatOverlay');
+    if(liveChatOverlay&&liveChatOverlay.classList.contains('show')){return;}
     var adminOverlay=document.getElementById('adminOverlay');
-    if(adminOverlay&&adminOverlay.classList.contains('show')){closeAdmin(true);return;}
+    if(adminOverlay&&adminOverlay.classList.contains('show')){
+      var lcPanel=document.getElementById('adminLiveChatPanel');
+      if(lcPanel&&!lcPanel.hidden){
+        var activeLcPane=document.querySelector('#adminLiveChatPanel [data-lc-pane]:not([hidden])');
+        if(activeLcPane&&activeLcPane.getAttribute('data-lc-pane')!=='current'){
+          try{selectLiveChatAdminGroup('chat');selectLiveChatAdminSubtab('current');history.pushState({dcAdmin:true},'',location.href);}catch(_){}
+          return;
+        }
+      }
+      closeAdmin(true);return;
+    }
     var screen=document.getElementById('playerScreen');
     if(screen&&screen.classList.contains('show')){
       var closeIt=dcPlayerBackAction==='close';
@@ -8726,7 +8738,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v593</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v594</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9008,7 +9020,6 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   </div>
   <div class="live-chat-admin-groups" role="tablist" aria-label="Live Chat administration groups">
 <button type="button" class="admin-mini-btn active" data-lc-group="chat" onclick="selectLiveChatAdminGroup('chat')">CHAT</button>
-<button type="button" class="admin-mini-btn" data-lc-group="moderation" onclick="selectLiveChatAdminGroup('moderation')">MODERATION</button>
 <button type="button" class="admin-mini-btn" data-lc-group="manage" onclick="selectLiveChatAdminGroup('manage')">MANAGE</button>
 <button type="button" class="admin-mini-btn" data-lc-group="tools" onclick="selectLiveChatAdminGroup('tools')">TOOLS</button>
 </div><div class="live-chat-admin-subtabs" id="liveChatAdminSubtabs" role="tablist" aria-label="Live Chat section"></div>
@@ -9022,11 +9033,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="admin-status admin-feedback" id="adminLiveChatCurrentFeedback"></div>
   </div>
   <div class="live-chat-admin-pane" data-lc-pane="participants" hidden><div id="adminLiveChatParticipants"></div></div>
-  <div class="live-chat-admin-pane" data-lc-pane="timeouts" hidden><div id="adminLiveChatTimeouts"></div></div>
-  <div class="live-chat-admin-pane" data-lc-pane="blocked" hidden><div id="adminLiveChatBlocked"></div></div>
   <div class="live-chat-admin-pane" data-lc-pane="hosts" hidden><div id="adminLiveChatHosts"></div></div>
   <div class="live-chat-admin-pane" data-lc-pane="recent" hidden><div class="live-chat-recent-intro"><strong>RECENT CHATS</strong><span>Read-only game chats from the previous 30 days.</span></div><div id="adminLiveChatRecent"></div></div>
-  <div class="live-chat-admin-pane" data-lc-pane="log" hidden><div id="adminLiveChatLog"></div></div>
   <div class="live-chat-admin-pane" data-lc-pane="settings" hidden><div class="live-chat-settings-intro"><strong>BLOCKED WORDS</strong><span>Add custom words or phrases you do not want displayed in Live Chat. Built-in filtering remains automatic.</span></div>
     <div class="live-chat-settings-card">
       <div class="admin-field"><label for="adminLiveChatBlockedWord">Blocked Word / Phrase</label><input id="adminLiveChatBlockedWord" placeholder="Add a custom blocked word or phrase"></div>
@@ -13279,8 +13287,8 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
   async function loadAdminLiveChatBlockedWords(){var wrap=document.getElementById('adminLiveChatBlockedWords');if(!wrap)return;var r=await dcSupabase.from('live_chat_blocked_words').select('*').order('term');wrap.innerHTML='<div class="live-chat-admin-list" style="margin-top:8px">'+(r.data||[]).map(function(w){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(w.term)+'</span><button type="button" class="admin-mini-btn" onclick="adminLiveChatRemoveBlockedWord('+w.id+')">REMOVE</button></div></div>';}).join('')+'</div>';}
   window.adminLiveChatAddBlockedWord=async function(){var el=document.getElementById('adminLiveChatBlockedWord');if(!el.value.trim())return;try{await api({action:'save_blocked_word',term:el.value.trim()},await dcGetSession());el.value='';loadAdminLiveChatBlockedWords();}catch(e){toast(e.message);}};
   window.adminLiveChatRemoveBlockedWord=async function(id){try{await api({action:'remove_blocked_word',id:id},await dcGetSession());loadAdminLiveChatBlockedWords();}catch(e){toast(e.message);}};
-  var liveChatAdminGroups={chat:[['current','CURRENT CHAT'],['participants','PARTICIPANTS']],moderation:[['timeouts','TIMED OUT'],['blocked','BLOCKED'],['log','MOD LOG']],manage:[['hosts','HOSTS'],['settings','SETTINGS']],tools:[['recent','RECENT CHATS'],['test','TEST CHAT']]};
-var liveChatAdminDefaults={chat:'current',moderation:'timeouts',manage:'hosts',tools:'test'};
+  var liveChatAdminGroups={chat:[['current','CURRENT CHAT'],['participants','PARTICIPANTS']],manage:[['hosts','HOSTS'],['settings','SETTINGS']],tools:[['recent','RECENT CHATS'],['test','TEST CHAT']]};
+var liveChatAdminDefaults={chat:'current',manage:'hosts',tools:'test'};
 var liveChatAdminActiveGroup='chat';
 function renderLiveChatAdminSubtabs(group,selected){var wrap=document.getElementById('liveChatAdminSubtabs');if(!wrap)return;wrap.innerHTML=(liveChatAdminGroups[group]||[]).map(function(x){return '<button type="button" class="admin-mini-btn'+(x[0]===selected?' active':'')+'" data-lc-admin="'+x[0]+'" onclick="selectLiveChatAdminSubtab(\''+x[0]+'\')">'+x[1]+'</button>';}).join('');}
 window.selectLiveChatAdminGroup=function(group){liveChatAdminActiveGroup=group;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===group);});var tab=liveChatAdminDefaults[group]||'current';renderLiveChatAdminSubtabs(group,tab);selectLiveChatAdminSubtab(tab);};
@@ -13313,7 +13321,7 @@ window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveC
       updateLiveChatTestUnread();
     }catch(e){toast(e.message);}
   };
-  window.liveChatTestResetConversation=function(){if(!confirm('Reset Test Chat for all connected devices?'))return;api({action:'test_reset_conversation'},dcGetSession()).then(function(){return loadLiveChatTestParticipants();}).then(function(){toast('Test conversation reset.');}).catch(function(e){toast(e.message);});};
+  window.liveChatTestResetConversation=function(){if(!confirm('Reset Test Chat for all connected devices?'))return;api({action:'test_reset_conversation'},dcGetSession()).then(async function(){await loadLiveChatTestParticipants();if(chatOpen&&chatTest){chatMessages=[];reactions={};await loadChatMessages();}toast('Test conversation reset.');}).catch(function(e){toast(e.message);});};
   window.liveChatTestResetAll=async function(){
     if(!confirm('Reset EVERYTHING in Test Chat for all connected devices?'))return;
     try{
@@ -13397,7 +13405,7 @@ window.liveChatTestSetSpeed=async function(speed){
     }catch(e){toast(e.message);}
   };
   window.liveChatTestToggleGame=async function(){try{await ensureTestSeed();var st=await testState();testOwner=true;await setTestState({simulate_game:!st.simulate_game,sim_status:!st.simulate_game?'pregame':'read_only'});}catch(e){toast(e.message);}};
-  window.liveChatTestToggleReadOnly=async function(){try{var cur=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key','TEST:LIVE_CHAT').maybeSingle();var mode=cur.data?.mode==='read_only'?'open':'read_only';var result=await api({action:'set_read_only',game_key:'TEST:LIVE_CHAT',mode:mode,reason:mode==='read_only'?'Live Chat is temporarily paused.':''},await dcGetSession());currentControl=result.control||null;if(chatOpen&&chatTest){currentReadOnly=mode==='read_only';renderBanner();renderComposer();liveChatCloseMenu();}await updateLiveChatTestReadOnlyButton();toast(mode==='read_only'?'Test Chat is now read-only.':'Test Chat is open again.');}catch(e){toast(e.message);}};
+  window.liveChatTestToggleReadOnly=async function(){try{var cur=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key','TEST:LIVE_CHAT').maybeSingle();var mode=cur.data?.mode==='read_only'?'open':'read_only',reason='';if(mode==='read_only'){var entered=prompt('Optional reason for pausing Live Chat:','');if(entered===null)return;reason=String(entered||'').trim();}var result=await api({action:'set_read_only',game_key:'TEST:LIVE_CHAT',mode:mode,reason:reason},await dcGetSession());currentControl=result.control||null;if(chatOpen&&chatTest){currentReadOnly=mode==='read_only';renderBanner();renderComposer();liveChatCloseMenu();}await updateLiveChatTestReadOnlyButton();toast(mode==='read_only'?'Test Chat is now read-only.':'Test Chat is open again.');}catch(e){toast(e.message);}};
   window.liveChatTestEvent=async function(ev){try{await ensureTestSeed();var st=await testState();var y=Number(st.sim_phantoms_score)||0,o=Number(st.sim_opponent_score)||0,patch={};if(ev==='goal_phantoms'){y++;patch={sim_phantoms_score:y,sim_status:'live',sim_period:st.sim_period||'1ST',sim_clock:st.sim_clock||'12:00'};}else if(ev==='goal_opponent'){o++;patch={sim_opponent_score:o,sim_status:'live',sim_period:st.sim_period||'1ST',sim_clock:st.sim_clock||'12:00'};}else if(ev==='period_start_2'){patch={sim_status:'live',sim_period:'2ND',sim_clock:'20:00'};}else if(ev==='intermission_2'){patch={sim_status:'intermission',sim_period:'2ND',sim_clock:'INT'};}else if(ev==='final'){patch={sim_status:'final',sim_period:'3RD',sim_clock:'0:00'};}else if(ev==='final_ot'){patch={sim_status:'final',sim_period:'OT',sim_clock:'0:00'};}else if(ev==='final_so'){patch={sim_status:'final',sim_period:'SO',sim_clock:'0:00'};}patch.sim_phantoms_score=y;patch.sim_opponent_score=o;await setTestState(patch);var key='TEST:LIVE_CHAT';var text=ev==='goal_phantoms'?'GOAL — PHANTOMS • YNG '+y+'–'+o+' OPP • '+(st.sim_clock||'12:00')+' '+(st.sim_period||'1ST'):ev==='goal_opponent'?'GOAL — OPPONENT • YNG '+y+'–'+o+' OPP • '+(st.sim_clock||'12:00')+' '+(st.sim_period||'1ST'):ev==='period_start_2'?'START OF 2ND PERIOD • YNG '+y+'–'+o+' OPP':ev==='intermission_2'?'2ND INTERMISSION • YNG '+y+'–'+o+' OPP':ev==='final_ot'?'FINAL-OT • YNG '+y+'–'+o+' OPP':ev==='final_so'?'FINAL-SO • YNG '+y+'–'+o+' OPP':'FINAL • YNG '+y+'–'+o+' OPP';await api({action:'system_event',game_key:key,system_event_id:key+'|manual|'+ev+'|'+Date.now(),system_event_type:ev.indexOf('goal')===0?(ev==='goal_phantoms'?'goal_phantoms':'goal_opponent'):ev,body:text},await dcGetSession());}catch(e){toast(e.message);}
     liveChatFollowNewMessage(v586Scroll,v586WasNearBottom);
 };
