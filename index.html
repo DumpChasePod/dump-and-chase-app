@@ -8726,7 +8726,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v592</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v593</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13006,7 +13006,7 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 .live-chat-banner.read-only{border-color:rgba(242,137,44,.30);background:rgba(242,137,44,.06);color:#f1c18f}
 .live-chat-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:10px 10px 8px}
 .live-chat-list{display:flex;flex-direction:column;gap:8px;max-width:900px;margin:0 auto;padding-bottom:18px}
-.live-chat-unread-divider{display:flex;align-items:center;gap:9px;margin:5px 2px 1px;color:#8cc8ff;font-size:9px;font-weight:950;letter-spacing:.09em;text-transform:uppercase}.live-chat-unread-divider::before,.live-chat-unread-divider::after{content:"";height:1px;flex:1;background:rgba(111,181,255,.34)}
+.live-chat-unread-divider{display:flex;align-items:center;gap:9px;margin:5px 2px 1px;color:#f2892c;font-size:9px;font-weight:950;letter-spacing:.09em;text-transform:uppercase;opacity:1;transition:opacity .38s ease}.live-chat-unread-divider::before,.live-chat-unread-divider::after{content:"";height:1px;flex:1;background:rgba(242,137,44,.58)}.live-chat-unread-divider.fade-out{opacity:0}
 .live-chat-message{position:relative;padding:7px 8px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid transparent}
 .live-chat-message.own{background:rgba(139,82,255,.075);border-color:rgba(139,82,255,.15)}
 .live-chat-message.host{border-left:2px solid rgba(139,82,255,.52);background:rgba(139,82,255,.045)}
@@ -13140,7 +13140,14 @@ function dcHumanMessages(){return (chatMessages||[]).filter(function(m){return !
 function dcUnreadMessages(){var last=dcLastReadMessageId();return dcHumanMessages().filter(function(m){return Number(m.id)>last;});}
 function dcUnreadCount(){return dcUnreadMessages().length;}
 var dcUnreadDividerId=0;
-function dcClearUnreadDivider(){dcUnreadDividerId=0;var d=document.getElementById('liveChatUnreadDivider');if(d)d.remove();}
+var dcUnreadFadeTimer=0;
+function dcClearUnreadDivider(immediate){
+  if(dcUnreadFadeTimer){clearTimeout(dcUnreadFadeTimer);dcUnreadFadeTimer=0;}
+  var d=document.getElementById('liveChatUnreadDivider');
+  if(!d||immediate){dcUnreadDividerId=0;if(d)d.remove();return;}
+  d.classList.add('fade-out');
+  dcUnreadFadeTimer=setTimeout(function(){dcUnreadFadeTimer=0;dcUnreadDividerId=0;var x=document.getElementById('liveChatUnreadDivider');if(x)x.remove();},400);
+}
 function dcUpdateUnreadUI(){
   var n=dcUnreadCount(),label=n>99?'99+':String(n);
   document.querySelectorAll('[data-live-chat-unread],.live-chat-unread-badge').forEach(function(b){b.textContent=label;b.hidden=!n;});
@@ -13161,7 +13168,7 @@ function dcScrollToFirstUnread(){
   var unread=dcUnreadMessages();
   if(!unread.length){dcOpeningToUnread=false;dcClearUnreadDivider();liveChatTrueBottom();return;}
   var id=unread[0].id;dcUnreadDividerId=id;dcOpeningToUnread=true;renderMessages();
-  var el=document.querySelector('[data-message-id="'+id+'"],[data-live-chat-message-id="'+id+'"]');
+  var el=document.getElementById('liveChatUnreadDivider')||document.querySelector('[data-message-id="'+id+'"],[data-live-chat-message-id="'+id+'"]');
   if(el){el.scrollIntoView({block:'start'});requestAnimationFrame(function(){
     el.scrollIntoView({block:'start'});
     requestAnimationFrame(function(){
