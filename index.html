@@ -4716,34 +4716,8 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 [data-lc-pane="test"] .live-chat-test-grid{gap:8px!important}
 [data-lc-pane="test"] .live-chat-test-card{padding:10px!important}
 </style>
-<style id="liveChatRegistrationV586">
-.live-chat-agreement-row{
-  display:grid!important;
-  grid-template-columns:24px minmax(0,1fr)!important;
-  align-items:start!important;
-  column-gap:12px!important;
-  width:100%!important;
-  margin:16px 0 0!important;
-  text-align:left!important
-}
-.live-chat-agreement-row input[type="checkbox"]{
-  width:20px!important;
-  height:20px!important;
-  margin:3px 0 0!important;
-  padding:0!important;
-  align-self:start!important
-}
-.live-chat-agreement-row span,
-.live-chat-agreement-row{
-  line-height:1.35!important
-}
-</style>
-<style id="liveChatRegistrationV586">
-#liveChatFirst::placeholder,#liveChatLast::placeholder{color:rgba(255,255,255,.38)!important;opacity:1!important;font-weight:500!important}
-.live-chat-agreement-row{display:flex!important;align-items:flex-start!important;gap:10px!important;width:100%!important;margin:16px 0 0!important;text-align:left!important}
-.live-chat-agreement-row input[type="checkbox"]{position:static!important;transform:none!important;flex:0 0 20px!important;width:20px!important;height:20px!important;margin:1px 0 0!important;padding:0!important;align-self:flex-start!important}
-.live-chat-agreement-row span{display:block!important;flex:1 1 auto!important;margin:0!important;padding:0!important;line-height:1.35!important}
-</style>
+
+
 <style id="liveChatUnreadV586">
 .live-chat-unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:999px;font-size:10px;font-weight:900;line-height:1}
 .live-chat-unread-badge[hidden]{display:none!important}
@@ -4753,138 +4727,23 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .live-chat-closing-notice[hidden]{display:none!important}
 </style>
 
-<style id="v586-live-chat-registration-fix">
-/* Registration: placeholders must read as hints, not entered values. */
-#liveChatFirst::placeholder,#liveChatLast::placeholder{
-  color:rgba(255,255,255,.30)!important;
-  opacity:1!important;
-  font-weight:400!important;
-}
-/* Registration agreement: checkbox aligned to the first line of copy. */
-.live-chat-agreement-row{
-  display:grid!important;
-  grid-template-columns:22px minmax(0,1fr)!important;
-  column-gap:10px!important;
-  align-items:start!important;
-}
-.live-chat-agreement-row input[type="checkbox"]{
-  position:static!important;
-  inset:auto!important;
-  float:none!important;
-  transform:none!important;
-  width:20px!important;
-  height:20px!important;
-  margin:3px 0 0 0!important;
-  align-self:start!important;
-  justify-self:start!important;
-}
-.live-chat-agreement-row label,
-.live-chat-agreement-row span{
-  margin:0!important;
-  padding:0!important;
-  align-self:start!important;
-}
-</style>
 
-<style id="v586-registration-actual-fix">
-.live-chat-register input#liveChatFirst::placeholder,
-.live-chat-register input#liveChatLast::placeholder{color:rgba(255,255,255,.30)!important;opacity:1!important;font-weight:400!important}
-.live-chat-register label.live-chat-agree.live-chat-agreement-row{
- display:grid!important;grid-template-columns:22px minmax(0,1fr)!important;
- align-items:start!important;column-gap:10px!important;
-}
-.live-chat-register label.live-chat-agree.live-chat-agreement-row>input#liveChatConduct{
- position:static!important;display:block!important;float:none!important;
- width:20px!important;height:20px!important;margin:2px 0 0!important;
- transform:none!important;align-self:start!important;
-}
-.live-chat-register label.live-chat-agree.live-chat-agreement-row>span{
- display:block!important;margin:0!important;padding:0!important;line-height:1.35!important;
-}
-</style>
 
-<style id="v586-agreement-checkbox-fix">
-.live-chat-register label.live-chat-agree.live-chat-agreement-row{
-  position:relative!important;
-  display:block!important;
-  padding-left:32px!important;
-  margin-top:16px!important;
-  min-height:22px!important;
-}
-.live-chat-register label.live-chat-agree.live-chat-agreement-row>input#liveChatConduct{
-  position:absolute!important;
-  left:0!important;
-  top:2px!important;
-  width:20px!important;
-  height:20px!important;
-  margin:0!important;
-  padding:0!important;
-  transform:none!important;
-}
-.live-chat-register label.live-chat-agree.live-chat-agreement-row>span{
-  display:block!important;
-  margin:0!important;
-  padding:0!important;
-  line-height:1.35!important;
-}
-</style>
 
-<style id="v586-agreement-layout">
-.live-chat-register .live-chat-agree-v586{
-  position:relative!important;
-  display:block!important;
-  width:100%!important;
-  min-height:58px!important;
-  margin:16px 0 0!important;
-  padding:0 0 0 32px!important;
-  box-sizing:border-box!important;
-  text-align:left!important;
-}
-.live-chat-register .live-chat-agree-v586>input#liveChatConduct{
-  position:absolute!important;
-  left:0!important;
-  top:4px!important;
-  width:20px!important;
-  height:20px!important;
-  margin:0!important;
-  padding:0!important;
-  transform:none!important;
-}
-.live-chat-register .live-chat-agree-v586>.live-chat-agree-copy{
-  display:block!important;
-  margin:0!important;
-  padding:0!important;
-  line-height:1.35!important;
-}
-</style>
-<style id="v586-agreement-checkbox-custom">
-.live-chat-register .live-chat-agree-v586{display:grid!important;grid-template-columns:22px minmax(0,1fr)!important;column-gap:10px!important;align-items:start!important;width:100%!important;margin:16px 0 0!important;padding:0!important;text-align:left!important}
+
+
+
+
+
+<style id="liveChatRegistrationV600">
+#liveChatFirst::placeholder,#liveChatLast::placeholder{color:rgba(255,255,255,.30)!important;opacity:1!important;font-weight:400!important}
+.live-chat-register .live-chat-agree-v586{display:grid!important;grid-template-columns:20px minmax(0,1fr)!important;column-gap:10px!important;align-items:start!important;width:100%!important;margin:16px 0 0!important;padding:0!important;text-align:left!important}
 .live-chat-register .live-chat-conduct-native{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;margin:0!important;padding:0!important}
-.live-chat-register .live-chat-conduct-box{display:block!important;width:20px!important;height:20px!important;margin:3px 0 0!important;padding:0!important;border:2px solid rgba(255,255,255,.62)!important;border-radius:3px!important;box-sizing:border-box!important;background:#fff!important;position:relative!important}
-.live-chat-register .live-chat-conduct-native:checked + .live-chat-conduct-box::after{content:"✓";position:absolute!important;left:1px!important;top:-5px!important;font-size:20px!important;line-height:20px!important;font-weight:900!important;color:#111827!important}
-.live-chat-register .live-chat-agree-v586>.live-chat-agree-copy{display:block!important;margin:0!important;padding:0!important;line-height:1.35!important;cursor:pointer!important}
-</style><style id="v586-agreement-polish">
-.live-chat-register .live-chat-agree-v585{
-  grid-template-columns:18px minmax(0,1fr)!important;
-  column-gap:10px!important;
-  margin-top:18px!important;
-}
-.live-chat-register .live-chat-conduct-box{
-  width:18px!important;height:18px!important;
-  margin-top:2px!important;
-  border-width:1.5px!important;
-  border-radius:3px!important;
-}
-.live-chat-register .live-chat-agree-v585>.live-chat-agree-copy{
-  font-size:14px!important;
-  line-height:1.35!important;
-  color:rgba(226,232,240,.82)!important;
-  font-weight:400!important;
-}
-.live-chat-register .live-chat-conduct-native:checked + .live-chat-conduct-box::after{
-  left:1px!important;top:-5px!important;font-size:18px!important;line-height:18px!important;
-}
-</style></head>
+.live-chat-register .live-chat-conduct-box{display:block!important;width:18px!important;height:18px!important;margin:2px 0 0!important;padding:0!important;border:1.5px solid rgba(255,255,255,.62)!important;border-radius:3px!important;box-sizing:border-box!important;background:#fff!important;position:relative!important;cursor:pointer!important}
+.live-chat-register .live-chat-conduct-native:checked + .live-chat-conduct-box::after{content:"✓";position:absolute!important;left:1px!important;top:-5px!important;font-size:18px!important;line-height:18px!important;font-weight:900!important;color:#111827!important}
+.live-chat-register .live-chat-agree-v586>.live-chat-agree-copy{display:block!important;margin:0!important;padding:0!important;font-size:14px!important;line-height:1.35!important;color:rgba(226,232,240,.82)!important;font-weight:400!important;cursor:pointer!important}
+</style>
+</head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
 <div class="app">
@@ -5810,7 +5669,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
     min-width:0;
   }
   #home #gameDaySection,
-  #home #gameDayPanel,
   #home #meetHosts,
   #home .admin-footer{
     grid-column:1 / -1;
@@ -6141,24 +5999,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <p>Send it in to be answered in a future episode!</p>
   <button class="btn secondary phan-qa-button" onclick="openPhanQaForm()">SUBMIT A QUESTION</button>
 </section>
-
-<div class="game-day" id="gameDayPanel" style="display:none">
-  <div class="eyebrow" id="gdEyebrow">IT'S GAME DAY</div>
-  <h2 id="gdTitle">YOUNGSTOWN PHANTOMS</h2>
-  <div class="match" id="gdMatch">VS OPPONENT</div>
-  <div class="countdown" id="gdCountdown">
-    <div class="countbox"><b id="gdDays">00</b><span>Days</span></div>
-    <div class="countbox"><b id="gdHours">00</b><span>Hours</span></div>
-    <div class="countbox"><b id="gdMinutes">00</b><span>Minutes</span></div>
-    <div class="countbox"><b id="gdSeconds">00</b><span>Seconds</span></div>
-  </div>
-  <div class="result-score" id="gdScore" style="display:none"></div>
-  <div class="result-sub" id="gdSub">Puck drop shown in Eastern Time</div>
-  <div class="coverage-grid">
-    <button class="btn primary" onclick="openSheet('episodes')">LATEST EPISODE</button>
-    <button class="btn secondary" onclick="openGameCenter()">PHANTOMS HQ</button>
-  </div>
-</div>
 
   <div class="gamehero gc-next-card" id="nextGameHero">
     <div class="gc-next-kicker" id="gameHeroLabel">NEXT PHANTOMS GAME</div>
@@ -6761,9 +6601,15 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-pp]').forEach(b=>b.classList.toggle('active',b.dataset.adminPp===pp));
  const en=document.getElementById('adminEmptyNet')?.value||'';
  document.querySelectorAll('[data-admin-en]').forEach(b=>b.classList.toggle('active',b.dataset.adminEn===en));
+ const stoppage=document.getElementById('adminStoppageStatus')?.value||'';
+ document.querySelectorAll('[data-admin-stoppage]').forEach(b=>b.classList.toggle('active',b.dataset.adminStoppage===stoppage));
+ document.getElementById('adminFourOnFourButton')?.classList.toggle('active',document.getElementById('adminFourOnFour')?.value==='true');
+ const teamTimeout=document.getElementById('adminTeamTimeout')?.value||'';
+ document.querySelectorAll('[data-admin-team-timeout]').forEach(b=>b.classList.toggle('active',b.dataset.adminTeamTimeout===teamTimeout));
  const dash=document.getElementById('adminDashboard');
  if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
  updateAdminGameDayPreview();
+ if(typeof syncAdminShootoutVisibility==='function')syncAdminShootoutVisibility();
 }
 function setAdminStatus(value){
  const el=document.getElementById('adminGameStatus');if(!el)return;
@@ -6796,13 +6642,14 @@ function setAdminPeriod(value){
     else if(value==='SO')clock.value='0:00';
     syncAdminClockDigits(clock.value);
   }
+  if(String(value).toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'){
+    var state=dcNormalizeShootoutState(typeof dcAdminShootoutState!=='undefined'?dcAdminShootoutState:null);
+    if(!state.attempts.length&&!state.first){
+      state.base_score={phantoms:Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0),opponent:Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0)};
+      dcAdminShootoutState=state;
+    }
+  }
   syncAdminQuickControls();markGameDayDirty();
-}
-function nextAdminPeriod(){
-  var el=document.getElementById('adminPeriod');if(!el)return;
-  var order=['1st','2nd','3rd','OT','SO'];
-  var i=order.indexOf(el.value);
-  setAdminPeriod(order[Math.min(i<0?0:i+1,order.length-1)]);
 }
 function normalizeGameClockValue(value){
   var raw=String(value||'').trim().toUpperCase();
@@ -6833,9 +6680,6 @@ function stepAdminClockDigit(index,delta){
   if(index===0&&cur===2){var ones=document.getElementById('adminClockDigit1');if(ones)ones.textContent='0';var st=document.getElementById('adminClockDigit2');if(st)st.textContent='0';var so=document.getElementById('adminClockDigit3');if(so)so.textContent='0';}
   if(index===1&&Number(document.getElementById('adminClockDigit0')?.textContent||0)===2)out.textContent='0';
   var el=document.getElementById('adminClock');if(el)el.value=adminClockValueFromDigits();syncAdminClockDigits(el?el.value:adminClockValueFromDigits());syncAdminQuickControls();markGameDayDirty();
-}
-function setAdminClock(value){
-  var el=document.getElementById('adminClock');if(!el)return;el.value=normalizeGameClockValue(value);syncAdminClockDigits(el.value);syncAdminQuickControls();markGameDayDirty();
 }
 function setAdminIntermission(period){
   var p=document.getElementById('adminPeriod'),c=document.getElementById('adminClock');
@@ -7620,24 +7464,6 @@ async function upsertCompletedResult(result){
  return true;
 }
 
-window.addResultFromForm=async function(){
- const get=function(id){const el=document.getElementById(id);return el?el.value.trim():'';};
- const date=get('resultDate').toUpperCase(),opponent=get('resultOpponent'),result=get('resultOutcome')||'W';
- const phRaw=get('resultPhantomsScore'),osRaw=get('resultOpponentScore'),ph=Number(phRaw),os=Number(osRaw);
- if(!date||!opponent||!['W','L','OTL','SOL'].includes(result)||phRaw===''||osRaw===''||!Number.isInteger(ph)||!Number.isInteger(os)||ph<0||os<0){
-  if(typeof toast==='function')toast('Enter the date, opponent and both scores.');
-  return false;
- }
- try{
-  var manualScheduleRow=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===date&&String(r.opponent||'').trim()===opponent;})||null;
-  await upsertCompletedResult({date,opponent,result,phantoms:ph,opponentScore:os,homeAway:'',arena:'',city:'',iso:new Date().toISOString(),gameKey:date+'|'+opponent,boxScoreUrl:manualScheduleRow&&manualScheduleRow.box_score_url?String(manualScheduleRow.box_score_url).trim():dcKnownBoxScoreUrl(date,opponent)});
-  ['resultDate','resultOpponent','resultPhantomsScore','resultOpponentScore'].forEach(function(id){const el=document.getElementById(id);if(el)el.value='';});
-  const outcome=document.getElementById('resultOutcome');if(outcome)outcome.value='W';
-  if(typeof toast==='function')toast('Result published.');
-  return true;
- }catch(e){if(typeof toast==='function')toast(e.message);return false;}
-};
-
 renderRecentResults();
 
 
@@ -7648,15 +7474,27 @@ function featuredHomeAwayRole(g){
   return String(g&&g[2]||'')==='Youngstown, OH'?'HOME':'AWAY';
 }
 
+function dcNextHomeGame(nowValue){
+ const now=nowValue instanceof Date?nowValue:new Date(nowValue||Date.now());
+ var next=null;
+ for(var i=0;i<phantomsSchedule.length;i++){
+   var g=phantomsSchedule[i],row=null;
+   try{row=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
+   if(row&&['POSTPONED','CANCELLED'].includes(String(row.status||'').toUpperCase()))continue;
+   var iso=gameTimes[g[0]]||'';if(!iso)continue;
+   var d=new Date(iso);if(!isFinite(d.getTime())||d<=now)continue;
+   if(!next||d<next.d)next={g:g,d:d,row:row};
+ }
+ return next;
+}
 function updateNextGame(){
- const now=new Date();
- const next=phantomsSchedule.map(g=>({g,date:gameTimes[g[0]]?new Date(gameTimes[g[0]]):null})).find(x=>x.date&&x.date>now);
+ const next=dcNextHomeGame(new Date());
  if(!next)return;
- const g=next.g,d=next.date,diff=Math.max(0,d-now);
+ const g=next.g,d=next.d,diff=Math.max(0,d-Date.now());
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
  const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
- if(heroPhantomsLogo) heroPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
- const isHome = featuredHomeAwayRole(g)==='HOME';
+ if(heroPhantomsLogo)heroPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
+ const isHome=featuredHomeAwayRole(g)==='HOME';
  const phHomeAway=document.getElementById('heroPhantomsHomeAway');
  const oppHomeAway=document.getElementById('heroOpponentHomeAway');
  if(phHomeAway)phHomeAway.textContent=isHome?'HOME':'AWAY';
@@ -7666,38 +7504,32 @@ function updateNextGame(){
    const phTeam=phHomeAway&&phHomeAway.closest('.upcoming-team');
    const oppTeam=oppHomeAway&&oppHomeAway.closest('.upcoming-team');
    const vs=heroMatchup.querySelector('.upcoming-vs');
-   if(phTeam&&oppTeam&&vs){
-     if(isHome){heroMatchup.append(oppTeam,vs,phTeam);}else{heroMatchup.append(phTeam,vs,oppTeam);}
-   }
+   if(phTeam&&oppTeam&&vs){if(isHome)heroMatchup.append(oppTeam,vs,phTeam);else heroMatchup.append(phTeam,vs,oppTeam);}
  }
- const heroOpponentLogo=document.getElementById('heroOpponentLogo');
- if(heroOpponentLogo) heroOpponentLogo.innerHTML=matchupLogo(g[1]);
- const gcPhantomsLogo=document.getElementById('gcPhantomsLogo');
- if(gcPhantomsLogo) gcPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
- const gcOpponentLogo=document.getElementById('gcOpponentLogo');
- if(gcOpponentLogo) gcOpponentLogo.innerHTML=matchupLogo(g[1]);
-
+ const heroOpponentLogo=document.getElementById('heroOpponentLogo');if(heroOpponentLogo)heroOpponentLogo.innerHTML=matchupLogo(g[1]);
+ const gcPhantomsLogo=document.getElementById('gcPhantomsLogo');if(gcPhantomsLogo)gcPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
+ const gcOpponentLogo=document.getElementById('gcOpponentLogo');if(gcOpponentLogo)gcOpponentLogo.innerHTML=matchupLogo(g[1]);
  const vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60].map(x=>String(x).padStart(2,'0'));
- const homeIds=['cdDays','cdHours','cdMinutes','cdSeconds'], gcIds=['gcDays','gcHours','gcMinutes','gcSeconds'];
+ const homeIds=['cdDays','cdHours','cdMinutes','cdSeconds'],gcIds=['gcDays','gcHours','gcMinutes','gcSeconds'];
  var heroOppEl=document.getElementById('heroOpponent');if(heroOppEl)heroOppEl.innerHTML=teamNameStack(g[1]);
+ var heroPhEl=document.getElementById('heroPhantomsName');if(heroPhEl)heroPhEl.innerHTML=teamNameStack('Youngstown Phantoms');
  renderMatchupRecords();
- document.getElementById('gameHeroDate').textContent=(g[0]==='SEP 5'||g[0]==='SEP 6'?'PRESEASON • ':'')+weekdayFull(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
- const hv=scheduleVenue(g); document.getElementById('gameHeroLocation').textContent=hv.arena+(hv.arena&&hv.city?' — ':'')+hv.city;
+ ensureHomeOpponentRecord();
+ var eventLabel='';try{eventLabel=typeof scheduleEventLabel==='function'?(scheduleEventLabel(g)||''):'';}catch(_){}
+ if(!eventLabel)eventLabel='REGULAR SEASON';
+ var heroLabel=document.getElementById('gameHeroLabel');if(heroLabel)heroLabel.textContent=eventLabel==='PRESEASON'?'PRESEASON':'NEXT PHANTOMS GAME';
+ var heroDate=document.getElementById('gameHeroDate');if(heroDate)heroDate.textContent=weekdayFull(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+ const hv=scheduleVenue(g);var heroLoc=document.getElementById('gameHeroLocation');if(heroLoc)heroLoc.textContent=hv.arena+(hv.arena&&hv.city?' — ':'')+hv.city;
+ var eventEl=document.getElementById('homeGameEvent');if(eventEl)eventEl.textContent=eventLabel;
+ var timeEl=document.getElementById('homeGameTime');if(timeEl)timeEl.textContent=g[3]||'TBD';
  homeIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
- const gcOpp=document.getElementById('gcOpponent'); if(gcOpp)gcOpp.textContent=opp;
- const gcDate=document.getElementById('gcDate'); if(gcDate)gcDate.textContent=d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
- const gcLoc=document.getElementById('gcLocation'); if(gcLoc){const gv=scheduleVenue(g);gcLoc.textContent=`${gv.arena} — ${gv.city}`;}
+ const gcOpp=document.getElementById('gcOpponent');if(gcOpp)gcOpp.textContent=opp;
+ const gcDate=document.getElementById('gcDate');if(gcDate)gcDate.textContent=d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+ const gcLoc=document.getElementById('gcLocation');if(gcLoc){const gv=scheduleVenue(g);gcLoc.textContent=`${gv.arena} — ${gv.city}`;}
  gcIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
 }
 updateNextGame();setInterval(updateNextGame,1000);
 
-function updateGameDayMode(){
- // The unified Game Day card below now owns the automated pregame/live/final window.
- // Keep the older standalone panel hidden so two Game Day cards never appear at once.
- const panel=document.getElementById('gameDayPanel');
- if(panel)panel.style.display='none';
-}
-updateGameDayMode();
 
 
 
@@ -8027,33 +7859,6 @@ function fmt(s){if(!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.f
 
 
 
-<script>
-window.DCAddResult=function(event){
-  if(event)event.preventDefault();
-  var val=function(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';};
-  var date=val('resultDate').toUpperCase(), opponent=val('resultOpponent'), result=val('resultOutcome')||'W';
-  var phs=val('resultPhantomsScore'), ops=val('resultOpponentScore'), ph=Number(phs), os=Number(ops);
-  if(!date||!opponent||['W','L','OTL','SOL'].indexOf(result)<0||phs===''||ops===''||!Number.isFinite(ph)||!Number.isFinite(os)||Math.floor(ph)!==ph||Math.floor(os)!==os||ph<0||os<0){
-    if(typeof toast==='function')toast('Enter both scores.');
-    return false;
-  }
-  var results=[];
-  try{results=JSON.parse(localStorage.getItem('dc_completed_results_v1')||'[]');}catch(e){results=[];}
-  results.push({date:date,opponent:opponent,result:result,phantoms:ph,opponentScore:os,homeAway:'',arena:'',city:'',iso:new Date().toISOString()});
-  results.sort(function(a,b){return new Date(b.iso||b.date)-new Date(a.iso||a.date);});
-  localStorage.setItem('dc_completed_results_v1',JSON.stringify(results));
-  var box=document.getElementById('recentResultsList');
-  if(box){
-    box.innerHTML=results.slice(0,5).map(function(g){
-      var parts=String(g.date||'').split(' '),cls={W:'result-w',L:'result-l',OTL:'result-otl',SOL:'result-sol'}[g.result]||'result-w';
-      return '<div class="result-row"><div class="result-date"><b>'+escapeHtml(parts[1]||'')+'</b><br>'+escapeHtml(parts[0]||'')+'</div><div><div class="result-opp">'+escapeHtml(g.opponent)+'</div></div><div class="result-score"><span class="'+cls+'">'+g.result+'</span>'+g.phantoms+'-'+g.opponentScore+'</div></div>';
-    }).join('');
-  }
-  var form=document.getElementById('resultEntryForm');if(form)form.reset();
-  if(typeof toast==='function')toast('Result added.');
-  return false;
-};
-</script>
 
 
 
@@ -8062,19 +7867,8 @@ window.DCAddResult=function(event){
 
 <script>
 (function(){
-  function setText(id,value){var el=document.getElementById(id);if(el)el.textContent=value;}
-
   function getNextGame(){
-    if(typeof phantomsSchedule==='undefined')return null;
-    var now=new Date();
-    for(var i=0;i<phantomsSchedule.length;i++){
-      var g=phantomsSchedule[i],iso=typeof gameTimes!=='undefined'?gameTimes[g[0]]:null;
-      var sr=null;try{sr=typeof scheduleRowForGame==='function'?scheduleRowForGame(g):null;}catch(_){}
-      if(sr&&['POSTPONED','CANCELLED'].includes(sr.status))continue;
-      if(!iso)continue;
-      var d=new Date(iso);
-      if(d.getTime()>now.getTime())return {g:g,d:d};
-    }
+    if(typeof dcNextHomeGame==='function')return dcNextHomeGame(new Date());
     return null;
   }
 
@@ -8128,27 +7922,6 @@ function resolveGCVenue(g){
     return scheduleVenue(g);
   }
 
-function dcPrepareHqBoxScoreOpen(){
-  var hqNav=document.querySelector('.bottomnav .navitem[aria-label="Phantoms HQ"]');
-  if(hqNav)setActive(hqNav);
-  try{
-    dcHistoryBase();
-    if(!history.state||history.state.dcView!=='section')history.replaceState({dcView:'section'},'',location.href);
-  }catch(_){}
-  dcTrack('outbound_click','ushl_box_score');
-  return true;
-}
-
-function dcOpenHqBoxScore(url){
-  url=String(url||'').trim();
-  if(!url)return false;
-  dcPrepareHqBoxScoreOpen();
-  try{
-    var opened=window.open(url,'_blank','noopener');
-    if(!opened)window.location.href=url;
-  }catch(_){window.location.href=url;}
-  return false;
-}
 function scheduleHTML(monthIndex){
     var rows=scheduleForMonth(monthIndex);
     if(!rows.length)return '<div class="card"><p>No games scheduled for this month.</p></div>';
@@ -8184,11 +7957,6 @@ function scheduleHTML(monthIndex){
     }).join('')+'</div>';
   }
 
-function teamScheduleAbbr(team){
-  var map={'Dubuque Fighting Saints':'DBQ','Muskegon Lumberjacks':'MUS','Des Moines Buccaneers':'DSM','Waterloo Black Hawks':'WAT','Madison Capitols':'MAD','Cedar Rapids RoughRiders':'CRR','NTDP U17':'USA','NTDP U18':'USA','Omaha Lancers':'OMA','Green Bay Gamblers':'GB','Sioux City Musketeers':'SC','Sioux Falls Stampede':'SF','Lincoln Stars':'LIN','Tri-City Storm':'TC','Fargo Force':'FAR','Chicago Steel':'CHI'};
-  return map[team]||String(team||'OPP').slice(0,3).toUpperCase();
-}
-
   window.selectGCMonth=function(index){
     var hidden=document.getElementById('gcMonthSelect');
     if(hidden)hidden.value=String(index);
@@ -8201,35 +7969,6 @@ function teamScheduleAbbr(team){
   };
 
   
-function selectSmartScheduleMonth(){
-  var select=document.getElementById('gcMonthSelect');
-  if(!select)return;
-  var now=new Date();
-  var currentMonth=now.getMonth();
-  var options=Array.from(select.options||[]);
-  var currentOption=options.find(function(opt){
-    var n=Number(opt.value);
-    return n===currentMonth;
-  });
-  if(currentOption){
-    select.value=currentOption.value;
-  }else{
-    try{
-      var next=getNextGame();
-      if(next&&next.d){
-        var nextMonth=next.d.getMonth();
-        var nextOption=options.find(function(opt){return Number(opt.value)===nextMonth;});
-        if(nextOption)select.value=nextOption.value;
-      }
-    }catch(e){}
-  }
-  renderSelectedMonth();
-  document.querySelectorAll('.gc-month-btn').forEach(function(btn){
-    var val=btn.getAttribute('data-month');
-    btn.classList.toggle('active',String(val)===String(select.value));
-  });
-}
-
 function renderSelectedMonth(){
     var select=document.getElementById('gcMonthSelect'),list=document.getElementById('gameCenterMonthList');
     if(!select||!list)return;
@@ -8318,13 +8057,6 @@ function renderSelectedMonth(){
       '<div class="gc-series-body" id="gcSeriesBody" hidden><div class="gc-series-summary">'+escapeHtml(seriesRecordText(opponent,meetings))+'</div><div class="gc-series-list">'+rows+'</div></div>';
     if(typeof matchupLogo==='function'){var ol=document.getElementById('gcOpponentLogo');if(ol)ol.innerHTML=matchupLogo(opponent);}
   }
-
-  function updateGCCountdown(target){
-    var diff=Math.max(0,target.getTime()-Date.now());
-    var vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60];
-    ['gcDays','gcHours','gcMinutes','gcSeconds'].forEach(function(id,i){setText(id,String(vals[i]).padStart(2,'0'));});
-  }
-
 
   var dcUshlStandingsRows=[];
   var dcGameDayOfficialRecords={};
@@ -8681,32 +8413,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     return false;
   };
 
-  function repairHome(){
-    var next=getNextGame();if(!next)return;
-    var g=next.g,d=next.d,diff=Math.max(0,d.getTime()-Date.now()),isHome=g[2]==='Youngstown, OH';
-    var opp=String(g[1]).toUpperCase();
-    var venue={arena:'Arena TBA',city:g[2]};
-    try{venue=scheduleVenue(g);}catch(_){}
-    var pre=(g[0]==='SEP 5'||g[0]==='SEP 6');
-    var eventLabel='';try{if(typeof scheduleEventLabel==='function')eventLabel=scheduleEventLabel(g)||'';}catch(e){}
-    if(!eventLabel)eventLabel=pre?'PRESEASON':'REGULAR SEASON';
-    setText('gameHeroLabel',pre?'PRESEASON':'NEXT PHANTOMS GAME');
-    var heroOppName=document.getElementById('heroOpponent');if(heroOppName)heroOppName.innerHTML=teamNameStack(g[1]);
-    var heroPhName=document.getElementById('heroPhantomsName');if(heroPhName)heroPhName.innerHTML=teamNameStack('Youngstown Phantoms');
-    renderMatchupRecords();
-    ensureHomeOpponentRecord();
-    setText('gameHeroDate',weekdayFull(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'}));
-    setText('gameHeroLocation',venue.arena+(venue.arena&&venue.city?' — ':'')+venue.city);
-    setText('homeGameEvent',eventLabel);
-    setText('homeGameTime',g[3]);
-    var vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60];
-    ['cdDays','cdHours','cdMinutes','cdSeconds'].forEach(function(id,i){setText(id,String(vals[i]).padStart(2,'0'));});
-    setText('heroPhantomsHomeAway',isHome?'HOME':'AWAY');setText('heroOpponentHomeAway',isHome?'AWAY':'HOME');
-  }
-
   function boot(){
     document.querySelectorAll('.game-action-wide').forEach(function(btn){btn.onclick=function(e){e.preventDefault();return window.openGameCenter();};});
-    repairHome();setInterval(repairHome,1000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
@@ -8741,7 +8449,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v599</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v600</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9668,12 +9376,13 @@ async function removeAdminGameNotes(){
 }
 setTimeout(function(){loadPublicGameNotes(false);},900);
 
-function dcGameDayCardActive(){return document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live')||document.body.classList.contains('game-final');}
 function dcWrrGameDaySuppressed(){
+  var active=null;try{active=typeof gameDayAutomationWindow==='function'?gameDayAutomationWindow(new Date()):null;}catch(_){}
+  if(active&&active.g&&typeof dcGameAudioAvailableForGame==='function'&&!dcGameAudioAvailableForGame(active.g))return false;
   if(document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live'))return true;
   if(!document.body.classList.contains('game-final'))return false;
-  var st=getAdminGameState(),stamp=Date.parse(String(st&&st.updatedAt||''));
-  if(!isFinite(stamp))return true;
+  var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;
+  var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;
   return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
 }
 function syncMoreWrrAudioUi(state,message){
@@ -9850,9 +9559,6 @@ function defaultAdminScheduleMonth(){
 }
 function adminScheduleIsFinal(r){
   return ['FINAL','FINAL-OT','FINAL-SO'].includes(String(r&&r.status||'').toUpperCase());
-}
-function adminScheduleFinalLabel(r){
-  return 'FINAL';
 }
 function renderAdminScheduleList(){
   var box=document.getElementById('adminScheduleList');if(!box)return;
@@ -10075,14 +9781,9 @@ function formatRecordPill(record){
 }
 function currentNextGameRecordTarget(){
   try{
-    var now=Date.now();
-    for(var i=0;i<dcScheduleRows.length;i++){
-      var r=dcScheduleRows[i];
-      if(['POSTPONED','CANCELLED'].includes(String(r.status||'').toUpperCase()))continue;
-      if(!r.game_date||!r.game_time)continue;
-      var t=new Date(String(r.game_date)+'T'+String(r.game_time).slice(0,8)).getTime();
-      if(t>now)return {opponent:String(r.opponent||''),game_date:String(r.game_date||'')};
-    }
+    var next=typeof dcNextHomeGame==='function'?dcNextHomeGame(new Date()):null;
+    var r=next&&next.row?next.row:null;
+    if(r)return {opponent:String(r.opponent||''),game_date:String(r.game_date||'')};
   }catch(e){}
   return null;
 }
@@ -10249,13 +9950,6 @@ function renderPhantomsRecord(record){
   dcPhantomsRecord=record;
   try{localStorage.setItem('dc_phantoms_record_v1',JSON.stringify(record));}catch(_){}
   renderMatchupRecords();
-  var map={recordGp:'gp',recordW:'w',recordL:'l',recordOtl:'otl',recordSol:'sol',recordPts:'pts'};
-  Object.keys(map).forEach(function(id){
-    var el=document.getElementById(id);
-    if(el)el.textContent=String(Math.max(0,parseInt(record[map[id]],10)||0));
-  });
-  var pct=document.getElementById('recordPct');
-  if(pct)pct.textContent=formatPhantomsPct(record);
 }
 async function dcHydrateGameDayRecordsFromServer(){
   try{
@@ -10860,32 +10554,18 @@ async function adminLoginSubmit(){
  }
 }
 async function adminLogout(){stopAdminQnaWatch();window.dcLiveChatAdminUnlocked=false;window.dcLiveChatAdminPresence=0;try{if(window.adminLiveChatChannel&&typeof dcSupabase!=='undefined')dcSupabase.removeChannel(window.adminLiveChatChannel);}catch(_){}await dcSupabase.auth.signOut();dcHomeQnaAuthorized=false;setHomeQnaIndicator(0);document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';updateGameDayLiveChatBadge();}
-function mapRemoteState(r){r=r||{};return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminEmptyNet:r.empty_net||'',updatedAt:r.updated_at||''};}
+function mapRemoteState(r){
+ r=r||{};
+ return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminEmptyNet:r.empty_net||'',adminStoppageStatus:r.stoppage_status||'',adminFourOnFour:!!r.four_on_four,adminTeamTimeout:r.team_timeout||'',adminShootoutState:typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(r.shootout_state):(r.shootout_state||null),goalEvent:r.goal_event||null,updatedAt:r.updated_at||''};
+}
 async function fetchRemoteGameState(){
- try{const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,updated_at').eq('id','current').single();if(error)throw error;const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));return x;}
- catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
-}
-/* v454: production bridge from HockeyTech into the existing Game Center draft.
-   Safety: this function only updates local Admin draft controls; publishing remains a separate explicit action. */
-function dcHtBridgeSetStatus(html){
-  var el=document.getElementById('adminHtBridgeStatus');
-  if(el)el.innerHTML=html;
-}
-function dcHtBridgeDateForRow(row){
-  return row&&/^\d{4}-\d{2}-\d{2}$/.test(String(row.game_date||''))?String(row.game_date):'';
-}
-function dcHtBridgeCurrentTarget(){
-  var next=null;
-  try{next=getNextGameForGameDay();}catch(_){next=null;}
-  if(!next||!next.g)return null;
-  var row=null;
-  try{row=typeof scheduleRowForGame==='function'?scheduleRowForGame(next.g):null;}catch(_){row=null;}
-  if(!row&&dcScheduleRows&&dcScheduleRows.length){
-    var key=String(next.g[0]||''),opp=String(next.g[1]||'').trim();
-    row=dcScheduleRows.find(function(r){return dcScheduleKeyFromRow(r)===key&&String(r.opponent||'').trim()===opp;})||null;
-  }
-  if(!row)return null;
-  return {row:row,game:next.g,date:dcHtBridgeDateForRow(row),opponent:String(row.opponent||next.g[1]||'Opponent')};
+ try{
+  const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,shootout_state,goal_event,stoppage_status,four_on_four,team_timeout,updated_at').eq('id','current').single();
+  if(error)throw error;
+  const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));
+  if(typeof dcHandleGoalEvent==='function')dcHandleGoalEvent(x);
+  return x;
+ }catch(e){try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}}
 }
 function dcHtBridgeTeamIsYoungstown(team){
   if(!team)return false;
@@ -10893,91 +10573,6 @@ function dcHtBridgeTeamIsYoungstown(team){
   var name=String(team.name||'').toLowerCase();
   return code==='YNG'||name.includes('youngstown')||name.includes('phantoms');
 }
-function dcHtBridgePeriod(snapshot){
-  var g=snapshot&&snapshot.game||{};
-  var progress=String(g.progress||'').toLowerCase();
-  var label=String(g.period_label||'').toUpperCase();
-  var n=Number(g.period||0);
-  var rawClock=String(g.clock_display||g.clock||g.time_remaining||g.time||'').trim();
-  var zeroClock=/^(?:00:)?0{1,2}:00$/.test(rawClock);
-  var firstOrSecond=n===1||n===2||/1ST|FIRST|2ND|SECOND/.test(label);
-  if(/intermission/.test(progress)||(g.started&&!g.final&&firstOrSecond&&zeroClock)){
-    if(n===1||/1ST|FIRST/.test(label))return {period:'1ST',clock:'INT'};
-    if(n===2||/2ND|SECOND/.test(label))return {period:'2ND',clock:'INT'};
-  }
-  if(g.shootout||/\bSO\b|SHOOTOUT/.test(label)||n>=5)return {period:'SO',clock:'0:00'};
-  if(/\bOT\b|OVERTIME/.test(label)||n===4)return {period:'OT',clock:String(g.clock_display||'5:00')};
-  if(n===1||/1ST|FIRST/.test(label))return {period:'1st',clock:String(g.clock_display||'20:00')};
-  if(n===2||/2ND|SECOND/.test(label))return {period:'2nd',clock:String(g.clock_display||'20:00')};
-  if(n===3||/3RD|THIRD/.test(label))return {period:'3rd',clock:String(g.clock_display||'20:00')};
-  return {period:'',clock:String(g.clock_display||'')};
-}
-function dcHtBridgeFinalResult(snapshot,yngScore,oppScore){
-  if(!(snapshot&&snapshot.game&&snapshot.game.final)||!Number.isFinite(yngScore)||!Number.isFinite(oppScore)||yngScore===oppScore)return '';
-  var win=yngScore>oppScore;
-  var g=snapshot.game||{};
-  var label=String(g.period_label||'').toUpperCase();
-  var n=Number(g.period||0);
-  if(g.shootout||/\bSO\b|SHOOTOUT/.test(label)||n>=5)return win?'W_SO':'L_SO';
-  if(/\bOT\b|OVERTIME/.test(label)||n===4)return win?'W_OT':'L_OT';
-  return win?'W':'L';
-}
-function dcHtBridgeApply(snapshot,gameId,target){
-  var teams=snapshot&&snapshot.teams||{};
-  var home=teams.home||{},visitor=teams.visitor||{};
-  var yngHome=dcHtBridgeTeamIsYoungstown(home),yngVisitor=dcHtBridgeTeamIsYoungstown(visitor);
-  if(yngHome===yngVisitor)throw new Error('HockeyTech game '+gameId+' is not a valid Youngstown matchup.');
-  var yng=yngHome?home:visitor,opp=yngHome?visitor:home;
-  var yngScore=Number(yng.score),oppScore=Number(opp.score);
-  if(!Number.isFinite(yngScore)||!Number.isFinite(oppScore))throw new Error('HockeyTech did not return both scores.');
-  var g=snapshot.game||{},status=g.final?'final':(g.started?'live':'upcoming');
-  var mapped=dcHtBridgePeriod(snapshot);
-  var statusEl=document.getElementById('adminGameStatus'),yEl=document.getElementById('adminPhantomsScore'),oEl=document.getElementById('adminOpponentScore'),pEl=document.getElementById('adminPeriod'),cEl=document.getElementById('adminClock'),rEl=document.getElementById('adminResult');
-  if(statusEl)statusEl.value=status;
-  if(yEl)yEl.value=String(Math.max(0,yngScore));
-  if(oEl)oEl.value=String(Math.max(0,oppScore));
-  if(pEl)pEl.value=status==='upcoming'?'':mapped.period;
-  if(cEl)cEl.value=status==='upcoming'?'':mapped.clock;
-  if(rEl&&status==='final')rEl.value=dcHtBridgeFinalResult(snapshot,yngScore,oppScore);
-  if(rEl&&status!=='final')rEl.value=dcManualOverrideActive(getAdminGameState())?'MANUAL':'';
-  syncAdminClockDigits(status==='upcoming'?'20:00':(mapped.clock==='INT'?'0:00':mapped.clock||'20:00'));
-  syncAdminQuickControls();
-  updateAdminGameDayPreview();
-  markGameDayDirty();
-  var state=status==='final'?'FINAL':(status==='live'?(mapped.clock==='INT'?'INTERMISSION':'LIVE'):'UPCOMING');
-  var oppName=String(opp.name||target.opponent||'Opponent');
-  dcHtBridgeSetStatus('<strong>Loaded game '+escapeHtml(String(gameId))+'</strong> · Youngstown '+yngScore+'–'+oppScore+' '+escapeHtml(oppName)+' · '+escapeHtml(state)+(mapped.period?' · '+escapeHtml(mapped.period):'')+(mapped.clock?' '+escapeHtml(mapped.clock):'')+'<br><span style="color:#8fe0aa">Draft updated — nothing published.</span>');
-  setAdminFeedback('adminSaveStatus','dirty','HockeyTech loaded into Preview — review, then Save & Publish');
-}
-async function loadHockeyTechIntoGameCenter(){
-  var btn=document.getElementById('adminHtBridgeButton');
-  if(btn){btn.disabled=true;btn.textContent='LOADING HOCKEYTECH…';}
-  try{
-    if(!dcScheduleRows.length)await loadSupabaseSchedule();
-    var target=dcHtBridgeCurrentTarget();
-    if(!target||!target.date)throw new Error('No scheduled Youngstown game could be resolved.');
-    dcHtBridgeSetStatus('Resolving <strong>'+escapeHtml(target.opponent)+'</strong> on '+escapeHtml(target.date)+'…');
-    var lookupUrl=DC_SUPABASE_URL+'/functions/v1/lookup-ushl-box-score?date='+encodeURIComponent(target.date)+'&opponent='+encodeURIComponent(target.opponent);
-    var lookupRes=await fetch(lookupUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
-    var lookup=await lookupRes.json();
-    if(!lookupRes.ok||!lookup||!lookup.match||!lookup.match.game_id)throw new Error((lookup&&lookup.error)||'Could not resolve the HockeyTech game ID.');
-    var gameId=String(lookup.match.game_id);
-    dcHtBridgeSetStatus('Game <strong>'+escapeHtml(gameId)+'</strong> found. Loading live HockeyTech state…');
-    var session=await dcGetSession();
-    if(!session||!(await dcVerifyAdminSession(session)))throw new Error('Admin session expired. Sign in again.');
-    var liveUrl=DC_SUPABASE_URL+'/functions/v1/get-ushl-live-game?game_id='+encodeURIComponent(gameId);
-    var liveRes=await fetch(liveUrl,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token}});
-    var live=await liveRes.json();
-    if(!liveRes.ok||!live||live.ok!==true||!live.interpreted)throw new Error((live&&live.error)||'HockeyTech live state was unavailable.');
-    dcHtBridgeApply(live.interpreted,gameId,target);
-  }catch(e){
-    dcHtBridgeSetStatus('<span style="color:#ff8f8f">'+escapeHtml(e&&e.message?e.message:String(e))+'</span><br>No Game Center values were published.');
-    setAdminFeedback('adminSaveStatus','error','HockeyTech load failed — existing draft retained');
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent='LOAD HOCKEYTECH DATA';}
-  }
-}
-
 function dcGameAudioDefaultForRow(row){return !!row&&String(row.home_away||'').toUpperCase()==='HOME';}
 function dcGameAudioAvailableForRow(row){
   if(!row)return false;
@@ -11013,11 +10608,16 @@ async function toggleAdminGameAudio(){
   }catch(e){if(status)status.textContent='Could not save audio availability: '+(e&&e.message?e.message:String(e));}
   finally{if(btn)btn.disabled=false;}
 }
-async function loadAdminUpdates(){const data=await fetchRemoteGameState();['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();if(!dcScheduleRows.length)await loadSupabaseSchedule();loadAdminGameDayBoxScore();syncAdminGameAudioControl();updateAdminGameDayPreview();}
-function formatGameClock(input){
-  if(!input)return;input.value=normalizeGameClockValue(input.value);syncAdminClockDigits(input.value);
+async function loadAdminUpdates(){
+ const data=await fetchRemoteGameState();
+ ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(function(id){var el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});
+ var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';
+ if(typeof dcNormalizeShootoutState==='function')dcAdminShootoutState=dcNormalizeShootoutState(data.adminShootoutState);
+ syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();
+ if(!dcScheduleRows.length)await loadSupabaseSchedule();
+ loadAdminGameDayBoxScore();syncAdminGameAudioControl();updateAdminGameDayPreview();
+ if(typeof renderAdminShootoutTracker==='function')renderAdminShootoutTracker();
 }
-
 function adminActiveScheduleRow(){
   try{
     var active=typeof gameDayAutomationWindow==='function'?gameDayAutomationWindow(new Date()):null;
@@ -11155,44 +10755,37 @@ function confirmFinalPublish(payload){
 }
 
 async function saveAdminUpdates(){
- const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
- if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
- const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:document.getElementById('adminPeriod')?.value||null,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null};
- if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){
-   if(st)st.textContent='Enter both scores before publishing LIVE.';return;
- }
- if(payload.status==='final'){
-   if(payload.phantoms_score===null||payload.opponent_score===null){if(st)st.textContent='Enter both final scores before publishing FINAL.';return;}
-   if(!payload.result){if(st)st.textContent='Choose a Final Result before publishing FINAL.';return;}
-   if(!confirmFinalPublish(payload)){setAdminFeedback(st,'','Final publish cancelled.');return;}
- }
- var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');
- if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
- setAdminFeedback(st,'saving','Publishing…');
- try{
-  const res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
-  const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
-  localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapRemoteState(body.data)));
-  var boxScoreChanged=false;
-  try{boxScoreChanged=await persistAdminGameDayBoxScore();}catch(boxError){if(st)st.textContent='Game published, but box score link failed: '+boxError.message;return;}
-  if(payload.status==='final'&&payload.result){
-   try{await publishFinalResultFromCurrentState(payload);}catch(resultError){if(st)st.textContent='Game published, but result/schedule sync failed: '+resultError.message;return;}
+  const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
+  if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
+  const period=document.getElementById('adminPeriod')?.value||null;
+  const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:period,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null,stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,four_on_four:document.getElementById('adminFourOnFour')?.value==='true',team_timeout:document.getElementById('adminTeamTimeout')?.value||null,shootout_state:String(period||'').toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(dcAdminShootoutState):null};
+  if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){if(st)st.textContent='Enter both scores before publishing LIVE.';return;}
+  if(payload.status==='final'){
+    if(payload.phantoms_score===null||payload.opponent_score===null){if(st)st.textContent='Enter both final scores before publishing FINAL.';return;}
+    if(!payload.result){if(st)st.textContent='Choose a Final Result before publishing FINAL.';return;}
+    if(!confirmFinalPublish(payload)){setAdminFeedback(st,'','Final publish cancelled.');return;}
   }
-if(payload.status==='final'&&payload.result){
-  await syncCompletedResults(true);
-  renderRecentResults();
-  if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
-}
-clearAdminDirty();
-var publishDetail=(payload.status==='final'&&payload.result?'Result + schedule updated'+(boxScoreChanged?' + box score':''):(boxScoreChanged?'Box score updated':'Game Day updated'));
-setAdminFeedback(st,'saved','✓ PUBLISHED • '+publishDetail+' • '+adminTimeStamp());
-syncAdminQuickControls();
-if(publishBtn){publishBtn.textContent='✓ PUBLISHED';setTimeout(function(){if(publishBtn&&!publishBtn.disabled)publishBtn.textContent='SAVE & PUBLISH';},1600);}
-  if(typeof refreshPublicGameDay==='function')refreshPublicGameDay();
- }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
- finally{
-  if(publishBtn){publishBtn.disabled=false;if(publishBtn.textContent==='PUBLISHING…')publishBtn.textContent='SAVE & PUBLISH';}
- }
+  var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
+  setAdminFeedback(st,'saving','Publishing…');
+  try{
+    const res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
+    const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
+    var mapped=mapRemoteState(body.data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
+    if(typeof dcNormalizeShootoutState==='function')dcAdminShootoutState=dcNormalizeShootoutState(mapped.adminShootoutState);
+    if(typeof dcHandleGoalEvent==='function')dcHandleGoalEvent(mapped);
+    var boxScoreChanged=false;
+    try{boxScoreChanged=await persistAdminGameDayBoxScore();}catch(boxError){if(st)st.textContent='Game published, but box score link failed: '+boxError.message;return;}
+    if(payload.status==='final'&&payload.result){
+      try{await publishFinalResultFromCurrentState(payload);}catch(resultError){if(st)st.textContent='Game published, but result/schedule sync failed: '+resultError.message;return;}
+      await syncCompletedResults(true);renderRecentResults();if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
+    }
+    clearAdminDirty();
+    var publishDetail=(payload.status==='final'&&payload.result?'Result + schedule updated'+(boxScoreChanged?' + box score':''):(boxScoreChanged?'Box score updated':'Game Day updated'));
+    setAdminFeedback(st,'saved','✓ PUBLISHED • '+publishDetail+' • '+adminTimeStamp());syncAdminQuickControls();
+    if(publishBtn){publishBtn.textContent='✓ PUBLISHED';setTimeout(function(){if(publishBtn&&!publishBtn.disabled)publishBtn.textContent='SAVE & PUBLISH';},1600);}
+    refreshPublicGameDay();
+  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
+  finally{if(publishBtn){publishBtn.disabled=false;if(publishBtn.textContent==='PUBLISHING…')publishBtn.textContent='SAVE & PUBLISH';}}
 }
 document.addEventListener('input',function(e){
   if(e.target&&e.target.closest&&e.target.closest('#adminGameDayPanel')){markGameDayDirty();updateAdminGameDayPreview();}
@@ -11357,7 +10950,7 @@ function featuredGameCountdownHtml(gameDate){
   return '<div class="gameday-countdown-mini">'+escapeHtml(text)+'</div>';
  }catch(_){return '';}
 }
-function renderPublicGameDay(){
+function dcRenderPublicGameDayBase(){
  var box=document.getElementById('publicGameDayCard');if(!box)return;
  var st=getAdminGameState(),status=st.adminGameStatus||'upcoming';
  var active=gameDayAutomationWindow(new Date());
@@ -12198,139 +11791,6 @@ async function adminShootoutUndo(){
   if(wasFinal)await dcReverseShootoutFinalRecord();
 }
 
-/* Wrap existing Admin UI state sync so SO visibility follows period/status. */
-var dcBaseSyncAdminQuickControls=syncAdminQuickControls;
-syncAdminQuickControls=function(){
-  dcBaseSyncAdminQuickControls();
-  var stoppage=document.getElementById('adminStoppageStatus')?.value||'';
-  document.querySelectorAll('[data-admin-stoppage]').forEach(function(b){b.classList.toggle('active',b.dataset.adminStoppage===stoppage);});
-  document.getElementById('adminFourOnFourButton')?.classList.toggle('active',document.getElementById('adminFourOnFour')?.value==='true');
-  var teamTimeout=document.getElementById('adminTeamTimeout')?.value||'';
-  document.querySelectorAll('[data-admin-team-timeout]').forEach(function(b){b.classList.toggle('active',b.dataset.adminTeamTimeout===teamTimeout);});
-  syncAdminShootoutVisibility();
-};
-var dcBaseSetAdminPeriod=setAdminPeriod;
-setAdminPeriod=function(value){
-  dcBaseSetAdminPeriod(value);
-  if(String(value).toUpperCase()==='SO'){
-    var state=dcNormalizeShootoutState(dcAdminShootoutState);
-    if(!state.attempts.length&&!state.first){
-      state.base_score={
-        phantoms:Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0),
-        opponent:Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0)
-      };
-      dcAdminShootoutState=state;
-    }
-  }
-  syncAdminShootoutVisibility();
-};
-
-/* Remote state now includes shootout_state + goal_event. */
-mapRemoteState=function(r){
-  r=r||{};
-  return {
-    adminGameStatus:r.status||'upcoming',
-    adminPhantomsScore:r.phantoms_score??0,
-    adminOpponentScore:r.opponent_score??0,
-    adminPeriod:r.period||'',
-    adminClock:r.clock||'',
-    adminResult:r.result||'',
-    adminPowerPlay:r.power_play||'',
-    adminEmptyNet:r.empty_net||'',
-    adminStoppageStatus:r.stoppage_status||'',adminFourOnFour:!!r.four_on_four,adminTeamTimeout:r.team_timeout||'',
-    adminShootoutState:dcNormalizeShootoutState(r.shootout_state),
-    goalEvent:r.goal_event||null,
-    updatedAt:r.updated_at||''
-  };
-};
-fetchRemoteGameState=async function(){
-  try{
-    var q=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,shootout_state,goal_event,stoppage_status,four_on_four,team_timeout,updated_at').eq('id','current').single();
-    if(q.error)throw q.error;
-    var x=mapRemoteState(q.data);
-    localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));
-    dcHandleGoalEvent(x);
-    return x;
-  }catch(e){
-    try{return JSON.parse(localStorage.getItem('dc_admin_game_state_v1')||'{}')}catch(_){return {}}
-  }
-};
-loadAdminUpdates=async function(){
-  var data=await fetchRemoteGameState();
-  ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus'].forEach(function(id){
-    var el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];
-  });
-  dcAdminShootoutState=dcNormalizeShootoutState(data.adminShootoutState);
-  syncAdminClockDigits(data.adminClock||'20:00');
-  syncAdminQuickControls();
-  if(!dcScheduleRows.length)await loadSupabaseSchedule();
-  loadAdminGameDayBoxScore();
-  updateAdminGameDayPreview();
-  renderAdminShootoutTracker();
-};
-
-/* Normal SAVE & PUBLISH keeps SO state and lets the server auto-detect regulation goals. */
-saveAdminUpdates=async function(){
-  const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
-  if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
-  const period=document.getElementById('adminPeriod')?.value||null;
-  const payload={
-    status:document.getElementById('adminGameStatus')?.value||'upcoming',
-    phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,
-    opponent_score:document.getElementById('adminOpponentScore')?.value||null,
-    period:period,
-    clock:document.getElementById('adminClock')?.value||null,
-    result:document.getElementById('adminResult')?.value||null,
-    power_play:document.getElementById('adminPowerPlay')?.value||null,
-    empty_net:document.getElementById('adminEmptyNet')?.value||null,
-    stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,
-    four_on_four:document.getElementById('adminFourOnFour')?.value==='true',
-    team_timeout:document.getElementById('adminTeamTimeout')?.value||null,
-    shootout_state:String(period||'').toUpperCase()==='SO'?dcNormalizeShootoutState(dcAdminShootoutState):null
-  };
-  if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){
-    if(st)st.textContent='Enter both scores before publishing LIVE.';return;
-  }
-  if(payload.status==='final'){
-    if(payload.phantoms_score===null||payload.opponent_score===null){if(st)st.textContent='Enter both final scores before publishing FINAL.';return;}
-    if(!payload.result){if(st)st.textContent='Choose a Final Result before publishing FINAL.';return;}
-    if(!confirmFinalPublish(payload)){setAdminFeedback(st,'','Final publish cancelled.');return;}
-  }
-  var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');
-  if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
-  setAdminFeedback(st,'saving','Publishing…');
-  try{
-    const res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},
-      body:JSON.stringify(payload)
-    });
-    const body=await res.json();if(!res.ok)throw new Error(body.error||'Publish failed');
-    var mapped=mapRemoteState(body.data);
-    localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
-    dcAdminShootoutState=dcNormalizeShootoutState(mapped.adminShootoutState);
-    dcHandleGoalEvent(mapped);
-    var boxScoreChanged=false;
-    try{boxScoreChanged=await persistAdminGameDayBoxScore();}catch(boxError){if(st)st.textContent='Game published, but box score link failed: '+boxError.message;return;}
-    if(payload.status==='final'&&payload.result){
-      try{await publishFinalResultFromCurrentState(payload);}catch(resultError){if(st)st.textContent='Game published, but result/schedule sync failed: '+resultError.message;return;}
-      await syncCompletedResults(true);
-      renderRecentResults();
-      if(typeof renderAdminRecentResults==='function')renderAdminRecentResults();
-    }
-    clearAdminDirty();
-    var publishDetail=(payload.status==='final'&&payload.result?'Result + schedule updated'+(boxScoreChanged?' + box score':''):(boxScoreChanged?'Box score updated':'Game Day updated'));
-    setAdminFeedback(st,'saved','✓ PUBLISHED • '+publishDetail+' • '+adminTimeStamp());
-    syncAdminQuickControls();
-    if(publishBtn){publishBtn.textContent='✓ PUBLISHED';setTimeout(function(){if(publishBtn&&!publishBtn.disabled)publishBtn.textContent='SAVE & PUBLISH';},1600);}
-    refreshPublicGameDay();
-  }catch(e){setAdminFeedback(st,'error','Could not publish: '+e.message);}
-  finally{
-    if(publishBtn){publishBtn.disabled=false;if(publishBtn.textContent==='PUBLISHING…')publishBtn.textContent='SAVE & PUBLISH';}
-  }
-};
-
-
 function setAdminStoppageDraft(type){if(type!=='official_timeout'&&type!=='under_review'&&type!=='injury_timeout')return;var h=document.getElementById('adminStoppageStatus');if(!h)return;h.value=h.value===type?'':type;syncAdminQuickControls();updateAdminGameDayPreview();markAdminDirty('Game Day changes');}
 function toggleAdminFourOnFour(){var h=document.getElementById('adminFourOnFour');if(!h)return;h.value=h.value==='true'?'false':'true';syncAdminQuickControls();updateAdminGameDayPreview();markAdminDirty('Game Day changes');}
 function toggleAdminTeamTimeout(team){
@@ -12463,14 +11923,13 @@ function dcRenderPublicShootout(box,g,st){
 }
 
 /* Decorate the existing proven Game Day renderer rather than replacing its normal-game logic. */
-var dcBaseRenderPublicGameDay=renderPublicGameDay;
-renderPublicGameDay=function(){
+function dcRenderPublicGameDayDecorated(){
   var preBox=document.getElementById('publicGameDayCard');
   if(preBox){
     preBox.className='card gameday-card';
     preBox.style.cssText='';
   }
-  dcBaseRenderPublicGameDay();
+  dcRenderPublicGameDayBase();
   syncMoreWrrForGameDay();
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
@@ -12494,7 +11953,7 @@ renderPublicGameDay=function(){
       syncGameDayHomePriority();
     }
   }
-};
+}
 
 /* Faster lightweight state polling only while the live/final Game Day card is active. */
 function dcFastLiveGameSync(){
@@ -12777,14 +12236,6 @@ async function dcSyncLiveStats(force){
   }
 }
 
-function dcNormalizePrivateTestSnapshot(snapshot){
-  snapshot=snapshot||{};
-  var teams=snapshot.teams||{},home=teams.home||{},visitor=teams.visitor||{};
-  function periodsFor(team){var out={'1':0,'2':0,'3':0,'4':0},id=String(team.id||''),code=String(team.code||'').toUpperCase();(snapshot.goals||[]).forEach(function(g){var p=Number(g&&g.period||0);if(p<1||p>4)return;var hit=(id&&String(g.team_id||'')===id)||(code&&String(g.team_code||'').toUpperCase()===code);if(hit)out[String(p)]++;});return out;}
-  home.period_goals=home.period_goals||periodsFor(home);visitor.period_goals=visitor.period_goals||periodsFor(visitor);
-  snapshot.teams={home:home,visitor:visitor};return snapshot;
-}
-
 function dcLiveSides(snapshot){
   if(!snapshot||!snapshot.teams)return null;var h=snapshot.teams.home||{},v=snapshot.teams.visitor||{};
   var yh=dcHtBridgeTeamIsYoungstown(h),yv=dcHtBridgeTeamIsYoungstown(v);if(yh===yv)return null;
@@ -12909,7 +12360,8 @@ function dcProductionSpecialHtml(team,st,effective){
   if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
 }
 function dcProductionShootoutTeam(team,homeAway,attemptTeam,state,next){
-  var record=(typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null)||(String(team||'').trim()==='Youngstown Phantoms'?dcPhantomsRecord:opponentRecordFor(team));return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
+  var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
+  var record=isYoungstown?dcPhantomsRecord:((typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null)||opponentRecordFor(team));return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
 }
 function dcRenderProductionActiveGame(box,g,st,effective){
   var phRole=featuredHomeAwayRole(g),isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME',opp=String(g[1]||'Opponent').toUpperCase();
@@ -12932,25 +12384,16 @@ function dcUpgradePregameActions(box,g,st){
   var old=box.querySelector('.gameday-box-score');if(old)old.remove();var prior=box.querySelector('.dc-game-notes-block');if(prior)prior.remove();var eff={status:'upcoming'};box.insertAdjacentHTML('beforeend',dcGameDayActions(g,eff,st)+dcGameNotesGameDayHtml());
 }
 
-var dcV463RenderPublicGameDay=renderPublicGameDay;
-renderPublicGameDay=function(){
-  dcV463RenderPublicGameDay();
+function renderPublicGameDay(){
+  dcRenderPublicGameDayDecorated();
   var box=document.getElementById('publicGameDayCard');if(!box)return;var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}if(!active||!active.g)return;
   if(dcPublicGoalFx)return;
   var st=getAdminGameState();
   var effective=dcEffectivePublicState(active.g,st);
   if(effective.status==='upcoming'){dcUpgradePregameActions(box,active.g,st);syncMoreWrrForGameDay();return;}
   dcRenderProductionActiveGame(box,active.g,st,effective);syncMoreWrrForGameDay();syncGameDayHomePriority();
-};
+}
 
-/* More WRR returns five minutes after the operator-published final; feed-only Final stays safely suppressed until then. */
-dcWrrGameDaySuppressed=function(){
-  var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){}
-  if(!active||!active.g||!dcGameAudioAvailableForGame(active.g))return false;
-  if(document.body.classList.contains('game-pregame')||document.body.classList.contains('game-live'))return true;
-  if(!document.body.classList.contains('game-final'))return false;
-  var st=getAdminGameState();if(String(st&&st.adminGameStatus||'').toLowerCase()!=='final')return true;var stamp=Date.parse(String(st&&st.updatedAt||''));if(!isFinite(stamp))return true;return Date.now()-stamp<DC_WRR_FINAL_GRACE_MS;
-};
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();}
 setInterval(function(){dcSyncLiveStats(false);},5000);
@@ -13218,16 +12661,10 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
   try{deviceId=localStorage.getItem(DEVICE_KEY)||uuid();localStorage.setItem(DEVICE_KEY,deviceId);}catch(_){deviceId=uuid();}
   function api(payload,auth){var headers={'Content-Type':'application/json','apikey':DC_SUPABASE_KEY};if(auth&&auth.access_token)headers.Authorization='Bearer '+auth.access_token;return fetch(API,{method:'POST',headers:headers,body:JSON.stringify(payload),cache:'no-store'}).then(async r=>{var b={};try{b=await r.json();}catch(_){ }if(!r.ok||b.ok===false){var e=new Error(b.error||('HTTP '+r.status));Object.assign(e,b);throw e;}return b;});}
   function currentGameInfo(){var active=null;try{active=gameDayAutomationWindow(new Date());}catch(_){ }return active&&active.g?active:null;}
-  function dcLiveChatGameKey(g){return String(g&&g[0]||'')+'|'+String(g&&g[1]||'');}
   window.dcLiveChatGameKey=dcLiveChatGameKey;
-  function gameNickname(name){var n=String(name||'').toLowerCase();var map=[['Youngstown Phantoms','PHANTOMS'],['Green Bay Gamblers','GAMBLERS'],['Chicago Steel','STEEL'],['Cedar Rapids RoughRiders','ROUGH RIDERS'],['Des Moines Buccaneers','BUCCANEERS'],['Dubuque Fighting Saints','FIGHTING SAINTS'],['Fargo Force','FORCE'],['Lincoln Stars','STARS'],['Madison Capitols','CAPITOLS'],['Muskegon Lumberjacks','LUMBERJACKS'],['Omaha Lancers','LANCERS'],['Sioux City Musketeers','MUSKETEERS'],['Sioux Falls Stampede','STAMPEDE'],['Tri-City Storm','STORM'],['Waterloo Black Hawks','BLACK HAWKS'],['USA Hockey NTDP','NTDP']];for(var i=0;i<map.length;i++)if(n===map[i][0].toLowerCase())return map[i][1];return String(name||'OPPONENT').replace(/\b(Youngstown|Hockey|USHL)\b/gi,'').trim().split(/\s+/).slice(-1)[0].toUpperCase();}
   function teamScoreText(g,st){var y=Number(st?.phantoms_score ?? st?.adminPhantomsScore),o=Number(st?.opponent_score ?? st?.adminOpponentScore);if(!Number.isFinite(y))y=Number(st&&st.adminPhantomsScore)||0;if(!Number.isFinite(o))o=Number(st&&st.adminOpponentScore)||0;return {y:y,o:o};}
-  function liveChatGameEligible(game){
-  return !!game; /* Live Chat is available for every Phantoms Game Day, home or away. */
-}
 function liveChatControl(gameKey){return dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',gameKey).maybeSingle().then(function(r){if(!r.error)currentControl=r.data||null;return currentControl;});}
   function unreadKey(){return UNREAD_PREFIX+currentGameKey;}
-  function clearUnread(){try{localStorage.removeItem(unreadKey());}catch(_){} updateGameDayLiveChatBadge();}
   function bumpUnread(){try{var n=Number(localStorage.getItem(unreadKey())||0)+1;localStorage.setItem(unreadKey(),String(Math.min(99,n)));}catch(_){} updateGameDayLiveChatBadge();}
   function updateGameDayLiveChatBadge(){try{var active=currentGameInfo();if(!active||!active.g)return;var b=document.querySelector('#publicGameDayCard .dc-live-chat-unread');if(b){var n=dcLiveChatUnreadCount(dcLiveChatGameKey(active.g));b.textContent=n>99?'99+':n;b.hidden=n<=0;}}catch(_){} }
   window.updateGameDayLiveChatBadge=updateGameDayLiveChatBadge;
@@ -13382,46 +12819,30 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
        contains human conversation only unless an Admin/Host posts manually. */
     previousGameState=JSON.parse(JSON.stringify(st||{}));
   }
-    var dcLiveChatAutoEnabledGameKey='';
-  async function refreshLiveChatAvailability(){try{
-    var active=currentGameInfo();
-    if(!active||!active.g){dcLiveChatEnabled=false;dcLiveChatAutoEnabledGameKey='';return;}
-    var key=dcLiveChatGameKey(active.g);
-    var r=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',key).maybeSingle();
-    if(r.data?.enabled===true){dcLiveChatEnabled=true;dcLiveChatAutoEnabledGameKey=key;refreshPublicGameDay();return;}
-    /* When the public Game Day window becomes active, Live Chat should always
-       start enabled for that game. Use the existing authenticated API when an
-       Admin session is available; otherwise keep polling until one is. */
-    var session=await dcGetSession();
-    if(session&&await dcVerifyAdminSession(session)&&dcLiveChatAutoEnabledGameKey!==key){
-      dcLiveChatAutoEnabledGameKey=key;
-      try{
-        await api({action:'set_enabled',game_key:key,enabled:true},session);
-        dcLiveChatEnabled=true;
-        refreshPublicGameDay();
-        return;
-      }catch(e){dcLiveChatAutoEnabledGameKey='';}
-    }
-    dcLiveChatEnabled=false;
-    refreshPublicGameDay();
-  }catch(_){dcLiveChatEnabled=false;}}
+  async function refreshLiveChatAvailability(){
+    try{
+      var active=currentGameInfo();if(!active||!active.g){dcLiveChatEnabled=false;return;}
+      var key=dcLiveChatGameKey(active.g);
+      var r=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',key).maybeSingle();
+      if(r.error)throw r.error;
+      dcLiveChatEnabled=r.data?r.data.enabled!==false:true;
+      if(!dcLiveChatEnabled&&chatOpen&&!chatTest&&!chatAdmin)closeLiveChat();
+      refreshPublicGameDay();
+    }catch(_){dcLiveChatEnabled=false;}
+  }
   async function productionStateWatcher(){if(chatTest)return;var active=currentGameInfo();if(!active||!active.g)return;var st=getAdminGameState();var session=await dcGetSession();if(session&&await dcVerifyAdminSession(session)){if(!currentGameKey||currentGameKey!==dcLiveChatGameKey(active.g)){currentGameKey=dcLiveChatGameKey(active.g);currentGame={g:active.g};}await maybeProductionSystemEvent(st);}if(chatOpen){var automaticReadOnly=false;if(String(st.adminGameStatus||'').toLowerCase()==='final'){var stamp=Date.parse(String(st.updatedAt||''));if(isFinite(stamp)){dcChatFinalAt=stamp;dcEnsureCountdown();dcUpdatePostgameNotice();automaticReadOnly=Date.now()-stamp>=DC_LIVE_CHAT_POSTGAME_MS;}}else{dcChatFinalAt=0;dcUpdatePostgameNotice();}var controlReadOnly=!!(currentControl&&currentControl.mode==='read_only');var nextReadOnly=automaticReadOnly||controlReadOnly;if(nextReadOnly!==currentReadOnly){currentReadOnly=nextReadOnly;renderBanner();renderComposer();liveChatCloseMenu();}renderScore();}refreshPublicGameDay();}
   window.addEventListener('online',function(){if(chatOpen){renderBanner();}});
   setInterval(productionStateWatcher,3000);
   setInterval(refreshLiveChatAvailability,5000);
   refreshLiveChatAvailability();
   setInterval(function(){if(chatOpen&&chatTest&&testStateCache&&testStateCache.sim_status==='final'&&testStateCache.updated_at&&Date.now()-Date.parse(testStateCache.updated_at)>=30000&&!currentReadOnly){currentReadOnly=true;renderBanner();renderComposer();}},3000);
-  window.dcLiveChatRefreshUi=function(){if(chatOpen){renderScore();renderBanner();renderComposer();}updateGameDayLiveChatBadge();};
 
-  async function loadAdminLiveChat(){window.dcLiveChatAdminUnlocked=true;var active=currentGameInfo();var key=active?.g?dcLiveChatGameKey(active.g):'';adminLiveChatGameKey=key;var state=document.getElementById('adminLiveChatHomeState');if(!key){if(state)state.textContent='NO ACTIVE GAME';return;}var st=getAdminGameState();var final=String(st.adminGameStatus||'').toLowerCase()==='final';var stamp=Date.parse(String(st.updatedAt||''));var readOnly=final&&isFinite(stamp)&&Date.now()-stamp>=DC_LIVE_CHAT_POSTGAME_MS;var ctl=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',key).maybeSingle();var mode=ctl.data?.mode||'open';var enabled=ctl.data?.enabled===true;dcLiveChatEnabled=enabled;var status=!enabled?'OFF':(readOnly?'POSTGAME':(mode==='read_only'?'READ ONLY':'OPEN'));if(state)state.textContent=status+' · '+adminLiveChatPresence+' VIEWING';var summary=document.getElementById('adminLiveChatSummary');if(summary)summary.innerHTML='<div class="live-chat-admin-stat"><b id="adminLiveChatParticipantCount">'+adminLiveChatPresence+'</b><span>Viewing</span></div><div class="live-chat-admin-stat"><b>'+status+'</b><span>Status</span></div><div class="live-chat-admin-stat"><b id="adminLiveChatFlagCount">0</b><span>Unseen Flags</span></div>';var eb=document.getElementById('adminLiveChatEnabledBtn');if(eb)eb.textContent=enabled?'TURN CHAT OFF':'TURN CHAT ON';if(adminLiveChatChannel){try{await dcSupabase.removeChannel(adminLiveChatChannel);}catch(_){}adminLiveChatChannel=null;}adminLiveChatChannel=dcSupabase.channel('live-chat-'+key.replace(/[^A-Za-z0-9_-]/g,'_'),{config:{presence:{key:'admin-'+deviceId}}}).on('presence',{event:'sync'},function(){adminLiveChatPresence=Object.values(adminLiveChatChannel.presenceState()||{}).reduce(function(n,arr){return n+((arr||[]).some(function(x){return x&&x.visible!==false;})?1:0);},0);window.dcLiveChatAdminPresence=adminLiveChatPresence;try{refreshPublicGameDay();}catch(_){}var c=document.getElementById('adminLiveChatParticipantCount');if(c)c.textContent=adminLiveChatPresence;}).subscribe(async function(s){if(s==='SUBSCRIBED'){await adminLiveChatChannel.track({device_id:deviceId,admin:true,visible:false});}});await loadAdminLiveChatParticipants(key);await loadAdminLiveChatHosts();await loadAdminLiveChatBlockedWords();await loadAdminLiveChatLog(key);await loadAdminLiveChatRecent();}
-  async function loadAdminLiveChatParticipants(key){var wrap=document.getElementById('adminLiveChatParticipants');if(!wrap)return;var r=await dcSupabase.from('live_chat_participants').select('*').eq('game_key',key).order('display_name');var rows=r.data||[];var flags=await dcSupabase.from('live_chat_moderation_log').select('participant_id').eq('game_key',key).eq('action','SEVERE_LANGUAGE_ATTEMPT').is('acknowledged_at',null).order('created_at',{ascending:false});window.dcLiveChatFlaggedIds=Array.from(new Set((flags.data||[]).map(function(x){return x.participant_id;}).filter(Boolean)));var counts={};if(rows.length){var msgs=await dcSupabase.from('live_chat_messages').select('participant_id').eq('game_key',key).is('deleted_at',null);(msgs.data||[]).forEach(function(m){counts[m.participant_id]=(counts[m.participant_id]||0)+1;});}var order={blocked:0,timed_out:1,active:2};rows.sort(function(a,b){return (order[a.status]-order[b.status])||a.display_name.localeCompare(b.display_name);});wrap.innerHTML='<div class="live-chat-admin-list">'+rows.map(function(p){var flagged=(window.dcLiveChatFlaggedIds||[]).indexOf(p.id)>=0;var status=p.registration_required?'REGISTRATION RESET':p.status==='timed_out'?'PAUSED':p.status.toUpperCase();var acts=p.status==='timed_out'?'<button type="button" class="admin-mini-btn" onclick="adminLiveChatUnpause(\''+p.id+'\')">UNPAUSE</button>':'<button type="button" class="admin-mini-btn" onclick="adminLiveChatPause(\''+p.id+'\')">PAUSE</button>';if(p.status==='blocked')acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatUnblock(\''+p.id+'\')">UNBLOCK</button>';else acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatBlock(\''+p.id+'\')">BLOCK</button>';if(flagged)acts+='<button type="button" class="admin-mini-btn" onclick="event.stopPropagation();adminLiveChatAcknowledgeFlag(\''+p.id+'\')">VIEW FLAG</button>';acts+='<button type="button" class="admin-mini-btn danger" onclick="adminLiveChatRemoveParticipantMessages(\''+p.id+'\',\''+escapeHtml(p.display_name).replace(/'/g,'\\\'')+'\')">REMOVE MESSAGES</button>';acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatEditName(\''+p.id+'\',\''+escapeHtml(p.display_name).replace(/'/g,'\\\'')+'\')">EDIT NAME</button><button type="button" class="admin-mini-btn" onclick="adminLiveChatResetRegistration(\''+p.id+'\')">RESET REG</button>';return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(p.display_name||'(registration reset)')+'</span><span class="live-chat-admin-row-status">'+(flagged?'FLAGGED · ':'')+escapeHtml(status)+' · '+(counts[p.id]||0)+' msgs</span></div><div class="live-chat-admin-row-actions">'+acts+'</div></div>';}).join('')+'</div>'+(rows.length?'':'<div class="admin-muted">No participants yet.</div>');}
-  async function adminModerate(participantId,command,extra){var session=await dcGetSession();try{await api(Object.assign({action:'moderate',game_key:adminLiveChatGameKey,participant_id:participantId,command:command,actor_name:(function(){try{var s=document.getElementById('liveChatHostProfile');return s&&s.value&&s.selectedOptions[0]?s.selectedOptions[0].textContent:'Admin';}catch(_){return 'Admin';}})()},extra||{}),session);await loadAdminLiveChatParticipants(adminLiveChatGameKey);await loadAdminLiveChatTimeouts();await loadAdminLiveChatBlocked();}catch(e){toast(e.message||'Moderation action failed.');}}
-  window.adminLiveChatPause=function(id){adminModerate(id,'pause');};window.adminLiveChatUnpause=function(id){adminModerate(id,'unpause');};window.adminLiveChatAcknowledgeFlag=async function(id){try{await api({action:'acknowledge_flags',game_key:adminLiveChatGameKey,participant_id:id},await dcGetSession());await loadAdminLiveChatParticipants(adminLiveChatGameKey);await loadAdminLiveChatLog(adminLiveChatGameKey);}catch(e){toast(e.message||'Could not acknowledge flag.');}};window.adminLiveChatTimeout=function(id,m){adminModerate(id,'timeout',{minutes:m});};window.adminLiveChatRest=function(id){adminModerate(id,'rest_of_game');};window.adminLiveChatEndTimeout=function(id){adminModerate(id,'end_timeout');};window.adminLiveChatBlock=function(id){adminModerate(id,'block');};window.adminLiveChatUnblock=function(id){adminModerate(id,'unblock');};window.adminLiveChatEditName=function(id,name){var n=prompt('Correct name:',name||'');if(n)adminModerate(id,'edit_name',{display_name:n});};window.adminLiveChatResetRegistration=function(id){if(confirm('Reset this listener\'s registration?'))adminModerate(id,'reset_registration');};window.adminLiveChatRemoveParticipantMessages=function(id,name){if(confirm('Remove all messages from '+(name||'this listener')+' for this game?'))adminModerate(id,'remove_messages');};
+  async function loadAdminLiveChat(){window.dcLiveChatAdminUnlocked=true;var active=currentGameInfo();var key=active?.g?dcLiveChatGameKey(active.g):'';adminLiveChatGameKey=key;var state=document.getElementById('adminLiveChatHomeState');if(!key){if(state)state.textContent='NO ACTIVE GAME';return;}var st=getAdminGameState();var final=String(st.adminGameStatus||'').toLowerCase()==='final';var stamp=Date.parse(String(st.updatedAt||''));var readOnly=final&&isFinite(stamp)&&Date.now()-stamp>=DC_LIVE_CHAT_POSTGAME_MS;var ctl=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',key).maybeSingle();var mode=ctl.data?.mode||'open';var enabled=ctl.data?ctl.data.enabled!==false:true;dcLiveChatEnabled=enabled;var status=!enabled?'OFF':(readOnly?'POSTGAME':(mode==='read_only'?'READ ONLY':'OPEN'));if(state)state.textContent=status+' · '+adminLiveChatPresence+' VIEWING';var summary=document.getElementById('adminLiveChatSummary');if(summary)summary.innerHTML='<div class="live-chat-admin-stat"><b id="adminLiveChatParticipantCount">'+adminLiveChatPresence+'</b><span>Viewing</span></div><div class="live-chat-admin-stat"><b>'+status+'</b><span>Status</span></div><div class="live-chat-admin-stat"><b id="adminLiveChatFlagCount">0</b><span>Unseen Flags</span></div>';var eb=document.getElementById('adminLiveChatEnabledBtn');if(eb)eb.textContent=enabled?'TURN CHAT OFF':'TURN CHAT ON';if(adminLiveChatChannel){try{await dcSupabase.removeChannel(adminLiveChatChannel);}catch(_){}adminLiveChatChannel=null;}adminLiveChatChannel=dcSupabase.channel('live-chat-'+key.replace(/[^A-Za-z0-9_-]/g,'_'),{config:{presence:{key:'admin-'+deviceId}}}).on('presence',{event:'sync'},function(){adminLiveChatPresence=Object.values(adminLiveChatChannel.presenceState()||{}).reduce(function(n,arr){return n+((arr||[]).some(function(x){return x&&x.visible!==false;})?1:0);},0);window.dcLiveChatAdminPresence=adminLiveChatPresence;try{refreshPublicGameDay();}catch(_){}var c=document.getElementById('adminLiveChatParticipantCount');if(c)c.textContent=adminLiveChatPresence;}).subscribe(async function(s){if(s==='SUBSCRIBED'){await adminLiveChatChannel.track({device_id:deviceId,admin:true,visible:false});}});await loadAdminLiveChatParticipants(key);await loadAdminLiveChatHosts();await loadAdminLiveChatBlockedWords();await loadAdminLiveChatRecent();}
+  async function loadAdminLiveChatParticipants(key){var wrap=document.getElementById('adminLiveChatParticipants');if(!wrap)return;var r=await dcSupabase.from('live_chat_participants').select('*').eq('game_key',key).order('display_name');var rows=r.data||[];var flags=await dcSupabase.from('live_chat_moderation_log').select('participant_id').eq('game_key',key).eq('action','SEVERE_LANGUAGE_ATTEMPT').is('acknowledged_at',null).order('created_at',{ascending:false});window.dcLiveChatFlaggedIds=Array.from(new Set((flags.data||[]).map(function(x){return x.participant_id;}).filter(Boolean)));var flagCount=document.getElementById('adminLiveChatFlagCount');if(flagCount)flagCount.textContent=String(window.dcLiveChatFlaggedIds.length);var alertDot=document.getElementById('adminLiveChatAlertDot');if(alertDot)alertDot.classList.toggle('show',window.dcLiveChatFlaggedIds.length>0);var counts={};if(rows.length){var msgs=await dcSupabase.from('live_chat_messages').select('participant_id').eq('game_key',key).is('deleted_at',null);(msgs.data||[]).forEach(function(m){counts[m.participant_id]=(counts[m.participant_id]||0)+1;});}var order={blocked:0,timed_out:1,active:2};rows.sort(function(a,b){return (order[a.status]-order[b.status])||a.display_name.localeCompare(b.display_name);});wrap.innerHTML='<div class="live-chat-admin-list">'+rows.map(function(p){var flagged=(window.dcLiveChatFlaggedIds||[]).indexOf(p.id)>=0;var status=p.registration_required?'REGISTRATION RESET':p.status==='timed_out'?'PAUSED':p.status.toUpperCase();var acts=p.status==='timed_out'?'<button type="button" class="admin-mini-btn" onclick="adminLiveChatUnpause(\''+p.id+'\')">UNPAUSE</button>':'<button type="button" class="admin-mini-btn" onclick="adminLiveChatPause(\''+p.id+'\')">PAUSE</button>';if(p.status==='blocked')acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatUnblock(\''+p.id+'\')">UNBLOCK</button>';else acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatBlock(\''+p.id+'\')">BLOCK</button>';if(flagged)acts+='<button type="button" class="admin-mini-btn" onclick="event.stopPropagation();adminLiveChatAcknowledgeFlag(\''+p.id+'\')">VIEW FLAG</button>';acts+='<button type="button" class="admin-mini-btn danger" onclick="adminLiveChatRemoveParticipantMessages(\''+p.id+'\',\''+escapeHtml(p.display_name).replace(/'/g,'\\\'')+'\')">REMOVE MESSAGES</button>';acts+='<button type="button" class="admin-mini-btn" onclick="adminLiveChatEditName(\''+p.id+'\',\''+escapeHtml(p.display_name).replace(/'/g,'\\\'')+'\')">EDIT NAME</button><button type="button" class="admin-mini-btn" onclick="adminLiveChatResetRegistration(\''+p.id+'\')">RESET REG</button>';return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(p.display_name||'(registration reset)')+'</span><span class="live-chat-admin-row-status">'+(flagged?'FLAGGED · ':'')+escapeHtml(status)+' · '+(counts[p.id]||0)+' msgs</span></div><div class="live-chat-admin-row-actions">'+acts+'</div></div>';}).join('')+'</div>'+(rows.length?'':'<div class="admin-muted">No participants yet.</div>');}
+  async function adminModerate(participantId,command,extra){var session=await dcGetSession();try{await api(Object.assign({action:'moderate',game_key:adminLiveChatGameKey,participant_id:participantId,command:command,actor_name:(function(){try{var s=document.getElementById('liveChatHostProfile');return s&&s.value&&s.selectedOptions[0]?s.selectedOptions[0].textContent:'Admin';}catch(_){return 'Admin';}})()},extra||{}),session);await loadAdminLiveChatParticipants(adminLiveChatGameKey);}catch(e){toast(e.message||'Moderation action failed.');}}
+  window.adminLiveChatPause=function(id){adminModerate(id,'pause');};window.adminLiveChatUnpause=function(id){adminModerate(id,'unpause');};window.adminLiveChatAcknowledgeFlag=async function(id){try{await api({action:'acknowledge_flags',game_key:adminLiveChatGameKey,participant_id:id},await dcGetSession());await loadAdminLiveChatParticipants(adminLiveChatGameKey);}catch(e){toast(e.message||'Could not acknowledge flag.');}};window.adminLiveChatBlock=function(id){adminModerate(id,'block');};window.adminLiveChatUnblock=function(id){adminModerate(id,'unblock');};window.adminLiveChatEditName=function(id,name){var n=prompt('Correct name:',name||'');if(n)adminModerate(id,'edit_name',{display_name:n});};window.adminLiveChatResetRegistration=function(id){if(confirm('Reset this listener\'s registration?'))adminModerate(id,'reset_registration');};window.adminLiveChatRemoveParticipantMessages=function(id,name){if(confirm('Remove all messages from '+(name||'this listener')+' for this game?'))adminModerate(id,'remove_messages');};
   async function loadAdminLiveChatHosts(){var wrap=document.getElementById('adminLiveChatHosts');if(!wrap)return;var r=await dcSupabase.from('live_chat_host_profiles').select('*').order('name');wrap.innerHTML='<div class="live-chat-admin-list">'+(r.data||[]).map(function(h){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(h.name)+'</span><span class="live-chat-admin-row-status">'+(h.active?'ACTIVE':'INACTIVE')+'</span></div><div class="live-chat-admin-row-actions"><button type="button" class="admin-mini-btn" onclick="adminLiveChatToggleHost(\''+h.id+'\','+(!h.active)+')">'+(h.active?'DEACTIVATE':'ACTIVATE')+'</button></div></div>';}).join('')+'</div>';}
   window.adminLiveChatToggleHost=async function(id,active){try{await api({action:'set_host_active',host_profile_id:id,active:active},await dcGetSession());loadAdminLiveChatHosts();loadHosts();}catch(e){toast(e.message);}};
-  async function loadAdminLiveChatBlocked(){var wrap=document.getElementById('adminLiveChatBlocked');if(!wrap)return;var r=await dcSupabase.from('live_chat_participants').select('*').eq('game_key',adminLiveChatGameKey).eq('status','blocked').order('display_name');wrap.innerHTML='<div class="live-chat-admin-list">'+(r.data||[]).map(function(p){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(p.display_name)+'</span><span class="live-chat-admin-row-status">BLOCKED</span></div><div class="live-chat-admin-row-actions"><button type="button" class="admin-mini-btn" onclick="adminLiveChatUnblock(\''+p.id+'\')">UNBLOCK</button></div></div>';}).join('')+'</div>'+(r.data?.length?'':'<div class="admin-muted">No blocked participants.</div>');}
-  async function loadAdminLiveChatTimeouts(){var wrap=document.getElementById('adminLiveChatTimeouts');if(!wrap)return;var r=await dcSupabase.from('live_chat_participants').select('*').eq('game_key',adminLiveChatGameKey).eq('status','timed_out').order('display_name');wrap.innerHTML='<div class="live-chat-admin-list">'+(r.data||[]).map(function(p){var left=p.timeout_scope==='rest_of_game'?'REST OF GAME':(p.timeout_until?Math.max(0,Math.ceil((Date.parse(p.timeout_until)-Date.now())/60000))+' MIN':'TIMED OUT');return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(p.display_name)+'</span><span class="live-chat-admin-row-status">'+left+'</span></div><div class="live-chat-admin-row-actions"><button type="button" class="admin-mini-btn" onclick="adminLiveChatEndTimeout(\''+p.id+'\')">END TIMEOUT</button></div></div>';}).join('')+'</div>'+(r.data?.length?'':'<div class="admin-muted">No active timeouts.</div>');}
-  async function loadAdminLiveChatLog(key){var wrap=document.getElementById('adminLiveChatLog');if(!wrap)return;var r=await dcSupabase.from('live_chat_moderation_log').select('*').eq('game_key',key).order('created_at',{ascending:false}).limit(100);var rows=r.data||[];wrap.innerHTML='<div class="live-chat-admin-list">'+rows.map(function(x){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(x.action.replace(/_/g,' '))+'</span><span class="live-chat-admin-row-status">'+formatChatTime(x.created_at)+'</span></div><div class="admin-muted">'+escapeHtml(x.actor_name||'Admin')+'</div></div>';}).join('')+'</div>'+(rows.length?'':'<div class="admin-muted">No moderation actions yet.</div>');var flags=rows.filter(function(x){return x.action==='SEVERE_LANGUAGE_ATTEMPT'&&!x.acknowledged_at;}).length;var flag=document.getElementById('adminLiveChatFlagCount');if(flag)flag.textContent=String(flags);var dot=document.getElementById('adminLiveChatAlertDot');if(dot)dot.classList.toggle('show',flags>0);}
   async function loadAdminLiveChatRecent(){var wrap=document.getElementById('adminLiveChatRecent');if(!wrap)return;var rows=[];for(var i=0;i<(typeof dcScheduleRows!=='undefined'?dcScheduleRows.length:0);i++){var r=dcScheduleRows[i];var d=new Date(String(r.game_date||'')+'T12:00:00');if(!isFinite(d.getTime())||Date.now()-d.getTime()>30*86400000)continue;var key=dcScheduleKeyFromRow(r)+'|'+r.opponent;var q=await dcSupabase.from('live_chat_messages').select('id',{count:'exact',head:true}).eq('game_key',key);if(q.count)rows.push({key:key,date:r.game_date,opponent:r.opponent,count:q.count});}wrap.innerHTML='<div class="live-chat-admin-list">'+rows.map(function(x){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(x.date+' · '+x.opponent)+'</span><span class="live-chat-admin-row-status">'+x.count+' messages</span></div><div class="live-chat-admin-row-actions"><button type="button" class="admin-mini-btn" onclick="openLiveChat(true,\''+x.key.replace(/'/g,"\\'")+'\')">VIEW ARCHIVE</button></div></div>';}).join('')+'</div>'+(rows.length?'':'<div class="admin-muted">No retained chats in the last 30 days.</div>');}
   async function loadAdminLiveChatBlockedWords(){var wrap=document.getElementById('adminLiveChatBlockedWords');if(!wrap)return;var r=await dcSupabase.from('live_chat_blocked_words').select('*').order('term');wrap.innerHTML='<div class="live-chat-admin-list" style="margin-top:8px">'+(r.data||[]).map(function(w){return '<div class="live-chat-admin-row"><div class="live-chat-admin-row-head"><span class="live-chat-admin-row-name">'+escapeHtml(w.term)+'</span><button type="button" class="admin-mini-btn" onclick="adminLiveChatRemoveBlockedWord('+w.id+')">REMOVE</button></div></div>';}).join('')+'</div>';}
   window.adminLiveChatAddBlockedWord=async function(){var el=document.getElementById('adminLiveChatBlockedWord');if(!el.value.trim())return;try{await api({action:'save_blocked_word',term:el.value.trim()},await dcGetSession());el.value='';loadAdminLiveChatBlockedWords();}catch(e){toast(e.message);}};
@@ -13431,8 +12852,8 @@ var liveChatAdminDefaults={chat:'current',manage:'hosts',tools:'recent'};
 var liveChatAdminActiveGroup='chat';
 function renderLiveChatAdminSubtabs(group,selected){var wrap=document.getElementById('liveChatAdminSubtabs');if(!wrap)return;wrap.innerHTML=(liveChatAdminGroups[group]||[]).map(function(x){return '<button type="button" class="admin-mini-btn'+(x[0]===selected?' active':'')+'" data-lc-admin="'+x[0]+'" onclick="selectLiveChatAdminSubtab(\''+x[0]+'\')">'+x[1]+'</button>';}).join('');}
 window.selectLiveChatAdminGroup=function(group){liveChatAdminActiveGroup=group;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===group);});var tab=liveChatAdminDefaults[group]||'current';renderLiveChatAdminSubtabs(group,tab);selectLiveChatAdminSubtab(tab);};
-window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveChatAdminGroups||{}).find(function(g){return (liveChatAdminGroups[g]||[]).some(function(x){return x[0]===tab;});});if(owningGroup){liveChatAdminActiveGroup=owningGroup;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===owningGroup);});}if(tab==='timeouts'||tab==='blocked'||tab==='log'){try{if(typeof loadAdminLiveChatParticipants==='function')loadAdminLiveChatParticipants();}catch(_){}try{if(tab==='log'&&typeof loadAdminLiveChatModLog==='function')loadAdminLiveChatModLog();}catch(_){}}document.querySelectorAll('#liveChatAdminSubtabs [data-lc-admin]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-admin')===tab);});document.querySelectorAll('[data-lc-admin]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-admin')===tab);});document.querySelectorAll('[data-lc-pane]').forEach(function(p){p.hidden=p.getAttribute('data-lc-pane')!==tab;});if(tab==='timeouts')loadAdminLiveChatTimeouts();if(tab==='blocked')loadAdminLiveChatBlocked();if(tab==='hosts')loadAdminLiveChatHosts();if(tab==='recent')loadAdminLiveChatRecent();if(tab==='log')loadAdminLiveChatLog(adminLiveChatGameKey);if(tab==='settings')loadAdminLiveChatBlockedWords();if(tab==='test'){liveChatTestEnsureSeed().then(function(){loadLiveChatTestParticipants();updateLiveChatTestUnread();updateLiveChatTestReadOnlyButton();});}};
-  window.adminLiveChatToggleEnabled=async function(){if(!adminLiveChatGameKey)return;var ctl=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',adminLiveChatGameKey).maybeSingle();var next=ctl.data?.enabled!==true;if(!confirm(next?'Turn Live Chat ON for this game?':'Turn Live Chat OFF for this game?'))return;try{await api({action:'set_enabled',game_key:adminLiveChatGameKey,enabled:next},await dcGetSession());dcLiveChatEnabled=next;try{refreshPublicGameDay();}catch(_){}loadAdminLiveChat();}catch(e){toast(e.message||'Could not change Live Chat availability.');}};
+window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveChatAdminGroups||{}).find(function(g){return (liveChatAdminGroups[g]||[]).some(function(x){return x[0]===tab;});});if(owningGroup){liveChatAdminActiveGroup=owningGroup;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===owningGroup);});}document.querySelectorAll('#liveChatAdminSubtabs [data-lc-admin]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-admin')===tab);});document.querySelectorAll('[data-lc-admin]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-admin')===tab);});document.querySelectorAll('[data-lc-pane]').forEach(function(p){p.hidden=p.getAttribute('data-lc-pane')!==tab;});if(tab==='hosts')loadAdminLiveChatHosts();if(tab==='recent')loadAdminLiveChatRecent();if(tab==='settings')loadAdminLiveChatBlockedWords();if(tab==='test'){liveChatTestEnsureSeed().then(function(){loadLiveChatTestParticipants();updateLiveChatTestUnread();updateLiveChatTestReadOnlyButton();});}};
+  window.adminLiveChatToggleEnabled=async function(){if(!adminLiveChatGameKey)return;var ctl=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',adminLiveChatGameKey).maybeSingle();var current=ctl.data?ctl.data.enabled!==false:true;var next=!current;if(!confirm(next?'Turn Live Chat ON for this game?':'Turn Live Chat OFF for this game?'))return;try{await api({action:'set_enabled',game_key:adminLiveChatGameKey,enabled:next},await dcGetSession());dcLiveChatEnabled=next;try{refreshPublicGameDay();}catch(_){}loadAdminLiveChat();}catch(e){toast(e.message||'Could not change Live Chat availability.');}};
   window.adminLiveChatToggleReadOnly=async function(){if(!adminLiveChatGameKey)return;var b=prompt('Optional reason for pausing Live Chat:','');if(b===null)return;try{var cur=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',adminLiveChatGameKey).maybeSingle();var mode=cur.data?.mode==='read_only'?'open':'read_only';await api({action:'set_read_only',game_key:adminLiveChatGameKey,mode:mode,reason:mode==='read_only'?b:''},await dcGetSession());loadAdminLiveChat();}catch(e){toast(e.message);}};
   window.adminLiveChatRemoveToday=async function(){if(!adminLiveChatGameKey||!confirm('Remove today\'s Live Chat messages?'))return;try{await api({action:'clear_today',game_key:adminLiveChatGameKey},await dcGetSession());toast('Today\'s messages removed.');}catch(e){toast(e.message);}};
 
@@ -13543,9 +12964,6 @@ window.liveChatTestSetSpeed=async function(speed){
   };
   window.liveChatTestToggleGame=async function(){try{await ensureTestSeed();var st=await testState();testOwner=true;await setTestState({simulate_game:!st.simulate_game,sim_status:!st.simulate_game?'pregame':'read_only'});}catch(e){toast(e.message);}};
   window.liveChatTestToggleReadOnly=async function(){try{var cur=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key','TEST:LIVE_CHAT').maybeSingle();var mode=cur.data?.mode==='read_only'?'open':'read_only',reason='';if(mode==='read_only'){var entered=prompt('Optional reason for pausing Live Chat:','');if(entered===null)return;reason=String(entered||'').trim();}var result=await api({action:'set_read_only',game_key:'TEST:LIVE_CHAT',mode:mode,reason:reason},await dcGetSession());currentControl=result.control||null;if(chatOpen&&chatTest){currentReadOnly=mode==='read_only';renderBanner();renderComposer();liveChatCloseMenu();}await updateLiveChatTestReadOnlyButton();toast(mode==='read_only'?'Test Chat is now read-only.':'Test Chat is open again.');}catch(e){toast(e.message);}};
-  window.liveChatTestEvent=async function(ev){try{await ensureTestSeed();var st=await testState();var y=Number(st.sim_phantoms_score)||0,o=Number(st.sim_opponent_score)||0,patch={};if(ev==='goal_phantoms'){y++;patch={sim_phantoms_score:y,sim_status:'live',sim_period:st.sim_period||'1ST',sim_clock:st.sim_clock||'12:00'};}else if(ev==='goal_opponent'){o++;patch={sim_opponent_score:o,sim_status:'live',sim_period:st.sim_period||'1ST',sim_clock:st.sim_clock||'12:00'};}else if(ev==='period_start_2'){patch={sim_status:'live',sim_period:'2ND',sim_clock:'20:00'};}else if(ev==='intermission_2'){patch={sim_status:'intermission',sim_period:'2ND',sim_clock:'INT'};}else if(ev==='final'){patch={sim_status:'final',sim_period:'3RD',sim_clock:'0:00'};}else if(ev==='final_ot'){patch={sim_status:'final',sim_period:'OT',sim_clock:'0:00'};}else if(ev==='final_so'){patch={sim_status:'final',sim_period:'SO',sim_clock:'0:00'};}patch.sim_phantoms_score=y;patch.sim_opponent_score=o;await setTestState(patch);var key='TEST:LIVE_CHAT';var text=ev==='goal_phantoms'?'GOAL — PHANTOMS • YNG '+y+'–'+o+' OPP • '+(st.sim_clock||'12:00')+' '+(st.sim_period||'1ST'):ev==='goal_opponent'?'GOAL — OPPONENT • YNG '+y+'–'+o+' OPP • '+(st.sim_clock||'12:00')+' '+(st.sim_period||'1ST'):ev==='period_start_2'?'START OF 2ND PERIOD • YNG '+y+'–'+o+' OPP':ev==='intermission_2'?'2ND INTERMISSION • YNG '+y+'–'+o+' OPP':ev==='final_ot'?'FINAL-OT • YNG '+y+'–'+o+' OPP':ev==='final_so'?'FINAL-SO • YNG '+y+'–'+o+' OPP':'FINAL • YNG '+y+'–'+o+' OPP';await api({action:'system_event',game_key:key,system_event_id:key+'|manual|'+ev+'|'+Date.now(),system_event_type:ev.indexOf('goal')===0?(ev==='goal_phantoms'?'goal_phantoms':'goal_opponent'):ev,body:text},await dcGetSession());}catch(e){toast(e.message);}
-    liveChatFollowNewMessage(v586Scroll,v586WasNearBottom);
-};
   async function testActivityTick(){if(!testOwner)return;var st=await testState();if(!st?.activity_enabled)return;var participants=await dcSupabase.from('live_chat_participants').select('*').eq('game_key','TEST:LIVE_CHAT').eq('status','active');var ps=participants.data||[];if(!ps.length)return;var idx=Math.floor(Math.random()*ps.length),p=ps[idx];var pool=['Huge shift.','That was clean.','Come on Phantoms!','I need another replay of that.','Defense is flying tonight.','That call had me yelling at my phone.','This chat is going to get busy.','Nice save.','Pressure is building.','LET’S GO! 😂','I think we are about to get a goal.','That was a wild sequence.'];var msg=pool[Math.floor(Math.random()*pool.length)];var reply=null;var existing=await dcSupabase.from('live_chat_messages').select('id').eq('game_key','TEST:LIVE_CHAT').order('created_at',{ascending:false}).limit(20);if(st.activity_speed!=='slow'&&existing.data?.length&&Math.random()<.35)reply=existing.data[Math.floor(Math.random()*existing.data.length)].id;try{var isHost=p.display_name==='Sam Olmstead'||p.display_name==='Justin Irwin';var hostId=null;if(isHost){var hh=await dcSupabase.from('live_chat_host_profiles').select('id').eq('name',p.display_name).maybeSingle();hostId=hh.data?.id||null;}var sent=await api({action:'send',game_key:'TEST:LIVE_CHAT',participant_id:p.id,device_id:p.device_id,body:msg,parent_message_id:reply,host_profile_id:hostId},await dcGetSession());if(sent.message&&Math.random()<.45){var all=await dcSupabase.from('live_chat_messages').select('id,participant_id').eq('game_key','TEST:LIVE_CHAT').order('created_at',{ascending:false}).limit(8);var target=(all.data||[]).find(function(x){return x.participant_id!==p.id;});if(target)await api({action:'react',message_id:target.id,participant_id:p.id,device_id:p.device_id,reaction:['👍','😂','❤️','😢'][Math.floor(Math.random()*4)]},await dcGetSession());}}catch(_){} }
   function startTestActivity(){clearInterval(testActivityTimer);if(!testOwner)return;testState().then(function(st){if(!st?.activity_enabled)return;var ms=st.activity_speed==='chaos'?2000:st.activity_speed==='slow'?15000:7000;testActivityTimer=setInterval(testActivityTick,ms);});}
   async function testGameTick(){
