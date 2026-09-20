@@ -8522,16 +8522,16 @@ function renderSelectedMonth(){
   }
   function applyOfficialMatchupRecords(){
     if(!dcUshlStandingsRows||!dcUshlStandingsRows.length)return false;
-    var yng=gcOfficialStandingFor('Youngstown Phantoms');
     var opp=currentNextOpponent();
     var oppRow=gcOfficialStandingFor(opp);
-    if(yng)renderPhantomsRecord(gcRecordFromStanding(yng));
+    /* Youngstown is intentionally not painted from standings here.
+       loadPhantomsRecord() owns that record from phantoms_record. */
     if(oppRow){
       dcOpponentRecord=Object.assign({opponent:opp},gcRecordFromStanding(oppRow));
       renderMatchupRecords();
       if(typeof renderPublicGameDay==='function')renderPublicGameDay();
     }
-    return !!(yng||oppRow);
+    return !!oppRow;
   }
 
   function syncUshlStandingsConsumers(){
@@ -8738,7 +8738,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v597</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v598</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10254,8 +10254,9 @@ async function dcHydrateGameDayRecordsFromServer(){
     dcUshlStandingsRows=rows;
     dcSetGameDayOfficialRecords(rows);
     saveCachedUshlStandings(rows);
-    var yng=gcOfficialStandingFor('Youngstown Phantoms');
-    if(yng)renderPhantomsRecord(gcRecordFromStanding(yng));
+    /* v598: Do not let the standings snapshot overwrite Youngstown's
+       authoritative phantoms_record used by the Home/Next Game card. */
+    await loadPhantomsRecord();
     if(typeof renderPublicGameDay==='function')renderPublicGameDay();
     return true;
   }catch(e){console.warn('Game Day record hydration unavailable',e);return false;}
@@ -10263,9 +10264,9 @@ async function dcHydrateGameDayRecordsFromServer(){
 
 async function loadPhantomsRecord(){
   try{
-    var officialNow=typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor('Youngstown Phantoms'):null;
-    if(officialNow&&typeof gcRecordFromStanding==='function'){var officialRecord=gcRecordFromStanding(officialNow);renderPhantomsRecord(officialRecord);return officialRecord;}
-    /* v549: Game Day uses a dedicated authoritative standings snapshot so async record loaders cannot overwrite it. */
+    /* v598: Youngstown's Home/Next Game record has one authoritative source:
+       phantoms_record. Official standings may update HQ/opponents, but cannot
+       replace this value with a stale or preseason-zero snapshot. */
     var r=await dcSupabase.from('phantoms_record').select('gp,w,l,otl,sol,pts').eq('id',1).maybeSingle();
     if(r.error)throw r.error;
     if(r.data){renderPhantomsRecord(r.data);return r.data;}
