@@ -8726,7 +8726,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v588</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v589</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13133,8 +13133,8 @@ function renderBanner(){dcUpdatePostgameNotice();var b=document.getElementById('
   function formatChatTime(v){try{return new Date(v).toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});}catch(_){return '';}}
   
 function dcChatReadKey(key){return 'dc-live-chat-read:'+String(key||currentGameKey||'game');}
-function dcLastReadMessageId(){try{return Number(localStorage.getItem(dcChatReadKey())||0)||0;}catch(_){return 0;}}
-function dcSetLastReadMessageId(id){try{localStorage.setItem(dcChatReadKey(),String(Number(id)||0));}catch(_){}}
+function dcLastReadMessageId(key){try{return Number(localStorage.getItem(dcChatReadKey(key))||0)||0;}catch(_){return 0;}}
+function dcSetLastReadMessageId(id,key){try{localStorage.setItem(dcChatReadKey(key),String(Number(id)||0));}catch(_){}}
 function dcHumanMessages(){return (chatMessages||[]).filter(function(m){return !m.is_system&&!m.system_type;});}
 function dcUnreadMessages(){var last=dcLastReadMessageId();return dcHumanMessages().filter(function(m){return Number(m.id)>last;});}
 function dcUnreadCount(){return dcUnreadMessages().length;}
@@ -13146,13 +13146,14 @@ function dcUpdateUnreadUI(){
 }
 function dcMarkChatReadThroughNewest(){
   var human=dcHumanMessages();if(!human.length)return;
-  dcSetLastReadMessageId(human.reduce(function(a,m){return Math.max(a,Number(m.id)||0);},0));
+  dcSetLastReadMessageId(human.reduce(function(a,m){return Math.max(a,Number(m.id)||0);},0),currentGameKey);
+  if(currentGameKey==='TEST:LIVE_CHAT')setTimeout(updateLiveChatTestUnread,0);
   dcUpdateUnreadUI();
 }
 function dcScrollToFirstUnread(){
-  var unread=dcUnreadMessages();if(!unread.length){jumpBottom();return;}
+  var unread=dcUnreadMessages();if(!unread.length){liveChatTrueBottom();return;}
   var id=unread[0].id,el=document.querySelector('[data-message-id="'+id+'"],[data-live-chat-message-id="'+id+'"]');
-  if(el){el.scrollIntoView({block:'start'});}else{jumpBottom();}
+  if(el){el.scrollIntoView({block:'start'});}else{liveChatTrueBottom();}
 }
 function chatAtBottom(){var sc=document.getElementById('liveChatScroll');return !sc||sc.scrollHeight-sc.scrollTop-sc.clientHeight<=120;}
   function liveChatTrueBottom(){
@@ -13160,9 +13161,9 @@ function chatAtBottom(){var sc=document.getElementById('liveChatScroll');return 
   function finish(){sc.scrollTop=sc.scrollHeight;var b=document.getElementById('liveChatNewBtn');if(b)b.hidden=true;dcMarkChatReadThroughNewest();}
   finish();requestAnimationFrame(function(){finish();requestAnimationFrame(finish);});setTimeout(finish,80);
 }
-function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(sc)sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});document.getElementById('liveChatNewBtn').hidden=true;clearUnread();}
+function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(sc)sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});document.getElementById('liveChatNewBtn').hidden=true;dcMarkChatReadThroughNewest();}
   window.liveChatJumpToBottom=jumpBottom;
-  function bindScroll(){var sc=document.getElementById('liveChatScroll');if(!sc||chatScrollBound)return;chatScrollBound=true;var last=0;sc.addEventListener('scroll',function(){var score=document.getElementById('liveChatScoreCard');if(score)var at=chatAtBottom();score.classList.toggle('collapsed',!at);document.getElementById('liveChatNewBtn').hidden=at||chatMessages.length===0;last=sc.scrollTop;},{passive:true});}
+  function bindScroll(){var sc=document.getElementById('liveChatScroll');if(!sc||chatScrollBound)return;chatScrollBound=true;var last=0;sc.addEventListener('scroll',function(){var score=document.getElementById('liveChatScoreCard');var at=chatAtBottom();if(score)score.classList.toggle('collapsed',!at);document.getElementById('liveChatNewBtn').hidden=at||chatMessages.length===0;if(at)dcMarkChatReadThroughNewest();last=sc.scrollTop;},{passive:true});}
   function renderComposer(){var ta=document.getElementById('liveChatComposer'),send=document.getElementById('liveChatSendBtn'),wrap=document.getElementById('liveChatComposerWrap'),counter=document.getElementById('liveChatCounter'),hostSel=document.getElementById('liveChatHostSelect');if(!ta)return;ta.disabled=dcChatReconnectMode;var max=currentHostId&&chatAdmin?500:250;ta.maxLength=500;var n=ta.value.length;counter.textContent=n+' / '+max;counter.classList.toggle('show',n>=max-50);send.disabled=dcChatReconnectMode||currentReadOnly||!participant||participant.registration_required===true||participant.status==='blocked'||participant.status==='timed_out'||!ta.value.trim()||n>max||!currentGameKey;if(hostSel)hostSel.classList.toggle('show',chatAdmin&&!!currentHostId);if(wrap)wrap.style.display=(participant&&!currentReadOnly)?'block':'none';}
   function renderReply(){var r=document.getElementById('liveChatReplying'),t=document.getElementById('liveChatReplyingText');r.hidden=!replyTarget;if(replyTarget)t.textContent='Replying to '+replyTarget.display_name;}
   function renderHostSelect(hosts){var box=document.getElementById('liveChatHostProfile');if(!box)return;box.innerHTML='<option value="">ADMIN — MODERATION ONLY</option>'+hosts.filter(function(h){return h.active;}).map(function(h){return '<option value="'+h.id+'">'+escapeHtml(h.name)+'</option>';}).join('');if(currentHostId&&hosts.some(function(h){return h.id===currentHostId&&h.active;}))box.value=currentHostId;else{currentHostId='';try{localStorage.removeItem(HOST_KEY);}catch(_){}box.value='';}}
@@ -13270,7 +13271,7 @@ window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveC
   window.liveChatTestEnsureSeed=async function(){try{await ensureTestSeed();await loadLiveChatTestParticipants();toast('Test Chat seeded.');}catch(e){toast(e.message);}};
   async function updateLiveChatTestUnread(){
     try{
-      var last=Number(localStorage.getItem(dcChatReadKey('TEST:LIVE_CHAT'))||0)||0;
+      var last=dcLastReadMessageId('TEST:LIVE_CHAT');
       var r=await dcSupabase.from('live_chat_messages').select('id,sender_type').eq('game_key','TEST:LIVE_CHAT').gt('id',last).order('id',{ascending:true}).limit(100);
       var n=(r.data||[]).filter(function(m){return m.sender_type!=='system';}).length;
       var badge=document.getElementById('liveChatTestUnread');if(badge){badge.textContent=n>99?'99+':String(n);badge.hidden=!n;}
