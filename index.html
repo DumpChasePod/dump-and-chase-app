@@ -8726,7 +8726,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v590</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v592</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13005,7 +13005,8 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 .live-chat-banner[hidden]{display:none}
 .live-chat-banner.read-only{border-color:rgba(242,137,44,.30);background:rgba(242,137,44,.06);color:#f1c18f}
 .live-chat-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:10px 10px 8px}
-.live-chat-list{display:flex;flex-direction:column;gap:8px;max-width:900px;margin:0 auto}
+.live-chat-list{display:flex;flex-direction:column;gap:8px;max-width:900px;margin:0 auto;padding-bottom:18px}
+.live-chat-unread-divider{display:flex;align-items:center;gap:9px;margin:5px 2px 1px;color:#8cc8ff;font-size:9px;font-weight:950;letter-spacing:.09em;text-transform:uppercase}.live-chat-unread-divider::before,.live-chat-unread-divider::after{content:"";height:1px;flex:1;background:rgba(111,181,255,.34)}
 .live-chat-message{position:relative;padding:7px 8px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid transparent}
 .live-chat-message.own{background:rgba(139,82,255,.075);border-color:rgba(139,82,255,.15)}
 .live-chat-message.host{border-left:2px solid rgba(139,82,255,.52);background:rgba(139,82,255,.045)}
@@ -13129,7 +13130,7 @@ function liveChatControl(gameKey){return dcSupabase.from('live_chat_game_control
 window.dcSetReconnectMode=dcSetReconnectMode;
 function renderBanner(){dcUpdatePostgameNotice();var b=document.getElementById('liveChatBanner');if(!b)return;if(dcChatReconnectMode){b.hidden=false;b.className='live-chat-banner read-only';b.textContent='Reconnecting…';return;}b.hidden=false;b.className='live-chat-banner'+(currentReadOnly?' read-only':'');if(currentControl&&currentControl.mode==='read_only'){b.textContent=currentControl.reason||'Live Chat is temporarily paused.';b.className='live-chat-banner read-only';return;}if(currentReadOnly){b.textContent=chatTest?'Test Chat is read-only.':'Thanks for joining us! Live Chat has ended for this game.';return;}b.hidden=true;}
   function messageCounts(){var out={};chatReactions.forEach(function(r){out[r.message_id]=out[r.message_id]||{};out[r.message_id][r.reaction]=(out[r.message_id][r.reaction]||0)+1;});return out;}
-  function renderMessages(){var list=document.getElementById('liveChatList');if(!list)return;var counts=messageCounts();list.innerHTML=chatMessages.map(function(m){if(m.deleted_at)return '';var own=m.participant_id===participant?.id;var parent=m.parent_message_id?chatMessages.find(function(x){return x.id===m.parent_message_id;}):null;var reply=parent?'<span class="live-chat-reply-name">'+escapeHtml(parent.display_name)+'</span>':'';if(m.sender_type==='system')return '<div class="live-chat-message system '+(m.system_event_type==='goal_phantoms'?'phantoms-goal':'')+'" data-message-id="'+m.id+'"><div class="live-chat-system-body">'+escapeHtml(m.body)+'</div></div>';var host=m.sender_type==='host';var hostBadge=host?'<span class="live-chat-host-badge">HOST</span>':'';var r=counts[m.id]||{};var reactions=['👍','😂','❤️','😢'].map(function(e){return r[e]?'<button type="button" class="live-chat-reaction'+(chatReactions.some(function(z){return z.message_id===m.id&&z.participant_id===participant?.id&&z.reaction===e;})?' active':'')+'" onclick="event.stopPropagation();liveChatReact('+m.id+',\''+e+'\')"><span class="live-chat-reaction-emoji">'+e+'</span><span class="live-chat-reaction-count">'+r[e]+'</span></button>':'';}).join('');return '<div class="live-chat-message '+(own?'own ':'')+(host?'host':'')+'" data-message-id="'+m.id+'" onclick="liveChatMessageTap(event,'+m.id+')"><div class="live-chat-message-head"><span class="live-chat-name">'+escapeHtml(m.display_name)+'</span>'+hostBadge+'<span class="live-chat-time">'+formatChatTime(m.created_at)+'</span></div><div class="live-chat-message-body">'+reply+escapeHtml(m.body)+'</div>'+(m.edited_at&&!host?'':'')+(reactions?'<div class="live-chat-reactions">'+reactions+'</div>':'')+'</div>';}).join('')||'<div class="admin-muted" style="text-align:center;padding:30px 8px">Live Chat is open. Be the first to say something.</div>';}
+  function renderMessages(){var list=document.getElementById('liveChatList');if(!list)return;var counts=messageCounts();list.innerHTML=chatMessages.map(function(m){if(m.deleted_at)return '';var unreadDivider=(dcUnreadDividerId&&Number(m.id)===Number(dcUnreadDividerId))?'<div class="live-chat-unread-divider" id="liveChatUnreadDivider">NEW MESSAGES</div>':'';var own=m.participant_id===participant?.id;var parent=m.parent_message_id?chatMessages.find(function(x){return x.id===m.parent_message_id;}):null;var reply=parent?'<span class="live-chat-reply-name">'+escapeHtml(parent.display_name)+'</span>':'';if(m.sender_type==='system')return unreadDivider+'<div class="live-chat-message system '+(m.system_event_type==='goal_phantoms'?'phantoms-goal':'')+'" data-message-id="'+m.id+'"><div class="live-chat-system-body">'+escapeHtml(m.body)+'</div></div>';var host=m.sender_type==='host';var hostBadge=host?'<span class="live-chat-host-badge">HOST</span>':'';var r=counts[m.id]||{};var reactions=['👍','😂','❤️','😢'].map(function(e){return r[e]?'<button type="button" class="live-chat-reaction'+(chatReactions.some(function(z){return z.message_id===m.id&&z.participant_id===participant?.id&&z.reaction===e;})?' active':'')+'" onclick="event.stopPropagation();liveChatReact('+m.id+',\''+e+'\')"><span class="live-chat-reaction-emoji">'+e+'</span><span class="live-chat-reaction-count">'+r[e]+'</span></button>':'';}).join('');return unreadDivider+'<div class="live-chat-message '+(own?'own ':'')+(host?'host':'')+'" data-message-id="'+m.id+'" onclick="liveChatMessageTap(event,'+m.id+')"><div class="live-chat-message-head"><span class="live-chat-name">'+escapeHtml(m.display_name)+'</span>'+hostBadge+'<span class="live-chat-time">'+formatChatTime(m.created_at)+'</span></div><div class="live-chat-message-body">'+reply+escapeHtml(m.body)+'</div>'+(m.edited_at&&!host?'':'')+(reactions?'<div class="live-chat-reactions">'+reactions+'</div>':'')+'</div>';}).join('')||'<div class="admin-muted" style="text-align:center;padding:30px 8px">Live Chat is open. Be the first to say something.</div>';}
   function formatChatTime(v){try{return new Date(v).toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});}catch(_){return '';}}
   
 function dcChatReadKey(key){return 'dc-live-chat-read:'+String(key||currentGameKey||'game');}
@@ -13138,6 +13139,8 @@ function dcSetLastReadMessageId(id,key){try{localStorage.setItem(dcChatReadKey(k
 function dcHumanMessages(){return (chatMessages||[]).filter(function(m){return !m.is_system&&!m.system_type;});}
 function dcUnreadMessages(){var last=dcLastReadMessageId();return dcHumanMessages().filter(function(m){return Number(m.id)>last;});}
 function dcUnreadCount(){return dcUnreadMessages().length;}
+var dcUnreadDividerId=0;
+function dcClearUnreadDivider(){dcUnreadDividerId=0;var d=document.getElementById('liveChatUnreadDivider');if(d)d.remove();}
 function dcUpdateUnreadUI(){
   var n=dcUnreadCount(),label=n>99?'99+':String(n);
   document.querySelectorAll('[data-live-chat-unread],.live-chat-unread-badge').forEach(function(b){b.textContent=label;b.hidden=!n;});
@@ -13145,17 +13148,28 @@ function dcUpdateUnreadUI(){
   if(btn&&n&&!chatAtBottom())btn.hidden=false;
 }
 function dcMarkChatReadThroughNewest(){
-  var human=dcHumanMessages();if(!human.length)return;
+  var human=dcHumanMessages();if(!human.length){dcClearUnreadDivider();return;}
   dcSetLastReadMessageId(human.reduce(function(a,m){return Math.max(a,Number(m.id)||0);},0),currentGameKey);
+  dcClearUnreadDivider();
   if(currentGameKey==='TEST:LIVE_CHAT')setTimeout(updateLiveChatTestUnread,0);
   dcUpdateUnreadUI();
 }
 var dcOpeningToUnread=false;
+var dcUnreadShortTimer=0;
 function dcScrollToFirstUnread(){
+  if(dcUnreadShortTimer){clearTimeout(dcUnreadShortTimer);dcUnreadShortTimer=0;}
   var unread=dcUnreadMessages();
-  if(!unread.length){dcOpeningToUnread=false;liveChatTrueBottom();return;}
-  var id=unread[0].id,el=document.querySelector('[data-message-id="'+id+'"],[data-live-chat-message-id="'+id+'"]');
-  if(el){el.scrollIntoView({block:'start'});requestAnimationFrame(function(){el.scrollIntoView({block:'start'});dcOpeningToUnread=false;});}
+  if(!unread.length){dcOpeningToUnread=false;dcClearUnreadDivider();liveChatTrueBottom();return;}
+  var id=unread[0].id;dcUnreadDividerId=id;dcOpeningToUnread=true;renderMessages();
+  var el=document.querySelector('[data-message-id="'+id+'"],[data-live-chat-message-id="'+id+'"]');
+  if(el){el.scrollIntoView({block:'start'});requestAnimationFrame(function(){
+    el.scrollIntoView({block:'start'});
+    requestAnimationFrame(function(){
+      if(chatAtBottom()){
+        dcUnreadShortTimer=setTimeout(function(){dcUnreadShortTimer=0;dcOpeningToUnread=false;dcMarkChatReadThroughNewest();},5000);
+      }else dcOpeningToUnread=false;
+    });
+  });}
   else{dcOpeningToUnread=false;liveChatTrueBottom();}
 }
 function chatAtBottom(){var sc=document.getElementById('liveChatScroll');return !sc||sc.scrollHeight-sc.scrollTop-sc.clientHeight<=120;}
@@ -13164,7 +13178,7 @@ function chatAtBottom(){var sc=document.getElementById('liveChatScroll');return 
   function finish(){sc.scrollTop=sc.scrollHeight;var b=document.getElementById('liveChatNewBtn');if(b)b.hidden=true;dcMarkChatReadThroughNewest();}
   finish();requestAnimationFrame(function(){finish();requestAnimationFrame(finish);});setTimeout(finish,80);
 }
-function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(sc)sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});document.getElementById('liveChatNewBtn').hidden=true;dcMarkChatReadThroughNewest();}
+function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(!sc)return;var b=document.getElementById('liveChatNewBtn');if(b)b.hidden=true;sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});function settle(){sc.scrollTop=sc.scrollHeight;requestAnimationFrame(function(){sc.scrollTop=sc.scrollHeight;dcMarkChatReadThroughNewest();});}setTimeout(settle,320);}
   window.liveChatJumpToBottom=jumpBottom;
   function bindScroll(){var sc=document.getElementById('liveChatScroll');if(!sc||chatScrollBound)return;chatScrollBound=true;var last=0;sc.addEventListener('scroll',function(){var score=document.getElementById('liveChatScoreCard');var at=chatAtBottom();if(score)score.classList.toggle('collapsed',!at);document.getElementById('liveChatNewBtn').hidden=at||chatMessages.length===0;if(at&&!dcOpeningToUnread)dcMarkChatReadThroughNewest();last=sc.scrollTop;},{passive:true});}
   function renderComposer(){var ta=document.getElementById('liveChatComposer'),send=document.getElementById('liveChatSendBtn'),wrap=document.getElementById('liveChatComposerWrap'),counter=document.getElementById('liveChatCounter'),hostSel=document.getElementById('liveChatHostSelect');if(!ta)return;ta.disabled=dcChatReconnectMode;var max=currentHostId&&chatAdmin?500:250;ta.maxLength=500;var n=ta.value.length;counter.textContent=n+' / '+max;counter.classList.toggle('show',n>=max-50);send.disabled=dcChatReconnectMode||currentReadOnly||!participant||participant.registration_required===true||participant.status==='blocked'||participant.status==='timed_out'||!ta.value.trim()||n>max||!currentGameKey;if(hostSel)hostSel.classList.toggle('show',chatAdmin&&!!currentHostId);if(wrap)wrap.style.display=(participant&&!currentReadOnly)?'block':'none';}
