@@ -7342,7 +7342,8 @@ function renderRecentResults(){
         const arena=(scheduleMatch&&scheduleMatch.arena)||g.arena||'';
         const city=(scheduleMatch&&scheduleMatch.location)||g.city||'';
         const venue=[arena,city].filter(Boolean).join(' — ');
-        const boxUrl=(g.boxScoreUrl?String(g.boxScoreUrl).trim():'')||(scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'')||dcKnownBoxScoreUrl(g.date,g.opponent);
+        const scheduleGame=scheduleMatch?[dcScheduleKeyFromRow(scheduleMatch),scheduleMatch.opponent,scheduleMatch.location||'',scheduleMatch.time_label||'TBD']:null;
+        const boxUrl=(g.boxScoreUrl?String(g.boxScoreUrl).trim():'')||(scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'')||(scheduleGame?autoBoxScoreUrlForGame(scheduleGame):'')||dcKnownBoxScoreUrl(g.date,g.opponent);
         const inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+'</div>'+escapeHtml(arena||city)+'</div><div class="gc-series-status">'+tagHtml+'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span class="schedule-final-score">'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span></span></div>';
         return dcBoxScoreCardHtml(inner,boxUrl,g.opponent||'Opponent');
       }).join('')+'</div>';
@@ -7950,7 +7951,7 @@ function scheduleHTML(monthIndex){
       }else{
         statusHtml='<span class="gc-series-upcoming">'+escapeHtml((db&&db.time_label)||g[3]||'UPCOMING')+'</span>';
       }
-      var boxUrl=(db&&db.box_score_url?String(db.box_score_url).trim():'')||dcKnownBoxScoreUrl((db&&db.game_date)||g[0],g[1]);
+      var boxUrl=(db&&db.box_score_url?String(db.box_score_url).trim():'')||autoBoxScoreUrlForGame(g)||dcKnownBoxScoreUrl((db&&db.game_date)||g[0],g[1]);
       var inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g[1])+'</div><div class="gc-series-role-line"><b>'+escapeHtml(role)+'</b></div>'+escapeHtml(venue.arena||venue.city||g[2]||'')+'</div><div class="gc-series-status">'+tagHtml+statusHtml+'</div>';
       var scheduleClass=String(role||'').toUpperCase()==='HOME'?'hq-schedule-home':'';
       return dcBoxScoreCardHtml(inner,boxUrl,g[1],scheduleClass);
@@ -8449,7 +8450,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v600</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v601</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8913,6 +8914,7 @@ async function loadSupabaseSchedule(){
       try{renderSelectedMonth();}catch(_){}
       try{renderNextGame();}catch(_){}
       try{renderRecentResults();}catch(_){}
+      setTimeout(function(){dcBackfillMissingBoxScores().catch(function(e){console.warn('Box score backfill unavailable.',e);});},150);
     }
   }catch(e){console.warn('Supabase schedule unavailable; using cached schedule when available.',e);}
 }
@@ -9019,6 +9021,25 @@ function boxScoreUrlForGame(g){
   var manual=r&&String(r.box_score_url||'').trim()?String(r.box_score_url).trim():'';
   return manual||autoBoxScoreUrlForGame(g);
 }
+async function dcBackfillMissingBoxScores(){
+  if(!Array.isArray(dcScheduleRows)||!dcScheduleRows.length)return;
+  var missing=dcScheduleRows.filter(function(row){
+    return String(row.status||'').toUpperCase()==='FINAL'&&!String(row.box_score_url||'').trim();
+  });
+  for(var i=0;i<missing.length;i++){
+    var row=missing[i];
+    var g=[dcScheduleKeyFromRow(row),row.opponent,row.location||'',row.time_label||'TBD'];
+    try{
+      var found=await Promise.resolve(ensureAutoBoxScoreForGame(g));
+      if(/^https?:\/\//i.test(String(found||''))){
+        row.box_score_url=String(found);
+      }
+    }catch(e){console.warn('Completed-game box score backfill failed.',row&&row.game_date,row&&row.opponent,e);}
+  }
+  try{renderSelectedMonth();}catch(_){}
+  try{renderRecentResults();}catch(_){}
+}
+
 function displayGameClock(value){var v=String(value||'').trim();if(!v)return '';if(v==='INT')return v;var m=v.match(/^0?(\d{1,2}):(\d{2})$/);return m?String(parseInt(m[1],10)||0)+':'+m[2]:v;}
 function boxScoreButton(url,extraClass){
   url=String(url||'').trim();
