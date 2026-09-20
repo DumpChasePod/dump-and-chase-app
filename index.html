@@ -8738,7 +8738,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v596</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v597</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13369,7 +13369,29 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
        contains human conversation only unless an Admin/Host posts manually. */
     previousGameState=JSON.parse(JSON.stringify(st||{}));
   }
-    async function refreshLiveChatAvailability(){try{var active=currentGameInfo();if(!active||!active.g){dcLiveChatEnabled=false;return;}var key=dcLiveChatGameKey(active.g);var r=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',key).maybeSingle();dcLiveChatEnabled=r.data?.enabled===true;refreshPublicGameDay();}catch(_){dcLiveChatEnabled=false;}}
+    var dcLiveChatAutoEnabledGameKey='';
+  async function refreshLiveChatAvailability(){try{
+    var active=currentGameInfo();
+    if(!active||!active.g){dcLiveChatEnabled=false;dcLiveChatAutoEnabledGameKey='';return;}
+    var key=dcLiveChatGameKey(active.g);
+    var r=await dcSupabase.from('live_chat_game_controls').select('enabled').eq('game_key',key).maybeSingle();
+    if(r.data?.enabled===true){dcLiveChatEnabled=true;dcLiveChatAutoEnabledGameKey=key;refreshPublicGameDay();return;}
+    /* When the public Game Day window becomes active, Live Chat should always
+       start enabled for that game. Use the existing authenticated API when an
+       Admin session is available; otherwise keep polling until one is. */
+    var session=await dcGetSession();
+    if(session&&await dcVerifyAdminSession(session)&&dcLiveChatAutoEnabledGameKey!==key){
+      dcLiveChatAutoEnabledGameKey=key;
+      try{
+        await api({action:'set_enabled',game_key:key,enabled:true},session);
+        dcLiveChatEnabled=true;
+        refreshPublicGameDay();
+        return;
+      }catch(e){dcLiveChatAutoEnabledGameKey='';}
+    }
+    dcLiveChatEnabled=false;
+    refreshPublicGameDay();
+  }catch(_){dcLiveChatEnabled=false;}}
   async function productionStateWatcher(){if(chatTest)return;var active=currentGameInfo();if(!active||!active.g)return;var st=getAdminGameState();var session=await dcGetSession();if(session&&await dcVerifyAdminSession(session)){if(!currentGameKey||currentGameKey!==dcLiveChatGameKey(active.g)){currentGameKey=dcLiveChatGameKey(active.g);currentGame={g:active.g};}await maybeProductionSystemEvent(st);}if(chatOpen){var automaticReadOnly=false;if(String(st.adminGameStatus||'').toLowerCase()==='final'){var stamp=Date.parse(String(st.updatedAt||''));if(isFinite(stamp)){dcChatFinalAt=stamp;dcEnsureCountdown();dcUpdatePostgameNotice();automaticReadOnly=Date.now()-stamp>=DC_LIVE_CHAT_POSTGAME_MS;}}else{dcChatFinalAt=0;dcUpdatePostgameNotice();}var controlReadOnly=!!(currentControl&&currentControl.mode==='read_only');var nextReadOnly=automaticReadOnly||controlReadOnly;if(nextReadOnly!==currentReadOnly){currentReadOnly=nextReadOnly;renderBanner();renderComposer();liveChatCloseMenu();}renderScore();}refreshPublicGameDay();}
   window.addEventListener('online',function(){if(chatOpen){renderBanner();}});
   setInterval(productionStateWatcher,3000);
@@ -13392,7 +13414,7 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
   window.adminLiveChatAddBlockedWord=async function(){var el=document.getElementById('adminLiveChatBlockedWord');if(!el.value.trim())return;try{await api({action:'save_blocked_word',term:el.value.trim()},await dcGetSession());el.value='';loadAdminLiveChatBlockedWords();}catch(e){toast(e.message);}};
   window.adminLiveChatRemoveBlockedWord=async function(id){try{await api({action:'remove_blocked_word',id:id},await dcGetSession());loadAdminLiveChatBlockedWords();}catch(e){toast(e.message);}};
   var liveChatAdminGroups={chat:[['current','CURRENT CHAT'],['participants','PARTICIPANTS']],manage:[['hosts','HOSTS'],['settings','SETTINGS']],tools:[['recent','RECENT CHATS'],['test','TEST CHAT']]};
-var liveChatAdminDefaults={chat:'current',manage:'hosts',tools:'test'};
+var liveChatAdminDefaults={chat:'current',manage:'hosts',tools:'recent'};
 var liveChatAdminActiveGroup='chat';
 function renderLiveChatAdminSubtabs(group,selected){var wrap=document.getElementById('liveChatAdminSubtabs');if(!wrap)return;wrap.innerHTML=(liveChatAdminGroups[group]||[]).map(function(x){return '<button type="button" class="admin-mini-btn'+(x[0]===selected?' active':'')+'" data-lc-admin="'+x[0]+'" onclick="selectLiveChatAdminSubtab(\''+x[0]+'\')">'+x[1]+'</button>';}).join('');}
 window.selectLiveChatAdminGroup=function(group){liveChatAdminActiveGroup=group;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===group);});var tab=liveChatAdminDefaults[group]||'current';renderLiveChatAdminSubtabs(group,tab);selectLiveChatAdminSubtab(tab);};
