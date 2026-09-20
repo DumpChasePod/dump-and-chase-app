@@ -8044,7 +8044,7 @@ function renderSelectedMonth(){
       var seriesInner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place">'+place+'</div><div class="gc-series-status">'+status+'</div>';
       if(result){
         var seriesDb=scheduleRowForGame(row);
-        var seriesBoxUrl=(result.boxScoreUrl?String(result.boxScoreUrl).trim():'')||(seriesDb&&seriesDb.box_score_url?String(seriesDb.box_score_url).trim():'')||dcKnownBoxScoreUrl((seriesDb&&seriesDb.game_date)||row[0],row[1]);
+        var seriesBoxUrl=(result.boxScoreUrl?String(result.boxScoreUrl).trim():'')||(seriesDb&&seriesDb.box_score_url?String(seriesDb.box_score_url).trim():'')||autoBoxScoreUrlForGame(row)||dcKnownBoxScoreUrl((seriesDb&&seriesDb.game_date)||row[0],row[1]);
         return dcBoxScoreCardHtml(seriesInner,seriesBoxUrl,row[1],isNext?'is-next':'');
       }
       return '<div class="gc-series-row'+(isNext?' is-next':'')+'">'+seriesInner+'</div>';
@@ -8390,7 +8390,7 @@ function renderSelectedMonth(){
       try{renderSelectedMonth();}catch(_){}
       try{renderNextGame();}catch(_){}
       try{renderRecentResults();}catch(_){}
-      try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
+      try{if(typeof renderNextGame==='function')renderNextGame();}catch(_){}
     }).catch(function(e){
       console.warn('HQ schedule refresh failed; keeping current cached schedule.',e);
     });
@@ -8450,7 +8450,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v601</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v602</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9002,7 +9002,7 @@ async function ensureAutoBoxScoreForGame(g){
         try{await dcPersistResolvedBoxScoreToSchedule(g,found);}catch(_){}
         try{renderPublicGameDay();}catch(_){}
         try{renderSelectedMonth();}catch(_){}
-        try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
+        try{if(typeof renderNextGame==='function')renderNextGame();}catch(_){}
         return found;
       }
     }catch(e){
@@ -9038,6 +9038,7 @@ async function dcBackfillMissingBoxScores(){
   }
   try{renderSelectedMonth();}catch(_){}
   try{renderRecentResults();}catch(_){}
+  try{renderNextGame();}catch(_){}
 }
 
 function displayGameClock(value){var v=String(value||'').trim();if(!v)return '';if(v==='INT')return v;var m=v.match(/^0?(\d{1,2}):(\d{2})$/);return m?String(parseInt(m[1],10)||0)+':'+m[2]:v;}
@@ -10701,7 +10702,7 @@ async function persistAdminGameDayBoxScore(){
   syncAdminGameDayBoxScoreControl(false);
   try{renderSelectedMonth();}catch(_){}
   try{renderRecentResults();}catch(_){}
-  try{if(typeof renderSeasonSeries==='function')renderSeasonSeries();}catch(_){}
+  try{if(typeof renderNextGame==='function')renderNextGame();}catch(_){}
   return true;
 }
 
