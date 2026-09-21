@@ -6093,12 +6093,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <h2 id="bigAudioTitle">Dump & Chase Podcast</h2>
   <div class="big-meta"><span id="bigCurrent">0:00</span><span id="bigDuration" aria-label="Time remaining">−0:00</span></div>
   <input class="big-range" id="bigRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
-  <div class="player-volume" id="playerVolumeControl">
-    <span class="player-volume-label">VOLUME</span>
-    <input class="player-volume-range" id="audioVolumeRange" type="range" min="0" max="100" step="1" value="100" aria-label="Player volume">
-    <span class="player-volume-value" id="audioVolumeValue">100%</span>
-  </div>
-  <div class="player-volume-note" id="audioVolumeNote" hidden>Use your device volume buttons.</div>
   <div class="player-controls">
     <button onclick="seekAudio(-15)" aria-label="Back 15 seconds">↶<small>15</small></button>
     <button class="big-play" id="bigPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
@@ -8248,7 +8242,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v603</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v604</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11082,9 +11076,7 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
   var timer=0;
   var DC_PLAYBACK_KEY='dc_episode_playback_positions_v1';
   var DC_LISTENED_KEY='dc_episode_listened_v1';
-  var DC_VOLUME_KEY='dc_episode_player_volume_v1';
   var dcRestoredPlaybackSrc='';
-  var volumeSupported=null;
 
   function audio(){return document.getElementById('audio');}
   function fmtLocal(sec){
@@ -11154,40 +11146,6 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
   function seekBy(delta){seekTo(current()+Number(delta||0));}
   function seekPercent(value){var d=duration();if(!d)return;seekTo(d*Math.max(0,Math.min(100,Number(value)||0))/100);}
 
-  function readVolume(){
-    try{var saved=Number(localStorage.getItem(DC_VOLUME_KEY));return Number.isFinite(saved)?Math.max(0,Math.min(1,saved)):1;}catch(_){return 1;}
-  }
-  function saveVolume(value){try{localStorage.setItem(DC_VOLUME_KEY,String(Math.max(0,Math.min(1,value))));}catch(_){}}
-  function paintVolume(value){
-    var row=document.getElementById('playerVolumeControl'),range=document.getElementById('audioVolumeRange');
-    var label=document.getElementById('audioVolumeValue'),note=document.getElementById('audioVolumeNote');
-    if(volumeSupported===false){
-      if(row)row.classList.add('is-device-volume');
-      if(range){range.disabled=true;range.value='100';}
-      if(label)label.textContent='DEVICE';
-      if(note)note.hidden=false;
-      return;
-    }
-    if(row)row.classList.remove('is-device-volume');
-    if(range){range.disabled=false;range.value=String(Math.round(value*100));}
-    if(label)label.textContent=Math.round(value*100)+'%';
-    if(note)note.hidden=true;
-  }
-  function applyVolume(value,userInitiated){
-    var a=audio();if(!a)return false;
-    value=Math.max(0,Math.min(1,Number(value)));if(!Number.isFinite(value))value=1;
-    var before=Number(a.volume);
-    try{a.muted=false;a.volume=value;}catch(_){}
-    var actual=Number(a.volume);
-    var applied=Number.isFinite(actual)&&Math.abs(actual-value)<=0.02;
-    if(!applied&&Number.isFinite(before)&&Math.abs(before-value)>0.02){
-      volumeSupported=false;paintVolume(1);
-      if(userInitiated&&typeof toast==='function')toast('Use your device volume buttons on this iPhone or iPad.');
-      return false;
-    }
-    volumeSupported=true;saveVolume(value);paintVolume(value);return true;
-  }
-
   function getSavedPlaybackMap(){
     try{var raw=localStorage.getItem(DC_PLAYBACK_KEY),parsed=raw?JSON.parse(raw):{};return parsed&&typeof parsed==='object'?parsed:{};}catch(_){return {};}
   }
@@ -11256,9 +11214,6 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
     document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')savePlaybackPosition();});
     var small=document.getElementById('audioRange'),big=document.getElementById('bigRange');
     ['input','change'].forEach(function(evt){if(small)small.addEventListener(evt,function(e){seekPercent(e.target.value);paint();});if(big)big.addEventListener(evt,function(e){seekPercent(e.target.value);paint();});});
-    var volume=document.getElementById('audioVolumeRange');
-    if(volume){['input','change'].forEach(function(evt){volume.addEventListener(evt,function(e){applyVolume(Number(e.target.value)/100,true);});});}
-    applyVolume(readVolume(),false);
     if('mediaSession' in navigator&&navigator.mediaSession){
       try{navigator.mediaSession.setActionHandler('seekbackward',function(details){seekBy(-(details&&details.seekOffset?details.seekOffset:15));});}catch(_){}
       try{navigator.mediaSession.setActionHandler('seekforward',function(details){seekBy(details&&details.seekOffset?details.seekOffset:30);});}catch(_){}
@@ -12139,17 +12094,7 @@ setInterval(function(){dcRenderAdminHtLiveStrip();},1000);
 }
 </style>
 
-<style id="v603-player-time-volume">
-/* v603: remaining-time counter + persistent player volume. */
-.player-volume{width:100%;max-width:620px;margin:12px auto 0;display:grid;grid-template-columns:auto minmax(0,1fr) 44px;gap:10px;align-items:center}
-.player-volume-label,.player-volume-value{color:#8793a4;font-size:9px;font-weight:950;letter-spacing:.08em}
-.player-volume-value{text-align:right;font-variant-numeric:tabular-nums}
-.player-volume-range{width:100%;height:20px;margin:0;accent-color:#8b4dff;touch-action:pan-x}
-.player-volume-note{max-width:620px;margin:5px auto 0;color:#8793a4;font-size:9px;font-weight:800;text-align:center}
-.player-volume.is-device-volume .player-volume-range{opacity:.45}
-.player-volume.is-device-volume .player-volume-value{font-size:8px;letter-spacing:.05em}
-@media(max-width:420px){.player-volume{grid-template-columns:auto minmax(0,1fr) 40px;gap:8px}}
-</style>
+
 
 <style id="v535-game-center-authority">
 /* V535: HockeyTech-first Game Center. Manual score/period/clock are emergency-only. */
