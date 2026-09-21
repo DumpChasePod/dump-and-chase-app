@@ -7628,6 +7628,36 @@ function startAudio(item){
  document.getElementById('playerScreen').classList.add('show');
  if(typeof syncEpisodeNowPlaying==='function')syncEpisodeNowPlaying();
 }
+function openFullPlayer(){
+ const a=document.getElementById('audio');
+ if(!a||!a.src){toast('Choose an episode first.');return;}
+ dcHistoryEnterPlayer();
+ var screen=document.getElementById('playerScreen');
+ var mini=document.getElementById('audioPlayer');
+ if(screen)screen.classList.add('show');
+ if(mini)mini.classList.remove('show');
+}
+function minimizePlayer(){
+ if(!dcHistoryHandling&&history.state&&history.state.dcView==='player'){
+   dcPlayerBackAction='minimize';
+   history.back();
+   return;
+ }
+ dcVisualMinimizePlayer(false);
+}
+function closePlayer(){
+ var a=document.getElementById('audio');
+ if(a)a.pause();
+ var screen=document.getElementById('playerScreen');
+ if(!dcHistoryHandling&&screen&&screen.classList.contains('show')&&history.state&&history.state.dcView==='player'){
+   dcPlayerBackAction='close';
+   history.back();
+   return;
+ }
+ var mini=document.getElementById('audioPlayer');
+ if(mini)mini.classList.remove('show');
+ if(screen)screen.classList.remove('show');
+}
 function parseEpisodeDurationSeconds(value){
   var text=String(value||'').trim();
   if(!text)return 0;
@@ -8242,7 +8272,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v604</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v605</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
