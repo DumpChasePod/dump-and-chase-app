@@ -4388,7 +4388,7 @@ header.home-masthead{
 
 <style id="v496-mini-player-layout">
 .audio-player{
-  grid-template-columns:44px minmax(0,1fr) 34px!important;
+  grid-template-columns:84px minmax(0,1fr) 34px!important;
   grid-template-rows:auto auto auto!important;
   column-gap:10px!important;
   row-gap:7px!important;
@@ -4413,9 +4413,11 @@ header.home-masthead{
   grid-column:1;
   grid-row:3;
   justify-self:start;
-  width:38px;
+  width:82px;
   height:38px;
-  font-size:19px;
+  padding:0 10px;
+  font-size:9px;
+  letter-spacing:.05em;
   font-weight:950;
   background:rgba(139,77,255,.16);
   border:1px solid rgba(165,108,255,.38);
@@ -4437,7 +4439,7 @@ header.home-masthead{
 }
 @media(max-width:600px){
   .audio-player{
-    grid-template-columns:44px minmax(0,1fr) 34px!important;
+    grid-template-columns:84px minmax(0,1fr) 34px!important;
   }
 }
 </style>
@@ -6072,7 +6074,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   </button>
   <button class="audio-btn secondary-audio" onclick="closePlayer()" aria-label="Close player">✕</button>
   <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
-  <button class="audio-btn reopen-audio" onclick="openFullPlayer()" aria-label="Open full player">↗</button>
+  <button class="audio-btn reopen-audio" onclick="openFullPlayer()" aria-label="Maximize player">MAXIMIZE</button>
   <button class="audio-btn" id="audioPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
   <span class="audio-control-spacer" aria-hidden="true"></span>
   <audio id="audio" preload="metadata"></audio>
@@ -6081,7 +6083,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 
 <div class="player-screen" id="playerScreen">
   <div class="player-top">
-    <button class="player-back player-minimize-icon" onclick="minimizePlayer()" aria-label="Minimize player"><span class="min-arrow min-arrow-a">↘</span><span class="min-arrow min-arrow-b">↖</span></button>
+    <span aria-hidden="true" style="width:40px;height:40px"></span>
     <span>NOW PLAYING</span>
     <button class="player-back" onclick="closePlayer()" aria-label="Close player">✕</button>
   </div>
@@ -8272,7 +8274,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v607</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v608</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
