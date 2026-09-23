@@ -7316,7 +7316,9 @@ function dcDelayedBoxScoreOpen(event,url){
   setTimeout(function(){dcClearBoxScoreOpening(card);},170);
   setTimeout(function(){
     dcClearBoxScoreOpening(card);
-    window.location.assign(destination);
+    try{
+      window.open(destination,'_blank','noopener');
+    }catch(_){}
   },210);
   return false;
 }
@@ -7325,7 +7327,7 @@ function dcBoxScoreCardHtml(inner,url,label,extraClass){
   url=String(url||'').trim();
   var cls='gc-series-row v306-game-row v308-schedule-row'+(extraClass?' '+extraClass:'');
   if(!url)return '<div class="'+cls+'">'+inner+'</div>';
-  return '<a class="'+cls+' dc-box-score-card" href="'+escapeHtml(url)+'" onclick="return dcDelayedBoxScoreOpen(event,this.href)" aria-label="Open USHL box score for '+escapeHtml(label||'game')+'">'+inner+'</a>';
+  return '<a class="'+cls+' dc-box-score-card" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="return dcDelayedBoxScoreOpen(event,this.href)" aria-label="Open USHL box score for '+escapeHtml(label||'game')+'">'+inner+'</a>';
 }
 function renderRecentResults(){
   const boxes=['recentResultsList','homeRecentResultsList'].map(id=>document.getElementById(id)).filter(Boolean);
@@ -8274,7 +8276,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v608</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v609</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
