@@ -8272,7 +8272,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v605</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v606</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11712,7 +11712,7 @@ function dcZeroPlayerStats(kind){
     :{gp:0,g:0,a:0,pts:0,pim:0,plus_minus:0};
 }
 function dcPlayerStatsCacheKey(player){
-  return 'dc-player-stats-v2|91|'+String(player&&player.name||'').trim().toLowerCase()+'|'+String(player&&player.position||player&&player.position_group||'').trim().toLowerCase();
+  return 'dc-player-stats-v3|91|'+String(player&&player.name||'').trim().toLowerCase()+'|'+String(player&&player.position||player&&player.position_group||'').trim().toLowerCase();
 }
 function dcReadPlayerStatsCache(player){
   try{
@@ -11754,7 +11754,7 @@ async function dcLoadPlayerStats(player){
   else marker.innerHTML='<div class="player-profile-stats-note">Loading official USHL stats…</div>';
   host.appendChild(marker);
   try{
-    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'')+'&position='+encodeURIComponent(player.position||player.position_group||'');
+    var url=DC_SUPABASE_URL+'/functions/v1/get-ushl-player-stats?season_id=91&player_name='+encodeURIComponent(player.name||'')+'&position='+encodeURIComponent(player.position||player.position_group||'')+'&team_code=YNG&jersey_number='+encodeURIComponent(player.number||'');
     var res=await fetch(url,{method:'GET',cache:'no-store',headers:{'apikey':DC_SUPABASE_KEY}});
     var data=await res.json();
     if(!res.ok||data.ok===false)throw new Error(data.error||('HTTP '+res.status));
