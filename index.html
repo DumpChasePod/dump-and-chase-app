@@ -8272,7 +8272,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v606</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v607</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10985,7 +10985,9 @@ async function refreshLatestEpisode(){
         date:x.pubDate?new Date(x.pubDate).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}):'',
         desc:cleanEpisodeDescription(x.description||x.content||''),
         duration:formatEpisodeDuration(x.itunes_duration||x.duration||''),
-        link:x.link||'',audio:enc.link||enc.url||x.audio||''
+        link:x.link||'',
+        audio:enc.link||enc.url||x.audio||'',
+        image:x.image||''
       };
       populateLatestEpisode(latest);
       try{localStorage.setItem('dc_latest_episode_v1',JSON.stringify(latest));}catch(cacheError){} dcOfflineMarkSync('home');
