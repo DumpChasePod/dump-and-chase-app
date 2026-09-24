@@ -7528,7 +7528,7 @@ function dcCanonicalNextGame(nowValue){
    if(status!=='final'&&typeof gameDayAutomationWindow==='function'){
      var active=gameDayAutomationWindow(now);
      if(active&&active.g&&active.d instanceof Date&&isFinite(active.d.getTime())){
-       return {g:active.g,d:active.d,window:active};
+       return {g:active.g,d:active.d,row:active.row||null,window:active};
      }
    }
  }catch(_){}
@@ -7542,12 +7542,30 @@ function dcPaintNextGameCountdown(next){
  ['gcDays','gcHours','gcMinutes','gcSeconds'].forEach(function(id,i){var el=document.getElementById(id);if(el)el.textContent=vals[i];});
  return true;
 }
+function dcPaintNextGameIdentity(next){
+ if(!next||!next.g||!(next.d instanceof Date)||!isFinite(next.d.getTime()))return;
+ var g=next.g,d=next.d,row=next.row||(next.window&&next.window.row)||null;
+ var opponent=String((row&&row.opponent)||g[1]||'').trim();
+ var timeLabel=String((row&&row.time_label)||g[3]||'TBD').trim()||'TBD';
+ var isHome=featuredHomeAwayRole(g)==='HOME';
+ try{var logo=document.getElementById('heroOpponentLogo');if(logo)logo.innerHTML=matchupLogo(opponent);}catch(_){}
+ try{var name=document.getElementById('heroOpponent');if(name){if(typeof teamNameStack==='function')name.innerHTML=teamNameStack(opponent);else name.textContent=opponent;}}catch(_){try{var name2=document.getElementById('heroOpponent');if(name2)name2.textContent=opponent;}catch(__){}}
+ try{var ph=document.getElementById('heroPhantomsName');if(ph){if(typeof teamNameStack==='function')ph.innerHTML=teamNameStack('Youngstown Phantoms');else ph.textContent='Youngstown Phantoms';}}catch(_){}
+ try{var phLogo=document.getElementById('heroPhantomsLogo');if(phLogo)phLogo.innerHTML=matchupLogo('Youngstown Phantoms');}catch(_){}
+ try{var phHA=document.getElementById('heroPhantomsHomeAway');if(phHA)phHA.textContent=isHome?'HOME':'AWAY';}catch(_){}
+ try{var opHA=document.getElementById('heroOpponentHomeAway');if(opHA)opHA.textContent=isHome?'AWAY':'HOME';}catch(_){}
+ try{var dateEl=document.getElementById('gameHeroDate');if(dateEl)dateEl.textContent=weekdayFull(d)+' • '+d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});}catch(_){}
+ try{var timeEl=document.getElementById('homeGameTime');if(timeEl)timeEl.textContent=timeLabel;}catch(_){}
+ try{var venue=scheduleVenue(g),loc=document.getElementById('gameHeroLocation');if(loc)loc.textContent=(venue.arena||'')+(venue.arena&&venue.city?' — ':'')+(venue.city||'');}catch(_){try{var loc2=document.getElementById('gameHeroLocation');if(loc2)loc2.textContent=String((row&&row.location)||g[2]||'');}catch(__){}}
+ try{var eventLabel=typeof scheduleEventLabel==='function'?(scheduleEventLabel(g)||'REGULAR SEASON'):'REGULAR SEASON';var eventEl=document.getElementById('homeGameEvent');if(eventEl)eventEl.textContent=eventLabel;var label=document.getElementById('gameHeroLabel');if(label)label.textContent=eventLabel==='PRESEASON'?'PRESEASON':'NEXT PHANTOMS GAME';}catch(_){}
+}
 function updateNextGame(){
  const next=dcCanonicalNextGame(new Date());
  if(!next)return;
- /* V614: paint the countdown first and independently. Home-card record/branding helpers
-    may fail or re-render later, but they can no longer block the ticking clock. */
+ /* V620: paint countdown + core game identity before any secondary matchup/record helpers.
+    Each identity field is isolated so one helper failure cannot leave stale cached fields behind. */
  dcPaintNextGameCountdown(next);
+ dcPaintNextGameIdentity(next);
  const g=next.g,d=next.d,diff=Math.max(0,d-Date.now());
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
  const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
@@ -8343,7 +8361,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v619</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v620</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8806,7 +8824,7 @@ async function loadSupabaseSchedule(){
       try{localStorage.setItem(DC_SCHEDULE_CACHE_KEY,JSON.stringify(q.data));}catch(_){} dcOfflineMarkSync('hq');
       try{renderSelectedMonth();}catch(_){}
       try{renderNextGame();}catch(_){}
-      /* V619: Supabase has now replaced the cached schedule. Refresh Home from the
+      /* V620: Supabase has now replaced the cached schedule. Refresh Home from the
          same newly rebuilt schedule so opponent, logo, time, venue and countdown
          cannot remain split between stale cache data and current schedule data. */
       try{updateNextGame();}catch(e){console.warn('Home Next Game refresh after schedule sync failed.',e);}
