@@ -7572,7 +7572,34 @@ function updateNextGame(){
  const gcLoc=document.getElementById('gcLocation');if(gcLoc){const gv=scheduleVenue(g);gcLoc.textContent=`${gv.arena} — ${gv.city}`;}
  gcIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
 }
-updateNextGame();setInterval(updateNextGame,1000);
+updateNextGame();
+/* V615: the Home countdown owns its own visible-page clock. The previous generic
+   interval could stop advancing even though the initial render succeeded. Keep
+   the expensive Next Game card refresh separate and repaint only the four clock
+   values from requestAnimationFrame, which automatically resumes when the PWA
+   becomes visible again. */
+(function dcStartNextGameCountdownClock(){
+ var lastSecond=-1,rafId=0;
+ function paint(){
+  var now=Date.now(),second=Math.floor(now/1000);
+  if(second!==lastSecond){
+   lastSecond=second;
+   try{dcPaintNextGameCountdown(dcNextHomeGame(new Date(now)));}catch(_){}
+  }
+  rafId=requestAnimationFrame(paint);
+ }
+ function restart(){
+  try{if(rafId)cancelAnimationFrame(rafId);}catch(_){}
+  rafId=0;lastSecond=-1;
+  try{dcPaintNextGameCountdown(dcNextHomeGame(new Date()));}catch(_){}
+  rafId=requestAnimationFrame(paint);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restart,{once:true});
+ else restart();
+ window.addEventListener('pageshow',restart);
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)restart();});
+})();
+setInterval(function(){try{updateNextGame();}catch(_){}},15000);
 
 
 
@@ -8316,7 +8343,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v614</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v615</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
