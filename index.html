@@ -7223,6 +7223,26 @@ let dcScheduleRows=[];
 const DC_SCHEDULE_CACHE_KEY='dc_schedule_cache_v1';
 const monthNumbers={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
 const defaultHours={};
+function dcEasternGameDate(dateValue,timeValue){
+  var date=String(dateValue||'').trim(),time=String(timeValue||'').trim().slice(0,8);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^\d{2}:\d{2}(?::\d{2})?$/.test(time))return null;
+  if(time.length===5)time+=':00';
+  var parts=(date+'T'+time).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/);
+  if(!parts)return null;
+  var target={year:+parts[1],month:+parts[2],day:+parts[3],hour:+parts[4],minute:+parts[5],second:+parts[6]};
+  var guess=Date.UTC(target.year,target.month-1,target.day,target.hour,target.minute,target.second);
+  var fmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+  for(var n=0;n<3;n++){
+    var vals={};
+    fmt.formatToParts(new Date(guess)).forEach(function(p){if(p.type!=='literal')vals[p.type]=+p.value;});
+    var shown=Date.UTC(vals.year,vals.month-1,vals.day,vals.hour,vals.minute,vals.second);
+    var wanted=Date.UTC(target.year,target.month-1,target.day,target.hour,target.minute,target.second);
+    var delta=wanted-shown;
+    if(!delta)break;
+    guess+=delta;
+  }
+  return new Date(guess);
+}
 function dcScheduleKeyFromRow(r){
   var d=new Date(String(r.game_date)+'T12:00:00');
   return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()]+' '+d.getDate();
@@ -7236,7 +7256,8 @@ function rebuildScheduleFromSupabase(rows){
     var label=r.time_label||'TBD';
     phantomsSchedule.push([key,r.opponent,r.location,label]);
     if(r.game_time){
-      gameTimes[key]=String(r.game_date)+'T'+String(r.game_time).slice(0,8);
+      var easternGame=dcEasternGameDate(r.game_date,r.game_time);
+      if(easternGame&&isFinite(easternGame.getTime()))gameTimes[key]=easternGame.toISOString();
     }
   });
 }
@@ -8276,7 +8297,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v610</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v611</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
