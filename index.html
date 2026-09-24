@@ -7520,9 +7520,20 @@ function dcNextHomeGame(nowValue){
  }
  return next;
 }
+function dcPaintNextGameCountdown(next){
+ if(!next||!(next.d instanceof Date)||!isFinite(next.d.getTime()))return false;
+ var diff=Math.max(0,next.d.getTime()-Date.now());
+ var vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60].map(function(x){return String(x).padStart(2,'0');});
+ ['cdDays','cdHours','cdMinutes','cdSeconds'].forEach(function(id,i){var el=document.getElementById(id);if(el)el.textContent=vals[i];});
+ ['gcDays','gcHours','gcMinutes','gcSeconds'].forEach(function(id,i){var el=document.getElementById(id);if(el)el.textContent=vals[i];});
+ return true;
+}
 function updateNextGame(){
  const next=dcNextHomeGame(new Date());
  if(!next)return;
+ /* V614: paint the countdown first and independently. Home-card record/branding helpers
+    may fail or re-render later, but they can no longer block the ticking clock. */
+ dcPaintNextGameCountdown(next);
  const g=next.g,d=next.d,diff=Math.max(0,d-Date.now());
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
  const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
@@ -8305,7 +8316,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v613</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v614</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
