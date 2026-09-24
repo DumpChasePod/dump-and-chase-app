@@ -7572,13 +7572,20 @@ function updateNextGame(){
  const gcLoc=document.getElementById('gcLocation');if(gcLoc){const gv=scheduleVenue(g);gcLoc.textContent=`${gv.arena} — ${gv.city}`;}
  gcIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
 }
-/* V616: restore the original proven countdown cadence. updateNextGame now paints
-   the countdown before any secondary card work, so a failure later in the render
-   cannot freeze the clock. */
-updateNextGame();
-setInterval(function(){
- try{updateNextGame();}catch(_){}
-},1000);
+/* V617: start the countdown clock before the full Next Game render.
+   The full card render can touch data/helpers that are not ready yet; if one of
+   those throws, the countdown must already be alive and remain independent. */
+function dcTickNextGameCountdown(){
+ try{
+   var next=dcNextHomeGame(new Date());
+   if(next)dcPaintNextGameCountdown(next);
+ }catch(_){}
+}
+var dcNextGameCountdownTimer=setInterval(dcTickNextGameCountdown,1000);
+dcTickNextGameCountdown();
+try{updateNextGame();}catch(e){console.warn('Next Game render deferred; countdown remains active.',e);}
+window.addEventListener('pageshow',dcTickNextGameCountdown);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)dcTickNextGameCountdown();});
 
 
 
@@ -8322,7 +8329,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v616</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v617</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
