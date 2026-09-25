@@ -3916,9 +3916,12 @@ body.game-live #publicGameDayCard .gameday-period{
 <style>
 .gc-hq-panel[data-gc-hq-panel="roster"] .roster-player{cursor:pointer;position:relative;padding-right:26px!important}
 .gc-hq-panel[data-gc-hq-panel="roster"] .roster-player::after{content:"›";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#7f8998;font-size:18px;font-weight:900}
-.player-profile-backdrop{position:fixed;inset:0;z-index:12000;background:rgba(2,5,10,.72);display:flex;align-items:flex-end;justify-content:center;padding:14px}
+.player-profile-backdrop{position:fixed;inset:0;z-index:12000;background:rgba(2,5,10,.72);display:flex;align-items:flex-end;justify-content:center;padding:14px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility 0s linear .34s}
 .player-profile-backdrop[hidden]{display:none}
-.player-profile-sheet{position:relative;width:min(100%,520px);max-height:78vh;overflow:auto;border:1px solid rgba(139,82,255,.42);border-radius:20px;background:linear-gradient(160deg,#182131,#0b111a 62%);box-shadow:0 -12px 45px rgba(0,0,0,.42);padding:18px}
+.player-profile-backdrop.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .24s ease,visibility 0s linear 0s}
+.player-profile-sheet{position:relative;width:min(100%,520px);max-height:78vh;overflow:auto;border:1px solid rgba(139,82,255,.42);border-radius:20px;background:linear-gradient(160deg,#182131,#0b111a 62%);box-shadow:0 -12px 45px rgba(0,0,0,.42);padding:18px;transform:translate3d(0,calc(100% + 28px),0);opacity:.96;transition:transform .34s cubic-bezier(.22,.8,.25,1),opacity .22s ease;will-change:transform}
+.player-profile-backdrop.show .player-profile-sheet{transform:translate3d(0,0,0);opacity:1}
+@media(prefers-reduced-motion:reduce){.player-profile-backdrop,.player-profile-sheet{transition:none!important}}
 .player-profile-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:0;background:transparent;color:#aeb7c5;font-size:26px;line-height:1;cursor:pointer;z-index:20;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .player-profile-kicker{color:#b98cff;font-size:9px;font-weight:950;letter-spacing:.1em}
 .player-profile-identity{display:flex;align-items:center;gap:12px;padding:10px 36px 13px 0;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -6343,6 +6346,7 @@ function dcGuardModalTouchScroll(event){
   // above the HQ app-view. Do not let the underlying modal guard cancel its
   // touchmove events.
   if(target&&target.closest&&target.closest('#standingsSeriesModal .standings-series-sheet'))return;
+  if(target&&target.closest&&target.closest('#playerProfileBackdrop .player-profile-sheet'))return;
   var modal=document.getElementById('modal');
   if(!modal||!modal.classList.contains('show'))return;
   var sheet=target&&target.closest?target.closest('.sheet'):null;
@@ -8627,7 +8631,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v631</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v632</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12167,8 +12171,8 @@ function openPlayerProfileById(id){var p=(window.dcRosterPlayers||[]).find(funct
   dcProfileDetail('Weight',p.weight_lbs?String(p.weight_lbs)+' lbs':'')+
   dcProfileDetail('Youth Team',p.youth_team,true)+
   dcProfileDetail('College Commitment',p.college_commitment,true);
-document.getElementById('playerProfileBackdrop').hidden=false;dcLoadPlayerStats(p);}
-function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(b)b.hidden=true;}
+var b=document.getElementById('playerProfileBackdrop');if(b){if(window.dcPlayerProfileCloseTimer){clearTimeout(window.dcPlayerProfileCloseTimer);window.dcPlayerProfileCloseTimer=null;}b.hidden=false;b.classList.remove('show');requestAnimationFrame(function(){requestAnimationFrame(function(){if(!b.hidden)b.classList.add('show');});});}dcLoadPlayerStats(p);}
+function closePlayerProfile(){var b=document.getElementById('playerProfileBackdrop');if(!b||b.hidden)return;b.classList.remove('show');if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){b.hidden=true;return;}if(window.dcPlayerProfileCloseTimer)clearTimeout(window.dcPlayerProfileCloseTimer);window.dcPlayerProfileCloseTimer=setTimeout(function(){b.hidden=true;window.dcPlayerProfileCloseTimer=null;},360);}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePlayerProfile();});
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.gc-hq-panel[data-gc-hq-panel="roster"] .roster-player');if(c&&c.dataset.playerId)openPlayerProfileById(c.dataset.playerId);});
 
