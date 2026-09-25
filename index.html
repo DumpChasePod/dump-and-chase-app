@@ -3313,6 +3313,26 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .gameday-team-name .matchup-name-city{font-size:9px;}
 .gameday-team-name .matchup-name-team{font-size:10px;}
 
+/* V622: Game Day team names always reserve separate city + nickname rows. */
+#publicGameDayCard .gameday-team-name .matchup-name-stack{
+  display:grid!important;
+  grid-template-rows:auto auto!important;
+  grid-template-columns:1fr!important;
+  align-items:center!important;
+  justify-items:center!important;
+  row-gap:1px!important;
+  min-height:24px!important;
+}
+#publicGameDayCard .gameday-team-name .matchup-name-city,
+#publicGameDayCard .gameday-team-name .matchup-name-team{
+  display:block!important;
+  grid-column:1!important;
+  width:100%!important;
+  min-height:1.05em!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+
 
 .admin-opponent-record{margin-top:14px;padding-top:13px;border-top:1px solid #28374a;}
 .admin-opponent-record-title{display:block;margin-bottom:10px;}
@@ -8387,7 +8407,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v621</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v622</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9165,6 +9185,15 @@ function selectAdminTab(tab,skipDirtyCheck){
 
 
 const DC_WRR_LIVE365_STREAM='https://streaming.live365.com/a60106';
+/* V622: More and Game Day use the exact same direct Live365 stream pathway. */
+function dcWrrLiveStreamUrl(){ return DC_WRR_LIVE365_STREAM; }
+function dcCreateWrrLiveAudio(){
+  var audio=new Audio();
+  audio.preload='none';
+  audio.playsInline=true;
+  audio.src=dcWrrLiveStreamUrl();
+  return audio;
+}
 
 function dcWrrMediaLogo(){
   var img=document.querySelector('#moreWrrCard .more-wrr-logo');
@@ -9370,8 +9399,7 @@ async function toggleMoreWrrAudio(){
   stopMoreWrrAudio(false);
   var run=++dcMoreWrrAudioRun;
   try{
-    var audio=new Audio();
-    audio.preload='none';audio.playsInline=true;audio.src=DC_WRR_LIVE365_STREAM;
+    var audio=dcCreateWrrLiveAudio();
     audio.addEventListener('playing',function(){if(run===dcMoreWrrAudioRun){dcSetWrrMediaSession(audio);syncMoreWrrAudioUi('playing','Playing Western Reserve Radio live.');}});
     audio.addEventListener('waiting',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Connecting to Western Reserve Radio…');});
     audio.addEventListener('stalled',function(){if(run===dcMoreWrrAudioRun)syncMoreWrrAudioUi('playing','Stream stalled · reconnecting…');});
@@ -12167,6 +12195,7 @@ function dcGameDayActions(g,effective,st){
 }
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
+  /* V622: uses the same dcCreateWrrLiveAudio() direct-stream pathway as More/WRR. */
   if(navigator.onLine===false){if(typeof toast==='function')toast('Live audio requires an internet connection.');return;}
   dcPausePodcastForWrr();
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
@@ -12174,7 +12203,7 @@ async function toggleGameDayWrrAudio(){
   dcTrack('outbound_click','wrr_live_stream',{source:'game_day'});
   async function connect(attempt){
     if(run!==dcGameDayWrrAudioRun)return;
-    var a=new Audio();a.preload='none';a.playsInline=true;a.src=DC_WRR_LIVE365_STREAM+(attempt?'?dc='+Date.now():'');
+    var a=dcCreateWrrLiveAudio();
     var retrying=false;
     async function retry(){if(retrying||run!==dcGameDayWrrAudioRun)return;retrying=true;try{a.pause();a.removeAttribute('src');a.load();}catch(_){}if(attempt<2){setTimeout(function(){connect(attempt+1);},650);}else{dcGameDayWrrAudio=null;refreshPublicGameDay();if(typeof toast==='function')toast('Could not start the Western Reserve Radio stream.');}}
     a.addEventListener('playing',function(){if(run===dcGameDayWrrAudioRun){dcSetWrrMediaSession(a);refreshPublicGameDay();}});
