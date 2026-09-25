@@ -6338,9 +6338,14 @@ function dcUnlockPageScroll(){
 }
 function dcGuardModalTouchScroll(event){
   if(!document.body.classList.contains('dc-modal-open')&&!document.body.classList.contains('dc-app-view-open'))return;
+  var target=event.target;
+  // V631: the standings season-series sheet is its own scroll surface layered
+  // above the HQ app-view. Do not let the underlying modal guard cancel its
+  // touchmove events.
+  if(target&&target.closest&&target.closest('#standingsSeriesModal .standings-series-sheet'))return;
   var modal=document.getElementById('modal');
   if(!modal||!modal.classList.contains('show'))return;
-  var sheet=event.target&&event.target.closest?event.target.closest('.sheet'):null;
+  var sheet=target&&target.closest?target.closest('.sheet'):null;
   if(!sheet){event.preventDefault();return;}
 }
 document.addEventListener('touchmove',dcGuardModalTouchScroll,{passive:false});
@@ -6451,6 +6456,10 @@ async function dcPtrRunRefresh(){
 }
 document.addEventListener('touchstart',function(event){
   if(dcPtrRefreshing||event.touches.length!==1||!dcPtrView())return;
+  var target=event.target;
+  // V631: gestures inside the standings series belong to its own scroller,
+  // never to HQ pull-to-refresh.
+  if(target&&target.closest&&target.closest('#standingsSeriesModal'))return;
   var sheet=dcPtrSheet();
   if(!sheet||sheet.scrollTop>0)return;
   var target=event.target;
@@ -6461,6 +6470,8 @@ document.addEventListener('touchstart',function(event){
 },{passive:true});
 document.addEventListener('touchmove',function(event){
   if(!dcPtrTracking||dcPtrRefreshing||event.touches.length!==1)return;
+  var target=event.target;
+  if(target&&target.closest&&target.closest('#standingsSeriesModal')){dcPtrTracking=false;dcPtrDistance=0;dcPtrHide();return;}
   var sheet=dcPtrSheet();
   if(!sheet||sheet.scrollTop>0){dcPtrTracking=false;dcPtrHide();return;}
   var dy=event.touches[0].clientY-dcPtrStartY;
@@ -8616,7 +8627,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v630</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v631</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
