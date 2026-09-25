@@ -7602,8 +7602,8 @@ function dcPaintNextGameIdentity(next){
  var role=String((row&&row.home_away)||featuredHomeAwayRole(g)||'').toUpperCase();
  var isHome=role==='HOME';
  try{var logo=document.getElementById('heroOpponentLogo');if(logo)logo.innerHTML=matchupLogo(opponent);}catch(_){}
- try{var name=document.getElementById('heroOpponent');if(name){if(typeof teamNameStack==='function')name.innerHTML=teamNameStack(opponent);else name.textContent=opponent;}}catch(_){try{var name2=document.getElementById('heroOpponent');if(name2)name2.textContent=opponent;}catch(__){}}
- try{var ph=document.getElementById('heroPhantomsName');if(ph){if(typeof teamNameStack==='function')ph.innerHTML=teamNameStack('Youngstown Phantoms');else ph.textContent='Youngstown Phantoms';}}catch(_){}
+ try{var name=document.getElementById('heroOpponent');if(name){if(typeof paintTwoLineTeamName==='function')paintTwoLineTeamName(name,opponent);else if(typeof teamNameStack==='function')name.innerHTML=teamNameStack(opponent);else name.textContent=opponent;}}catch(_){try{var name2=document.getElementById('heroOpponent');if(name2)name2.textContent=opponent;}catch(__){}}
+ try{var ph=document.getElementById('heroPhantomsName');if(ph){if(typeof paintTwoLineTeamName==='function')paintTwoLineTeamName(ph,'Youngstown Phantoms');else if(typeof teamNameStack==='function')ph.innerHTML=teamNameStack('Youngstown Phantoms');else ph.textContent='Youngstown Phantoms';}}catch(_){}
  try{var phLogo=document.getElementById('heroPhantomsLogo');if(phLogo)phLogo.innerHTML=matchupLogo('Youngstown Phantoms');}catch(_){}
  try{var phHA=document.getElementById('heroPhantomsHomeAway');if(phHA)phHA.textContent=isHome?'HOME':'AWAY';}catch(_){}
  try{var opHA=document.getElementById('heroOpponentHomeAway');if(opHA)opHA.textContent=isHome?'AWAY':'HOME';}catch(_){}
@@ -7640,8 +7640,8 @@ function updateNextGame(){
  const gcOpponentLogo=document.getElementById('gcOpponentLogo');if(gcOpponentLogo)gcOpponentLogo.innerHTML=matchupLogo(g[1]);
  const vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60].map(x=>String(x).padStart(2,'0'));
  const homeIds=['cdDays','cdHours','cdMinutes','cdSeconds'],gcIds=['gcDays','gcHours','gcMinutes','gcSeconds'];
- var heroOppEl=document.getElementById('heroOpponent');if(heroOppEl)heroOppEl.innerHTML=teamNameStack(g[1]);
- var heroPhEl=document.getElementById('heroPhantomsName');if(heroPhEl)heroPhEl.innerHTML=teamNameStack('Youngstown Phantoms');
+ var heroOppEl=document.getElementById('heroOpponent');if(heroOppEl)paintTwoLineTeamName(heroOppEl,g[1]);
+ var heroPhEl=document.getElementById('heroPhantomsName');if(heroPhEl)paintTwoLineTeamName(heroPhEl,'Youngstown Phantoms');
  renderMatchupRecords();
  ensureHomeOpponentRecord();
  var eventLabel=dcHomeNextGameEventLabel(next);
@@ -8413,7 +8413,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v623</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v624</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9770,6 +9770,26 @@ function teamNameParts(team){
 function teamNameStack(team){
   var p=teamNameParts(team);
   return '<span class="matchup-name-city">'+escapeHtml(p[0])+'</span><span class="matchup-name-team">'+escapeHtml(p[1])+'</span>';
+}
+/* V624: Next Game gets an element-level two-row stack so later/older CSS cannot collapse short names back onto one line. */
+function paintTwoLineTeamName(el,team){
+  if(!el)return;
+  el.innerHTML=teamNameStack(team);
+  try{
+    el.style.setProperty('display','flex','important');
+    el.style.setProperty('flex-direction','column','important');
+    el.style.setProperty('align-items','center','important');
+    el.style.setProperty('justify-content','center','important');
+    el.style.setProperty('width','100%','important');
+    el.style.setProperty('white-space','normal','important');
+    var rows=el.querySelectorAll('.matchup-name-city,.matchup-name-team');
+    rows.forEach(function(row){
+      row.style.setProperty('display','block','important');
+      row.style.setProperty('width','100%','important');
+      row.style.setProperty('text-align','center','important');
+      row.style.setProperty('white-space','nowrap','important');
+    });
+  }catch(_){ }
 }
 function formatRecordPill(record){
   record=record||{};
