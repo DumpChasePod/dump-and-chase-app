@@ -3339,6 +3339,32 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
   text-align:center!important;
 }
 
+/* V625: canonical Next Game name layout. These are explicit Home-card rows,
+   independent of the shared Game Day name renderer and older matchup CSS. */
+#heroPhantomsName,#heroOpponent{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  justify-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:28px!important;
+  row-gap:1px!important;
+  white-space:normal!important;
+}
+#heroPhantomsName>.next-game-name-city,#heroOpponent>.next-game-name-city{grid-row:1!important;}
+#heroPhantomsName>.next-game-name-team,#heroOpponent>.next-game-name-team{grid-row:2!important;}
+#heroPhantomsName>.next-game-name-city,#heroPhantomsName>.next-game-name-team,
+#heroOpponent>.next-game-name-city,#heroOpponent>.next-game-name-team{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
 
 .admin-opponent-record{margin-top:14px;padding-top:13px;border-top:1px solid #28374a;}
 .admin-opponent-record-title{display:block;margin-bottom:10px;}
@@ -7594,67 +7620,67 @@ function dcHomeNextGameEventLabel(next){
  if(!label&&typeof scheduleEventLabel==='function')try{label=String(scheduleEventLabel(next.g)||'').trim();}catch(_){}
  return label.toUpperCase()==='REGULAR SEASON'?'':label;
 }
-function dcPaintNextGameIdentity(next){
- if(!next||!next.g||!(next.d instanceof Date)||!isFinite(next.d.getTime()))return;
+function dcSetHomeNextGameName(el,team){
+ if(!el)return;
+ var parts=teamNameParts(team);
+ var city=document.createElement('span');
+ var nickname=document.createElement('span');
+ city.className='next-game-name-city matchup-name-city';
+ nickname.className='next-game-name-team matchup-name-team';
+ city.textContent=parts[0]||'';
+ nickname.textContent=parts[1]||'';
+ el.replaceChildren(city,nickname);
+}
+function renderHomeNextGame(next){
+ if(!next||!next.g||!(next.d instanceof Date)||!isFinite(next.d.getTime()))return false;
  var g=next.g,row=next.row||(next.window&&next.window.row)||null;
  var opponent=String((row&&row.opponent)||g[1]||'').trim();
  var timeLabel=String((row&&row.time_label)||g[3]||'TBD').trim()||'TBD';
  var role=String((row&&row.home_away)||featuredHomeAwayRole(g)||'').toUpperCase();
  var isHome=role==='HOME';
- try{var logo=document.getElementById('heroOpponentLogo');if(logo)logo.innerHTML=matchupLogo(opponent);}catch(_){}
- try{var name=document.getElementById('heroOpponent');if(name){if(typeof paintTwoLineTeamName==='function')paintTwoLineTeamName(name,opponent);else if(typeof teamNameStack==='function')name.innerHTML=teamNameStack(opponent);else name.textContent=opponent;}}catch(_){try{var name2=document.getElementById('heroOpponent');if(name2)name2.textContent=opponent;}catch(__){}}
- try{var ph=document.getElementById('heroPhantomsName');if(ph){if(typeof paintTwoLineTeamName==='function')paintTwoLineTeamName(ph,'Youngstown Phantoms');else if(typeof teamNameStack==='function')ph.innerHTML=teamNameStack('Youngstown Phantoms');else ph.textContent='Youngstown Phantoms';}}catch(_){}
- try{var phLogo=document.getElementById('heroPhantomsLogo');if(phLogo)phLogo.innerHTML=matchupLogo('Youngstown Phantoms');}catch(_){}
- try{var phHA=document.getElementById('heroPhantomsHomeAway');if(phHA)phHA.textContent=isHome?'HOME':'AWAY';}catch(_){}
- try{var opHA=document.getElementById('heroOpponentHomeAway');if(opHA)opHA.textContent=isHome?'AWAY':'HOME';}catch(_){}
- try{var dateEl=document.getElementById('gameHeroDate');if(dateEl)dateEl.textContent=dcHomeNextGameDateLabel(next);}catch(_){}
- try{var timeEl=document.getElementById('homeGameTime');if(timeEl)timeEl.textContent=timeLabel;}catch(_){}
- try{var venue=dcHomeNextGameVenue(next),loc=document.getElementById('gameHeroLocation');if(loc)loc.textContent=venue.label;}catch(_){}
- try{var eventLabel=dcHomeNextGameEventLabel(next),eventEl=document.getElementById('homeGameEvent');if(eventEl){eventEl.textContent=eventLabel;eventEl.style.display=eventLabel?'':'none';}var label=document.getElementById('gameHeroLabel');if(label)label.textContent=String(eventLabel).toUpperCase()==='PRESEASON'?'PRESEASON':'NEXT PHANTOMS GAME';}catch(_){}
+ var phLogo=document.getElementById('heroPhantomsLogo');
+ var opLogo=document.getElementById('heroOpponentLogo');
+ if(phLogo)phLogo.innerHTML=matchupLogo('Youngstown Phantoms');
+ if(opLogo)opLogo.innerHTML=matchupLogo(opponent);
+ dcSetHomeNextGameName(document.getElementById('heroPhantomsName'),'Youngstown Phantoms');
+ dcSetHomeNextGameName(document.getElementById('heroOpponent'),opponent);
+ var phHA=document.getElementById('heroPhantomsHomeAway');
+ var opHA=document.getElementById('heroOpponentHomeAway');
+ if(phHA)phHA.textContent=isHome?'HOME':'AWAY';
+ if(opHA)opHA.textContent=isHome?'AWAY':'HOME';
+ var matchup=document.querySelector('#nextGameHero .upcoming-matchup');
+ if(matchup){
+   var phTeam=phHA&&phHA.closest('.upcoming-team');
+   var opTeam=opHA&&opHA.closest('.upcoming-team');
+   var vs=matchup.querySelector('.upcoming-vs');
+   if(phTeam&&opTeam&&vs){if(isHome)matchup.append(opTeam,vs,phTeam);else matchup.append(phTeam,vs,opTeam);}
+ }
+ var dateEl=document.getElementById('gameHeroDate');if(dateEl)dateEl.textContent=dcHomeNextGameDateLabel(next);
+ var timeEl=document.getElementById('homeGameTime');if(timeEl)timeEl.textContent=timeLabel;
+ var venue=dcHomeNextGameVenue(next),loc=document.getElementById('gameHeroLocation');if(loc)loc.textContent=venue.label;
+ var eventLabel=dcHomeNextGameEventLabel(next);
+ var eventEl=document.getElementById('homeGameEvent');if(eventEl){eventEl.textContent=eventLabel;eventEl.style.display=eventLabel?'':'none';}
+ var label=document.getElementById('gameHeroLabel');if(label)label.textContent=String(eventLabel).toUpperCase()==='PRESEASON'?'PRESEASON':'NEXT PHANTOMS GAME';
+ dcPaintNextGameCountdown(next);
+ return true;
 }
 function updateNextGame(){
  const next=dcCanonicalNextGame(new Date());
  if(!next)return;
- /* V621: paint countdown + core game identity before any secondary matchup/record helpers.
-    Each identity field is isolated so one helper failure cannot leave stale cached fields behind. */
- dcPaintNextGameCountdown(next);
- dcPaintNextGameIdentity(next);
+ /* V625: Home Next Game has exactly one renderer. No later Home-field repaint. */
+ renderHomeNextGame(next);
+ renderMatchupRecords();
+ ensureHomeOpponentRecord();
+ /* Game Center/Preview support remains separate from the Home card. */
  const g=next.g,d=next.d,diff=Math.max(0,d-Date.now());
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
- const heroPhantomsLogo=document.getElementById('heroPhantomsLogo');
- if(heroPhantomsLogo)heroPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
- const isHome=String((next.row&&next.row.home_away)||featuredHomeAwayRole(g)||'').toUpperCase()==='HOME';
- const phHomeAway=document.getElementById('heroPhantomsHomeAway');
- const oppHomeAway=document.getElementById('heroOpponentHomeAway');
- if(phHomeAway)phHomeAway.textContent=isHome?'HOME':'AWAY';
- if(oppHomeAway)oppHomeAway.textContent=isHome?'AWAY':'HOME';
- const heroMatchup=document.querySelector('#nextGameHero .upcoming-matchup');
- if(heroMatchup){
-   const phTeam=phHomeAway&&phHomeAway.closest('.upcoming-team');
-   const oppTeam=oppHomeAway&&oppHomeAway.closest('.upcoming-team');
-   const vs=heroMatchup.querySelector('.upcoming-vs');
-   if(phTeam&&oppTeam&&vs){if(isHome)heroMatchup.append(oppTeam,vs,phTeam);else heroMatchup.append(phTeam,vs,oppTeam);}
- }
- const heroOpponentLogo=document.getElementById('heroOpponentLogo');if(heroOpponentLogo)heroOpponentLogo.innerHTML=matchupLogo(g[1]);
  const gcPhantomsLogo=document.getElementById('gcPhantomsLogo');if(gcPhantomsLogo)gcPhantomsLogo.innerHTML=matchupLogo('Youngstown Phantoms');
  const gcOpponentLogo=document.getElementById('gcOpponentLogo');if(gcOpponentLogo)gcOpponentLogo.innerHTML=matchupLogo(g[1]);
  const vals=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60].map(x=>String(x).padStart(2,'0'));
- const homeIds=['cdDays','cdHours','cdMinutes','cdSeconds'],gcIds=['gcDays','gcHours','gcMinutes','gcSeconds'];
- var heroOppEl=document.getElementById('heroOpponent');if(heroOppEl)paintTwoLineTeamName(heroOppEl,g[1]);
- var heroPhEl=document.getElementById('heroPhantomsName');if(heroPhEl)paintTwoLineTeamName(heroPhEl,'Youngstown Phantoms');
- renderMatchupRecords();
- ensureHomeOpponentRecord();
- var eventLabel=dcHomeNextGameEventLabel(next);
- var heroLabel=document.getElementById('gameHeroLabel');if(heroLabel)heroLabel.textContent=String(eventLabel).toUpperCase()==='PRESEASON'?'PRESEASON':'NEXT PHANTOMS GAME';
- var heroDate=document.getElementById('gameHeroDate');if(heroDate)heroDate.textContent=dcHomeNextGameDateLabel(next);
- const hv=dcHomeNextGameVenue(next);var heroLoc=document.getElementById('gameHeroLocation');if(heroLoc)heroLoc.textContent=hv.label;
- var eventEl=document.getElementById('homeGameEvent');if(eventEl){eventEl.textContent=eventLabel;eventEl.style.display=eventLabel?'':'none';}
- var timeEl=document.getElementById('homeGameTime');if(timeEl)timeEl.textContent=String((next.row&&next.row.time_label)||g[3]||'TBD');
- homeIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
  const gcOpp=document.getElementById('gcOpponent');if(gcOpp)gcOpp.textContent=opp;
  const gcDate=document.getElementById('gcDate');if(gcDate)gcDate.textContent=d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
  const gcLoc=document.getElementById('gcLocation');if(gcLoc){const gv=scheduleVenue(g);gcLoc.textContent=`${gv.arena} — ${gv.city}`;}
- gcIds.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
+ ['gcDays','gcHours','gcMinutes','gcSeconds'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=vals[i]});
 }
 /* V618: use the same canonical next-game selection as HQ, and start the countdown clock before the full Next Game render.
    The full card render can touch data/helpers that are not ready yet; if one of
@@ -8413,7 +8439,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v624</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v625</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
