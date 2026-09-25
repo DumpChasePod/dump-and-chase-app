@@ -6647,9 +6647,34 @@ function startAdminGame(){
   var cl=document.getElementById('adminClock');if(cl&&!String(cl.value).trim())cl.value='20:00';syncAdminClockDigits(cl&&cl.value?cl.value:'20:00');
   setAdminStatus('live');syncAdminQuickControls();markAdminDirty('Game Day changes');
 }
+function dcAdminManualAuthorityActive(){
+  var btn=document.getElementById('adminHtManualOverride');
+  if(btn&&btn.classList.contains('is-on'))return true;
+  try{return dcManualOverrideActive(getAdminGameState());}catch(_){return false;}
+}
+function dcCurrentHockeyTechFinalScores(){
+  if(dcAdminManualAuthorityActive())return null;
+  var active=null;try{active=dcGameCenterHockeyTechTarget(new Date());}catch(_){}
+  if(!active||!active.g)return null;
+  var key='';try{key=dcLiveGameKey(active.g);}catch(_){}
+  if(!key||dcLiveStatsState.key!==key||!dcLiveStatsState.snapshot)return null;
+  var snap=dcLiveStatsState.snapshot,game=snap&&snap.game||{};
+  if(!game.final)return null;
+  var sides=null;try{sides=dcLiveSides(snap);}catch(_){}
+  if(!sides)return null;
+  var ph=Number(sides.yng&&sides.yng.score),op=Number(sides.opp&&sides.opp.score);
+  if(!Number.isFinite(ph)||!Number.isFinite(op)||ph<0||op<0)return null;
+  return {phantoms:ph,opponent:op,source:'HockeyTech'};
+}
 function finalizeAdminGame(){
   var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
-  if(!ps||!os||String(ps.value).trim()===''||String(os.value).trim()===''){setAdminFeedback('adminSaveStatus','error','Enter both scores before going FINAL.');return;}
+  if(dcAdminManualAuthorityActive()){
+    if(!ps||!os||String(ps.value).trim()===''||String(os.value).trim()===''){setAdminFeedback('adminSaveStatus','error','Enter both scores before going FINAL in Emergency Override.');return;}
+  }else{
+    var htFinal=dcCurrentHockeyTechFinalScores();
+    if(!htFinal){setAdminFeedback('adminSaveStatus','error','HockeyTech has not reported a valid FINAL score yet. Wait for the feed to show FINAL, or use Emergency Override.');return;}
+    if(ps)ps.value=String(htFinal.phantoms);if(os)os.value=String(htFinal.opponent);
+  }
   setAdminStatus('final');syncAdminQuickControls();markAdminDirty('Game Day changes');
 }
 function saveNewsDraft(){
@@ -8657,7 +8682,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v633</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v634</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -11007,12 +11032,13 @@ async function deleteAdminResult(index){
 function adminFinalResultLabel(value){
   return ({W:'W',W_OT:'W OT',W_SO:'W SO',L:'L',L_OT:'L OT',L_SO:'L SO'})[value]||String(value||'');
 }
-function confirmFinalPublish(payload){
+function confirmFinalPublish(payload,scoreSource){
   var next=null;try{next=getNextGameForGameDay();}catch(_){}
   var opponent=next&&next.g?String(next.g[1]||'Opponent'):'Opponent';
   var ph=String(payload.phantoms_score??'—'),op=String(payload.opponent_score??'—');
   var result=adminFinalResultLabel(payload.result);
-  return confirm('Publish FINAL?\n\nYoungstown '+ph+' — '+op+' '+opponent+'\nResult: '+result+'\n\nThis will update Game Day, Schedule, Recent Results and the Phantoms record.');
+  var source=String(scoreSource||'Game Center');
+  return confirm('Publish FINAL?\n\nYoungstown '+ph+' — '+op+' '+opponent+'\nResult: '+result+'\nScore source: '+source+'\n\nThese are the exact scores that will be saved to Game Day, Schedule and Recent Results.');
 }
 
 async function saveAdminUpdates(){
@@ -11022,9 +11048,21 @@ async function saveAdminUpdates(){
   const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:period,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null,stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,four_on_four:document.getElementById('adminFourOnFour')?.value==='true',team_timeout:document.getElementById('adminTeamTimeout')?.value||null,shootout_state:String(period||'').toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(dcAdminShootoutState):null};
   if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){if(st)st.textContent='Enter both scores before publishing LIVE.';return;}
   if(payload.status==='final'){
-    if(payload.phantoms_score===null||payload.opponent_score===null){if(st)st.textContent='Enter both final scores before publishing FINAL.';return;}
-    if(!payload.result){if(st)st.textContent='Choose a Final Result before publishing FINAL.';return;}
-    if(!confirmFinalPublish(payload)){setAdminFeedback(st,'','Final publish cancelled.');return;}
+    var finalScoreSource='Emergency Override';
+    if(!dcAdminManualAuthorityActive()){
+      try{await dcSyncLiveStats(true);}catch(_){}
+      var htFinal=dcCurrentHockeyTechFinalScores();
+      if(!htFinal){setAdminFeedback(st,'error','FINAL not published: HockeyTech does not have a valid FINAL score for this game. Wait for the feed to show FINAL, or use Emergency Override and enter the score manually.');return;}
+      payload.phantoms_score=htFinal.phantoms;
+      payload.opponent_score=htFinal.opponent;
+      finalScoreSource='HockeyTech';
+      var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
+      if(ps)ps.value=String(htFinal.phantoms);if(os)os.value=String(htFinal.opponent);
+      updateAdminGameDayPreview();
+    }
+    if(payload.phantoms_score===null||payload.opponent_score===null||String(payload.phantoms_score).trim()===''||String(payload.opponent_score).trim()===''){setAdminFeedback(st,'error','Enter both final scores before publishing FINAL.');return;}
+    if(!payload.result){setAdminFeedback(st,'error','Choose a Final Result before publishing FINAL.');return;}
+    if(!confirmFinalPublish(payload,finalScoreSource)){setAdminFeedback(st,'','Final publish cancelled.');return;}
   }
   var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
   setAdminFeedback(st,'saving','Publishing…');
