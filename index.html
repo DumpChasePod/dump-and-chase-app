@@ -3525,7 +3525,10 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .standings-series-main{min-width:0}
 .standings-series-opponent{font-size:11px;font-weight:950;color:#f1f4f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .standings-series-meta{margin-top:3px;color:#9ca8b7;font-size:9px;line-height:1.3}
+.standings-series-side{display:flex;align-items:center;justify-content:flex-end;gap:6px;white-space:nowrap}
 .standings-series-role{display:inline-flex;align-items:center;justify-content:center;padding:3px 6px;border:1px solid rgba(165,108,255,.28);border-radius:999px;color:#cbb8f7;font-size:7px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.standings-series-result{font-size:8px;font-weight:950;letter-spacing:.02em;color:#dfe6ef;font-variant-numeric:tabular-nums}
+.standings-series-result.win{color:#9fe1b4}.standings-series-result.loss{color:#ffb1b1}
 .standings-series-empty{padding:18px 6px;color:#8995a5;font-size:11px;text-align:center}
 @media(max-width:430px){.standings-series-sheet{padding-left:12px;padding-right:12px}.standings-series-game{grid-template-columns:55px minmax(0,1fr) auto;gap:8px;padding:8px}.standings-series-title{font-size:16px}}
 
@@ -8286,15 +8289,38 @@ function renderSelectedMonth(){
       return String(a.game_date||'').localeCompare(String(b.game_date||''))||String(a.game_time||'').localeCompare(String(b.game_time||''));
     });
   }
+  function dcStandingSeriesResult(row){
+    if(!row)return null;
+    var result=null;
+    try{
+      if(typeof seriesResultForGame==='function'){
+        result=seriesResultForGame([dcScheduleKeyFromRow(row),row.opponent||'',row.location||'',row.time_label||'TBD']);
+      }
+    }catch(_){}
+    if(result){
+      var code=String(result.result||'').toUpperCase();
+      var score=(result.phantoms!=null&&result.opponentScore!=null)?String(result.phantoms)+'–'+String(result.opponentScore):'';
+      return {label:(typeof resultLabel==='function'?resultLabel(code):code)+(result.resultDetail||''),score:score,win:code==='W'};
+    }
+    var status=String(row.status||'').toUpperCase();
+    if(status.indexOf('FINAL')!==0)return null;
+    var ph=row.phantoms_score,op=row.opponent_score;
+    if(ph==null||op==null)return null;
+    var code=String(row.result||'').toUpperCase();
+    if(!code)code=Number(ph)>Number(op)?'W':'L';
+    return {label:(typeof resultLabel==='function'?resultLabel(code):code),score:String(ph)+'–'+String(op),win:code==='W'};
+  }
   function dcStandingSeriesGameHtml(row,teamLabel){
     var dl=dcStandingSeriesDateLabel(row&&row.game_date);
     var role=String(row&&row.home_away||'').toUpperCase()||(/youngstown/i.test(String(row&&row.location||''))?'HOME':'AWAY');
     var arena=String(row&&row.arena||'').trim()||String(row&&row.location||'').trim()||'Arena TBA';
     var time=String(row&&row.time_label||'').trim()||'TBD';
+    var result=dcStandingSeriesResult(row);
+    var resultHtml=result?'<span class="standings-series-result '+(result.win?'win':'loss')+'">'+escapeHtml(result.label+(result.score?' '+result.score:''))+'</span>':'';
     return '<div class="standings-series-game">'+
       '<div class="standings-series-date">'+escapeHtml(dl.day)+'<small>'+escapeHtml(dl.date)+'</small></div>'+
       '<div class="standings-series-main"><div class="standings-series-opponent">'+escapeHtml(String(row&&row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta">'+escapeHtml(time)+' • '+escapeHtml(arena)+'</div></div>'+
-      '<div class="standings-series-role">'+escapeHtml(role)+'</div>'+
+      '<div class="standings-series-side"><span class="standings-series-role">'+escapeHtml(role)+'</span>'+resultHtml+'</div>'+
     '</div>';
   }
   function openStandingSeasonSeries(teamKey,teamLabel){
@@ -8631,7 +8657,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v632</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v633</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
