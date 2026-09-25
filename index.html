@@ -3339,7 +3339,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
   text-align:center!important;
 }
 
-/* V625: canonical Next Game name layout. These are explicit Home-card rows,
+/* V626: canonical Next Game name layout. These are explicit Home-card rows,
    independent of the shared Game Day name renderer and older matchup CSS. */
 #heroPhantomsName,#heroOpponent{
   display:grid!important;
@@ -6056,11 +6056,11 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 
   <div class="gamehero gc-next-card" id="nextGameHero">
     <div class="gc-next-kicker" id="gameHeroLabel">NEXT PHANTOMS GAME</div>
-    <div class="gc-next-date" id="gameHeroDate">September 17, 2026</div>
-    <div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroPhantomsLogo"></div><div id="heroPhantomsName" class="matchup-name-stack"><span class="matchup-name-city">YOUNGSTOWN</span><span class="matchup-name-team">PHANTOMS</span></div><div class="homeaway" id="heroPhantomsHomeAway">HOME</div><div class="team-record-pill" id="heroPhantomsRecord" hidden></div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroOpponentLogo"></div><div id="heroOpponent" class="matchup-name-stack"><span class="matchup-name-city">DES MOINES</span><span class="matchup-name-team">BUCCANEERS</span></div><div class="homeaway" id="heroOpponentHomeAway">AWAY</div><div class="team-record-pill" id="heroOpponentRecord" hidden></div></div></div>
-    <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameEvent">REGULAR SEASON</span><span class="gc-detail-pill" id="homeGameTime">1:00 PM ET</span></div>
+    <div class="gc-next-date" id="gameHeroDate">UPCOMING GAME</div>
+    <div class="upcoming-matchup"><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroPhantomsLogo"></div><div id="heroPhantomsName" class="matchup-name-stack"><span class="matchup-name-city">YOUNGSTOWN</span><span class="matchup-name-team">PHANTOMS</span></div><div class="homeaway" id="heroPhantomsHomeAway">HOME</div><div class="team-record-pill" id="heroPhantomsRecord" hidden></div></div><div class="upcoming-vs">VS</div><div class="upcoming-team"><div class="matchup-logo-wrap" id="heroOpponentLogo"></div><div id="heroOpponent" class="matchup-name-stack"><span class="matchup-name-city">UPCOMING</span><span class="matchup-name-team">OPPONENT</span></div><div class="homeaway" id="heroOpponentHomeAway">AWAY</div><div class="team-record-pill" id="heroOpponentRecord" hidden></div></div></div>
+    <div class="gc-next-details"><span class="gc-detail-pill" id="homeGameEvent" style="display:none"></span><span class="gc-detail-pill" id="homeGameTime">TBD</span></div>
     <div class="countdown"><div class="countbox"><b id="cdDays">00</b><span>Days</span></div><div class="countbox"><b id="cdHours">00</b><span>Hours</span></div><div class="countbox"><b id="cdMinutes">00</b><span>Minutes</span></div><div class="countbox"><b id="cdSeconds">00</b><span>Seconds</span></div></div>
-    <div class="gc-venue home-location" id="gameHeroLocation">Chicago, IL</div>
+    <div class="gc-venue home-location" id="gameHeroLocation"></div>
     <button class="btn secondary game-action-wide next-game-hub-btn" onclick="window.openGameCenter()">OPEN PHANTOMS HQ</button>
   </div>
 
@@ -7620,9 +7620,35 @@ function dcHomeNextGameEventLabel(next){
  if(!label&&typeof scheduleEventLabel==='function')try{label=String(scheduleEventLabel(next.g)||'').trim();}catch(_){}
  return label.toUpperCase()==='REGULAR SEASON'?'':label;
 }
+function dcHomeNextGameNameParts(team){
+ var raw=String(team||'').trim();
+ var map={
+   'Youngstown Phantoms':['YOUNGSTOWN','PHANTOMS'],
+   'Muskegon Lumberjacks':['MUSKEGON','LUMBERJACKS'],
+   'Des Moines Buccaneers':['DES MOINES','BUCCANEERS'],
+   'Waterloo Black Hawks':['WATERLOO','BLACK HAWKS'],
+   'Fargo Force':['FARGO','FORCE'],
+   'Dubuque Fighting Saints':['DUBUQUE','FIGHTING SAINTS'],
+   'Chicago Steel':['CHICAGO','STEEL'],
+   'Madison Capitols':['MADISON','CAPITOLS'],
+   'Cedar Rapids RoughRiders':['CEDAR RAPIDS','ROUGHRIDERS'],
+   'Green Bay Gamblers':['GREEN BAY','GAMBLERS'],
+   'Lincoln Stars':['LINCOLN','STARS'],
+   'Omaha Lancers':['OMAHA','LANCERS'],
+   'Sioux City Musketeers':['SIOUX CITY','MUSKETEERS'],
+   'Sioux Falls Stampede':['SIOUX FALLS','STAMPEDE'],
+   'Tri-City Storm':['TRI-CITY','STORM'],
+   'NTDP U17':['TEAM USA','U17'],
+   'NTDP U18':['TEAM USA','U18']
+ };
+ if(map[raw])return map[raw];
+ var words=raw.split(/\s+/).filter(Boolean);
+ if(words.length<=1)return [raw.toUpperCase(),''];
+ return [words.slice(0,-1).join(' ').toUpperCase(),words[words.length-1].toUpperCase()];
+}
 function dcSetHomeNextGameName(el,team){
  if(!el)return;
- var parts=teamNameParts(team);
+ var parts=dcHomeNextGameNameParts(team);
  var city=document.createElement('span');
  var nickname=document.createElement('span');
  city.className='next-game-name-city matchup-name-city';
@@ -7667,10 +7693,11 @@ function renderHomeNextGame(next){
 function updateNextGame(){
  const next=dcCanonicalNextGame(new Date());
  if(!next)return;
- /* V625: Home Next Game has exactly one renderer. No later Home-field repaint. */
+ /* V626: Home Next Game has exactly one renderer and self-contained startup-safe name parsing. */
  renderHomeNextGame(next);
- renderMatchupRecords();
- ensureHomeOpponentRecord();
+ /* V626: the Home card must finish rendering even if later modules are not loaded yet. */
+ try{if(typeof renderMatchupRecords==='function')renderMatchupRecords();}catch(e){console.warn('Next Game records deferred.',e);}
+ try{if(typeof ensureHomeOpponentRecord==='function')ensureHomeOpponentRecord();}catch(e){console.warn('Next Game opponent record deferred.',e);}
  /* Game Center/Preview support remains separate from the Home card. */
  const g=next.g,d=next.d,diff=Math.max(0,d-Date.now());
  const opp=g[1].replace(' Buccaneers','').replace(' Black Hawks','').replace(' Force','');
@@ -8439,7 +8466,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v625</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v626</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
