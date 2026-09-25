@@ -3506,9 +3506,11 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .gc-standings-table .gc-series-team-trigger{cursor:pointer;text-decoration:underline;text-decoration-color:rgba(165,108,255,.28);text-underline-offset:2px}
 .gc-standings-table .gc-series-team-trigger:hover,.gc-standings-table .gc-series-team-trigger:focus{color:#d8c3ff;text-decoration-color:#a56cff;outline:none}
 .gc-standings-table tr.is-youngstown .gc-series-team-trigger{cursor:default;text-decoration:none;color:inherit}
-.standings-series-modal{position:fixed;inset:0;display:none;align-items:end;justify-content:center;background:rgba(0,0,0,.58);z-index:90;padding:0}
-.standings-series-modal.show{display:flex}
-.standings-series-sheet{width:min(680px,100%);max-height:min(72vh,620px);overflow:auto;background:#111925;border:1px solid #3b2b59;border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.45);-webkit-overflow-scrolling:touch}
+.standings-series-modal{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;background:rgba(0,0,0,.58);z-index:90;padding:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility 0s linear .34s}
+.standings-series-modal.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .24s ease,visibility 0s linear 0s}
+.standings-series-sheet{width:min(680px,100%);max-height:min(72vh,620px);overflow:auto;background:#111925;border:1px solid #3b2b59;border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.45);-webkit-overflow-scrolling:touch;transform:translate3d(0,105%,0);opacity:.96;transition:transform .34s cubic-bezier(.22,.8,.25,1),opacity .22s ease;will-change:transform}
+.standings-series-modal.show .standings-series-sheet{transform:translate3d(0,0,0);opacity:1}
+@media(prefers-reduced-motion:reduce){.standings-series-modal,.standings-series-sheet{transition:none!important}}
 .standings-series-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.08)}
 .standings-series-kicker{color:#a56cff;font-size:8px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
 .standings-series-title{margin-top:2px;font-size:17px;font-weight:950;line-height:1.15}
@@ -8600,7 +8602,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v628</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v629</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
