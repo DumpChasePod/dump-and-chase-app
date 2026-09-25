@@ -3508,14 +3508,17 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .gc-standings-table tr.is-youngstown .gc-series-team-trigger{cursor:default;text-decoration:none;color:inherit}
 .standings-series-modal{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;background:rgba(0,0,0,.58);z-index:90;padding:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility 0s linear .34s}
 .standings-series-modal.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .24s ease,visibility 0s linear 0s}
-.standings-series-sheet{width:min(680px,100%);max-height:min(72vh,620px);overflow:auto;background:#111925;border:1px solid #3b2b59;border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.45);-webkit-overflow-scrolling:touch;transform:translate3d(0,105%,0);opacity:.96;transition:transform .34s cubic-bezier(.22,.8,.25,1),opacity .22s ease;will-change:transform}
+.standings-series-sheet{width:min(680px,100%);max-height:min(78dvh,660px);display:flex;flex-direction:column;overflow:hidden;background:#111925;border:1px solid #3b2b59;border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.45);transform:translate3d(0,105%,0);opacity:.96;transition:transform .34s cubic-bezier(.22,.8,.25,1),opacity .22s ease;will-change:transform;box-sizing:border-box}
 .standings-series-modal.show .standings-series-sheet{transform:translate3d(0,0,0);opacity:1}
 @media(prefers-reduced-motion:reduce){.standings-series-modal,.standings-series-sheet{transition:none!important}}
 .standings-series-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.08)}
 .standings-series-kicker{color:#a56cff;font-size:8px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
 .standings-series-title{margin-top:2px;font-size:17px;font-weight:950;line-height:1.15}
 .standings-series-close{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eef2f8;font-size:16px;font-weight:900;cursor:pointer}
-.standings-series-list{display:grid;gap:7px;margin-top:12px}
+.standings-series-list{display:grid;gap:7px;margin-top:12px;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding-bottom:2px}
+.standings-series-group{display:grid;gap:7px}
+.standings-series-group+.standings-series-group{margin-top:9px;padding-top:11px;border-top:1px solid rgba(255,255,255,.08)}
+.standings-series-group-title{position:sticky;top:0;z-index:1;padding:5px 7px;border-radius:8px;background:#111925;color:#cbb8f7;font-size:8px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}
 .standings-series-game{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.025)}
 .standings-series-date{font-size:9px;font-weight:900;text-align:center;line-height:1.2;text-transform:uppercase;color:#e4e9f1}
 .standings-series-date small{display:block;margin-top:2px;color:#8995a5;font-size:7px;letter-spacing:.05em}
@@ -8268,6 +8271,17 @@ function renderSelectedMonth(){
       return String(a.game_date||'').localeCompare(String(b.game_date||''))||String(a.game_time||'').localeCompare(String(b.game_time||''));
     });
   }
+  function dcStandingSeriesGameHtml(row,teamLabel){
+    var dl=dcStandingSeriesDateLabel(row&&row.game_date);
+    var role=String(row&&row.home_away||'').toUpperCase()||(/youngstown/i.test(String(row&&row.location||''))?'HOME':'AWAY');
+    var arena=String(row&&row.arena||'').trim()||String(row&&row.location||'').trim()||'Arena TBA';
+    var time=String(row&&row.time_label||'').trim()||'TBD';
+    return '<div class="standings-series-game">'+
+      '<div class="standings-series-date">'+escapeHtml(dl.day)+'<small>'+escapeHtml(dl.date)+'</small></div>'+
+      '<div class="standings-series-main"><div class="standings-series-opponent">'+escapeHtml(String(row&&row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta">'+escapeHtml(time)+' • '+escapeHtml(arena)+'</div></div>'+
+      '<div class="standings-series-role">'+escapeHtml(role)+'</div>'+
+    '</div>';
+  }
   function openStandingSeasonSeries(teamKey,teamLabel){
     var key=gcStandingTeamKey(teamKey);
     if(!key||key==='youngstown')return;
@@ -8277,19 +8291,19 @@ function renderSelectedMonth(){
     title.textContent=String(teamLabel||teamKey||'Opponent')+' — Season Series';
     if(!rows.length){
       list.innerHTML='<div class="standings-series-empty">No regular-season meetings are currently listed.</div>';
+    }else if(key==='team usa'){
+      var u17=rows.filter(function(row){return /\bU\s*17\b/i.test(String(row&&row.opponent||''));});
+      var u18=rows.filter(function(row){return /\bU\s*18\b/i.test(String(row&&row.opponent||''));});
+      var other=rows.filter(function(row){return u17.indexOf(row)===-1&&u18.indexOf(row)===-1;});
+      var groups=[];
+      if(u17.length)groups.push('<div class="standings-series-group"><div class="standings-series-group-title">NTDP U17</div>'+u17.map(function(row){return dcStandingSeriesGameHtml(row,'NTDP U17');}).join('')+'</div>');
+      if(u18.length)groups.push('<div class="standings-series-group"><div class="standings-series-group-title">NTDP U18</div>'+u18.map(function(row){return dcStandingSeriesGameHtml(row,'NTDP U18');}).join('')+'</div>');
+      if(other.length)groups.push('<div class="standings-series-group"><div class="standings-series-group-title">NTDP</div>'+other.map(function(row){return dcStandingSeriesGameHtml(row,'NTDP');}).join('')+'</div>');
+      list.innerHTML=groups.join('');
     }else{
-      list.innerHTML=rows.map(function(row){
-        var dl=dcStandingSeriesDateLabel(row.game_date);
-        var role=String(row.home_away||'').toUpperCase()||(/youngstown/i.test(String(row.location||''))?'HOME':'AWAY');
-        var arena=String(row.arena||'').trim()||String(row.location||'').trim()||'Arena TBA';
-        var time=String(row.time_label||'').trim()||'TBD';
-        return '<div class="standings-series-game">'+
-          '<div class="standings-series-date">'+escapeHtml(dl.day)+'<small>'+escapeHtml(dl.date)+'</small></div>'+
-          '<div class="standings-series-main"><div class="standings-series-opponent">'+escapeHtml(String(row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta">'+escapeHtml(time)+' • '+escapeHtml(arena)+'</div></div>'+
-          '<div class="standings-series-role">'+escapeHtml(role)+'</div>'+
-        '</div>';
-      }).join('');
+      list.innerHTML=rows.map(function(row){return dcStandingSeriesGameHtml(row,teamLabel);}).join('');
     }
+    list.scrollTop=0;
     modal.classList.add('show');
   }
   window.openStandingSeasonSeries=openStandingSeasonSeries;
@@ -8602,7 +8616,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v629</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v630</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
