@@ -3313,18 +3313,24 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .gameday-team-name .matchup-name-city{font-size:9px;}
 .gameday-team-name .matchup-name-team{font-size:10px;}
 
-/* V622: Game Day team names always reserve separate city + nickname rows. */
-#publicGameDayCard .gameday-team-name .matchup-name-stack{
+/* V623: shared two-row team-name treatment for Next Game + Game Day.
+   teamNameStack() is the single renderer; these cards reserve one row for city
+   and one for nickname even when both names are short. */
+#publicGameDayCard .gameday-team-name .matchup-name-stack,
+#nextGameHero .upcoming-team .matchup-name-stack{
   display:grid!important;
-  grid-template-rows:auto auto!important;
+  grid-template-rows:minmax(1.05em,auto) minmax(1.05em,auto)!important;
   grid-template-columns:1fr!important;
   align-items:center!important;
   justify-items:center!important;
   row-gap:1px!important;
-  min-height:24px!important;
 }
+#publicGameDayCard .gameday-team-name .matchup-name-stack{min-height:24px!important;}
+#nextGameHero .upcoming-team .matchup-name-stack{min-height:27px!important;}
 #publicGameDayCard .gameday-team-name .matchup-name-city,
-#publicGameDayCard .gameday-team-name .matchup-name-team{
+#publicGameDayCard .gameday-team-name .matchup-name-team,
+#nextGameHero .upcoming-team .matchup-name-city,
+#nextGameHero .upcoming-team .matchup-name-team{
   display:block!important;
   grid-column:1!important;
   width:100%!important;
@@ -8407,7 +8413,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v622</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v623</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9185,7 +9191,7 @@ function selectAdminTab(tab,skipDirtyCheck){
 
 
 const DC_WRR_LIVE365_STREAM='https://streaming.live365.com/a60106';
-/* V622: More and Game Day use the exact same direct Live365 stream pathway. */
+/* V623: More, Game Day and the public pregame Preview use the same direct Live365 stream pathway. */
 function dcWrrLiveStreamUrl(){ return DC_WRR_LIVE365_STREAM; }
 function dcCreateWrrLiveAudio(){
   var audio=new Audio();
@@ -12195,7 +12201,7 @@ function dcGameDayActions(g,effective,st){
 }
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
-  /* V622: uses the same dcCreateWrrLiveAudio() direct-stream pathway as More/WRR. */
+  /* V623: Game Day and pregame Preview both use this same dcCreateWrrLiveAudio() direct-stream pathway as More/WRR. */
   if(navigator.onLine===false){if(typeof toast==='function')toast('Live audio requires an internet connection.');return;}
   dcPausePodcastForWrr();
   if(dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused){stopGameDayWrrAudio();return;}
