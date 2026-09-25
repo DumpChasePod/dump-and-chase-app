@@ -3502,6 +3502,28 @@ body.game-live #publicGameDayCard .gameday-pp-slot:has(.gameday-special + .gamed
 .admin-box-score-controls small{display:block;margin-top:5px}
 </style>
 <style>
+/* V628: tappable standings season-series bottom sheet. */
+.gc-standings-table .gc-series-team-trigger{cursor:pointer;text-decoration:underline;text-decoration-color:rgba(165,108,255,.28);text-underline-offset:2px}
+.gc-standings-table .gc-series-team-trigger:hover,.gc-standings-table .gc-series-team-trigger:focus{color:#d8c3ff;text-decoration-color:#a56cff;outline:none}
+.gc-standings-table tr.is-youngstown .gc-series-team-trigger{cursor:default;text-decoration:none;color:inherit}
+.standings-series-modal{position:fixed;inset:0;display:none;align-items:end;justify-content:center;background:rgba(0,0,0,.58);z-index:90;padding:0}
+.standings-series-modal.show{display:flex}
+.standings-series-sheet{width:min(680px,100%);max-height:min(72vh,620px);overflow:auto;background:#111925;border:1px solid #3b2b59;border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.45);-webkit-overflow-scrolling:touch}
+.standings-series-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.08)}
+.standings-series-kicker{color:#a56cff;font-size:8px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+.standings-series-title{margin-top:2px;font-size:17px;font-weight:950;line-height:1.15}
+.standings-series-close{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eef2f8;font-size:16px;font-weight:900;cursor:pointer}
+.standings-series-list{display:grid;gap:7px;margin-top:12px}
+.standings-series-game{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.025)}
+.standings-series-date{font-size:9px;font-weight:900;text-align:center;line-height:1.2;text-transform:uppercase;color:#e4e9f1}
+.standings-series-date small{display:block;margin-top:2px;color:#8995a5;font-size:7px;letter-spacing:.05em}
+.standings-series-main{min-width:0}
+.standings-series-opponent{font-size:11px;font-weight:950;color:#f1f4f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.standings-series-meta{margin-top:3px;color:#9ca8b7;font-size:9px;line-height:1.3}
+.standings-series-role{display:inline-flex;align-items:center;justify-content:center;padding:3px 6px;border:1px solid rgba(165,108,255,.28);border-radius:999px;color:#cbb8f7;font-size:7px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+.standings-series-empty{padding:18px 6px;color:#8995a5;font-size:11px;text-align:center}
+@media(max-width:430px){.standings-series-sheet{padding-left:12px;padding-right:12px}.standings-series-game{grid-template-columns:55px minmax(0,1fr) auto;gap:8px;padding:8px}.standings-series-title{font-size:16px}}
+
 /* v319: Home game cards use full weekday names, stack HOME/AWAY above record, and always place home team on the right. */
 #nextGameHero .upcoming-team .homeaway,
 #publicGameDayCard .gameday-team .homeaway{display:flex;margin:5px auto 0;}
@@ -6214,6 +6236,17 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
+
+<div class="standings-series-modal" id="standingsSeriesModal" role="dialog" aria-modal="true" aria-labelledby="standingsSeriesTitle" onclick="if(event.target===this)closeStandingSeasonSeries()">
+  <div class="standings-series-sheet">
+    <div class="standings-series-head">
+      <div><div class="standings-series-kicker">SEASON SERIES</div><div class="standings-series-title" id="standingsSeriesTitle">Opponent</div></div>
+      <button class="standings-series-close" type="button" aria-label="Close season series" onclick="closeStandingSeasonSeries()">✕</button>
+    </div>
+    <div class="standings-series-list" id="standingsSeriesList"></div>
+  </div>
+</div>
+
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" onclick="if(event.target===this)closeSheet()"><div class="sheet">
   <div class="sheethead"><h2 id="sheetTitle" tabindex="-1"></h2><button class="close" type="button" aria-label="Close panel" title="Close" onclick="closeSheet()">✕</button></div>
   <div id="sheetBody"></div>
@@ -8215,6 +8248,54 @@ function renderSelectedMonth(){
   }
   window.setGCStandingsConference=setGCStandingsConference;
 
+
+  function dcStandingSeriesDateLabel(dateValue){
+    var raw=String(dateValue||'').trim();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return {day:'TBD',date:''};
+    var d=new Date(raw+'T12:00:00');
+    if(!isFinite(d.getTime()))return {day:'TBD',date:''};
+    return {day:d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase(),date:d.toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase()};
+  }
+  function dcStandingSeriesRows(teamKey){
+    var key=gcStandingTeamKey(teamKey);
+    if(!key||key==='youngstown')return [];
+    return (dcScheduleRows||[]).filter(function(row){
+      if(gcStandingTeamKey(row&&row.opponent||'')!==key)return false;
+      return String(row&&row.event_label||'').trim().toUpperCase()!=='PRESEASON';
+    }).slice().sort(function(a,b){
+      return String(a.game_date||'').localeCompare(String(b.game_date||''))||String(a.game_time||'').localeCompare(String(b.game_time||''));
+    });
+  }
+  function openStandingSeasonSeries(teamKey,teamLabel){
+    var key=gcStandingTeamKey(teamKey);
+    if(!key||key==='youngstown')return;
+    var modal=document.getElementById('standingsSeriesModal'),title=document.getElementById('standingsSeriesTitle'),list=document.getElementById('standingsSeriesList');
+    if(!modal||!title||!list)return;
+    var rows=dcStandingSeriesRows(key);
+    title.textContent=String(teamLabel||teamKey||'Opponent')+' — Season Series';
+    if(!rows.length){
+      list.innerHTML='<div class="standings-series-empty">No regular-season meetings are currently listed.</div>';
+    }else{
+      list.innerHTML=rows.map(function(row){
+        var dl=dcStandingSeriesDateLabel(row.game_date);
+        var role=String(row.home_away||'').toUpperCase()||(/youngstown/i.test(String(row.location||''))?'HOME':'AWAY');
+        var arena=String(row.arena||'').trim()||String(row.location||'').trim()||'Arena TBA';
+        var time=String(row.time_label||'').trim()||'TBD';
+        return '<div class="standings-series-game">'+
+          '<div class="standings-series-date">'+escapeHtml(dl.day)+'<small>'+escapeHtml(dl.date)+'</small></div>'+
+          '<div class="standings-series-main"><div class="standings-series-opponent">'+escapeHtml(String(row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta">'+escapeHtml(time)+' • '+escapeHtml(arena)+'</div></div>'+
+          '<div class="standings-series-role">'+escapeHtml(role)+'</div>'+
+        '</div>';
+      }).join('');
+    }
+    modal.classList.add('show');
+  }
+  window.openStandingSeasonSeries=openStandingSeasonSeries;
+  function closeStandingSeasonSeries(){
+    var modal=document.getElementById('standingsSeriesModal');
+    if(modal)modal.classList.remove('show');
+  }
+  window.closeStandingSeasonSeries=closeStandingSeasonSeries;
   function renderGCStandings(){
     var host=document.getElementById('gcStandingsBody');
     if(!host)return;
@@ -8248,7 +8329,7 @@ function renderSelectedMonth(){
             var full=String(row.team||team);
             return '<tr'+(isYng?' class="is-youngstown"':'')+'>'+
               '<td class="gc-st-rk">'+escapeHtml(rank)+'</td>'+
-              '<td class="gc-st-team" title="'+escapeHtml(full)+'">'+escapeHtml(team)+'</td>'+
+              '<td class="gc-st-team'+(isYng?'':' gc-series-team-trigger')+'" title="'+escapeHtml(full)+(isYng?'':' • Tap for season series')+'"'+(isYng?'':' role="button" tabindex="0" data-series-team-key="'+escapeHtml(gcStandingTeamKey(full))+'" data-series-team-label="'+escapeHtml(full)+'"')+'>'+escapeHtml(team)+'</td>'+
               '<td class="gc-st-narrow">'+escapeHtml(String(row.gp??0))+'</td>'+
               '<td class="gc-st-narrow">'+escapeHtml(String(row.w??0))+'</td>'+
               '<td class="gc-st-narrow">'+escapeHtml(String(row.l??0))+'</td>'+
@@ -8262,6 +8343,11 @@ function renderSelectedMonth(){
           '</tbody>'+
         '</table>'+
       '</div>';
+    host.querySelectorAll('.gc-series-team-trigger').forEach(function(cell){
+      function open(){openStandingSeasonSeries(cell.getAttribute('data-series-team-key')||'',cell.getAttribute('data-series-team-label')||cell.textContent||'Opponent');}
+      cell.addEventListener('click',open);
+      cell.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    });
   }
 
   function gcStandingTeamKey(value){
@@ -8514,7 +8600,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v627</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v628</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
