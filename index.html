@@ -1935,8 +1935,12 @@ body.game-final #gameDaySection .sectionhead{
 .gc-standings-table .gc-st-pts{width:25px;color:#f2f4f7;font-weight:950}
 .gc-standings-table .gc-st-pct{width:30px}
 .gc-standings-table .gc-st-row{width:27px}
-.gc-standings-table tr.is-youngstown{
-  background:linear-gradient(90deg,rgba(139,82,255,.16),rgba(139,82,255,.07));
+.gc-standings-table tbody tr{
+  background:var(--gc-team-tint,rgba(255,255,255,.018));
+}
+.gc-standings-table tr.is-youngstown td:not(.gc-st-team){
+  font-weight:950;
+  color:#f2f4f7;
 }
 .gc-standings-table tr.is-youngstown td{
   background:transparent;
@@ -8264,6 +8268,35 @@ function renderSelectedMonth(){
     return text.indexOf('youngstown')!==-1||/\byng\b/.test(text);
   }
 
+  var GC_TEAM_PRIMARY_COLORS={
+    'cedar rapids':'#005130',
+    'chicago':'#941018',
+    'des moines':'#0d4c92',
+    'dubuque':'#cf0a2c',
+    'fargo':'#003e7e',
+    'green bay':'#edb111',
+    'lincoln':'#003685',
+    'madison':'#0c1d3c',
+    'muskegon':'#cfc393',
+    'team usa':'#083a81',
+    'omaha':'#f68f18',
+    'sioux city':'#003c28',
+    'sioux falls':'#00275c',
+    'tri city':'#500b85',
+    'waterloo':'#cf202e',
+    'youngstown':'#50327a'
+  };
+  function gcTeamStandingsTint(row){
+    var key=gcStandingTeamKey((row&&row.team)||'')||gcStandingTeamKey((row&&row.team_code)||'');
+    var hex=GC_TEAM_PRIMARY_COLORS[key]||'';
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+    if(!m)return 'rgba(255,255,255,.018)';
+    var r=parseInt(m[1],16),g=parseInt(m[2],16),b=parseInt(m[3],16);
+    var max=Math.max(r,g,b),min=Math.min(r,g,b),light=(max+min)/510;
+    var alpha=light>.68?.045:light>.48?.055:.07;
+    return 'rgba('+r+','+g+','+b+','+alpha+')';
+  }
+
   function setGCHQView(view){
     if(['standings','schedule','roster'].indexOf(view)===-1)return;
     document.querySelectorAll('[data-gc-hq-view]').forEach(function(btn){
@@ -8409,7 +8442,8 @@ function renderSelectedMonth(){
             var rank=String(index+1);
             var team=gcStandingsTeamName(row);
             var full=String(row.team||team);
-            return '<tr'+(isYng?' class="is-youngstown"':'')+'>'+
+            var tint=gcTeamStandingsTint(row);
+            return '<tr'+(isYng?' class="is-youngstown"':'')+' style="--gc-team-tint:'+escapeHtml(tint)+'">'+
               '<td class="gc-st-rk">'+escapeHtml(rank)+'</td>'+
               '<td class="gc-st-team'+(isYng?'':' gc-series-team-trigger')+'" title="'+escapeHtml(full)+(isYng?'':' • Tap for season series')+'"'+(isYng?'':' role="button" tabindex="0" data-series-team-key="'+escapeHtml(gcStandingTeamKey(full))+'" data-series-team-label="'+escapeHtml(full)+'"')+'>'+escapeHtml(team)+'</td>'+
               '<td class="gc-st-narrow">'+escapeHtml(String(row.gp??0))+'</td>'+
@@ -8682,7 +8716,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v634</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v635</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
