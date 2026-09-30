@@ -4757,12 +4757,17 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 .admin-roster-categories{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 .player-profile-pronunciation{margin-top:3px;color:#9da8b7;font-size:11px;font-weight:850;font-style:italic}
 .roster-staff-list{display:grid;gap:8px;border-top:0!important}
+.roster-staff-subgroup{display:grid;gap:8px}
+.roster-staff-subgroup+.roster-staff-subgroup{margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.roster-staff-subgroup-title{padding:0 2px 2px;color:#d8c7f5;font-size:10px;line-height:1.2;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
 .roster-staff-card{padding:10px 12px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:linear-gradient(145deg,rgba(28,37,51,.92),rgba(17,24,36,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
 .roster-staff-title{font-size:9px;line-height:1.2;font-weight:950;letter-spacing:.09em;color:#b88cff;text-transform:uppercase}
 .roster-staff-name{margin-top:4px;font-size:13px;line-height:1.25;font-weight:900;color:#eef2f7}
 .admin-roster-staff-row{grid-template-columns:auto 1fr auto!important}
 .admin-roster-staff-order{min-width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#ffffff0b;border:1px solid #ffffff14;color:#9aa7b7;font-size:11px;font-weight:950;font-variant-numeric:tabular-nums}
 .admin-roster-staff-row .admin-roster-meta{color:#b88cff;text-transform:uppercase;letter-spacing:.05em;font-weight:900}
+.admin-roster-staff-category-title{margin:10px 2px 6px;color:#d8c7f5;font-size:10px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.admin-roster-staff-category-title:first-child{margin-top:2px}
 .admin-roster-staff-form{display:none;margin-top:12px;padding:12px;border:1px solid #ffffff18;border-radius:12px;background:#111925}
 .admin-roster-staff-form.show{display:block}
 .admin-roster-staff-form .admin-actions{margin-top:8px}
@@ -8691,7 +8696,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v636</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v637</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -8841,7 +8846,8 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <div class="admin-roster-staff-form" id="adminRosterStaffForm">
           <input type="hidden" id="rosterStaffEditId">
           <div class="admin-roster-grid">
-            <div class="admin-field"><label for="rosterStaffOrder">Order</label><input id="rosterStaffOrder" inputmode="numeric" pattern="[0-9]*" min="1" placeholder="1"></div>
+            <div class="admin-field"><label for="rosterStaffCategory">Category</label><select id="rosterStaffCategory" onchange="updateRosterStaffOrderLimit()"><option value="COACHES">Coaches</option><option value="HOCKEY_OPS">Hockey Ops</option><option value="OFFICE">Office</option></select></div>
+            <div class="admin-field"><label for="rosterStaffOrder">Order in Category</label><input id="rosterStaffOrder" inputmode="numeric" pattern="[0-9]*" min="1" placeholder="1"></div>
             <div class="admin-field wide"><label for="rosterStaffTitle">Title</label><input id="rosterStaffTitle" placeholder="Head Coach"></div>
             <div class="admin-field wide"><label for="rosterStaffName">Name</label><input id="rosterStaffName"></div>
           </div>
@@ -10487,7 +10493,7 @@ async function fetchRosterData(){
   var results=await Promise.all([
     dcSupabase.from('roster_players').select('id,position_group,number,name,position,shoots_catches,hometown,birthdate,height_weight,height_feet,height_inches,weight_lbs,youth_team,college_commitment,captain_role,pronunciation_guide,sort_order').order('position_group').order('sort_order').order('number'),
     dcSupabase.from('roster_meta').select('checked_date').eq('id','current').maybeSingle(),
-    dcSupabase.from('roster_staff').select('id,title,name,sort_order').order('sort_order').order('title').order('name')
+    dcSupabase.from('roster_staff').select('id,title,name,category,sort_order').order('category').order('sort_order').order('title').order('name')
   ]);
   if(results[0].error)throw results[0].error;
   if(results[2].error)throw results[2].error;
@@ -10500,8 +10506,13 @@ function renderAdminRosterList(){
   if(editor&&list.contains(editor)&&list.parentNode)list.insertAdjacentElement('afterend',editor);
   if(staffEditor&&list.contains(staffEditor)&&list.parentNode)list.insertAdjacentElement('afterend',staffEditor);
   if(adminRosterGroup==='STAFF'){
-    list.innerHTML=adminRosterStaff.map(function(p){
-      return '<div class="admin-roster-row admin-roster-staff-row" data-staff-id="'+p.id+'"><div class="admin-roster-staff-order">'+escapeHtml(p.sort_order||'')+'</div><div><div class="admin-roster-meta">'+escapeHtml(p.title||'')+'</div><div class="admin-roster-name">'+escapeHtml(p.name||'')+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterStaffEditor('+p.id+')">EDIT</button></div>';
+    var staffCategoryOrder=['COACHES','HOCKEY_OPS','OFFICE'];
+    list.innerHTML=staffCategoryOrder.map(function(category){
+      var rows=adminRosterStaff.filter(function(p){return String(p.category||'HOCKEY_OPS')===category;}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+      if(!rows.length)return '';
+      return '<div class="admin-roster-staff-category-title">'+escapeHtml(rosterStaffCategoryLabel(category))+'</div>'+rows.map(function(p){
+        return '<div class="admin-roster-row admin-roster-staff-row" data-staff-id="'+p.id+'"><div class="admin-roster-staff-order">'+escapeHtml(p.sort_order||'')+'</div><div><div class="admin-roster-meta">'+escapeHtml(p.title||'')+'</div><div class="admin-roster-name">'+escapeHtml(p.name||'')+'</div></div><button class="admin-mini-btn" type="button" onclick="openRosterStaffEditor('+p.id+')">EDIT</button></div>';
+      }).join('');
     }).join('');
   }else{
     var players=adminRosterPlayers.filter(function(p){return String(p.position_group||rosterGroupForPosition(p.position||'')).toUpperCase()===adminRosterGroup;});
@@ -10657,6 +10668,23 @@ async function deleteRosterPlayer(){
   await touchRosterDate();closeRosterEditor();await loadAdminRoster();await syncPublicRoster();
 }
 
+function rosterStaffCategoryLabel(category){
+  var c=String(category||'HOCKEY_OPS');
+  if(c==='COACHES')return 'Coaches';
+  if(c==='OFFICE')return 'Office';
+  return 'Hockey Ops';
+}
+function rosterStaffCategoryCount(category,excludeId){
+  return adminRosterStaff.filter(function(p){return String(p.category||'HOCKEY_OPS')===String(category||'HOCKEY_OPS')&&String(p.id)!==String(excludeId||'');}).length;
+}
+function updateRosterStaffOrderLimit(){
+  var cat=document.getElementById('rosterStaffCategory'),order=document.getElementById('rosterStaffOrder'),id=document.getElementById('rosterStaffEditId');
+  if(!cat||!order)return;
+  var max=rosterStaffCategoryCount(cat.value,id?id.value:'')+1;
+  order.max=String(max);
+  var n=Number(order.value);
+  if(!Number.isInteger(n)||n<1||n>max)order.value=String(max);
+}
 function openRosterStaffEditor(id){
   if(!confirmDiscardAdminChanges())return;
   var p=id?adminRosterStaff.find(function(x){return Number(x.id)===Number(id);}):null;
@@ -10664,7 +10692,9 @@ function openRosterStaffEditor(id){
   document.querySelectorAll('.admin-roster-row.selected').forEach(function(row){row.classList.remove('selected');});
   rememberAdminSelection('roster','__STAFF__');
   document.getElementById('rosterStaffEditId').value=p?p.id:'';
-  document.getElementById('rosterStaffOrder').value=p?(Number(p.sort_order)||1):(adminRosterStaff.length+1);
+  document.getElementById('rosterStaffCategory').value=p?String(p.category||'HOCKEY_OPS'):'COACHES';
+  document.getElementById('rosterStaffOrder').value=p?(Number(p.sort_order)||1):(rosterStaffCategoryCount('COACHES','')+1);
+  updateRosterStaffOrderLimit();
   document.getElementById('rosterStaffTitle').value=p?p.title:'';
   document.getElementById('rosterStaffName').value=p?p.name:'';
   if(p){
@@ -10698,20 +10728,28 @@ async function saveRosterStaff(){
   var session=await dcGetSession(),st=document.getElementById('adminRosterStaffStatus');
   if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired.';return;}
   var id=document.getElementById('rosterStaffEditId').value;
+  var existing=id?adminRosterStaff.find(function(x){return String(x.id)===String(id);}):null;
+  var oldCategory=existing?String(existing.category||'HOCKEY_OPS'):'';
+  var category=String(document.getElementById('rosterStaffCategory').value||'HOCKEY_OPS');
   var title=document.getElementById('rosterStaffTitle').value.trim(),name=document.getElementById('rosterStaffName').value.trim();
   var requested=Number(document.getElementById('rosterStaffOrder').value);
-  var maxPosition=adminRosterStaff.length+(id?0:1);
+  var maxPosition=rosterStaffCategoryCount(category,id)+1;
+  if(!['COACHES','HOCKEY_OPS','OFFICE'].includes(category)){if(st)st.textContent='Choose a staff category.';return;}
   if(!title||!name){if(st)st.textContent='Title and name are required.';return;}
-  if(!Number.isInteger(requested)||requested<1||requested>Math.max(1,maxPosition)){if(st)st.textContent='Order must be between 1 and '+Math.max(1,maxPosition)+'.';return;}
+  if(!Number.isInteger(requested)||requested<1||requested>Math.max(1,maxPosition)){if(st)st.textContent='Order must be between 1 and '+Math.max(1,maxPosition)+' for '+rosterStaffCategoryLabel(category)+'.';return;}
   setAdminFeedback(st,'saving','Saving…');
   try{
-    var payload={title:title,name:name,sort_order:requested,updated_at:new Date().toISOString()};
-    var q=id?dcSupabase.from('roster_staff').update(payload).eq('id',id).select('id,title,name,sort_order').single():dcSupabase.from('roster_staff').insert(payload).select('id,title,name,sort_order').single();
+    var payload={title:title,name:name,category:category,sort_order:requested,updated_at:new Date().toISOString()};
+    var q=id?dcSupabase.from('roster_staff').update(payload).eq('id',id).select('id,title,name,category,sort_order').single():dcSupabase.from('roster_staff').insert(payload).select('id,title,name,category,sort_order').single();
     var r=await q;if(r.error)throw r.error;
     var saved=r.data;
-    var ordered=adminRosterStaff.filter(function(x){return String(x.id)!==String(saved.id);}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
-    ordered.splice(Math.min(requested-1,ordered.length),0,saved);
-    await normalizeRosterStaffOrder(ordered);
+    var target=adminRosterStaff.filter(function(x){return String(x.id)!==String(saved.id)&&String(x.category||'HOCKEY_OPS')===category;}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+    target.splice(Math.min(requested-1,target.length),0,saved);
+    await normalizeRosterStaffOrder(target);
+    if(oldCategory&&oldCategory!==category){
+      var oldRows=adminRosterStaff.filter(function(x){return String(x.id)!==String(saved.id)&&String(x.category||'HOCKEY_OPS')===oldCategory;}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+      await normalizeRosterStaffOrder(oldRows);
+    }
     rememberAdminSelection('roster','__STAFF__');
     clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
     setAdminFeedback('adminRosterFeedback','saved','Saved • '+adminTimeStamp());
@@ -10723,7 +10761,8 @@ async function deleteRosterStaff(){
   if(!confirm('Remove '+(p?p.name:'this staff member')+' from Staff? This cannot be undone.'))return;
   var r=await dcSupabase.from('roster_staff').delete().eq('id',id);if(r.error){if(st)st.textContent='Could not remove staff: '+r.error.message;return;}
   try{
-    var remaining=adminRosterStaff.filter(function(x){return String(x.id)!==String(id);}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
+    var category=p?String(p.category||'HOCKEY_OPS'):'HOCKEY_OPS';
+    var remaining=adminRosterStaff.filter(function(x){return String(x.id)!==String(id)&&String(x.category||'HOCKEY_OPS')===category;}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||Number(a.id)-Number(b.id);});
     await normalizeRosterStaffOrder(remaining);
     rememberAdminSelection('roster','__STAFF__');
     clearAdminDirty();closeRosterStaffEditor(true);await touchRosterDate();await loadAdminRoster();await syncPublicRoster();
@@ -10782,9 +10821,13 @@ function publicRosterMarkup(players,meta,staff){
       return '<article class="roster-player" data-player-id="'+escapeHtml(p.id)+'"><div class="roster-number">'+escapeHtml(p.number)+'</div><div class="roster-player-main"><div class="roster-player-name">'+escapeHtml(p.name)+'</div><div class="roster-player-meta">'+escapeHtml(rosterPublicMetaLine(p))+'</div><div class="roster-player-meta roster-birth">'+escapeHtml(rosterBirthSizeLine(p))+'</div></div>'+(role?'<div class="player-profile-captain-role roster-list-captain role-'+role+'" aria-label="'+(role==='c'?'Captain':'Alternate captain')+'"></div>':'')+'</article>';
     }).join('')+'</div></div>';
   }).join('');
-  var staffRows=(staff||[]).slice().sort(function(a,b){return (a.sort_order||0)-(b.sort_order||0)||String(a.title||'').localeCompare(String(b.title||''));});
-  var staffGroup='<div class="roster-group" data-roster-group="STAFF"><div class="roster-group-title">STAFF</div><div class="roster-list roster-staff-list">'+staffRows.map(function(p){
-    return '<div class="roster-staff-card"><div class="roster-staff-title">'+escapeHtml(p.title||'')+'</div><div class="roster-staff-name">'+escapeHtml(p.name||'')+'</div></div>';
+  var staffCategoryOrder=['COACHES','HOCKEY_OPS','OFFICE'];
+  var staffGroup='<div class="roster-group" data-roster-group="STAFF"><div class="roster-group-title">STAFF</div><div class="roster-list roster-staff-list">'+staffCategoryOrder.map(function(category){
+    var rows=(staff||[]).filter(function(p){return String(p.category||'HOCKEY_OPS')===category;}).slice().sort(function(a,b){return (Number(a.sort_order)||0)-(Number(b.sort_order)||0)||String(a.title||'').localeCompare(String(b.title||''));});
+    if(!rows.length)return '';
+    return '<div class="roster-staff-subgroup"><div class="roster-staff-subgroup-title">'+escapeHtml(rosterStaffCategoryLabel(category))+'</div>'+rows.map(function(p){
+      return '<div class="roster-staff-card"><div class="roster-staff-title">'+escapeHtml(p.title||'')+'</div><div class="roster-staff-name">'+escapeHtml(p.name||'')+'</div></div>';
+    }).join('')+'</div>';
   }).join('')+'</div></div>';
   return playerGroups+staffGroup;
 }
