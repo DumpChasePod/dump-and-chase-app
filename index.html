@@ -8696,7 +8696,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v637</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v638</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9040,9 +9040,9 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="admin-stat"><b>—</b><span>Episode Listens</span><small>Taps that started an episode.</small></div>
     <div class="admin-stat"><b>—</b><span>HQ Opens</span><small>Times Phantoms HQ was opened.</small></div>
     <div class="admin-stat"><b>—</b><span>Box Score Clicks</span><small>Taps on the USHL Box Score button.</small></div>
-    <div class="admin-stat"><b>—</b><span>App Installs</span><small>Times the app reported a successful install.</small></div>
+    <div class="admin-stat"><b>—</b><span>Installed Devices</span><small>All-time known devices that opened the installed app.</small></div>
   </div>
-  <div class="admin-analytics-note" id="adminAnalyticsContexts">Numbers cover the selected time range. Visitors are device-based, so one person using two devices can count twice.</div>
+  <div class="admin-analytics-note" id="adminAnalyticsContexts">Selected-range metrics use the active range. Installed Devices is all-time. Visitors are device-based, so one person using two devices can count twice.</div>
 </div>
       </div>
       <button type="button" class="admin-back-top" id="adminBackTop" onclick="scrollAdminToTop()">↑ BACK TO TOP</button>
@@ -10395,17 +10395,13 @@ async function loadAdminAnalytics(days){
     var body=await res.json();
     if(!res.ok||body.ok===false)throw new Error(body.error||('HTTP '+res.status));
 
-    var counts=body.counts||{};
-    var visits=Number(counts.app_view||0);
-    var visitors=Number(body.unique_visitors||0);
-    var listens=Number(counts.episode_listen||0);
-    var hubCount=0;
-    var boxScoreClicks=0;
-    (body.top_contexts||[]).forEach(function(x){
-      if(x.context==='phantoms_hub')hubCount=Number(x.count||0);
-      if(x.context==='ushl_box_score')boxScoreClicks=Number(x.count||0);
-    });
-    var installedDevices=Number(body.installed_devices||0);
+    var metrics=body.metrics||{};
+    var visits=Number(metrics.app_views||0);
+    var visitors=Number(metrics.visitors||0);
+    var listens=Number(metrics.episode_listens||0);
+    var hubCount=Number(metrics.hq_opens||0);
+    var boxScoreClicks=Number(metrics.box_score_clicks||0);
+    var installedDevices=Number(metrics.installed_devices_all_time||body.installed_devices||0);
 
     var stats=[
       [visits,'App Views','Times the app was opened or viewed.'],
@@ -10413,7 +10409,7 @@ async function loadAdminAnalytics(days){
       [listens,'Episode Listens','Taps that started an episode.'],
       [hubCount,'HQ Opens','Times Phantoms HQ was opened.'],
       [boxScoreClicks,'Box Score Clicks','Taps on the USHL Box Score button.'],
-      [installedDevices,'Installed Devices','Known devices that have opened the installed app.']
+      [installedDevices,'Installed Devices','All-time known devices that have opened the installed app.']
     ];
 
     if(grid){
@@ -10423,11 +10419,11 @@ async function loadAdminAnalytics(days){
     }
 
     if(contexts){
-      contexts.textContent='Most numbers cover the selected time range. Installed Devices is cumulative and grows as installed copies are opened. Visitors are device-based, so one person using two devices can count twice.';
+      contexts.textContent='App Views, Visitors, Episode Listens, HQ Opens, and Box Score Clicks cover the selected range. Installed Devices is all-time. Today runs from 12:00 AM Eastern to now.';
     }
 
     if(st){
-      var rangeLabel=days===1?'Today':days===7?'Last 7 days':'Last 30 days';
+      var rangeLabel=days===1?'Today (ET)':days===7?'Last 7 days':'Last 30 days';
       st.textContent=rangeLabel+' • Updated '+adminTimeStamp();
     }
   }catch(err){
