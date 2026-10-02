@@ -8924,7 +8924,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v642</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v645</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12853,8 +12853,8 @@ function dcGameDayActions(g,effective,st){
   var actions=[];
   if(audioOk){var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();actions.push({p:1,html:'<button type="button" class="btn secondary dc-wrr-live-btn dc-wrr-live-wide" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button>'});}
   if(dcLiveChatEnabled){actions.push({p:2,html:'<button type="button" class="btn secondary dc-live-chat-action" onclick="openLiveChat()"><span>'+chatLabel+'</span>'+dcLiveChatAdminParticipantBadgeHtml(gameKey)+dcLiveChatBadgeHtml(gameKey)+'</button>'});}
-  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','ushl_box_score')">BOX SCORE ↗</a>'});
-  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes('game_day')">GAME NOTES ↗</button>'});
+  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>'});
+  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>'});
   actions.sort(function(a,b){return a.p-b.p;});
   var rows=[];
   if(actions.length===4){
