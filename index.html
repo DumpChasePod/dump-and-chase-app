@@ -5008,6 +5008,33 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
+<style id="v643-gameday-action-font-normalize">
+/* V643 — unify Game Day action label sizing across the 2x2 button grid. */
+#publicGameDayCard .dc-gd-action-row > *,
+#publicGameDayCard .dc-gd-action-row .btn,
+#publicGameDayCard .dc-gd-action-row .dc-basic-gd-action,
+#publicGameDayCard .dc-gd-action-row .box-score-btn.gameday-box-score,
+#publicGameDayCard .dc-gd-action-row .dc-live-chat-action{
+  font-size:10px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  letter-spacing:.035em!important;
+}
+#publicGameDayCard .dc-gd-action-row .dc-live-chat-action{
+  padding-left:25px!important;
+  padding-right:25px!important;
+}
+@media(max-width:390px){
+  #publicGameDayCard .dc-gd-action-row > *,
+  #publicGameDayCard .dc-gd-action-row .btn,
+  #publicGameDayCard .dc-gd-action-row .dc-basic-gd-action,
+  #publicGameDayCard .dc-gd-action-row .box-score-btn.gameday-box-score,
+  #publicGameDayCard .dc-gd-action-row .dc-live-chat-action{
+    font-size:9px!important;
+  }
+}
+</style>
+
 <style id="v642-box-score-grid-match">
 /* V642 — override legacy standalone Box Score pill sizing inside the Game Day action grid. */
 #publicGameDayCard .dc-gd-action-row .box-score-btn.gameday-box-score{
