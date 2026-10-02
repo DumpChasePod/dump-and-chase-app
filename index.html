@@ -5123,6 +5123,17 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   }
 }
 </style>
+</style>
+
+<style id="v649-live-chat-home-badge-routing">
+/* V649 — Live Chat number badges are display-only; taps belong to the Live Chat button. */
+#publicGameDayCard .dc-live-chat-participants,
+#publicGameDayCard .dc-live-chat-unread{
+  pointer-events:none!important;
+  cursor:default!important;
+}
+
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -8924,7 +8935,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v648</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v649</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12846,7 +12857,7 @@ function dcLiveChatButtonLabel(g,st,effective){
 function dcLiveChatGameKey(g){return String(g&&g[0]||'')+'|'+String(g&&g[1]||'');}
 function dcLiveChatUnreadCount(gameKey){try{return Number(localStorage.getItem('dcLiveChatUnread:'+gameKey)||0)||0;}catch(_){return 0;}}
 function dcLiveChatBadgeHtml(gameKey){var n=dcLiveChatUnreadCount(gameKey);return n>0?'<span class="dc-live-chat-unread">'+(n>99?'99+':n)+'</span>':'';}
-function dcLiveChatAdminParticipantBadgeHtml(gameKey){var n=window.dcLiveChatAdminUnlocked?Number(window.dcLiveChatAdminPresence||0):0;return window.dcLiveChatAdminUnlocked?'<span class="dc-live-chat-participants" role="button" tabindex="0" aria-label="'+n+' people viewing Live Chat" onclick="event.stopPropagation();openLiveChatParticipantList()">'+n+'</span>':'';}
+function dcLiveChatAdminParticipantBadgeHtml(gameKey){var n=window.dcLiveChatAdminUnlocked?Number(window.dcLiveChatAdminPresence||0):0;return window.dcLiveChatAdminUnlocked?'<span class="dc-live-chat-participants" aria-label="'+n+' people viewing Live Chat">'+n+'</span>':'';}
 function dcGameDayActions(g,effective,st){
   var url=String(boxScoreUrlForGame(g)||'').trim(),audioOk=dcGameDayAudioVisible(g,effective,st),gameKey=dcLiveChatGameKey(g),chatLabel=dcLiveChatButtonLabel(g,st,effective);
   if(!audioOk&&dcGameDayWrrAudio)stopGameDayWrrAudio(false);
@@ -13599,7 +13610,6 @@ window.liveChatTestSetSpeed=async function(speed){
 
   // Initial button refresh and keyboard-safe behavior.
   document.addEventListener('visibilitychange',function(){if(chatOpen&&document.hidden&&chatChannel){try{chatChannel.untrack();}catch(_){}}else if(chatOpen&&!document.hidden&&chatChannel){try{chatChannel.track({device_id:deviceId,visible:true,admin:chatAdmin});}catch(_){}}});
-  document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.closest&&e.target.closest('.dc-live-chat-participants')){e.preventDefault();e.stopPropagation();openLiveChatParticipantList();}});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){try{currentHostId=localStorage.getItem(HOST_KEY)||'';}catch(_){}updateGameDayLiveChatBadge();},{once:true});else updateGameDayLiveChatBadge();
 })();
 </script>
