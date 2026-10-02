@@ -5008,6 +5008,66 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
+<style id="v644-single-row-gameday-actions">
+/* V644 — Game Day controls in a single four-box bottom row. */
+#publicGameDayCard .dc-gd-actions{
+  width:90%!important;
+  max-width:760px!important;
+  margin:8px auto 0!important;
+  gap:0!important;
+}
+#publicGameDayCard .dc-gd-action-row.four{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#publicGameDayCard .dc-gd-action-row.four > *{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:31px!important;
+  height:31px!important;
+  padding:4px 6px!important;
+  border-radius:10px!important;
+  font-size:8.7px!important;
+  line-height:1!important;
+  letter-spacing:.03em!important;
+  white-space:nowrap!important;
+}
+#publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+#publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+#publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+  min-height:31px!important;
+  height:31px!important;
+  font-size:8.7px!important;
+  font-weight:950!important;
+  letter-spacing:.03em!important;
+}
+#publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide{gap:3px!important}
+#publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide img{
+  width:14px!important;height:14px!important;max-width:14px!important;max-height:14px!important;flex-basis:14px!important;
+}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action{padding-left:18px!important;padding-right:18px!important}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-participants{left:4px!important;min-width:13px!important;height:13px!important;padding:0 3px!important;font-size:6.7px!important}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-unread{right:4px!important;min-width:13px!important;height:13px!important;padding:0 3px!important;font-size:6.7px!important}
+@media(max-width:390px){
+  #publicGameDayCard .dc-gd-actions{width:93%!important}
+  #publicGameDayCard .dc-gd-action-row.four{gap:4px!important}
+  #publicGameDayCard .dc-gd-action-row.four > *,
+  #publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+  #publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+  #publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+    min-height:29px!important;height:29px!important;font-size:8px!important;padding:4px 4px!important
+  }
+  #publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide img{width:13px!important;height:13px!important;max-width:13px!important;max-height:13px!important;flex-basis:13px!important}
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action{padding-left:16px!important;padding-right:16px!important}
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-participants{left:3px!important;min-width:12px!important;height:12px!important;font-size:6.3px!important}
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-unread{right:3px!important;min-width:12px!important;height:12px!important;font-size:6.3px!important}
+}
+
 <style id="v643-gameday-action-font-normalize">
 /* V643 — unify Game Day action label sizing across the 2x2 button grid. */
 #publicGameDayCard .dc-gd-action-row > *,
@@ -12793,12 +12853,20 @@ function dcGameDayActions(g,effective,st){
   var actions=[];
   if(audioOk){var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();actions.push({p:1,html:'<button type="button" class="btn secondary dc-wrr-live-btn dc-wrr-live-wide" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button>'});}
   if(dcLiveChatEnabled){actions.push({p:2,html:'<button type="button" class="btn secondary dc-live-chat-action" onclick="openLiveChat()"><span>'+chatLabel+'</span>'+dcLiveChatAdminParticipantBadgeHtml(gameKey)+dcLiveChatBadgeHtml(gameKey)+'</button>'});}
-  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>'});
-  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>'});
+  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack('outbound_click','ushl_box_score')">BOX SCORE ↗</a>'});
+  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes('game_day')">GAME NOTES ↗</button>'});
   actions.sort(function(a,b){return a.p-b.p;});
-  var rows=[];if(actions.length===3){rows.push('<div class="dc-gd-action-row single">'+actions[0].html+'</div>');rows.push('<div class="dc-gd-action-row">'+actions[1].html+actions[2].html+'</div>');}else{for(var i=0;i<actions.length;i+=2){rows.push('<div class="dc-gd-action-row '+(actions.length%2===1&&i===actions.length-1?'single':'')+'">'+actions.slice(i,i+2).map(function(x){return x.html;}).join('')+'</div>');}}
-  return '<div class="dc-gd-actions '+(actions.length===1?'one':'')+' '+(actions.length===3?'three':'')+'">'+rows.join('')+'</div>';
+  var rows=[];
+  if(actions.length===4){
+    rows.push('<div class="dc-gd-action-row four">'+actions.map(function(x){return x.html;}).join('')+'</div>');
+  }else if(actions.length===3){
+    rows.push('<div class="dc-gd-action-row three">'+actions.map(function(x){return x.html;}).join('')+'</div>');
+  }else{
+    for(var i=0;i<actions.length;i+=2){rows.push('<div class="dc-gd-action-row '+(actions.length%2===1&&i===actions.length-1?'single':'')+'">'+actions.slice(i,i+2).map(function(x){return x.html;}).join('')+'</div>');}
+  }
+  return '<div class="dc-gd-actions '+(actions.length===1?'one':'')+' '+(actions.length===3?'three':'')+' '+(actions.length===4?'four':'')+'">'+rows.join('')+'</div>';
 }
+
 function stopGameDayWrrAudio(rerender){dcGameDayWrrAudioRun++;var a=dcGameDayWrrAudio;dcGameDayWrrAudio=null;if(a){try{a.pause();a.removeAttribute('src');a.load();}catch(_){}}dcClearWrrMediaSession();if(rerender!==false)refreshPublicGameDay();}
 async function toggleGameDayWrrAudio(){
   /* V623: Game Day and pregame Preview both use this same dcCreateWrrLiveAudio() direct-stream pathway as More/WRR. */
