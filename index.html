@@ -5007,6 +5007,35 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   #publicGameDayCard .dc-basic-gd-action{font-size:8.6px!important}
 }
 </style>
+
+<style id="v642-box-score-grid-match">
+/* V642 — override legacy standalone Box Score pill sizing inside the Game Day action grid. */
+#publicGameDayCard .dc-gd-action-row .box-score-btn.gameday-box-score{
+  display:flex!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:32px!important;
+  height:32px!important;
+  margin:0!important;
+  padding:4px 7px!important;
+  border-radius:10px!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:9.25px!important;
+  line-height:1!important;
+  letter-spacing:.035em!important;
+}
+@media(max-width:390px){
+  #publicGameDayCard .dc-gd-action-row .box-score-btn.gameday-box-score{
+    min-height:30px!important;
+    height:30px!important;
+    padding:4px 5px!important;
+    font-size:8.6px!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -8808,7 +8837,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v641</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v642</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
