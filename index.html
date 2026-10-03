@@ -5170,6 +5170,61 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 #adminGameDayPanel .admin-publish-bar .btn{width:100%!important;margin:0!important}
 #adminGameDayPanel .admin-publish-bar .admin-leave-unpublished{margin:0!important}
 </style>
+
+<style id="v655-participant-count-accessibility-sticky-fix">
+/* V655 — live participant badge refresh, large-text resilience, solid sticky publish footer. */
+#adminGameDayPanel .admin-publish-bar{
+  bottom:0!important;
+  margin:8px -20px 0!important;
+  padding:9px 20px calc(10px + env(safe-area-inset-bottom))!important;
+  background:#101722!important;
+  border-top:1px solid rgba(139,82,255,.24)!important;
+  box-shadow:0 -12px 28px rgba(0,0,0,.34)!important;
+  z-index:60!important;
+  isolation:isolate;
+}
+#adminGameDayPanel .admin-publish-bar::before{
+  top:-8px!important;
+  height:9px!important;
+  background:#101722!important;
+}
+#adminDashboard.admin-game-day-active .admin-back-top{display:none!important}
+@media(max-width:600px){
+  .admin-section-tab,
+  .admin-mini-btn,
+  #adminGameDayPanel .admin-chip,
+  #adminGameDayPanel .admin-game-shortcuts .admin-mini-btn,
+  #adminGameDayPanel .admin-period-tools .admin-mini-btn,
+  #adminGameDayPanel .admin-clock-tools .admin-mini-btn,
+  #adminGameDayPanel .admin-publish-bar .btn,
+  #liveChatAdminSubtabs .admin-mini-btn,
+  .live-chat-admin-groups .admin-mini-btn{
+    height:auto!important;
+    min-height:34px;
+    white-space:normal!important;
+    overflow-wrap:anywhere;
+    line-height:1.2!important;
+  }
+  #adminGameDayPanel .admin-publish-bar .btn{padding:8px 7px!important}
+  #publicGameDayCard .dc-gd-action-row.four > *,
+  #publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+  #publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+  #publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+    height:auto!important;
+    min-height:32px!important;
+    white-space:normal!important;
+    line-height:1.12!important;
+    overflow-wrap:anywhere;
+  }
+  .live-chat-prod-participant-summary{min-width:0;height:auto!important}
+  .live-chat-prod-participant-main,
+  .live-chat-prod-participant-name,
+  .live-chat-prod-participant-meta{min-width:0;white-space:normal!important;overflow-wrap:anywhere}
+  .admin-dashboard-head,.admin-title-row{min-width:0}
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -8971,7 +9026,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v654</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v655</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9740,6 +9795,8 @@ function selectAdminTab(tab,skipDirtyCheck){
   rememberAdminScroll();
   tab=['game-day','roster','record','schedule','news','notes','live-chat','qna','analytics'].includes(tab)?tab:'game-day';
   try{localStorage.setItem('dcAdminLastTab',tab);}catch(_){}
+  var adminDashboard=document.getElementById('adminDashboard');
+  if(adminDashboard)adminDashboard.classList.toggle('admin-game-day-active',tab==='game-day');
   ['game-day','roster','record','schedule','news','notes','live-chat','qna','analytics'].forEach(function(name){
     var cap=name==='game-day'?'GameDay':(name==='qna'?'Qna':(name==='live-chat'?'LiveChat':name.charAt(0).toUpperCase()+name.slice(1)));
     var panel=document.getElementById('admin'+cap+'Panel');
@@ -13444,7 +13501,7 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
     return out;
   }
   async function loadAdminLiveChat(){window.dcLiveChatAdminUnlocked=true;var active=currentGameInfo();var key=active?.g?dcLiveChatGameKey(active.g):'';adminLiveChatGameKey=key;var state=document.getElementById('adminLiveChatHomeState');if(!key){if(state)state.textContent='NO ACTIVE GAME';return;}var st=getAdminGameState();var final=String(st.adminGameStatus||'').toLowerCase()==='final';var stamp=Date.parse(String(st.updatedAt||''));var readOnly=final&&isFinite(stamp)&&Date.now()-stamp>=DC_LIVE_CHAT_POSTGAME_MS;var ctl=await dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',key).maybeSingle();var mode=ctl.data?.mode||'open';var enabled=ctl.data?ctl.data.enabled!==false:true;dcLiveChatEnabled=enabled;var status=!enabled?'OFF':(readOnly?'POSTGAME':(mode==='read_only'?'READ ONLY':'OPEN'));if(state)state.textContent=status+' · '+adminLiveChatPresence+' VIEWING';dcUpdateAdminParticipantBadge();var summary=document.getElementById('adminLiveChatSummary');if(summary)summary.innerHTML='<div class="live-chat-admin-stat"><b id="adminLiveChatParticipantCount">'+adminLiveChatPresence+'</b><span>Viewing</span></div><div class="live-chat-admin-stat"><b>'+status+'</b><span>Status</span></div><div class="live-chat-admin-stat"><b id="adminLiveChatFlagCount">0</b><span>Unseen Flags</span></div>';var eb=document.getElementById('adminLiveChatEnabledBtn');if(eb)eb.textContent=enabled?'TURN CHAT OFF':'TURN CHAT ON';if(adminLiveChatChannel){try{await dcSupabase.removeChannel(adminLiveChatChannel);}catch(_){}adminLiveChatChannel=null;}adminLiveChatChannel=dcSupabase.channel('live-chat-'+key.replace(/[^A-Za-z0-9_-]/g,'_'),{config:{presence:{key:'admin-'+deviceId}}}).on('presence',{event:'sync'},function(){adminLiveChatPresence=Object.values(adminLiveChatChannel.presenceState()||{}).reduce(function(n,arr){return n+((arr||[]).some(function(x){return x&&x.visible!==false;})?1:0);},0);window.dcLiveChatAdminPresence=adminLiveChatPresence;try{refreshPublicGameDay();}catch(_){}var c=document.getElementById('adminLiveChatParticipantCount');if(c)c.textContent=adminLiveChatPresence;dcUpdateAdminParticipantBadge();loadAdminLiveChatParticipants(key).catch(function(){});}).subscribe(async function(s){if(s==='SUBSCRIBED'){await adminLiveChatChannel.track({device_id:deviceId,admin:true,visible:true,display_name:dcAdminPresenceLabel()});}});await loadAdminLiveChatParticipants(key);await loadAdminLiveChatHosts();await loadAdminLiveChatBlockedWords();await loadAdminLiveChatRecent();}
-  async function loadAdminLiveChatParticipants(key){
+  async function loadAdminLiveChatParticipants(key){dcUpdateAdminParticipantBadge();
     var wrap=document.getElementById('adminLiveChatParticipants');if(!wrap)return;
     var r=await dcSupabase.from('live_chat_participants').select('*').eq('game_key',key).order('display_name');var rows=r.data||[];
     var flags=await dcSupabase.from('live_chat_moderation_log').select('participant_id').eq('game_key',key).eq('action','SEVERE_LANGUAGE_ATTEMPT').is('acknowledged_at',null).order('created_at',{ascending:false});
@@ -13470,7 +13527,25 @@ window.liveChatReact=async function(id,reaction){dcCaptureReactionScroll();liveC
   var liveChatAdminGroups={chat:[['current','CURRENT CHAT'],['participants','PARTICIPANTS']],manage:[['hosts','HOSTS'],['settings','SETTINGS']],tools:[['recent','RECENT CHATS'],['test','TEST CHAT']]};
 var liveChatAdminDefaults={chat:'current',manage:'hosts',tools:'recent'};
 var liveChatAdminActiveGroup='chat';
-function dcAdminParticipantCount(){return Math.max(0,Number(window.dcLiveChatAdminPresence||adminLiveChatPresence||0)||0);}
+function dcPresenceViewerCount(channel){
+  try{
+    if(!channel||typeof channel.presenceState!=='function')return 0;
+    var seen=new Set(),fallback=0,state=channel.presenceState()||{};
+    Object.keys(state).forEach(function(key){
+      (state[key]||[]).forEach(function(p){
+        if(!p||p.visible===false)return;
+        var id=String(p.device_id||'').trim();
+        if(id)seen.add(id);else fallback++;
+      });
+    });
+    return seen.size+fallback;
+  }catch(_){return 0;}
+}
+function dcAdminParticipantCount(){
+  var live=dcPresenceViewerCount(adminLiveChatChannel);
+  if(live>0)return live;
+  return Math.max(0,Number(window.dcLiveChatAdminPresence||adminLiveChatPresence||0)||0);
+}
 function dcUpdateAdminParticipantBadge(){var b=document.getElementById('adminLiveChatParticipantsBadge');if(b)b.textContent=String(dcAdminParticipantCount());}
 function renderLiveChatAdminSubtabs(group,selected){var wrap=document.getElementById('liveChatAdminSubtabs');if(!wrap)return;wrap.innerHTML=(liveChatAdminGroups[group]||[]).map(function(x){var badge=x[0]==='participants'?'<span class="live-chat-admin-tab-count" id="adminLiveChatParticipantsBadge">'+dcAdminParticipantCount()+'</span>':'';return '<button type="button" class="admin-mini-btn'+(x[0]===selected?' active':'')+'" data-lc-admin="'+x[0]+'" onclick="selectLiveChatAdminSubtab(\''+x[0]+'\')">'+x[1]+badge+'</button>';}).join('');}
 window.selectLiveChatAdminGroup=function(group){liveChatAdminActiveGroup=group;document.querySelectorAll('[data-lc-group]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-lc-group')===group);});var tab=liveChatAdminDefaults[group]||'current';renderLiveChatAdminSubtabs(group,tab);selectLiveChatAdminSubtab(tab);};
@@ -13642,7 +13717,7 @@ window.liveChatTestSetSpeed=async function(speed){
     try{if(adminLiveChatChannel)await dcSupabase.removeChannel(adminLiveChatChannel);}catch(_){}
     adminLiveChatGameKey=key;
     adminLiveChatChannel=dcSupabase.channel('live-chat-'+key.replace(/[^A-Za-z0-9_-]/g,'_'),{config:{presence:{key:'admin-'+deviceId}}})
-      .on('presence',{event:'sync'},function(){adminLiveChatPresence=Object.values(adminLiveChatChannel.presenceState()||{}).reduce(function(n,arr){return n+((arr||[]).some(function(x){return x&&x.visible!==false;})?1:0);},0);window.dcLiveChatAdminPresence=adminLiveChatPresence;try{refreshPublicGameDay();}catch(_){}updateGameDayLiveChatBadge();if(document.getElementById('adminLiveChatParticipants'))loadAdminLiveChatParticipants(key).catch(function(){});})
+      .on('presence',{event:'sync'},function(){adminLiveChatPresence=dcPresenceViewerCount(adminLiveChatChannel);window.dcLiveChatAdminPresence=adminLiveChatPresence;dcUpdateAdminParticipantBadge();try{refreshPublicGameDay();}catch(_){}updateGameDayLiveChatBadge();if(document.getElementById('adminLiveChatParticipants'))loadAdminLiveChatParticipants(key).catch(function(){});})
       .subscribe(async function(s){if(s==='SUBSCRIBED'){try{await adminLiveChatChannel.track({device_id:deviceId,admin:true,visible:true,display_name:dcAdminPresenceLabel()});}catch(_){} }});
   }
   setInterval(function(){ensureBackgroundChannel();if(window.dcLiveChatAdminUnlocked)refreshAdminPresenceChannel();},4000);
