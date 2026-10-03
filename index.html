@@ -3936,6 +3936,17 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 @keyframes dcGoalFlash{0%,100%{opacity:.35}50%{opacity:1}}
 @keyframes dcGoalPulse{from{transform:scale(.96);opacity:.88}to{transform:scale(1.04);opacity:1}}
+/* V661 scorer spotlight overlays the proven Game Day card without changing its geometry. */
+#publicGameDayCard .dc-goal-spotlight{position:absolute;z-index:35;left:12px;right:12px;bottom:68px;padding:15px 14px 14px;border-radius:15px;text-align:center;pointer-events:none;border:1px solid rgba(165,108,255,.55);background:linear-gradient(180deg,rgba(23,18,34,.98),rgba(12,18,27,.99));box-shadow:0 18px 45px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.05);animation:dcGoalSpotlightIn .24s ease-out both}
+#publicGameDayCard .dc-goal-spotlight:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:15px 15px 0 0;background:linear-gradient(90deg,#a56cff,#f2892c)}
+#publicGameDayCard .dc-goal-spotlight.opponent{border-color:rgba(132,151,177,.5);background:linear-gradient(180deg,rgba(28,34,42,.98),rgba(12,18,27,.99))}
+#publicGameDayCard .dc-goal-spotlight.opponent:before{background:linear-gradient(90deg,#657487,#aab4c1)}
+#publicGameDayCard .dc-goal-spotlight-mark{margin-bottom:6px;color:#f5b166;font-size:9px;font-weight:950;letter-spacing:.14em}
+#publicGameDayCard .dc-goal-spotlight.opponent .dc-goal-spotlight-mark{color:#c6d0dc}
+#publicGameDayCard .dc-goal-spotlight-scorer{font-size:20px;line-height:1.1;font-weight:1000;letter-spacing:.01em;color:#fff}
+#publicGameDayCard .dc-goal-spotlight-type{margin-top:6px;color:#7cf0a6;font-size:12px;line-height:1.2;font-weight:950}
+#publicGameDayCard .dc-goal-spotlight-assists{margin-top:7px;color:#b6c0cc;font-size:9px;line-height:1.3;font-weight:800}
+@keyframes dcGoalSpotlightIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:420px){
   #publicGameDayCard .dc-goalfx-word{font-size:38px}
   #publicGameDayCard .dc-goalfx-opponent-word{font-size:26px}
@@ -9363,7 +9374,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v660</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v661</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12562,6 +12573,7 @@ var dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent
 var dcPublicGoalFx=null;
 var dcPublicGoalFxTimer=null;
 var DC_GOAL_EVENT_SEEN_KEY='dc_goal_event_seen_v1';
+var DC_HT_GOAL_SEEN_PREFIX='dc_ht_goal_seen_v1:';
 
 function dcNormalizeShootoutState(value){
   value=value&&typeof value==='object'?value:{};
@@ -12857,14 +12869,24 @@ function dcHandleGoalEvent(state){
   var age=isFinite(at)?Date.now()-at:999999;
   try{localStorage.setItem(DC_GOAL_EVENT_SEEN_KEY,String(ev.id));}catch(_){}
   if(age<0||age>12000)return;
+  dcStartGoalSequence(ev.team,ev.source==='shootout'?'shootout':'regulation',null);
+}
+function dcStartGoalSequence(team,source,details){
+  if(!(team==='phantoms'||team==='opponent'))return;
   if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
-  dcPublicGoalFx={team:ev.team,source:ev.source==='shootout'?'shootout':'regulation'};
-  var duration=dcPublicGoalFx.source==='shootout'?3000:(dcPublicGoalFx.team==='phantoms'?5000:3000);
+  dcPublicGoalFx={team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null};
+  var duration=dcPublicGoalFx.source==='shootout'?3000:(team==='phantoms'?5000:3000);
   refreshPublicGameDay();
   dcPublicGoalFxTimer=setTimeout(function(){
-    dcPublicGoalFx=null;
-    dcPublicGoalFxTimer=null;
-    refreshPublicGameDay();
+    if(details&&dcPublicGoalFx&&dcPublicGoalFx.details===details){
+      dcPublicGoalFx.phase='spotlight';
+      refreshPublicGameDay();
+      dcPublicGoalFxTimer=setTimeout(function(){
+        dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
+      },4000);
+      return;
+    }
+    dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
   },duration);
 }
 function dcPublicGoalCard(box,g,fx){
@@ -12889,6 +12911,43 @@ function dcPublicGoalCard(box,g,fx){
       '<div class="dc-goalfx-opponent-word">GOAL</div>'+
     '</div>';
   }
+}
+function dcGoalOrdinal(n){
+  n=Number(n);if(!Number.isFinite(n)||n<=0)return '';
+  var m=n%100,s=n%10,suffix=(m>=11&&m<=13)?'TH':(s===1?'ST':s===2?'ND':s===3?'RD':'TH');
+  return Math.floor(n)+suffix;
+}
+function dcGoalPlayerName(p){if(!p)return '';return [p.first_name,p.last_name].filter(Boolean).join(' ').trim();}
+function dcGoalSpotlightType(d){
+  if(!d)return 'GOAL';
+  if(d.empty_net&&d.short_handed)return 'SHORT-HANDED EMPTY NET GOAL';
+  if(d.empty_net)return 'EMPTY NET GOAL';
+  if(d.short_handed)return 'SHORT-HANDED GOAL';
+  if(d.power_play)return 'POWER PLAY GOAL';
+  return 'GOAL';
+}
+function dcGoalSpotlightTeamLabel(g,team){
+  if(team==='phantoms')return 'YOUNGSTOWN GOAL';
+  var name=String(g&&g[1]||'OPPONENT');
+  try{if(typeof adminPreviewCityName==='function')name=adminPreviewCityName(name)||name;}catch(_){}
+  return String(name).toUpperCase()+' GOAL';
+}
+function dcPublicGoalSpotlight(box,g,fx){
+  if(!box||!fx||!fx.details)return;
+  var d=fx.details,sc=d.scorer||{},name=dcGoalPlayerName(sc)||'GOAL SCORER';
+  var num=String(sc.number||'').trim();
+  var scorer=(num?'#'+escapeHtml(num)+' ':'')+escapeHtml(name.toUpperCase());
+  var ord=dcGoalOrdinal(d.scorer_goal_num);
+  var goalType=dcGoalSpotlightType(d)+(ord?' — '+ord+' OF THE SEASON':'');
+  var assists=[dcGoalPlayerName(d.assist1),dcGoalPlayerName(d.assist2)].filter(Boolean);
+  var overlay=document.createElement('div');
+  overlay.className='dc-goal-spotlight '+(fx.team==='phantoms'?'phantoms':'opponent');
+  overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');
+  overlay.innerHTML='<div class="dc-goal-spotlight-mark">'+escapeHtml(dcGoalSpotlightTeamLabel(g,fx.team))+'</div>'+
+    '<div class="dc-goal-spotlight-scorer">'+scorer+'</div>'+
+    '<div class="dc-goal-spotlight-type">'+escapeHtml(goalType)+'</div>'+
+    (assists.length?'<div class="dc-goal-spotlight-assists">Assists: '+assists.map(escapeHtml).join(' • ')+'</div>':'');
+  box.appendChild(overlay);
 }
 function dcPublicShootoutTeam(team,label,homeAway,attemptTeam,state,nextTeam,showNext){
   var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
@@ -12955,7 +13014,8 @@ function dcRenderPublicGameDayDecorated(){
   var st=getAdminGameState();
   dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(String(st.adminManpowerSituation||'')==='4-on-4')box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
   if(dcPublicGoalFx){
-    dcPublicGoalCard(box,active.g,dcPublicGoalFx);
+    if(dcPublicGoalFx.phase==='spotlight'&&dcPublicGoalFx.details)dcPublicGoalSpotlight(box,active.g,dcPublicGoalFx);
+    else dcPublicGoalCard(box,active.g,dcPublicGoalFx);
     syncGameDayHomePriority();
     return;
   }
@@ -13201,6 +13261,23 @@ async function dcResolveLiveGameId(g){
   if(resolvedBoxUrl)try{await dcPersistResolvedBoxScoreToSchedule(g,resolvedBoxUrl);}catch(_){}
   return id;
 }
+function dcHtGoalEventId(goal){return goal&&goal.id!=null?String(goal.id):'';}
+function dcHtGoalTeam(goal,snapshot){
+  if(!goal||!snapshot||!snapshot.teams)return '';
+  var h=snapshot.teams.home||{},v=snapshot.teams.visitor||{};
+  var gid=String(goal.team_id||''),gcode=String(goal.team_code||goal.scorer&&goal.scorer.team_code||'').trim().toUpperCase();
+  function hit(t){return (gid&&String(t.id||'')===gid)||(gcode&&String(t.code||'').trim().toUpperCase()===gcode);}
+  var target=hit(h)?h:(hit(v)?v:null);if(!target)return '';
+  return dcHtBridgeTeamIsYoungstown(target)?'phantoms':'opponent';
+}
+function dcHtNewGoal(prior,next,gameId){
+  var nextGoals=next&&Array.isArray(next.goals)?next.goals:[];if(!nextGoals.length)return null;
+  var storeKey=DC_HT_GOAL_SEEN_PREFIX+String(gameId||''),seen='';try{seen=localStorage.getItem(storeKey)||'';}catch(_){}
+  if(!prior){var initial=dcHtGoalEventId(nextGoals[nextGoals.length-1]);if(initial)try{localStorage.setItem(storeKey,initial);}catch(_){}return null;}
+  var priorIds={};(Array.isArray(prior.goals)?prior.goals:[]).forEach(function(x){var id=dcHtGoalEventId(x);if(id)priorIds[id]=true;});
+  var fresh=nextGoals.filter(function(x){var id=dcHtGoalEventId(x);return id&&!priorIds[id];});if(!fresh.length)return null;
+  var goal=fresh[fresh.length-1],id=dcHtGoalEventId(goal);if(id&&seen===id)return null;if(id)try{localStorage.setItem(storeKey,id);}catch(_){}return goal;
+}
 async function dcSyncLiveStats(force){
   var active=dcGameCenterHockeyTechTarget(new Date());
   if(!active||!active.g){dcRenderAdminHtLiveStrip();return;}
@@ -13231,16 +13308,17 @@ async function dcSyncLiveStats(force){
     }
     var snapshot=body.interpreted;
     var priorSnapshot=dcLiveStatsState.key===key?dcLiveStatsState.snapshot:null;
-    if(priorSnapshot){
+    var htGoal=dcHtNewGoal(priorSnapshot,snapshot,gameId);
+    if(htGoal){
+      var htGoalTeam=dcHtGoalTeam(htGoal,snapshot);
+      if(htGoalTeam)dcStartGoalSequence(htGoalTeam,'regulation',htGoal);
+    }else if(priorSnapshot){
+      /* Fallback preserves the existing goal animation if HockeyTech briefly omits goal-event details. */
       var priorSides=dcLiveSides(priorSnapshot),nextSides=dcLiveSides(snapshot);
       if(priorSides&&nextSides){
         var oldY=Number(priorSides.yng.score),oldO=Number(priorSides.opp.score),newY=Number(nextSides.yng.score),newO=Number(nextSides.opp.score);
         var goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
-        if(goalTeam){
-          if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
-          dcPublicGoalFx={team:goalTeam,source:'regulation'};
-          dcPublicGoalFxTimer=setTimeout(function(){dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();},goalTeam==='phantoms'?5000:3000);
-        }
+        if(goalTeam)dcStartGoalSequence(goalTeam,'regulation',null);
       }
     }
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
