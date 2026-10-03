@@ -3936,17 +3936,6 @@ body.game-live #publicGameDayCard .gameday-period{
 }
 @keyframes dcGoalFlash{0%,100%{opacity:.35}50%{opacity:1}}
 @keyframes dcGoalPulse{from{transform:scale(.96);opacity:.88}to{transform:scale(1.04);opacity:1}}
-/* V661 scorer spotlight overlays the proven Game Day card without changing its geometry. */
-#publicGameDayCard .dc-goal-spotlight{position:absolute;z-index:35;left:12px;right:12px;bottom:68px;padding:15px 14px 14px;border-radius:15px;text-align:center;pointer-events:none;border:1px solid rgba(165,108,255,.55);background:linear-gradient(180deg,rgba(23,18,34,.98),rgba(12,18,27,.99));box-shadow:0 18px 45px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.05);animation:dcGoalSpotlightIn .24s ease-out both}
-#publicGameDayCard .dc-goal-spotlight:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:15px 15px 0 0;background:linear-gradient(90deg,#a56cff,#f2892c)}
-#publicGameDayCard .dc-goal-spotlight.opponent{border-color:rgba(132,151,177,.5);background:linear-gradient(180deg,rgba(28,34,42,.98),rgba(12,18,27,.99))}
-#publicGameDayCard .dc-goal-spotlight.opponent:before{background:linear-gradient(90deg,#657487,#aab4c1)}
-#publicGameDayCard .dc-goal-spotlight-mark{margin-bottom:6px;color:#f5b166;font-size:9px;font-weight:950;letter-spacing:.14em}
-#publicGameDayCard .dc-goal-spotlight.opponent .dc-goal-spotlight-mark{color:#c6d0dc}
-#publicGameDayCard .dc-goal-spotlight-scorer{font-size:20px;line-height:1.1;font-weight:1000;letter-spacing:.01em;color:#fff}
-#publicGameDayCard .dc-goal-spotlight-type{margin-top:6px;color:#7cf0a6;font-size:12px;line-height:1.2;font-weight:950}
-#publicGameDayCard .dc-goal-spotlight-assists{margin-top:7px;color:#b6c0cc;font-size:9px;line-height:1.3;font-weight:800}
-@keyframes dcGoalSpotlightIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:420px){
   #publicGameDayCard .dc-goalfx-word{font-size:38px}
   #publicGameDayCard .dc-goalfx-opponent-word{font-size:26px}
@@ -5393,149 +5382,69 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 </style>
 
 
-<style id="v658-standing-series-result-match">
-/* V658 — Schedule/Standings season-series sheet matches Recent Results and links completed games to box scores. */
-#standingsSeriesModal .standings-series-game{grid-template-columns:54px minmax(0,1fr) auto!important;gap:9px!important;min-height:54px!important;padding:8px 10px!important;border-radius:11px!important;align-items:center!important}
-#standingsSeriesModal .standings-series-game-link{color:inherit!important;text-decoration:none!important;cursor:pointer}
-#standingsSeriesModal .standings-series-game-link:active{transform:scale(.995)}
-#standingsSeriesModal .standings-series-date{font-size:9px!important;line-height:1.1!important}
-#standingsSeriesModal .standings-series-date small{font-size:7px!important;margin-top:2px!important}
-#standingsSeriesModal .standings-series-opponent{font-size:11px!important;font-weight:950!important}
-#standingsSeriesModal .standings-series-meta{margin-top:3px!important;font-size:8.5px!important;line-height:1.2!important;color:#9ca8b7!important}
-#standingsSeriesModal .standings-series-meta b{font-size:8px!important;color:#c2cad5!important;letter-spacing:.04em}
-#standingsSeriesModal .standings-series-side{min-width:68px!important;display:flex!important;align-items:center!important;justify-content:flex-end!important}
-#standingsSeriesModal .standings-series-side .schedule-final-line{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important}
-#standingsSeriesModal .standings-series-side .result-outcome-pill{margin:0!important;min-width:30px!important;height:22px!important;padding:0 7px!important;font-size:10px!important}
-#standingsSeriesModal .standings-series-side .schedule-final-score{font-size:11px!important;font-weight:950!important;color:#edf2f8!important;line-height:1!important}
-#standingsSeriesModal .standings-series-box-arrow{font-size:8px!important;color:#aeb8c6!important;margin-left:1px}
-#standingsSeriesModal .standings-series-upcoming-time{font-size:10px!important;font-weight:950!important;color:#c9a9ff!important;white-space:nowrap}
-@media(max-width:430px){#standingsSeriesModal .standings-series-game{grid-template-columns:48px minmax(0,1fr) auto!important;gap:7px!important;padding:7px 8px!important}#standingsSeriesModal .standings-series-side{min-width:62px!important}#standingsSeriesModal .standings-series-meta{font-size:8px!important}}
-</style>
+<style id="v658-series-modal-and-gameday-actions">
+/* V658 — Schedule/standings Season Series matches Recent Results; equal Game Day action buttons. */
+#standingsSeriesModal .standings-series-list{gap:5px!important}
+#standingsSeriesModal .standings-series-game{
+  grid-template-columns:46px minmax(0,1fr) auto!important;
+  gap:7px!important;
+  align-items:center!important;
+  min-height:42px!important;
+  padding:6px 8px!important;
+  border-radius:10px!important;
+  text-decoration:none!important;
+  color:inherit!important;
+}
+#standingsSeriesModal .standings-series-date{font-size:8px!important;line-height:1.15!important;text-align:center!important}
+#standingsSeriesModal .standings-series-date small{display:block!important;margin:0 0 1px!important;font-size:6.5px!important;line-height:1!important;color:#8995a5!important}
+#standingsSeriesModal .standings-series-date span{display:block!important;font-weight:950!important;color:#e4e9f1!important}
+#standingsSeriesModal .standings-series-opponent{font-size:10.5px!important;font-weight:950!important;line-height:1.08!important}
+#standingsSeriesModal .standings-series-meta{margin-top:2px!important;font-size:8px!important;line-height:1.1!important;color:#9ca8b7!important}
+#standingsSeriesModal .standings-series-meta b{font-size:8px!important;font-weight:800!important;color:#aeb8c6!important;letter-spacing:.03em!important}
+#standingsSeriesModal .standings-series-side{display:flex!important;align-items:center!important;justify-content:flex-end!important;min-width:58px!important}
+#standingsSeriesModal .schedule-final-line{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important}
+#standingsSeriesModal .result-outcome-pill{min-width:28px!important;height:20px!important;padding:0 6px!important;margin:0!important;font-size:9px!important}
+#standingsSeriesModal .schedule-final-score{font-size:11px!important;font-weight:950!important;line-height:1!important}
+#standingsSeriesModal .standings-series-upcoming{font-size:9px!important;font-weight:900!important;color:#d5c1ff!important;text-align:right!important;white-space:nowrap!important}
+#standingsSeriesModal .standings-series-game.dc-box-score-card{cursor:pointer!important}
+#standingsSeriesModal .standings-series-game.dc-box-score-card:active{transform:scale(.992)}
 
-
-<style id="v659-result-pills-boxscore-arrows">
-/* V659 — semantic W/L result pills + far-right box-score link indicator. */
-.result-outcome-pill.result-w,
-.result-outcome-pill.win{
-  color:#9ff0bd!important;
-  background:rgba(49,214,124,.14)!important;
-  border-color:rgba(49,214,124,.48)!important;
+#publicGameDayCard .dc-gd-action-row.four > *,
+#publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+#publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+#publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:50px!important;
+  height:50px!important;
+  padding:6px 7px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  line-height:1.05!important;
+  letter-spacing:.03em!important;
+  text-align:center!important;
+  white-space:normal!important;
 }
-.result-outcome-pill.result-l,
-.result-outcome-pill.result-otl,
-.result-outcome-pill.result-sol,
-.result-outcome-pill.loss{
-  color:#ff9aa2!important;
-  background:rgba(239,89,102,.13)!important;
-  border-color:rgba(239,89,102,.44)!important;
-}
-.dc-box-score-card,
-#standingsSeriesModal .standings-series-game-link{
-  position:relative!important;
-  padding-right:25px!important;
-}
-.dc-box-score-card::after,
-#standingsSeriesModal .standings-series-game-link::after{
-  content:'↗';
-  position:absolute;
-  right:7px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#aeb8c6;
-  font-size:8px;
-  font-weight:950;
-  line-height:1;
-  pointer-events:none;
-}
-#standingsSeriesModal .standings-series-box-arrow{display:none!important}
-@media(max-width:390px){
-  .dc-box-score-card,
-  #standingsSeriesModal .standings-series-game-link{padding-right:21px!important}
-  .dc-box-score-card::after,
-  #standingsSeriesModal .standings-series-game-link::after{right:6px;font-size:7.5px}
-}
-</style>
-
-
-<style id="v660-game-center-special-teams">
-/* V660 — game-night Game Center cleanup + special teams controls.
-   Public Game Day geometry is unchanged; new indicators reuse the existing PP slots
-   above each score and the existing situation-pill position below the clock. */
-#adminGameDayPanel .admin-live-manual-console{
-  margin:8px 0 10px;
-  padding:10px;
-  border:1px solid rgba(143,224,170,.28);
-  border-radius:12px;
-  background:linear-gradient(180deg,rgba(143,224,170,.055),rgba(14,21,31,.9));
-}
-#adminGameDayPanel .admin-live-console-title{
-  margin-bottom:8px;
-  color:#8fe0aa;
-  font-size:8px;
-  font-weight:950;
-  letter-spacing:.12em;
-}
-#adminGameDayPanel .admin-special-sub-label{margin-top:8px}
-#adminGameDayPanel .admin-special-team-row{grid-template-columns:repeat(3,minmax(0,1fr))}
-#adminGameDayPanel .admin-manpower-row{grid-template-columns:repeat(5,minmax(0,1fr))}
-#adminGameDayPanel .admin-live-console-split{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-#adminGameDayPanel .admin-live-console-split>div{min-width:0;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)}
-#adminGameDayPanel .admin-stoppage-row,#adminGameDayPanel .admin-onice-row{display:grid;grid-template-columns:1fr;gap:4px}
-#adminGameDayPanel .admin-emergency-controls-label{
-  margin:10px 0 4px;
-  color:#7f8b9c;
-  font-size:7.5px;
-  font-weight:950;
-  letter-spacing:.1em;
-  text-align:center;
-}
-#adminGameDayPanel .admin-live-game-actions{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:5px;
-  margin-top:9px;
-  padding-top:9px;
-  border-top:1px solid rgba(255,255,255,.08);
-}
-#adminGameDayPanel .admin-live-final-btn{border-color:rgba(255,105,105,.48);color:#ffabab}
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-gameday-step-1,
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-gameday-step-2,
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-gameday-step-5,
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-live-preview,
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-reset-row{display:none!important}
-#adminDashboard.admin-is-live:not(.admin-is-so) #adminGameDayPanel .admin-gameday-step-4{display:none!important}
-#adminDashboard.admin-is-so #adminGameDayPanel .admin-gameday-step-4{display:block!important}
-#adminDashboard.admin-is-final #adminGameDayPanel .admin-gameday-step-1,
-#adminDashboard.admin-is-final #adminGameDayPanel .admin-gameday-step-2,
-#adminDashboard.admin-is-final #adminGameDayPanel .admin-gameday-step-3,
-#adminDashboard.admin-is-final #adminGameDayPanel .admin-gameday-step-4{display:none!important}
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-gameday-step-3{margin-top:0}
-#adminDashboard.admin-is-live #adminGameDayPanel .admin-gameday-step-3 .admin-gameday-step-head small{display:none}
-#adminGameDayPanel:not(.manual-authority) .admin-score-card,
-#adminGameDayPanel:not(.manual-authority) .admin-clock-digits,
-#adminGameDayPanel:not(.manual-authority) .admin-period-flow{opacity:.48}
-#adminGameDayPanel .admin-chip[data-admin-pp].active,
-#adminGameDayPanel .admin-chip[data-admin-pp-time].active,
-#adminGameDayPanel .admin-chip[data-admin-manpower].active{
-  border-color:rgba(105,212,147,.65);
-  background:rgba(105,212,147,.13);
-  color:#a9efc0;
-}
-#adminGameDayPanel .admin-chip[data-admin-pp-off].active,
-#adminGameDayPanel .admin-chip[data-admin-manpower=""].active{
-  border-color:rgba(255,255,255,.2);
-  background:rgba(255,255,255,.07);
-  color:#cad2dc;
-}
-/* Keep the public PP slot dimensions and score positions exactly as before. */
-#publicGameDayCard.dc-gd-modern .gameday-pp-slot{height:42px!important;min-height:42px!important}
-#publicGameDayCard .dc-four-on-four-pill{white-space:nowrap}
-@media(max-width:420px){
-  #adminGameDayPanel .admin-manpower-row{grid-template-columns:repeat(3,minmax(0,1fr))}
-  #adminGameDayPanel .admin-live-console-split{grid-template-columns:1fr}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action{padding-left:18px!important;padding-right:18px!important}
+@media(max-width:600px){
+  #publicGameDayCard .dc-gd-action-row.four > *,
+  #publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+  #publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+  #publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+    min-height:48px!important;
+    height:48px!important;
+    font-size:9px!important;
+    line-height:1.08!important;
+  }
 }
 </style>
-
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7395,7 +7304,7 @@ function updateAdminGameDayPreview(){
   var lt=document.getElementById('adminPreviewLeftTeam'),rt=document.getElementById('adminPreviewRightTeam');
   var ls=document.getElementById('adminPreviewLeftScore'),rs=document.getElementById('adminPreviewRightScore');
   if(lt)lt.textContent=leftTeam;if(rt)rt.textContent=rightTeam;if(ls)ls.textContent=String(leftScore);if(rs)rs.textContent=String(rightScore);
-  var manpower=String(document.getElementById('adminManpowerSituation')?.value||'');var previewFour=manpower==='4-on-4';var pp=previewFour?'':String(document.getElementById('adminPowerPlay')?.value||'');var ppTime=String(document.getElementById('adminPowerPlayTime')?.value||'');
+  var previewFour=document.getElementById('adminFourOnFour')?.value==='true';var pp=previewFour?'':String(document.getElementById('adminPowerPlay')?.value||'');
   var en=String(document.getElementById('adminEmptyNet')?.value||'');
   var leftPP=document.getElementById('adminPreviewLeftPP'),rightPP=document.getElementById('adminPreviewRightPP');
   var leftEN=document.getElementById('adminPreviewLeftEN'),rightEN=document.getElementById('adminPreviewRightEN');
@@ -7403,7 +7312,7 @@ function updateAdminGameDayPreview(){
   var rightHasPP=pp&&(phHome?pp==='phantoms':pp==='opponent');
   var leftHasEN=en&&(phHome?en==='opponent':en==='phantoms');
   var rightHasEN=en&&(phHome?en==='phantoms':en==='opponent');
-  if(leftPP){leftPP.hidden=!leftHasPP;leftPP.textContent=leftHasPP?('PP'+(ppTime?' • '+ppTime:'')):'PP';}if(rightPP){rightPP.hidden=!rightHasPP;rightPP.textContent=rightHasPP?('PP'+(ppTime?' • '+ppTime:'')):'PP';}
+  if(leftPP)leftPP.hidden=!leftHasPP;if(rightPP)rightPP.hidden=!rightHasPP;
   if(leftEN)leftEN.hidden=!leftHasEN;if(rightEN)rightEN.hidden=!rightHasEN;
   var state='UPCOMING';
   if(st==='live'){
@@ -7411,7 +7320,7 @@ function updateAdminGameDayPreview(){
     else{var displayClock=clock;var m=/^(\d{1,2}):(\d{2})$/.exec(clock);if(m)displayClock=String(Number(m[1]))+':'+m[2];state=(period?period+' • ':'')+(displayClock||'LIVE');}
   }else if(st==='final'){state='FINAL';}
   var stateEl=document.getElementById('adminPreviewState');if(stateEl)stateEl.textContent=state;var chatPreviewBtn=document.getElementById('adminPreviewLiveChatButton');if(chatPreviewBtn){var chatFinal=st==='final';var chatStamp=Date.parse(String(publishedState&&publishedState.updatedAt||''));chatPreviewBtn.textContent=(chatFinal&&isFinite(chatStamp)&&Date.now()-chatStamp>=DC_LIVE_CHAT_POSTGAME_MS)?'VIEW CHAT':'LIVE CHAT';chatPreviewBtn.disabled=true;}
-  var fourEl=document.getElementById('adminPreviewFourOnFour');if(fourEl){fourEl.hidden=!(st==='live'&&manpower);fourEl.textContent=manpower?manpower.toUpperCase().replace(/-/g,' '):'';}
+  var fourEl=document.getElementById('adminPreviewFourOnFour');if(fourEl)fourEl.hidden=!(st==='live'&&previewFour);
   var teamTimeout=String(document.getElementById('adminTeamTimeout')?.value||'');
   var timeoutEl=document.getElementById('adminPreviewTeamTimeout');
   if(timeoutEl){
@@ -7440,19 +7349,15 @@ function syncAdminQuickControls(){
  document.querySelectorAll('[data-admin-intermission]').forEach(b=>b.classList.toggle('active',ck==='INT'&&b.dataset.adminIntermission===pd));
  const pp=document.getElementById('adminPowerPlay')?.value||'';
  document.querySelectorAll('[data-admin-pp]').forEach(b=>b.classList.toggle('active',b.dataset.adminPp===pp));
- document.querySelectorAll('[data-admin-pp-off]').forEach(b=>b.classList.toggle('active',!pp));
- const ppTime=document.getElementById('adminPowerPlayTime')?.value||'';
- document.querySelectorAll('[data-admin-pp-time]').forEach(b=>b.classList.toggle('active',b.dataset.adminPpTime===ppTime));
- const manpower=document.getElementById('adminManpowerSituation')?.value||'';
- document.querySelectorAll('[data-admin-manpower]').forEach(b=>b.classList.toggle('active',b.dataset.adminManpower===manpower));
  const en=document.getElementById('adminEmptyNet')?.value||'';
  document.querySelectorAll('[data-admin-en]').forEach(b=>b.classList.toggle('active',b.dataset.adminEn===en));
  const stoppage=document.getElementById('adminStoppageStatus')?.value||'';
  document.querySelectorAll('[data-admin-stoppage]').forEach(b=>b.classList.toggle('active',b.dataset.adminStoppage===stoppage));
+ document.getElementById('adminFourOnFourButton')?.classList.toggle('active',document.getElementById('adminFourOnFour')?.value==='true');
  const teamTimeout=document.getElementById('adminTeamTimeout')?.value||'';
  document.querySelectorAll('[data-admin-team-timeout]').forEach(b=>b.classList.toggle('active',b.dataset.adminTeamTimeout===teamTimeout));
  const dash=document.getElementById('adminDashboard');
- if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');dash.classList.toggle('admin-is-so',String(pd).toUpperCase()==='SO');dash.classList.toggle('admin-is-ot',String(pd).toUpperCase()==='OT');}
+ if(dash){dash.classList.toggle('admin-is-upcoming',st==='upcoming');dash.classList.toggle('admin-is-live',st==='live');dash.classList.toggle('admin-is-final',st==='final');}
  updateAdminGameDayPreview();
  if(typeof syncAdminShootoutVisibility==='function')syncAdminShootoutVisibility();
 }
@@ -7465,10 +7370,10 @@ function setAdminStatus(value){
  }
  if(value==='upcoming'){
    var period=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock'),result=document.getElementById('adminResult');
-   if(period)period.value='';if(clock)clock.value='';if(result)result.value='';var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var ppt=document.getElementById('adminPowerPlayTime');if(ppt)ppt.value='';var mp=document.getElementById('adminManpowerSituation');if(mp)mp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';var tt=document.getElementById('adminTeamTimeout');if(tt)tt.value='';var four=document.getElementById('adminFourOnFour');if(four)four.value='false';
+   if(period)period.value='';if(clock)clock.value='';if(result)result.value='';var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';var tt=document.getElementById('adminTeamTimeout');if(tt)tt.value='';var four=document.getElementById('adminFourOnFour');if(four)four.value='false';
  }
  syncAdminQuickControls();loadAdminGameDayBoxScore();markGameDayDirty();
- if(value==='final'){var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var ppt=document.getElementById('adminPowerPlayTime');if(ppt)ppt.value='';var mp=document.getElementById('adminManpowerSituation');if(mp)mp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';
+ if(value==='final'){var pp=document.getElementById('adminPowerPlay');if(pp)pp.value='';var en=document.getElementById('adminEmptyNet');if(en)en.value='';
    setTimeout(function(){
      var el=document.getElementById('adminFinalResultControls');
      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
@@ -7476,30 +7381,7 @@ function setAdminStatus(value){
  }
 }
 function setAdminResult(value){const el=document.getElementById('adminResult');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
-function setAdminPowerPlay(value){
- const el=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime'),man=document.getElementById('adminManpowerSituation');if(!el)return;
- var next=String(value||'');
- el.value=next;
- if(next){
-   if(time&&!time.value)time.value='2:00';
-   if(man&&(!man.value||man.value==='4-on-4'))man.value='5-on-4';
- }else{
-   if(time)time.value='';
-   if(man&&['5-on-4','5-on-3','4-on-3'].includes(man.value))man.value='';
- }
- var four=document.getElementById('adminFourOnFour');if(four)four.value=(man&&man.value==='4-on-4')?'true':'false';
- syncAdminQuickControls();markGameDayDirty();
-}
-function setAdminPowerPlayTime(value){
- var el=document.getElementById('adminPowerPlayTime');if(!el)return;el.value=String(value||'');syncAdminQuickControls();markGameDayDirty();
-}
-function setAdminManpowerSituation(value){
- var el=document.getElementById('adminManpowerSituation'),pp=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime');if(!el)return;
- el.value=String(value||'');
- if(el.value==='4-on-4'){if(pp)pp.value='';if(time)time.value='';}
- var four=document.getElementById('adminFourOnFour');if(four)four.value=el.value==='4-on-4'?'true':'false';
- syncAdminQuickControls();markGameDayDirty();
-}
+function setAdminPowerPlay(value){const el=document.getElementById('adminPowerPlay');if(!el)return;el.value=(el.value===value?'':value);syncAdminQuickControls();markGameDayDirty();}
 function setAdminEmptyNet(value){const el=document.getElementById('adminEmptyNet');if(!el)return;el.value=(el.value===value?'':value);syncAdminQuickControls();markGameDayDirty();}
 function setAdminPeriod(value){
   const el=document.getElementById('adminPeriod'),clock=document.getElementById('adminClock');if(!el)return;
@@ -9023,23 +8905,17 @@ function renderSelectedMonth(){
     var arena=String(row&&row.arena||'').trim()||String(row&&row.location||'').trim()||'Arena TBA';
     var time=String(row&&row.time_label||'').trim()||'TBD';
     var result=dcStandingSeriesResult(row);
-    var game=[dcScheduleKeyFromRow(row),row&&row.opponent||'',row&&row.location||'',time];
-    var boxUrl='';
-    if(result){
-      try{boxUrl=String(row&&row.box_score_url||'').trim()||String(boxScoreUrlForGame(game)||'').trim()||String(autoBoxScoreUrlForGame(game)||'').trim()||String(dcKnownBoxScoreUrl(row&&row.game_date||game[0],game[1])||'').trim();}catch(_){boxUrl=String(row&&row.box_score_url||'').trim();}
-    }
-    var resultHtml=result
-      ?'<span class="schedule-final-line"><span class="result-outcome-pill '+(result.win?'win':'loss')+'">'+escapeHtml(result.label)+'</span><span class="schedule-final-score">'+escapeHtml(result.score||'')+'</span></span>'
-      :'<span class="standings-series-upcoming-time">'+escapeHtml(time)+'</span>';
-    var inner='<div class="standings-series-date">'+escapeHtml(dl.day)+'<small>'+escapeHtml(dl.date)+'</small></div>'+ 
-      '<div class="standings-series-main"><div class="standings-series-opponent">'+escapeHtml(String(row&&row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta"><b>'+escapeHtml(role)+'</b> • '+escapeHtml(arena)+'</div></div>'+ 
-      '<div class="standings-series-side">'+resultHtml+'</div>';
-    if(result&&boxUrl){
-      return '<a class="standings-series-game standings-series-game-link" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')" aria-label="Open box score for '+escapeHtml(String(row&&row.opponent||teamLabel||'opponent'))+'">'+inner+'</a>';
-    }
-    return '<div class="standings-series-game">'+inner+'</div>';
+    var game=[dcScheduleKeyFromRow(row),row&&row.opponent||teamLabel||'',row&&row.location||'',time];
+    var boxUrl=result?((row&&row.box_score_url?String(row.box_score_url).trim():'')||autoBoxScoreUrlForGame(game)||dcKnownBoxScoreUrl(row&&row.game_date||'',row&&row.opponent||teamLabel||'')):'';
+    var middle='<div class="standings-series-opponent">'+escapeHtml(String(row&&row.opponent||teamLabel||'Opponent'))+'</div><div class="standings-series-meta"><b>'+escapeHtml(role)+'</b>'+(arena?' • '+escapeHtml(arena):'')+'</div>';
+    var side=result
+      ?'<span class="schedule-final-line"><span class="result-outcome-pill '+(result.win?'result-w':'result-l')+'">'+escapeHtml(result.label)+'</span><span class="schedule-final-score">'+escapeHtml(result.score||'')+'</span></span>'
+      :'<span class="standings-series-upcoming">'+escapeHtml(time)+'</span>';
+    var inner='<div class="standings-series-date"><small>'+escapeHtml(dl.day)+'</small><span>'+escapeHtml(dl.date)+'</span></div><div class="standings-series-main">'+middle+'</div><div class="standings-series-side">'+side+'</div>';
+    var cls='standings-series-game'+(result?' is-final':' is-upcoming');
+    if(result&&boxUrl)return '<a class="'+cls+' dc-box-score-card" href="'+escapeHtml(boxUrl)+'" target="_blank" rel="noopener" onclick="return dcDelayedBoxScoreOpen(event,this.href)" aria-label="Open USHL box score for '+escapeHtml(String(row&&row.opponent||teamLabel||'game'))+'">'+inner+'</a>';
+    return '<div class="'+cls+'">'+inner+'</div>';
   }
-
   function openStandingSeasonSeries(teamKey,teamLabel){
     var key=gcStandingTeamKey(teamKey);
     if(!key||key==='youngstown')return;
@@ -9374,7 +9250,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v661</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v658</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9416,56 +9292,15 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <section class="admin-gameday-step admin-gameday-step-3 admin-status-group admin-live-controls">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">3</span><div><b>LIVE GAME</b><small>HockeyTech runs score, period and clock. You run game situations.</small></div></div>
   <div class="admin-authority-note" id="adminAuthorityNote">AUTO MODE — score, period and clock follow HockeyTech. Turn on Emergency Override only if the feed fails.</div>
-  <div class="admin-live-manual-console">
-    <div class="admin-live-console-title">MANUAL LIVE CONTROLS</div>
-    <div class="admin-special-teams-console">
-      <div class="admin-quick-label">Power Play Team</div>
-      <div class="admin-chip-row admin-special-team-row">
-        <button type="button" class="admin-chip" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">YNG PP</button>
-        <button type="button" class="admin-chip" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">OPP PP</button>
-        <button type="button" class="admin-chip" data-admin-pp-off="true" onclick="setAdminPowerPlay('')">PP OFF</button>
-      </div>
-      <div class="admin-quick-label admin-special-sub-label">PP Time</div>
-      <div class="admin-chip-row admin-special-team-row">
-        <button type="button" class="admin-chip" data-admin-pp-time="2:00" onclick="setAdminPowerPlayTime('2:00')">2:00</button>
-        <button type="button" class="admin-chip" data-admin-pp-time="4:00" onclick="setAdminPowerPlayTime('4:00')">4:00</button>
-        <button type="button" class="admin-chip" data-admin-pp-time="5:00" onclick="setAdminPowerPlayTime('5:00')">5:00</button>
-      </div>
-      <div class="admin-quick-label admin-special-sub-label">Manpower</div>
-      <div class="admin-chip-row admin-manpower-row">
-        <button type="button" class="admin-chip" data-admin-manpower="5-on-4" onclick="setAdminManpowerSituation('5-on-4')">5 ON 4</button>
-        <button type="button" class="admin-chip" data-admin-manpower="5-on-3" onclick="setAdminManpowerSituation('5-on-3')">5 ON 3</button>
-        <button type="button" class="admin-chip" data-admin-manpower="4-on-3" onclick="setAdminManpowerSituation('4-on-3')">4 ON 3</button>
-        <button type="button" class="admin-chip" data-admin-manpower="4-on-4" onclick="setAdminManpowerSituation('4-on-4')">4 ON 4</button>
-        <button type="button" class="admin-chip" data-admin-manpower="" onclick="setAdminManpowerSituation('')">EVEN</button>
-      </div>
-    </div>
-    <div class="admin-live-console-split">
-      <div>
-        <div class="admin-quick-label">Game Stoppage</div>
-        <div class="admin-stoppage-row"><button type="button" class="admin-chip" data-admin-stoppage="official_timeout" onclick="setAdminStoppageDraft('official_timeout')">OFFICIAL TIMEOUT</button><button type="button" class="admin-chip" data-admin-stoppage="under_review" onclick="setAdminStoppageDraft('under_review')">PLAY UNDER REVIEW</button><button type="button" class="admin-chip" data-admin-stoppage="injury_timeout" onclick="setAdminStoppageDraft('injury_timeout')">INJURY TIMEOUT</button></div>
-      </div>
-      <div>
-        <div class="admin-quick-label">Team Timeout</div>
-        <div class="admin-onice-row"><button type="button" class="admin-chip" id="adminYoungstownTimeoutButton" data-admin-team-timeout="phantoms" onclick="toggleAdminTeamTimeout('phantoms')">YNG TIMEOUT</button><button type="button" class="admin-chip" id="adminOpponentTimeoutButton" data-admin-team-timeout="opponent" onclick="toggleAdminTeamTimeout('opponent')">OPPONENT TIMEOUT</button></div>
-      </div>
-    </div>
-  </div>
-  <div class="admin-emergency-controls-label">HOCKEYTECH / EMERGENCY SCORE &amp; CLOCK</div>
   <div class="admin-quick-section admin-quick-section-first admin-status-group admin-live-controls"><div class="admin-quick-label">Period</div><div class="admin-chip-row admin-period-flow"><button type="button" class="admin-chip" data-admin-period="1st" onclick="setAdminPeriod('1st')">1ST</button><button type="button" class="admin-chip" data-admin-intermission="1ST" onclick="setAdminIntermission('1ST')">1ST INT</button><button type="button" class="admin-chip" data-admin-period="2nd" onclick="setAdminPeriod('2nd')">2ND</button><button type="button" class="admin-chip" data-admin-intermission="2ND" onclick="setAdminIntermission('2ND')">2ND INT</button><button type="button" class="admin-chip" data-admin-period="3rd" onclick="setAdminPeriod('3rd')">3RD</button></div></div>
       <input id="adminStoppageStatus" type="hidden" value=""><input id="adminFourOnFour" type="hidden" value="false"><input id="adminTeamTimeout" type="hidden" value="">
-      <input id="adminPowerPlay" type="hidden" value=""><input id="adminPowerPlayTime" type="hidden" value=""><input id="adminManpowerSituation" type="hidden" value="">
+      <input id="adminPowerPlay" type="hidden" value="">
       <input id="adminEmptyNet" type="hidden" value="">
       <div class="admin-score-card admin-status-group admin-live-controls">
-        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-en-btn" data-admin-en="phantoms" onclick="setAdminEmptyNet('phantoms')">EMPTY NET</button></div></div>
-        <div class="admin-score-team"><label for="adminOpponentScore" id="adminOpponentScoreLabel">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
+        <div class="admin-score-team"><label for="adminPhantomsScore">Youngstown</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease Youngstown score" onclick="stepAdminScore('adminPhantomsScore',-1)">−</button><input id="adminPhantomsScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase Youngstown score" onclick="stepAdminScore('adminPhantomsScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="phantoms" onclick="setAdminPowerPlay('phantoms')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="phantoms" onclick="setAdminEmptyNet('phantoms')">EMPTY NET</button></div></div>
+        <div class="admin-score-team"><label for="adminOpponentScore" id="adminOpponentScoreLabel">Opponent</label><div class="admin-score-stepper"><button type="button" aria-label="Decrease opponent score" onclick="stepAdminScore('adminOpponentScore',-1)">−</button><input id="adminOpponentScore" inputmode="numeric" pattern="[0-9]*"><button type="button" aria-label="Increase opponent score" onclick="stepAdminScore('adminOpponentScore',1)">+</button></div><div class="admin-score-specials"><button type="button" class="admin-pp-btn" data-admin-pp="opponent" onclick="setAdminPowerPlay('opponent')">POWER PLAY</button><button type="button" class="admin-en-btn" data-admin-en="opponent" onclick="setAdminEmptyNet('opponent')">EMPTY NET</button></div></div>
       </div>
-  <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-readout" id="adminClockReadout" aria-live="polite">20:00</div><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div></div>
-  <div class="admin-live-game-actions">
-    <button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button>
-    <button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SHOOTOUT</button>
-    <button type="button" class="admin-chip admin-live-final-btn" onclick="finalizeAdminGame()">GO FINAL</button>
-  </div>
+  <div class="admin-field admin-status-group admin-live-controls"><label>Time Remaining</label><input id="adminClock" class="admin-clock-hidden" type="text" autocomplete="off" aria-hidden="true"><div class="admin-clock-readout" id="adminClockReadout" aria-live="polite">20:00</div><div class="admin-clock-digits" aria-label="Game clock"><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of minutes" onclick="stepAdminClockDigit(0,1)">+</button><output id="adminClockDigit0">2</output><button type="button" aria-label="Decrease tens of minutes" onclick="stepAdminClockDigit(0,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase minutes" onclick="stepAdminClockDigit(1,1)">+</button><output id="adminClockDigit1">0</output><button type="button" aria-label="Decrease minutes" onclick="stepAdminClockDigit(1,-1)">−</button></div><span class="admin-clock-colon">:</span><div class="admin-clock-digit"><button type="button" aria-label="Increase tens of seconds" onclick="stepAdminClockDigit(2,1)">+</button><output id="adminClockDigit2">0</output><button type="button" aria-label="Decrease tens of seconds" onclick="stepAdminClockDigit(2,-1)">−</button></div><div class="admin-clock-digit"><button type="button" aria-label="Increase seconds" onclick="stepAdminClockDigit(3,1)">+</button><output id="adminClockDigit3">0</output><button type="button" aria-label="Decrease seconds" onclick="stepAdminClockDigit(3,-1)">−</button></div></div><div class="admin-stoppage-inline"><div class="admin-quick-label">Game Stoppage</div><div class="admin-stoppage-row"><button type="button" class="admin-chip" data-admin-stoppage="official_timeout" onclick="setAdminStoppageDraft('official_timeout')">OFFICIAL TIMEOUT</button><button type="button" class="admin-chip" data-admin-stoppage="under_review" onclick="setAdminStoppageDraft('under_review')">PLAY UNDER REVIEW</button><button type="button" class="admin-chip" data-admin-stoppage="injury_timeout" onclick="setAdminStoppageDraft('injury_timeout')">INJURY TIMEOUT</button></div></div><div class="admin-onice-inline"><div class="admin-quick-label">On-Ice Situation</div><div class="admin-onice-row"><button type="button" class="admin-chip" id="adminFourOnFourButton" onclick="toggleAdminFourOnFour()">4 ON 4</button><button type="button" class="admin-chip" id="adminYoungstownTimeoutButton" data-admin-team-timeout="phantoms" onclick="toggleAdminTeamTimeout('phantoms')">YNG TIMEOUT</button><button type="button" class="admin-chip" id="adminOpponentTimeoutButton" data-admin-team-timeout="opponent" onclick="toggleAdminTeamTimeout('opponent')">OPPONENT TIMEOUT</button></div></div></div>
 </section>
 
 <section class="admin-gameday-step admin-gameday-step-4 admin-status-group admin-live-controls">
@@ -9518,7 +9353,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-live-preview" id="adminGameDayPreview" aria-live="polite">
     <div class="admin-live-preview-label" id="adminPreviewLabel">PUBLIC GAME DAY PREVIEW • HOCKEYTECH</div>
     <div class="admin-live-preview-teams"><span class="admin-live-preview-team" id="adminPreviewLeftTeam">Opponent</span><span class="admin-live-preview-team" id="adminPreviewRightTeam">Youngstown</span></div><div class="admin-live-preview-score"><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewLeftPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewLeftEN" hidden>EN</span></span><span class="admin-live-preview-num" id="adminPreviewLeftScore">0</span><span class="admin-live-preview-sep">–</span><span class="admin-live-preview-num" id="adminPreviewRightScore">0</span><span class="admin-preview-specials"><span class="admin-preview-pp" id="adminPreviewRightPP" hidden>PP</span><span class="admin-preview-en" id="adminPreviewRightEN" hidden>EN</span></span></div>
-    <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div><button type="button" class="admin-preview-chat-button" id="adminPreviewLiveChatButton" disabled>LIVE CHAT</button><div class="admin-live-preview-four" id="adminPreviewFourOnFour" hidden></div><div class="admin-live-preview-timeout" id="adminPreviewTeamTimeout" hidden></div><div class="admin-live-preview-stoppage" id="adminPreviewStoppage" hidden></div>
+    <div class="admin-live-preview-state" id="adminPreviewState">UPCOMING</div><button type="button" class="admin-preview-chat-button" id="adminPreviewLiveChatButton" disabled>LIVE CHAT</button><div class="admin-live-preview-four" id="adminPreviewFourOnFour" hidden>4 ON 4</div><div class="admin-live-preview-timeout" id="adminPreviewTeamTimeout" hidden></div><div class="admin-live-preview-stoppage" id="adminPreviewStoppage" hidden></div>
   </div>
 <div class="admin-publish-bar">
   <div class="admin-status admin-publish-status admin-feedback" id="adminSaveStatus"></div>
@@ -10168,7 +10003,7 @@ async function openAdmin(){
   var cached=getAdminGameState();
   if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
-    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminPowerPlayTime','adminManpowerSituation','adminEmptyNet','adminStoppageStatus'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     if(typeof dcAdminShootoutState!=='undefined')dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent:0}};
     syncAdminQuickControls();
     var msg=document.getElementById('adminSaveStatus');if(msg)msg.textContent='Previous Final has rolled over. Next save will publish the upcoming-game state.';
@@ -11675,11 +11510,11 @@ async function adminLoginSubmit(){
 async function adminLogout(){stopAdminQnaWatch();window.dcLiveChatAdminUnlocked=false;window.dcLiveChatAdminPresence=0;try{if(window.adminLiveChatChannel&&typeof dcSupabase!=='undefined')dcSupabase.removeChannel(window.adminLiveChatChannel);}catch(_){}await dcSupabase.auth.signOut();dcHomeQnaAuthorized=false;setHomeQnaIndicator(0);document.getElementById('adminDashboard').style.display='none';document.getElementById('adminLogin').style.display='block';updateGameDayLiveChatBadge();}
 function mapRemoteState(r){
  r=r||{};
- return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminPowerPlayTime:r.power_play_time||'',adminManpowerSituation:r.manpower_situation||(r.four_on_four?'4-on-4':''),adminEmptyNet:r.empty_net||'',adminStoppageStatus:r.stoppage_status||'',adminFourOnFour:!!r.four_on_four,adminTeamTimeout:r.team_timeout||'',adminShootoutState:typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(r.shootout_state):(r.shootout_state||null),goalEvent:r.goal_event||null,updatedAt:r.updated_at||''};
+ return {adminGameStatus:r.status||'upcoming',adminPhantomsScore:r.phantoms_score??0,adminOpponentScore:r.opponent_score??0,adminPeriod:r.period||'',adminClock:r.clock||'',adminResult:r.result||'',adminPowerPlay:r.power_play||'',adminEmptyNet:r.empty_net||'',adminStoppageStatus:r.stoppage_status||'',adminFourOnFour:!!r.four_on_four,adminTeamTimeout:r.team_timeout||'',adminShootoutState:typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(r.shootout_state):(r.shootout_state||null),goalEvent:r.goal_event||null,updatedAt:r.updated_at||''};
 }
 async function fetchRemoteGameState(){
  try{
-  const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,power_play_time,manpower_situation,empty_net,shootout_state,goal_event,stoppage_status,four_on_four,team_timeout,updated_at').eq('id','current').single();
+  const {data,error}=await dcSupabase.from('game_day_state').select('status,phantoms_score,opponent_score,period,clock,result,power_play,empty_net,shootout_state,goal_event,stoppage_status,four_on_four,team_timeout,updated_at').eq('id','current').single();
   if(error)throw error;
   const x=mapRemoteState(data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(x));
   if(typeof dcHandleGoalEvent==='function')dcHandleGoalEvent(x);
@@ -11729,7 +11564,7 @@ async function toggleAdminGameAudio(){
 }
 async function loadAdminUpdates(){
  const data=await fetchRemoteGameState();
- ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminPowerPlayTime','adminManpowerSituation','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(function(id){var el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});
+ ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(function(id){var el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});
  var fourInput=document.getElementById('adminFourOnFour');if(fourInput)fourInput.value=data.adminFourOnFour?'true':'false';
  if(typeof dcNormalizeShootoutState==='function')dcAdminShootoutState=dcNormalizeShootoutState(data.adminShootoutState);
  syncAdminClockDigits(data.adminClock||'20:00');syncAdminQuickControls();
@@ -11805,7 +11640,7 @@ async function persistAdminGameDayBoxScore(){
 
 async function resetAdminGame(){
  if(!confirm('Reset the current game-day information?'))return;
- ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminPowerPlayTime','adminManpowerSituation','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
+ ['adminGameStatus','adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminEmptyNet','adminStoppageStatus','adminTeamTimeout'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=id==='adminGameStatus'?'upcoming':(id==='adminPhantomsScore'||id==='adminOpponentScore'?'0':'');});
  var four=document.getElementById('adminFourOnFour');if(four)four.value='false';
  await saveAdminUpdates();var st=document.getElementById('adminSaveStatus');setAdminFeedback(st,'saved','Game reset & published • '+adminTimeStamp());
 }
@@ -11878,7 +11713,7 @@ async function saveAdminUpdates(){
   const st=document.getElementById('adminSaveStatus'),session=await dcGetSession();
   if(!session||!(await dcVerifyAdminSession(session))){if(st)st.textContent='Admin session expired. Sign in again.';return;}
   const period=document.getElementById('adminPeriod')?.value||null;
-  const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:period,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,power_play_time:document.getElementById('adminPowerPlayTime')?.value||null,manpower_situation:document.getElementById('adminManpowerSituation')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null,stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,four_on_four:document.getElementById('adminFourOnFour')?.value==='true',team_timeout:document.getElementById('adminTeamTimeout')?.value||null,shootout_state:String(period||'').toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(dcAdminShootoutState):null};
+  const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:period,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null,stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,four_on_four:document.getElementById('adminFourOnFour')?.value==='true',team_timeout:document.getElementById('adminTeamTimeout')?.value||null,shootout_state:String(period||'').toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(dcAdminShootoutState):null};
   if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){if(st)st.textContent='Enter both scores before publishing LIVE.';return;}
   if(payload.status==='final'){
     var finalScoreSource='Emergency Override';
@@ -12152,18 +11987,14 @@ function dcRenderPublicGameDayBase(){
       var leftRole=isHome?oppRole:phRole, rightRole=isHome?phRole:oppRole;
       var leftScore=isHome?os:ph, rightScore=isHome?ph:os;
       var pp=String(st.adminPowerPlay||'');
-      var ppTime=String(st.adminPowerPlayTime||'');
-      var manpower=String(st.adminManpowerSituation||(st.adminFourOnFour?'4-on-4':''));
-      if(manpower==='4-on-4')pp='';
       var en=String(st.adminEmptyNet||'');
       var leftPp=(pp==='phantoms'&&!isHome)||(pp==='opponent'&&isHome);
       var rightPp=(pp==='phantoms'&&isHome)||(pp==='opponent'&&!isHome);
       var leftEn=(en==='phantoms'&&!isHome)||(en==='opponent'&&isHome);
       var rightEn=(en==='phantoms'&&isHome)||(en==='opponent'&&!isHome);
       function specialHtml(hasPp,hasEn){
-        var ppLabel='PP'+(ppTime?' • '+escapeHtml(ppTime):'');
-        if(hasPp&&hasEn)return '<div class="gameday-special gameday-pp">'+ppLabel+'</div><div class="gameday-special gameday-en">EMPTY NET</div>';
-        if(hasPp)return '<div class="gameday-special gameday-pp">'+ppLabel+'</div>';
+        if(hasPp&&hasEn)return '<div class="gameday-special gameday-pp">POWER PLAY</div><div class="gameday-special gameday-en">EMPTY NET</div>';
+        if(hasPp)return '<div class="gameday-special gameday-pp">POWER PLAY</div>';
         if(hasEn)return '<div class="gameday-special gameday-en">EMPTY NET</div>';
         return '';
       }
@@ -12573,7 +12404,6 @@ var dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent
 var dcPublicGoalFx=null;
 var dcPublicGoalFxTimer=null;
 var DC_GOAL_EVENT_SEEN_KEY='dc_goal_event_seen_v1';
-var DC_HT_GOAL_SEEN_PREFIX='dc_ht_goal_seen_v1:';
 
 function dcNormalizeShootoutState(value){
   value=value&&typeof value==='object'?value:{};
@@ -12707,11 +12537,9 @@ async function dcPublishShootoutState(options){
     clock:'0:00',
     result:document.getElementById('adminResult')?.value||null,
     power_play:null,
-    power_play_time:null,
-    manpower_situation:null,
     empty_net:null,
     stoppage_status:getAdminGameState().adminStoppageStatus||null,
-    four_on_four:false,
+    four_on_four:!!getAdminGameState().adminFourOnFour,
     team_timeout:getAdminGameState().adminTeamTimeout||null,
     shootout_state:dcNormalizeShootoutState(dcAdminShootoutState)
   };
@@ -12814,7 +12642,7 @@ async function adminShootoutUndo(){
 }
 
 function setAdminStoppageDraft(type){if(type!=='official_timeout'&&type!=='under_review'&&type!=='injury_timeout')return;var h=document.getElementById('adminStoppageStatus');if(!h)return;h.value=h.value===type?'':type;syncAdminQuickControls();updateAdminGameDayPreview();markAdminDirty('Game Day changes');}
-function toggleAdminFourOnFour(){var man=document.getElementById('adminManpowerSituation');setAdminManpowerSituation(man&&man.value==='4-on-4'?'':'4-on-4');updateAdminGameDayPreview();}
+function toggleAdminFourOnFour(){var h=document.getElementById('adminFourOnFour');if(!h)return;h.value=h.value==='true'?'false':'true';syncAdminQuickControls();updateAdminGameDayPreview();markAdminDirty('Game Day changes');}
 function toggleAdminTeamTimeout(team){
   if(team!=='phantoms'&&team!=='opponent')return;
   var h=document.getElementById('adminTeamTimeout');if(!h)return;
@@ -12835,15 +12663,7 @@ function dcApplyTeamTimeoutPill(box,state,game){
   var fourPill=box.querySelector('.dc-four-on-four-pill');
   (fourPill||periodBox).insertAdjacentElement('afterend',pill);
 }
-function dcApplyManpowerPill(box,state){
- if(!box||!state)return;
- var old=box.querySelector('.dc-four-on-four-pill');if(old)old.remove();
- var situation=String(state.adminManpowerSituation||(state.adminFourOnFour?'4-on-4':''));
- if(String(state.adminGameStatus||'').toLowerCase()!=='live'||!situation)return;
- var periodBox=box.querySelector('.gameday-periodbox');if(!periodBox)return;
- var pill=document.createElement('div');pill.className='dc-four-on-four-pill';pill.textContent=situation.toUpperCase().replace(/-/g,' ');
- periodBox.insertAdjacentElement('afterend',pill);
-}
+function dcApplyFourOnFourPill(box,state){if(!box||!state)return;var old=box.querySelector('.dc-four-on-four-pill');if(old)old.remove();if(String(state.adminGameStatus||'').toLowerCase()!=='live'||!state.adminFourOnFour)return;var periodBox=box.querySelector('.gameday-periodbox');if(!periodBox)return;var pill=document.createElement('div');pill.className='dc-four-on-four-pill';pill.textContent='4 ON 4';periodBox.insertAdjacentElement('afterend',pill);}
 function dcApplyStoppagePill(box,state){
   if(!box||!state)return;
   var old=box.querySelector('.dc-stoppage-pill');
@@ -12869,24 +12689,14 @@ function dcHandleGoalEvent(state){
   var age=isFinite(at)?Date.now()-at:999999;
   try{localStorage.setItem(DC_GOAL_EVENT_SEEN_KEY,String(ev.id));}catch(_){}
   if(age<0||age>12000)return;
-  dcStartGoalSequence(ev.team,ev.source==='shootout'?'shootout':'regulation',null);
-}
-function dcStartGoalSequence(team,source,details){
-  if(!(team==='phantoms'||team==='opponent'))return;
   if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
-  dcPublicGoalFx={team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null};
-  var duration=dcPublicGoalFx.source==='shootout'?3000:(team==='phantoms'?5000:3000);
+  dcPublicGoalFx={team:ev.team,source:ev.source==='shootout'?'shootout':'regulation'};
+  var duration=dcPublicGoalFx.source==='shootout'?3000:(dcPublicGoalFx.team==='phantoms'?5000:3000);
   refreshPublicGameDay();
   dcPublicGoalFxTimer=setTimeout(function(){
-    if(details&&dcPublicGoalFx&&dcPublicGoalFx.details===details){
-      dcPublicGoalFx.phase='spotlight';
-      refreshPublicGameDay();
-      dcPublicGoalFxTimer=setTimeout(function(){
-        dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
-      },4000);
-      return;
-    }
-    dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
+    dcPublicGoalFx=null;
+    dcPublicGoalFxTimer=null;
+    refreshPublicGameDay();
   },duration);
 }
 function dcPublicGoalCard(box,g,fx){
@@ -12911,43 +12721,6 @@ function dcPublicGoalCard(box,g,fx){
       '<div class="dc-goalfx-opponent-word">GOAL</div>'+
     '</div>';
   }
-}
-function dcGoalOrdinal(n){
-  n=Number(n);if(!Number.isFinite(n)||n<=0)return '';
-  var m=n%100,s=n%10,suffix=(m>=11&&m<=13)?'TH':(s===1?'ST':s===2?'ND':s===3?'RD':'TH');
-  return Math.floor(n)+suffix;
-}
-function dcGoalPlayerName(p){if(!p)return '';return [p.first_name,p.last_name].filter(Boolean).join(' ').trim();}
-function dcGoalSpotlightType(d){
-  if(!d)return 'GOAL';
-  if(d.empty_net&&d.short_handed)return 'SHORT-HANDED EMPTY NET GOAL';
-  if(d.empty_net)return 'EMPTY NET GOAL';
-  if(d.short_handed)return 'SHORT-HANDED GOAL';
-  if(d.power_play)return 'POWER PLAY GOAL';
-  return 'GOAL';
-}
-function dcGoalSpotlightTeamLabel(g,team){
-  if(team==='phantoms')return 'YOUNGSTOWN GOAL';
-  var name=String(g&&g[1]||'OPPONENT');
-  try{if(typeof adminPreviewCityName==='function')name=adminPreviewCityName(name)||name;}catch(_){}
-  return String(name).toUpperCase()+' GOAL';
-}
-function dcPublicGoalSpotlight(box,g,fx){
-  if(!box||!fx||!fx.details)return;
-  var d=fx.details,sc=d.scorer||{},name=dcGoalPlayerName(sc)||'GOAL SCORER';
-  var num=String(sc.number||'').trim();
-  var scorer=(num?'#'+escapeHtml(num)+' ':'')+escapeHtml(name.toUpperCase());
-  var ord=dcGoalOrdinal(d.scorer_goal_num);
-  var goalType=dcGoalSpotlightType(d)+(ord?' — '+ord+' OF THE SEASON':'');
-  var assists=[dcGoalPlayerName(d.assist1),dcGoalPlayerName(d.assist2)].filter(Boolean);
-  var overlay=document.createElement('div');
-  overlay.className='dc-goal-spotlight '+(fx.team==='phantoms'?'phantoms':'opponent');
-  overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');
-  overlay.innerHTML='<div class="dc-goal-spotlight-mark">'+escapeHtml(dcGoalSpotlightTeamLabel(g,fx.team))+'</div>'+
-    '<div class="dc-goal-spotlight-scorer">'+scorer+'</div>'+
-    '<div class="dc-goal-spotlight-type">'+escapeHtml(goalType)+'</div>'+
-    (assists.length?'<div class="dc-goal-spotlight-assists">Assists: '+assists.map(escapeHtml).join(' • ')+'</div>':'');
-  box.appendChild(overlay);
 }
 function dcPublicShootoutTeam(team,label,homeAway,attemptTeam,state,nextTeam,showNext){
   var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
@@ -13012,16 +12785,15 @@ function dcRenderPublicGameDayDecorated(){
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
   var st=getAdminGameState();
-  dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(String(st.adminManpowerSituation||'')==='4-on-4')box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
+  dcApplyFourOnFourPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(st.adminFourOnFour)box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
   if(dcPublicGoalFx){
-    if(dcPublicGoalFx.phase==='spotlight'&&dcPublicGoalFx.details)dcPublicGoalSpotlight(box,active.g,dcPublicGoalFx);
-    else dcPublicGoalCard(box,active.g,dcPublicGoalFx);
+    dcPublicGoalCard(box,active.g,dcPublicGoalFx);
     syncGameDayHomePriority();
     return;
   }
   if(String(st.adminPeriod||'').toUpperCase()==='SO'){
     if(dcRenderPublicShootout(box,active.g,st)){
-      dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);
+      dcApplyFourOnFourPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);
       if(String(st.adminGameStatus||'').toLowerCase()==='final'){
         document.body.classList.remove('game-pregame','game-live','game-upcoming');
         document.body.classList.add('game-final');
@@ -13195,7 +12967,7 @@ async function dcToggleManualOverride(){
   try{
     var session=await dcGetSession();if(!session||!(await dcVerifyAdminSession(session)))throw new Error('Admin session expired. Sign in again.');
     var remote=await fetchRemoteGameState(),turnOn=!dcManualOverrideActive(remote),period=String(remote.adminPeriod||'');
-    var payload={status:remote.adminGameStatus||'upcoming',phantoms_score:remote.adminPhantomsScore??0,opponent_score:remote.adminOpponentScore??0,period:period||null,clock:remote.adminClock||null,result:turnOn?'MANUAL':null,power_play:remote.adminPowerPlay||null,power_play_time:remote.adminPowerPlayTime||null,manpower_situation:remote.adminManpowerSituation||null,empty_net:remote.adminEmptyNet||null,stoppage_status:remote.adminStoppageStatus||null,four_on_four:!!remote.adminFourOnFour,team_timeout:remote.adminTeamTimeout||null,shootout_state:period.toUpperCase()==='SO'?dcNormalizeShootoutState(remote.adminShootoutState):null};
+    var payload={status:remote.adminGameStatus||'upcoming',phantoms_score:remote.adminPhantomsScore??0,opponent_score:remote.adminOpponentScore??0,period:period||null,clock:remote.adminClock||null,result:turnOn?'MANUAL':null,power_play:remote.adminPowerPlay||null,empty_net:remote.adminEmptyNet||null,stoppage_status:remote.adminStoppageStatus||null,four_on_four:!!remote.adminFourOnFour,team_timeout:remote.adminTeamTimeout||null,shootout_state:period.toUpperCase()==='SO'?dcNormalizeShootoutState(remote.adminShootoutState):null};
     var res=await fetch(DC_SUPABASE_URL+'/functions/v1/update-game-day',{method:'POST',headers:{'Content-Type':'application/json','apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify(payload)});
     var out=await res.json();if(!res.ok)throw new Error(out.error||'Could not change manual override.');
     var mapped=mapRemoteState(out.data);localStorage.setItem('dc_admin_game_state_v1',JSON.stringify(mapped));
@@ -13261,23 +13033,6 @@ async function dcResolveLiveGameId(g){
   if(resolvedBoxUrl)try{await dcPersistResolvedBoxScoreToSchedule(g,resolvedBoxUrl);}catch(_){}
   return id;
 }
-function dcHtGoalEventId(goal){return goal&&goal.id!=null?String(goal.id):'';}
-function dcHtGoalTeam(goal,snapshot){
-  if(!goal||!snapshot||!snapshot.teams)return '';
-  var h=snapshot.teams.home||{},v=snapshot.teams.visitor||{};
-  var gid=String(goal.team_id||''),gcode=String(goal.team_code||goal.scorer&&goal.scorer.team_code||'').trim().toUpperCase();
-  function hit(t){return (gid&&String(t.id||'')===gid)||(gcode&&String(t.code||'').trim().toUpperCase()===gcode);}
-  var target=hit(h)?h:(hit(v)?v:null);if(!target)return '';
-  return dcHtBridgeTeamIsYoungstown(target)?'phantoms':'opponent';
-}
-function dcHtNewGoal(prior,next,gameId){
-  var nextGoals=next&&Array.isArray(next.goals)?next.goals:[];if(!nextGoals.length)return null;
-  var storeKey=DC_HT_GOAL_SEEN_PREFIX+String(gameId||''),seen='';try{seen=localStorage.getItem(storeKey)||'';}catch(_){}
-  if(!prior){var initial=dcHtGoalEventId(nextGoals[nextGoals.length-1]);if(initial)try{localStorage.setItem(storeKey,initial);}catch(_){}return null;}
-  var priorIds={};(Array.isArray(prior.goals)?prior.goals:[]).forEach(function(x){var id=dcHtGoalEventId(x);if(id)priorIds[id]=true;});
-  var fresh=nextGoals.filter(function(x){var id=dcHtGoalEventId(x);return id&&!priorIds[id];});if(!fresh.length)return null;
-  var goal=fresh[fresh.length-1],id=dcHtGoalEventId(goal);if(id&&seen===id)return null;if(id)try{localStorage.setItem(storeKey,id);}catch(_){}return goal;
-}
 async function dcSyncLiveStats(force){
   var active=dcGameCenterHockeyTechTarget(new Date());
   if(!active||!active.g){dcRenderAdminHtLiveStrip();return;}
@@ -13308,17 +13063,16 @@ async function dcSyncLiveStats(force){
     }
     var snapshot=body.interpreted;
     var priorSnapshot=dcLiveStatsState.key===key?dcLiveStatsState.snapshot:null;
-    var htGoal=dcHtNewGoal(priorSnapshot,snapshot,gameId);
-    if(htGoal){
-      var htGoalTeam=dcHtGoalTeam(htGoal,snapshot);
-      if(htGoalTeam)dcStartGoalSequence(htGoalTeam,'regulation',htGoal);
-    }else if(priorSnapshot){
-      /* Fallback preserves the existing goal animation if HockeyTech briefly omits goal-event details. */
+    if(priorSnapshot){
       var priorSides=dcLiveSides(priorSnapshot),nextSides=dcLiveSides(snapshot);
       if(priorSides&&nextSides){
         var oldY=Number(priorSides.yng.score),oldO=Number(priorSides.opp.score),newY=Number(nextSides.yng.score),newO=Number(nextSides.opp.score);
         var goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
-        if(goalTeam)dcStartGoalSequence(goalTeam,'regulation',null);
+        if(goalTeam){
+          if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
+          dcPublicGoalFx={team:goalTeam,source:'regulation'};
+          dcPublicGoalFxTimer=setTimeout(function(){dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();},goalTeam==='phantoms'?5000:3000);
+        }
       }
     }
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
@@ -13426,8 +13180,8 @@ function dcGameDayActions(g,effective,st){
   var actions=[];
   if(audioOk){var playing=dcGameDayWrrAudio&&!dcGameDayWrrAudio.paused,logo=dcWrrLogoSrc();actions.push({p:1,html:'<button type="button" class="btn secondary dc-wrr-live-btn dc-wrr-live-wide" id="gameDayWrrButton" onclick="toggleGameDayWrrAudio()">'+(logo?'<img src="'+escapeHtml(logo)+'" alt="">':'')+'<span>'+(playing?'STOP AUDIO':'LISTEN LIVE')+'</span></button>'});}
   if(dcLiveChatEnabled){actions.push({p:2,html:'<button type="button" class="btn secondary dc-live-chat-action" onclick="openLiveChat()"><span>'+chatLabel+'</span>'+dcLiveChatBadgeHtml(gameKey)+'</button>'});}
-  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE ↗</a>'});
-  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES ↗</button>'});
+  if(url)actions.push({p:3,html:'<a class="btn secondary box-score-btn gameday-box-score dc-basic-gd-action" href="'+escapeHtml(url)+'" target="_blank" rel="noopener" onclick="dcTrack(\'outbound_click\',\'ushl_box_score\')">BOX SCORE</a>'});
+  var hasNotes=!!(dcGameNotesCurrent&&dcGameNotesCurrent.url);if(hasNotes)actions.push({p:4,html:'<button type="button" class="btn secondary dc-gd-notes-btn dc-basic-gd-action" onclick="openCurrentGameNotes(\'game_day\')">GAME NOTES</button>'});
   actions.sort(function(a,b){return a.p-b.p;});
   var rows=[];
   if(actions.length===4){
@@ -13462,12 +13216,7 @@ async function toggleGameDayWrrAudio(){
   connect(0);
 }
 function dcProductionSpecialHtml(team,st,effective){
-  if(effective.status!=='live'||effective.manualSO)return '';
-  var pp=String(st.adminPowerPlay||''),ppTime=String(st.adminPowerPlayTime||''),en=String(st.adminEmptyNet||''),man=String(st.adminManpowerSituation||'');
-  var hasPp=man!=='4-on-4'&&pp===team,hasEn=en===team,out='';
-  if(hasPp)out+='<div class="gameday-special gameday-pp">PP'+(ppTime?' • '+escapeHtml(ppTime):'')+'</div>';
-  if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';
-  return out;
+  if(effective.status!=='live'||effective.manualSO)return '';var pp=String(st.adminPowerPlay||''),en=String(st.adminEmptyNet||''),four=!!st.adminFourOnFour;var hasPp=!four&&pp===team,hasEn=en===team;var out='';if(hasPp)out+='<div class="gameday-special gameday-pp">POWER PLAY</div>';if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';return out;
 }
 function dcProductionShootoutTeam(team,homeAway,attemptTeam,state,next){
   var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
@@ -13488,7 +13237,7 @@ function dcRenderProductionActiveGame(box,g,st,effective){
   box.className='card gameday-card dc-gd-modern';box.style.cssText='';
   box.innerHTML='<div class="gameday-status '+statusClass+'">'+statusText+'</div>'+middle+(activeSO?'':dcProductionStatStrip(g,effective,st))+'<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+dcGameDayActions(g,effective,st)+dcGameNotesGameDayHtml();
   document.body.classList.remove('game-pregame','game-live','game-final','game-upcoming');document.body.classList.add(effective.status==='final'?'game-final':'game-live');
-  if(effective.status==='live'){dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,g);dcApplyStoppagePill(box,st);}
+  if(effective.status==='live'){dcApplyFourOnFourPill(box,st);dcApplyTeamTimeoutPill(box,st,g);dcApplyStoppagePill(box,st);}
 }
 function dcUpgradePregameActions(box,g,st){
   var old=box.querySelector('.gameday-box-score');if(old)old.remove();var prior=box.querySelector('.dc-game-notes-block');if(prior)prior.remove();var eff={status:'upcoming'};box.insertAdjacentHTML('beforeend',dcGameDayActions(g,eff,st)+dcGameNotesGameDayHtml());
