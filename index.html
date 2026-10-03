@@ -5445,6 +5445,57 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
   }
 }
 </style>
+
+<style id="v659-fullwidth-gameday-actions">
+/* V659 — full-width, shorter four-button Game Day action row; keep every label on one line. */
+#publicGameDayCard .dc-gd-actions.four{
+  width:100%!important;
+  max-width:none!important;
+  margin:8px 0 0!important;
+}
+#publicGameDayCard .dc-gd-action-row.four{
+  width:100%!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+#publicGameDayCard .dc-gd-action-row.four > *,
+#publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+#publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+#publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+  min-height:40px!important;
+  height:40px!important;
+  padding:5px 6px!important;
+  font-size:9.5px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action{
+  padding-left:16px!important;
+  padding-right:16px!important;
+}
+#publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action > span:first-child{
+  display:block!important;
+  width:100%!important;
+  white-space:nowrap!important;
+}
+@media(max-width:390px){
+  #publicGameDayCard .dc-gd-action-row.four{gap:4px!important}
+  #publicGameDayCard .dc-gd-action-row.four > *,
+  #publicGameDayCard .dc-gd-action-row.four .dc-wrr-live-wide,
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action,
+  #publicGameDayCard .dc-gd-action-row.four .box-score-btn.gameday-box-score,
+  #publicGameDayCard .dc-gd-action-row.four .dc-gd-notes-btn{
+    min-height:38px!important;
+    height:38px!important;
+    padding:4px 4px!important;
+    font-size:8.6px!important;
+    white-space:nowrap!important;
+  }
+  #publicGameDayCard .dc-gd-action-row.four .dc-live-chat-action{padding-left:14px!important;padding-right:14px!important}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9250,7 +9301,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v658</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v659</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
