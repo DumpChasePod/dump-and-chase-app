@@ -5225,6 +5225,76 @@ body.dc-offline .modal.app-view.show .dc-app-offline-note{display:block}
 }
 </style>
 
+
+<style id="v656-hq-season-series-alignment">
+/* V656 — tighten HQ Season Series and keep completed/upcoming rows on one grid. */
+#gcNextGameContent .gc-series-toggle{
+  min-height:38px!important;
+  height:auto!important;
+  margin-top:11px!important;
+  padding:8px 12px!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+}
+#gcNextGameContent .gc-series-body{margin-top:10px!important}
+#gcNextGameContent .gc-series-summary{
+  margin:11px 0 7px!important;
+  padding-top:10px!important;
+}
+#gcNextGameContent .gc-series-list{gap:6px!important}
+#gcNextGameContent .gc-series-row{
+  grid-template-columns:64px minmax(0,1fr) 84px!important;
+  gap:10px!important;
+  align-items:center!important;
+  min-height:58px!important;
+  padding:8px 11px!important;
+}
+#gcNextGameContent .gc-series-date{
+  align-self:center!important;
+  justify-self:stretch!important;
+  text-align:center!important;
+  line-height:1.1!important;
+}
+#gcNextGameContent .gc-series-date small{
+  margin-bottom:2px!important;
+  line-height:1!important;
+}
+#gcNextGameContent .gc-series-place{
+  align-self:center!important;
+  line-height:1.25!important;
+}
+#gcNextGameContent .gc-series-role-line{
+  margin:0 0 2px!important;
+  line-height:1!important;
+}
+#gcNextGameContent .gc-series-status{
+  align-self:center!important;
+  justify-self:stretch!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  gap:3px!important;
+  min-width:0!important;
+  line-height:1.05!important;
+}
+#gcNextGameContent .gc-series-status .result-outcome-pill{margin:0!important}
+#gcNextGameContent .gc-series-status .gc-series-upcoming{
+  display:block!important;
+  width:100%!important;
+  text-align:right!important;
+}
+@media(max-width:430px){
+  #gcNextGameContent .gc-series-row{
+    grid-template-columns:54px minmax(0,1fr) 76px!important;
+    gap:8px!important;
+    min-height:54px!important;
+    padding:7px 8px!important;
+  }
+  #gcNextGameContent .gc-series-toggle{min-height:36px!important;padding:7px 10px!important;font-size:10px!important}
+}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9026,7 +9096,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v655</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v656</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
