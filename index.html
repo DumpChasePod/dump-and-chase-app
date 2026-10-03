@@ -9301,7 +9301,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v659</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v660</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13583,6 +13583,7 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
   const API=DC_SUPABASE_URL+'/functions/v1/live-chat-api';
   const DEVICE_KEY='dc_live_chat_device_v1';
   const NAME_KEY='dc_live_chat_name_v1';
+  // V660: participant identity/host status now persist across Game Day chats via live-chat-api.
   const UNREAD_PREFIX='dcLiveChatUnread:';const DRAFT_PREFIX='dcLiveChatDraft:';const REPLY_PREFIX='dcLiveChatReply:';
   let deviceId='', participant=null, currentGameKey='', currentGame=null, currentReadOnly=false, currentControl=null;
   let chatChannel=null, chatMessages=[], chatReactions=[], chatPresenceCount=0, chatAdmin=false, chatOpen=false, chatTest=false;
