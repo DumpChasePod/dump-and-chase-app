@@ -9426,7 +9426,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v663</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v664</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12942,14 +12942,14 @@ function dcFinishGoalSequence(){
 }
 function dcStartGoalSequence(team,source,details){
   if(!(team==='phantoms'||team==='opponent'))return;
-  /* V663: one goal event owns the card until its entire animation/spotlight cycle finishes. */
+  /* V664: one goal event owns the card, and each visual phase renders only once. */
   if(dcPublicGoalFxLocked&&dcPublicGoalFx){
     if(!dcPublicGoalFx.details&&details&&dcPublicGoalFx.team===team)dcPublicGoalFx.details=details;
     return;
   }
   if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
   dcPublicGoalFxLocked=true;
-  dcPublicGoalFx={team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null,frame:dcCaptureGoalFrame()};
+  dcPublicGoalFx={id:'goal-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null,frame:dcCaptureGoalFrame()};
   var duration=dcPublicGoalFx.source==='shootout'?3000:(team==='phantoms'?5000:3000);
   refreshPublicGameDay();
   dcPublicGoalFxTimer=setTimeout(function(){
@@ -12964,6 +12964,8 @@ function dcStartGoalSequence(team,source,details){
 }
 function dcPublicGoalCard(box,g,fx){
   if(!box||!g||!fx)return;
+  var key=String(fx.id||'');
+  if(key&&box.dataset.dcGoalFxKey===key&&box.dataset.dcGoalFxPhase==='goal')return;
   var normalHeight=fx.frame&&fx.frame.height?Number(fx.frame.height):Math.ceil(box.getBoundingClientRect().height||0);
   if(normalHeight>0){
     box.style.height=normalHeight+'px';
@@ -12984,6 +12986,7 @@ function dcPublicGoalCard(box,g,fx){
       '<div class="dc-goalfx-opponent-word">GOAL</div>'+
     '</div>';
   }
+  box.dataset.dcGoalFxKey=key;box.dataset.dcGoalFxPhase='goal';
 }
 function dcGoalOrdinal(n){
   n=Number(n);if(!Number.isFinite(n)||n<=0)return '';
@@ -13006,9 +13009,22 @@ function dcGoalSpotlightTeamLabel(g,team){
   return String(name).toUpperCase()+' GOAL';
 }
 function dcPublicGoalSpotlight(box,g,fx){
-  if(!box||!fx||!fx.details)return;
-  /* Restore the exact pre-animation live card so the published score never falls back to stale/default values. */
-  dcRestoreGoalFrame(box,fx);
+  if(!box||!g||!fx||!fx.details)return;
+  var key=String(fx.id||'');
+  if(key&&box.dataset.dcGoalFxKey===key&&box.dataset.dcGoalFxPhase==='spotlight')return;
+
+  /* Rebuild the live card from the current feed while hidden, then reveal it with the spotlight already attached.
+     This prevents a one-frame normal-card flash and avoids restoring a stale captured score. */
+  var priorVisibility=box.style.visibility;
+  box.style.visibility='hidden';
+  try{
+    var st=getAdminGameState();
+    var effective=dcEffectivePublicState(g,st);
+    if(effective&&effective.status!=='upcoming')dcRenderProductionActiveGame(box,g,st,effective);
+    else dcRestoreGoalFrame(box,fx);
+  }catch(_){dcRestoreGoalFrame(box,fx);}
+  box.style.visibility='hidden';
+
   var d=fx.details,sc=d.scorer||{},name=dcGoalPlayerName(sc)||'GOAL SCORER';
   var num=String(sc.number||'').trim();
   var scorer=(num?'#'+escapeHtml(num)+' ':'')+escapeHtml(name.toUpperCase());
@@ -13023,7 +13039,10 @@ function dcPublicGoalSpotlight(box,g,fx){
     '<div class="dc-goal-spotlight-type">'+escapeHtml(goalType)+'</div>'+
     (assists.length?'<div class="dc-goal-spotlight-assists">Assists: '+assists.map(escapeHtml).join(' • ')+'</div>':'');
   box.appendChild(overlay);
+  box.dataset.dcGoalFxKey=key;box.dataset.dcGoalFxPhase='spotlight';
+  box.style.visibility=priorVisibility||'';
 }
+
 function dcPublicShootoutTeam(team,label,homeAway,attemptTeam,state,nextTeam,showNext){
   var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
   var official=!isYoungstown&&typeof gcOfficialStandingFor==='function'?gcOfficialStandingFor(team):null;
@@ -13079,7 +13098,7 @@ function dcRenderPublicShootout(box,g,st){
 function dcRenderPublicGameDayDecorated(){
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
-  /* V663: while a goal sequence owns the card, do not let the normal renderer tear it down between refreshes. */
+  /* V664: while a goal sequence owns the card, do not let the normal renderer tear it down or repaint an already-rendered phase. */
   if(dcPublicGoalFx){
     if(dcPublicGoalFx.phase==='spotlight'&&dcPublicGoalFx.details)dcPublicGoalSpotlight(box,active.g,dcPublicGoalFx);
     else dcPublicGoalCard(box,active.g,dcPublicGoalFx);
@@ -13392,7 +13411,7 @@ async function dcSyncLiveStats(force){
         goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
       }
     }
-    /* V663: commit the fresh HockeyTech snapshot first, then paint once before capturing the goal frame. */
+    /* V664: commit the fresh HockeyTech snapshot first before starting the locked goal sequence. */
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
     dcRenderAdminHtLiveStrip();
     updateAdminGameDayPreview();
