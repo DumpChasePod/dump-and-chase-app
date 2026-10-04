@@ -9426,7 +9426,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v662</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v663</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -12624,6 +12624,7 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(loadHomeNews,
 var dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent:0}};
 var dcPublicGoalFx=null;
 var dcPublicGoalFxTimer=null;
+var dcPublicGoalFxLocked=false;
 var DC_GOAL_EVENT_SEEN_KEY='dc_goal_event_seen_v1';
 var DC_HT_GOAL_SEEN_PREFIX='dc_ht_goal_seen_v1:';
 
@@ -12923,27 +12924,47 @@ function dcHandleGoalEvent(state){
   if(age<0||age>12000)return;
   dcStartGoalSequence(ev.team,ev.source==='shootout'?'shootout':'regulation',null);
 }
+function dcCaptureGoalFrame(){
+  var box=document.getElementById('publicGameDayCard');
+  if(!box)return null;
+  var h=Math.ceil(box.getBoundingClientRect().height||0);
+  return {className:box.className,html:box.innerHTML,style:box.style.cssText,height:h};
+}
+function dcRestoreGoalFrame(box,fx){
+  var frame=fx&&fx.frame;if(!box||!frame)return false;
+  box.className=frame.className||'card gameday-card';
+  box.style.cssText=frame.style||'';
+  box.innerHTML=frame.html||'';
+  return true;
+}
+function dcFinishGoalSequence(){
+  dcPublicGoalFx=null;dcPublicGoalFxTimer=null;dcPublicGoalFxLocked=false;refreshPublicGameDay();
+}
 function dcStartGoalSequence(team,source,details){
   if(!(team==='phantoms'||team==='opponent'))return;
+  /* V663: one goal event owns the card until its entire animation/spotlight cycle finishes. */
+  if(dcPublicGoalFxLocked&&dcPublicGoalFx){
+    if(!dcPublicGoalFx.details&&details&&dcPublicGoalFx.team===team)dcPublicGoalFx.details=details;
+    return;
+  }
   if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
-  dcPublicGoalFx={team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null};
+  dcPublicGoalFxLocked=true;
+  dcPublicGoalFx={team:team,source:source==='shootout'?'shootout':'regulation',phase:'goal',details:details||null,frame:dcCaptureGoalFrame()};
   var duration=dcPublicGoalFx.source==='shootout'?3000:(team==='phantoms'?5000:3000);
   refreshPublicGameDay();
   dcPublicGoalFxTimer=setTimeout(function(){
-    if(details&&dcPublicGoalFx&&dcPublicGoalFx.details===details){
+    if(dcPublicGoalFx&&dcPublicGoalFx.details){
       dcPublicGoalFx.phase='spotlight';
       refreshPublicGameDay();
-      dcPublicGoalFxTimer=setTimeout(function(){
-        dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
-      },4000);
+      dcPublicGoalFxTimer=setTimeout(dcFinishGoalSequence,4000);
       return;
     }
-    dcPublicGoalFx=null;dcPublicGoalFxTimer=null;refreshPublicGameDay();
+    dcFinishGoalSequence();
   },duration);
 }
 function dcPublicGoalCard(box,g,fx){
   if(!box||!g||!fx)return;
-  var normalHeight=Math.ceil(box.getBoundingClientRect().height||0);
+  var normalHeight=fx.frame&&fx.frame.height?Number(fx.frame.height):Math.ceil(box.getBoundingClientRect().height||0);
   if(normalHeight>0){
     box.style.height=normalHeight+'px';
     box.style.minHeight=normalHeight+'px';
@@ -12986,6 +13007,8 @@ function dcGoalSpotlightTeamLabel(g,team){
 }
 function dcPublicGoalSpotlight(box,g,fx){
   if(!box||!fx||!fx.details)return;
+  /* Restore the exact pre-animation live card so the published score never falls back to stale/default values. */
+  dcRestoreGoalFrame(box,fx);
   var d=fx.details,sc=d.scorer||{},name=dcGoalPlayerName(sc)||'GOAL SCORER';
   var num=String(sc.number||'').trim();
   var scorer=(num?'#'+escapeHtml(num)+' ':'')+escapeHtml(name.toUpperCase());
@@ -13054,23 +13077,22 @@ function dcRenderPublicShootout(box,g,st){
 
 /* Decorate the existing proven Game Day renderer rather than replacing its normal-game logic. */
 function dcRenderPublicGameDayDecorated(){
-  var preBox=document.getElementById('publicGameDayCard');
-  if(preBox){
-    preBox.className='card gameday-card';
-    preBox.style.cssText='';
-  }
-  dcRenderPublicGameDayBase();
-  syncMoreWrrForGameDay();
   var box=document.getElementById('publicGameDayCard');if(!box)return;
   var active=gameDayAutomationWindow(new Date());if(!active||!active.g)return;
-  var st=getAdminGameState();
-  dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(String(st.adminManpowerSituation||'')==='4-on-4')box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
+  /* V663: while a goal sequence owns the card, do not let the normal renderer tear it down between refreshes. */
   if(dcPublicGoalFx){
     if(dcPublicGoalFx.phase==='spotlight'&&dcPublicGoalFx.details)dcPublicGoalSpotlight(box,active.g,dcPublicGoalFx);
     else dcPublicGoalCard(box,active.g,dcPublicGoalFx);
-    syncGameDayHomePriority();
+    syncMoreWrrForGameDay();syncGameDayHomePriority();
     return;
   }
+  box.className='card gameday-card';
+  box.style.cssText='';
+  dcRenderPublicGameDayBase();
+  syncMoreWrrForGameDay();
+  box=document.getElementById('publicGameDayCard');if(!box)return;
+  var st=getAdminGameState();
+  dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(String(st.adminManpowerSituation||'')==='4-on-4')box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
   if(String(st.adminPeriod||'').toUpperCase()==='SO'){
     if(dcRenderPublicShootout(box,active.g,st)){
       dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);
@@ -13360,23 +13382,24 @@ async function dcSyncLiveStats(force){
     }
     var snapshot=body.interpreted;
     var priorSnapshot=dcLiveStatsState.key===key?dcLiveStatsState.snapshot:null;
-    var htGoal=dcHtNewGoal(priorSnapshot,snapshot,gameId);
-    if(htGoal){
-      var htGoalTeam=dcHtGoalTeam(htGoal,snapshot);
-      if(htGoalTeam)dcStartGoalSequence(htGoalTeam,'regulation',htGoal);
-    }else if(priorSnapshot){
+    var htGoal=dcHtNewGoal(priorSnapshot,snapshot,gameId),goalTeam='';
+    if(htGoal)goalTeam=dcHtGoalTeam(htGoal,snapshot);
+    else if(priorSnapshot){
       /* Fallback preserves the existing goal animation if HockeyTech briefly omits goal-event details. */
       var priorSides=dcLiveSides(priorSnapshot),nextSides=dcLiveSides(snapshot);
       if(priorSides&&nextSides){
         var oldY=Number(priorSides.yng.score),oldO=Number(priorSides.opp.score),newY=Number(nextSides.yng.score),newO=Number(nextSides.opp.score);
-        var goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
-        if(goalTeam)dcStartGoalSequence(goalTeam,'regulation',null);
+        goalTeam=newY>oldY?'phantoms':(newO>oldO?'opponent':'');
       }
     }
+    /* V663: commit the fresh HockeyTech snapshot first, then paint once before capturing the goal frame. */
     dcLiveStatsState={key:key,gameId:gameId,snapshot:snapshot,fetchedAt:Date.now(),busy:false,lastResolve:Date.now(),error:'',errorDetail:'',errorAt:0,httpStatus:res.status||200};
     dcRenderAdminHtLiveStrip();
     updateAdminGameDayPreview();
-    refreshPublicGameDay();
+    if(goalTeam){
+      if(!dcPublicGoalFx)refreshPublicGameDay();
+      dcStartGoalSequence(goalTeam,'regulation',htGoal||null);
+    }else refreshPublicGameDay();
   }catch(e){
     var keepLastGood=dcLiveStatsState.key===key&&dcLiveStatsState.snapshot&&Date.now()-dcLiveStatsState.fetchedAt<30000;
     dcLiveStatsState.key=key;dcLiveStatsState.busy=false;dcLiveStatsState.error=(e&&e.message)||'Live stats unavailable';dcLiveStatsState.errorDetail=(e&&e.dcDetail)||'';dcLiveStatsState.errorAt=Date.now();dcLiveStatsState.httpStatus=(e&&e.dcHttpStatus)||0;
