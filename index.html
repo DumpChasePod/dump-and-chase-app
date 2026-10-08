@@ -5615,6 +5615,13 @@ header.home-masthead{padding-top:calc(22px + env(safe-area-inset-top))!important
 @media(max-width:600px){.audio-player{grid-template-columns:42px minmax(0,1fr) 34px!important}}
 .player-screen,.audio-player{touch-action:pan-x pan-y}
 </style>
+
+<style id="v668-player-swipe-home-ptr-fix">
+html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;overscroll-behavior:none!important}
+.player-screen.show{overscroll-behavior:none}
+.player-swipe-hint{margin:6px auto 0;color:#7f8a9a;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:none;opacity:.82;user-select:none;-webkit-user-select:none}
+</style>
+
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -6968,6 +6975,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
     <button class="big-play" id="bigPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
     <button onclick="seekAudio(30)" aria-label="Forward 30 seconds">↷<small>30</small></button>
   </div>
+  <div class="player-swipe-hint" aria-hidden="true">Swipe down to minimize</div>
 </div>
 
 <nav class="bottomnav nav-v200">
@@ -7269,10 +7277,15 @@ function dcVisualHome(){
   if(homeBtn)setActive(homeBtn);
   window.scrollTo({top:0,behavior:'smooth'});
 }
+function dcSetFullPlayerOpen(open){
+  document.documentElement.classList.toggle('dc-player-full-open',!!open);
+  document.body.classList.toggle('dc-player-full-open',!!open);
+}
 function dcVisualMinimizePlayer(closeCompletely){
   var screen=document.getElementById('playerScreen');
   var mini=document.getElementById('audioPlayer');
   if(screen)screen.classList.remove('show');
+  dcSetFullPlayerOpen(false);
   if(mini)mini.classList.toggle('show',!closeCompletely);
 }
 window.addEventListener('popstate',function(){
@@ -8706,6 +8719,7 @@ function startAudio(item){
  document.getElementById('audioPlayer').classList.remove('show');
  dcHistoryEnterPlayer();
  document.getElementById('playerScreen').classList.add('show');
+ dcSetFullPlayerOpen(true);
  if(typeof syncEpisodeNowPlaying==='function')syncEpisodeNowPlaying();
 }
 function openFullPlayer(){
@@ -8715,6 +8729,7 @@ function openFullPlayer(){
  var screen=document.getElementById('playerScreen');
  var mini=document.getElementById('audioPlayer');
  if(screen)screen.classList.add('show');
+ dcSetFullPlayerOpen(true);
  if(mini)mini.classList.remove('show');
 }
 function minimizePlayer(){
@@ -8737,6 +8752,7 @@ function closePlayer(){
  var mini=document.getElementById('audioPlayer');
  if(mini)mini.classList.remove('show');
  if(screen)screen.classList.remove('show');
+ dcSetFullPlayerOpen(false);
 }
 
 // V667: touch gestures replace dedicated minimize / maximize buttons.
@@ -8759,10 +8775,12 @@ function closePlayer(){
     var t=event.touches[0];
     state.dx=t.clientX-state.x;
     state.dy=t.clientY-state.y;
-    if(Math.abs(state.dy)>12&&Math.abs(state.dy)>Math.abs(state.dx)*1.15){
-      // Once the gesture is clearly vertical, keep the browser from rubber-banding
-      // the player itself while still leaving range inputs/controls alone.
+    if(Math.abs(state.dy)>8&&Math.abs(state.dy)>Math.abs(state.dx)*1.15){
+      // The full player owns vertical swipes. This is especially important when
+      // it was opened from Home, where the browser would otherwise treat a
+      // downward swipe as pull-to-refresh.
       event.preventDefault();
+      if(state.mode==='full'){dcPtrTracking=false;dcPtrDistance=0;dcPtrHide();}
     }
   }
   function end(){
@@ -9493,7 +9511,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v667</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v668</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
