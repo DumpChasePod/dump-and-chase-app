@@ -5597,6 +5597,24 @@ body.game-live #gameDaySection,
 body.game-final #gameDaySection{display:block}
 body.game-upcoming #gameDaySection{display:none}
 </style>
+
+<style id="v667-ios-safearea-player-gestures">
+/* iPhone notch / Dynamic Island safe-area protection */
+header.home-masthead{padding-top:calc(22px + env(safe-area-inset-top))!important}
+.player-screen{padding-top:calc(22px + env(safe-area-inset-top))!important}
+@media(max-width:600px){
+  header.home-masthead{padding-top:calc(14px + env(safe-area-inset-top))!important}
+}
+/* Mini player after removing the dedicated maximize control */
+.audio-player{grid-template-columns:44px minmax(0,1fr) 34px!important;grid-template-rows:auto auto auto!important}
+.audio-player .audio-art{grid-column:1;grid-row:1}
+.audio-player .audio-info{grid-column:2;grid-row:1}
+.audio-player .secondary-audio{grid-column:3!important;grid-row:1!important}
+.audio-player .audio-range{grid-column:1/-1!important;grid-row:2!important}
+.audio-player #audioPlay{grid-column:1/-1!important;grid-row:3!important;justify-self:center!important}
+@media(max-width:600px){.audio-player{grid-template-columns:42px minmax(0,1fr) 34px!important}}
+.player-screen,.audio-player{touch-action:pan-x pan-y}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -6926,9 +6944,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   </button>
   <button class="audio-btn secondary-audio" onclick="closePlayer()" aria-label="Close player">✕</button>
   <input class="audio-range" id="audioRange" type="range" min="0" max="100" value="0" aria-label="Playback position">
-  <button class="audio-btn reopen-audio" onclick="openFullPlayer()" aria-label="Maximize player">MAXIMIZE</button>
   <button class="audio-btn" id="audioPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
-  <span class="audio-control-spacer" aria-hidden="true"></span>
   <audio id="audio" preload="metadata"></audio>
 </div>
 
@@ -6952,7 +6968,6 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
     <button class="big-play" id="bigPlay" onclick="toggleAudio()" aria-label="Play or pause episode">▶</button>
     <button onclick="seekAudio(30)" aria-label="Forward 30 seconds">↷<small>30</small></button>
   </div>
-  <button class="minimize" onclick="minimizePlayer()">MINIMIZE PLAYER</button>
 </div>
 
 <nav class="bottomnav nav-v200">
@@ -8723,6 +8738,49 @@ function closePlayer(){
  if(mini)mini.classList.remove('show');
  if(screen)screen.classList.remove('show');
 }
+
+// V667: touch gestures replace dedicated minimize / maximize buttons.
+(function dcInstallPlayerSwipeGestures(){
+  var full=document.getElementById('playerScreen');
+  var mini=document.getElementById('audioPlayer');
+  if(!full||!mini)return;
+  var state=null;
+  function start(event,mode){
+    if(!event.touches||event.touches.length!==1)return;
+    var target=event.target;
+    // Seeking and transport controls keep their normal touch behavior.
+    if(target&&target.closest&&target.closest('input[type="range"],#audioPlay,.player-controls,.player-back,.secondary-audio'))return;
+    if(mode==='full'&&full.scrollTop>2)return;
+    var t=event.touches[0];
+    state={mode:mode,x:t.clientX,y:t.clientY,dx:0,dy:0};
+  }
+  function move(event){
+    if(!state||!event.touches||event.touches.length!==1)return;
+    var t=event.touches[0];
+    state.dx=t.clientX-state.x;
+    state.dy=t.clientY-state.y;
+    if(Math.abs(state.dy)>12&&Math.abs(state.dy)>Math.abs(state.dx)*1.15){
+      // Once the gesture is clearly vertical, keep the browser from rubber-banding
+      // the player itself while still leaving range inputs/controls alone.
+      event.preventDefault();
+    }
+  }
+  function end(){
+    if(!state)return;
+    var s=state;state=null;
+    if(Math.abs(s.dy)<=Math.abs(s.dx)*1.15)return;
+    if(s.mode==='full'&&s.dy>=70){minimizePlayer();return;}
+    if(s.mode==='mini'&&s.dy<=-55){openFullPlayer();return;}
+  }
+  full.addEventListener('touchstart',function(e){start(e,'full')},{passive:true});
+  full.addEventListener('touchmove',move,{passive:false});
+  full.addEventListener('touchend',end,{passive:true});
+  full.addEventListener('touchcancel',function(){state=null},{passive:true});
+  mini.addEventListener('touchstart',function(e){start(e,'mini')},{passive:true});
+  mini.addEventListener('touchmove',move,{passive:false});
+  mini.addEventListener('touchend',end,{passive:true});
+  mini.addEventListener('touchcancel',function(){state=null},{passive:true});
+})();
 function parseEpisodeDurationSeconds(value){
   var text=String(value||'').trim();
   if(!text)return 0;
@@ -9435,7 +9493,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v666</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v667</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
