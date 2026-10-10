@@ -9581,7 +9581,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v671</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v672</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -14039,8 +14039,13 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
   }
 }
 </style>
+<style id="v672-livechat-close-target">
+/* Keep the V671 safe-area sizing while ensuring the header is above chat content. */
+#liveChatOverlay .live-chat-header{position:relative!important;z-index:12!important;isolation:isolate}
+#liveChatOverlay #liveChatCloseButton{position:relative!important;z-index:1!important;flex:0 0 48px!important;touch-action:manipulation!important}
+</style>
 <div class="live-chat-overlay" id="liveChatOverlay" aria-hidden="true">
-  <div class="live-chat-header"><h2>LIVE CHAT</h2><button type="button" class="live-chat-close" aria-label="Close Live Chat" onpointerup="event.preventDefault();event.stopPropagation();closeLiveChat()" onclick="event.preventDefault();event.stopPropagation();closeLiveChat()">×</button></div>
+  <div class="live-chat-header"><h2>LIVE CHAT</h2><button type="button" class="live-chat-close" aria-label="Close Live Chat" id="liveChatCloseButton">×</button></div>
   <div class="live-chat-body" id="liveChatBody">
     <div class="live-chat-score-wrap"><div class="live-chat-scorecard" id="liveChatScoreCard"><div class="live-chat-score-full" id="liveChatScoreFull"></div><div class="live-chat-score-collapsed" id="liveChatScoreCollapsed"></div></div></div>
     <div class="live-chat-banner" id="liveChatBanner" hidden></div>
@@ -14206,6 +14211,20 @@ function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(!sc)re
   window.openLiveChat=async function(adminMode,forcedKey){var g=currentGameInfo()?.g;var key=forcedKey||(g?dcLiveChatGameKey(g):'');if(!key)return;dcOpeningToUnread=dcLastReadMessageId(key)>0;if(chatOpen){if(forcedKey&&forcedKey!==currentGameKey){await openChatForGame(key,g,adminMode);setTimeout(dcScrollToFirstUnread,50);}return;}chatOpen=true;var o=document.getElementById('liveChatOverlay');o.classList.add('show');o.setAttribute('aria-hidden','false');document.body.classList.add('dc-live-chat-open');try{history.pushState({dcLiveChat:true},'');}catch(_){}await openChatForGame(key,g,adminMode);dcOpeningToUnread=dcUnreadMessages().length>0;setTimeout(dcScrollToFirstUnread,60);};
   window.closeLiveChat=function(fromPop){if(!chatOpen)return;var returnToTestAdmin=!fromPop&&chatAdmin&&currentGameKey==='TEST:LIVE_CHAT';chatOpen=false;dcStopLiveChatSync();dcSetChatReconnect(false);document.body.classList.remove('dc-live-chat-open');var o=document.getElementById('liveChatOverlay');o.classList.remove('show');o.setAttribute('aria-hidden','true');if(chatChannel){try{chatChannel.untrack();dcSupabase.removeChannel(chatChannel);}catch(_){}chatChannel=null;}if(!fromPop){try{if(history.state&&history.state.dcLiveChat)history.back();}catch(_){}}selectedMessage=null;if(returnToTestAdmin)setTimeout(function(){try{openAdmin().then(function(){selectAdminTab('live-chat',true);selectLiveChatAdminGroup('tools');selectLiveChatAdminSubtab('test');});}catch(_){}},80);}
   window.addEventListener('popstate',function(e){if(chatOpen&&!(e.state&&e.state.dcLiveChat)){closeLiveChat(true);}});
+  // V672: attach close handling once at capture phase, independent of inline handlers.
+  // A touch/pointer event closes immediately; the subsequent synthesized click is harmless.
+  (function(){
+    var closeBtn=document.getElementById('liveChatCloseButton');
+    if(!closeBtn)return;
+    function dismiss(e){
+      if(e.type==='pointerdown'&&e.pointerType==='mouse')return;
+      e.preventDefault();e.stopPropagation();
+      if(typeof window.closeLiveChat==='function')window.closeLiveChat();
+    }
+    closeBtn.addEventListener('pointerdown',dismiss,true);
+    closeBtn.addEventListener('click',dismiss,true);
+  })();
+
   window.liveChatMessageTap=function(e,id){
   if(currentReadOnly)return;
   if(e.target.closest('button'))return;
