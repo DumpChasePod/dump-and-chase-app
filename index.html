@@ -9581,7 +9581,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v676</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v677</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -14039,7 +14039,7 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
   }
 }
 </style>
-<style id="v676-livechat-close-target">
+<style id="v677-livechat-close-target">
 /* Keep the V671 safe-area sizing while ensuring the header is above chat content. */
 #liveChatOverlay .live-chat-header{position:relative!important;z-index:12!important;isolation:isolate}
 #liveChatOverlay #liveChatCloseButton{position:relative!important;z-index:1!important;flex:0 0 48px!important;touch-action:manipulation!important}
@@ -14234,7 +14234,7 @@ function jumpBottom(){var sc=document.getElementById('liveChatScroll');if(!sc)re
     liveChatCloseMenu();
     return;
   }
-  document.removeEventListener('click',liveChatCloseMenu);var m=chatMessages.find(function(x){return x.id===id;});if(!m||m.sender_type==='system')return;selectedMessage=m;var menu=document.getElementById('liveChatActionMenu');var canDelete=(m.participant_id===participant?.id&&Date.now()-Date.parse(m.created_at)<=120000)||chatAdmin;var canEdit=!!(participant&&participant.is_host&&m.sender_type==='host'&&m.participant_id===participant.id&&!m.deleted_at&&!currentReadOnly);var reactionHtml=(m.participant_id===participant?.id)?'':'<div class="live-chat-reaction-row">'+['👍','😂','❤️','😢'].map(function(x){return '<button type="button" class="live-chat-reaction-choice" onclick="liveChatReact('+m.id+',\''+(x==='😢'?'cry':x)+'\')"><span class="live-chat-reaction-emoji">'+x+'</span></button>';}).join('')+'</div>';menu.innerHTML=reactionHtml+'<div style="display:flex;gap:5px;flex-wrap:wrap"><button type="button" class="blue" onclick="liveChatReply('+m.id+')">REPLY</button>'+(canEdit?'<button type="button" onclick="liveChatEdit('+m.id+')">EDIT</button>':'')+(canDelete?'<button type="button" class="danger" onclick="liveChatDelete('+m.id+')">DELETE</button>':'')+'</div>';var r=e.currentTarget.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(window.innerWidth-370,r.left))+'px';menu.style.top=Math.min(window.innerHeight-130,r.bottom+5)+'px';menu.classList.add('show');setTimeout(function(){document.addEventListener('click',liveChatCloseMenu,{once:true});},0);};
+  document.removeEventListener('click',liveChatCloseMenu);var m=chatMessages.find(function(x){return x.id===id;});if(!m||m.sender_type==='system')return;selectedMessage=m;var menu=document.getElementById('liveChatActionMenu');var canDelete=!!(chatAdmin||(participant&&participant.is_host&&participant.status==='active'&&!participant.registration_required)||(participant&&participant.status==='active'&&!participant.registration_required&&m.participant_id===participant.id&&Date.now()-Date.parse(m.created_at)<=120000));var canEdit=!!(participant&&participant.is_host&&m.sender_type==='host'&&m.participant_id===participant.id&&!m.deleted_at&&!currentReadOnly);var reactionHtml=(m.participant_id===participant?.id)?'':'<div class="live-chat-reaction-row">'+['👍','😂','❤️','😢'].map(function(x){return '<button type="button" class="live-chat-reaction-choice" onclick="liveChatReact('+m.id+',\''+(x==='😢'?'cry':x)+'\')"><span class="live-chat-reaction-emoji">'+x+'</span></button>';}).join('')+'</div>';menu.innerHTML=reactionHtml+'<div style="display:flex;gap:5px;flex-wrap:wrap"><button type="button" class="blue" onclick="liveChatReply('+m.id+')">REPLY</button>'+(canEdit?'<button type="button" onclick="liveChatEdit('+m.id+')">EDIT</button>':'')+(canDelete?'<button type="button" class="danger" onclick="liveChatDelete('+m.id+')">DELETE</button>':'')+'</div>';var r=e.currentTarget.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(window.innerWidth-370,r.left))+'px';menu.style.top=Math.min(window.innerHeight-130,r.bottom+5)+'px';menu.classList.add('show');setTimeout(function(){document.addEventListener('click',liveChatCloseMenu,{once:true});},0);};
   
 (function(){
   var m=document.getElementById('liveChatActionMenu');
