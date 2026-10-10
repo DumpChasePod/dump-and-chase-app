@@ -9581,7 +9581,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v670</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v671</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13799,8 +13799,8 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-special{flex:0 0 auto!im
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special){height:22px!important;min-height:22px!important;flex-direction:row!important;align-items:center!important;justify-content:center!important}
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special) .gameday-special{width:auto!important}
 </style>
-<style id="v670-gameday-pp-livechat-ios">
-/* V670 — larger/lower Game Day PP pills and iPhone portrait-safe Live Chat header. */
+<style id="v671-gameday-pp-livechat-close">
+/* V671 — keep larger/lower PP pills; simplify Live Chat close targeting while preserving iPhone safe area. */
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot{
   height:30px!important;min-height:30px!important;margin:0 0 1px!important;
   align-items:flex-end!important;justify-content:center!important;overflow:visible!important;
@@ -13815,13 +13815,14 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 .live-chat-header{
   height:auto!important;min-height:calc(58px + env(safe-area-inset-top))!important;flex:0 0 auto!important;
   padding:calc(9px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))!important;
-  align-items:flex-end!important;position:relative;z-index:12;
+  align-items:flex-end!important;
 }
 .live-chat-close{
   width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
-  padding:0!important;display:grid!important;place-items:center!important;position:relative;z-index:20;
-  border-radius:12px!important;background:rgba(255,255,255,.045)!important;border:1px solid rgba(255,255,255,.10)!important;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;
+  padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  position:static!important;z-index:auto!important;border:0!important;background:transparent!important;
+  border-radius:10px!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent;cursor:pointer;
+  pointer-events:auto!important;
 }
 @media (orientation:portrait){
   .live-chat-header{padding-top:calc(11px + env(safe-area-inset-top))!important;}
@@ -14039,7 +14040,7 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 }
 </style>
 <div class="live-chat-overlay" id="liveChatOverlay" aria-hidden="true">
-  <div class="live-chat-header"><h2>LIVE CHAT</h2><button type="button" class="live-chat-close" aria-label="Close Live Chat" onclick="closeLiveChat()">×</button></div>
+  <div class="live-chat-header"><h2>LIVE CHAT</h2><button type="button" class="live-chat-close" aria-label="Close Live Chat" onpointerup="event.preventDefault();event.stopPropagation();closeLiveChat()" onclick="event.preventDefault();event.stopPropagation();closeLiveChat()">×</button></div>
   <div class="live-chat-body" id="liveChatBody">
     <div class="live-chat-score-wrap"><div class="live-chat-scorecard" id="liveChatScoreCard"><div class="live-chat-score-full" id="liveChatScoreFull"></div><div class="live-chat-score-collapsed" id="liveChatScoreCollapsed"></div></div></div>
     <div class="live-chat-banner" id="liveChatBanner" hidden></div>
