@@ -9581,7 +9581,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v680</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v681</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -13820,6 +13820,39 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot{height:22px;min-
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-special{flex:0 0 auto!important;width:auto!important;max-width:100%;padding:3px 6px!important;border-radius:999px!important;font-size:6.5px!important;line-height:1!important}
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special){height:22px!important;min-height:22px!important;flex-direction:row!important;align-items:center!important;justify-content:center!important}
 body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-special + .gameday-special) .gameday-special{width:auto!important}
+</style>
+<style id="v681-stacked-score-status-pills">
+/* V681: Keep each team's PP and EMPTY NET labels centered in its own score column.
+   The slot's existing height and score/card dimensions remain unchanged. */
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-pp-slot,
+#publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-pp-slot{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:3px!important;
+  overflow:visible!important;
+}
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-pp-slot:has(.gameday-special + .gameday-special),
+#publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-pp-slot:has(.gameday-special + .gameday-special){
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+}
+body.game-live #publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-special,
+#publicGameDayCard.dc-gd-modern .gameday-score-cell .gameday-special{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  width:max-content!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  transform:none!important;
+  line-height:1.1!important;
+}
 </style>
 <style id="v671-gameday-pp-livechat-close">
 /* V671 — keep larger/lower PP pills; simplify Live Chat close targeting while preserving iPhone safe area. */
