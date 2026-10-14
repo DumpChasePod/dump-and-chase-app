@@ -9581,7 +9581,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v682</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v683</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10871,7 +10871,37 @@ function closeScheduleEditor(){
   document.querySelectorAll('.admin-schedule-game').forEach(function(b){b.classList.remove('active');});
   parkScheduleEditor();
 }
-function setScheduleRole(v,silent){document.getElementById('adminScheduleRole').value=v;document.querySelectorAll('[data-schedule-role]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleRole===v);});if(!silent)markAdminDirty('Schedule changes');}
+function setScheduleRole(v,silent){
+  var roleInput=document.getElementById('adminScheduleRole');
+  var previousRole=roleInput.value;
+  roleInput.value=v;
+  document.querySelectorAll('[data-schedule-role]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleRole===v);});
+  // Change the venue only when the user changes HOME/AWAY, not when opening an editor.
+  if(!silent&&v!==previousRole){
+    var arenaInput=document.getElementById('adminScheduleArena');
+    var locationInput=document.getElementById('adminScheduleLocation');
+    if(v==='HOME'){
+      arenaInput.value='Covelli Centre';
+      locationInput.value='Youngstown, OH';
+    }else if(v==='AWAY'){
+      var opponent=String(document.getElementById('adminScheduleOpponent').value||'').trim().toLowerCase();
+      var currentId=String(document.getElementById('adminScheduleId').value||'');
+      // Reuse a known away-game venue for this exact opponent; never guess an arena.
+      var match=dcScheduleRows.find(function(row){
+        return String(row.id)!==currentId&&String(row.home_away||'').toUpperCase()==='AWAY'&&
+          String(row.opponent||'').trim().toLowerCase()===opponent&&String(row.arena||'').trim()&&
+          String(row.arena||'').trim().toLowerCase()!=='arena tba';
+      });
+      arenaInput.value=match?String(match.arena||''):'';
+      locationInput.value=match?String(match.location||''):'';
+      if(!match){
+        var status=document.getElementById('adminScheduleEditStatus');
+        if(status)status.textContent='Away venue not found in the schedule — enter the arena and location before saving.';
+      }
+    }
+  }
+  if(!silent)markAdminDirty('Schedule changes');
+}
 function setScheduleStatus(v,silent){document.getElementById('adminScheduleGameStatus').value=v;document.querySelectorAll('[data-schedule-status]').forEach(function(b){b.classList.toggle('active',b.dataset.scheduleStatus===v);});if(!silent)markAdminDirty('Schedule changes');}
 function formatScheduleTimeLabel(v){
   if(!v)return 'TBD';var p=v.split(':'),h=Number(p[0]),m=p[1],ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ap+' ET';
