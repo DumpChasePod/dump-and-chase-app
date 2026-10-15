@@ -5722,7 +5722,7 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 @media(max-width:380px){.pc-public-scroll{padding-left:12px;padding-right:12px}.pc-feature{padding:12px}.pc-archive-grid{gap:8px}.pc-archive-card{padding:7px}}
 </style>
 <style id="pcDesignV689">
-/* V689: Phan Central uses the existing HQ module design tokens and scale. */
+/* v690: Phan Central uses the existing HQ module design tokens and scale. */
 #pcPublicView,#pcNominationView,#pcThankYouView{background:#080d15;color:#f3f5f8}
 #pcPublicView .pc-public-head,#pcNominationView .pc-public-head,#pcThankYouView .pc-public-head{
   height:62px;min-height:62px;padding:0 16px;gap:10px;
@@ -5797,6 +5797,25 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcThankYouView .pc-thanks-content h2{font-size:22px}
 #pcThankYouView .pc-thanks-content p{font-size:13px;color:#a6b2c4}
 @media(max-width:380px){#pcPublicView .pc-public-scroll,#pcNominationView .pc-public-scroll{padding-left:12px;padding-right:12px}#pcPublicView .pc-feature-main>.pc-portrait{max-height:175px}}
+</style>
+<style id="pcShellV690">
+/* V690: Phan Central uses the same regular bottom tab shell as Phantoms HQ. */
+#pcPublicView.pc-main-tab{z-index:15!important;bottom:0!important;top:0!important;padding-bottom:calc(82px + env(safe-area-inset-bottom))!important;}
+#pcPublicView.pc-main-tab .pc-public-head{justify-content:flex-start!important;gap:10px!important;}
+#pcPublicView.pc-main-tab #pcClosePublicButton{display:none!important;}
+#pcPublicView.pc-main-tab .pc-public-scroll{overscroll-behavior:contain;}
+#pcPublicView.pc-admin-preview{z-index:13000!important;bottom:0!important;padding-bottom:env(safe-area-inset-bottom)!important;}
+#pcPublicView.pc-admin-preview #pcClosePublicButton{display:grid!important;position:relative;z-index:1;flex-shrink:0;cursor:pointer;touch-action:manipulation;}
+#pcPublicView .pc-feature h2{overflow-wrap:anywhere;word-break:normal;}
+#pcPublicView .pc-archive-card strong{overflow-wrap:anywhere;word-break:normal;}
+#pcPublicView .pc-archive-card{display:block;width:100%;box-sizing:border-box;}
+#pcPublicView .pc-feature-main>.pc-portrait{max-height:190px;}
+#pcPublicView .pc-archive-grid{align-items:stretch;}
+#pcNominationView .pc-public-scroll{min-height:0;}
+#pcNominationView #pcSubmissionFeedback:not(:empty){border:1px solid rgba(173,134,229,.28);border-radius:9px;background:#141c2b;padding:10px 12px;color:#d9c7ff;line-height:1.4;font-size:12px;}
+#pcProfileSheet .pc-profile-answer{overflow-wrap:anywhere;}
+#pcThankYouView .pc-thanks-content{min-height:0;}
+@media(max-width:380px){#pcPublicView .pc-feature h2{font-size:18px;}}
 </style>
 </head>
 <body>
@@ -7155,7 +7174,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </div>
 
 <section id="pcPublicView" class="pc-public-view" hidden aria-label="Phan Central">
-  <div class="pc-public-head"><span class="pc-head-mark" aria-hidden="true">★</span><strong>Phan Central</strong><button aria-label="Close Phan Central">✕</button></div>
+  <div class="pc-public-head"><span class="pc-head-mark" aria-hidden="true">★</span><strong>Phan Central</strong><button type="button" id="pcClosePublicButton" onclick="pcClosePublic()" aria-label="Close Phan Central preview">✕</button></div>
   <div class="pc-public-scroll" id="pcPublicContent"><p>Loading Phan Central…</p></div>
 </section>
 <section id="pcNominationView" class="pc-public-view pc-form-view" hidden aria-label="Phan Central Nomination">
@@ -7263,7 +7282,7 @@ function dcFocusAppViewHeading(){
   var title=document.getElementById('sheetTitle');
   if(title)setTimeout(function(){try{title.focus({preventScroll:true});}catch(_){title.focus();}},0);
 }
-function setActive(el){document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+function setActive(el){if(el&&el.id!=='phanCentralNav'&&typeof window.pcLeaveMainTab==='function')window.pcLeaveMainTab();document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active')}
 var dcModalPageScrollY=0;
 function dcLockPageScroll(appView){
   if(appView){
@@ -7890,6 +7909,7 @@ async function installDumpChase(){
 }
 window.addEventListener('appinstalled',function(){deferredInstallPrompt=null;dcTrack('app_installed','pwa');toast('Dump & Chase installed.');});
 function resetNavHome(){
+  if(typeof window.pcLeaveMainTab==='function')window.pcLeaveMainTab();
   document.querySelectorAll('.navitem').forEach(function(x){x.classList.remove('active');});
   var home=document.querySelector('.navitem');
   if(home)home.classList.add('active');
@@ -9776,7 +9796,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v689</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v690</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -15166,20 +15186,41 @@ function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Pho
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
-html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first featured listener is coming soon.</p></section>';
+html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first featured Dump &amp; Chase Podcast listener is coming soon.</p></section>';
 html+='<div class="pc-section-label pc-section-label-second">JOIN PHAN CENTRAL</div><section class="pc-feature pc-nominate-card"><strong>Think you should be Phan of the Week?</strong><p class="pc-muted">Tell the Dump &amp; Chase Podcast your story.</p>'+(d.submissions_open||preview?'<button class="pc-primary" id="pcBeginNomination">SUBMIT YOUR NOMINATION</button>':'<p class="pc-muted">Nominations are currently closed.</p>')+'</section>';
 var archive=feed.filter(x=>x.state==='archived'),seasons=[...new Set(archive.map(x=>x.season))].sort().reverse();html+='<div class="pc-section-label pc-archive-title">PREVIOUS PHANS OF THE WEEK</div>';
-if(!archive.length)html+='<div class="pc-archive-empty">Past winners will appear here.</div>';
+if(!archive.length)html+='<div class="pc-archive-empty">Featured listeners from previous weeks will appear here.</div>';
 seasons.forEach(season=>{html+='<h3 class="pc-season-label">'+safe(season)+' SEASON</h3><div class="pc-archive-grid">'+archive.filter(x=>x.season===season).map(card).join('')+'</div>';});
 target.innerHTML=html;
 }
 window.pcOpenPublic=async function(adminPreview){
  preview=!!adminPreview;
  if(preview && !(await getAdmin()))return;
- $('pcPublicView').hidden=false;$('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
+ var view=$('pcPublicView');
+ view.classList.toggle('pc-admin-preview',preview);
+ view.classList.toggle('pc-main-tab',!preview);
+ view.hidden=false;
+ $('pcPublicContent').scrollTop=0;
+ $('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
  try{render(await api({action:'feed',preview:preview}));}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
 };
-window.pcClosePublic=function(){$('pcPublicView').hidden=true;$('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;};
+window.pcClosePublic=function(){
+ var view=$('pcPublicView');
+ view.hidden=true;view.classList.remove('pc-admin-preview','pc-main-tab');
+ $('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+ if(!preview){
+   var home=document.querySelector('.bottomnav .navitem[aria-label="Home"]');
+   if(home&&typeof setActive==='function')setActive(home);
+ }
+ preview=false;
+};
+window.pcLeaveMainTab=function(){
+ var view=$('pcPublicView');
+ if(view&&!view.hidden&&!preview){
+   view.hidden=true;view.classList.remove('pc-main-tab');
+   $('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+ }
+};
 window.pcCloseProfile=function(){$('pcProfileSheet').hidden=true;};
 function openProfile(id){var w=feed.find(x=>x.id===id);if(!w)return;var n=w.profile;
 var headings=[['Phantoms Fan Since',n.fan_since],['Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No'],['Seating Section',n.seating_section||'Not provided'],['Why I’m a Phantoms Fan',n.why_fan],['Favorite Phantoms Memory',n.favorite_memory],['All-Time Favorite Player',n.favorite_player],['How Long I’ve Listened to the Dump & Chase Podcast',n.podcast_listener_since],['Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment]];
