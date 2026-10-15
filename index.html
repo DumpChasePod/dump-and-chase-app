@@ -5635,6 +5635,20 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 
 
 <style id="pcAdminStyles">
+
+.pc-photo,.pc-winner-tools,.pc-winners{margin:14px 0;padding:12px;border:1px solid rgba(173,134,229,.24);border-radius:12px;background:#151e2d}
+.pc-photo-preview{height:180px;max-width:360px;border:1px dashed #526076;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#9fabbf;background:#101723}
+.pc-photo-preview img{width:100%;height:100%;object-fit:cover}
+.pc-admin .pc-field input[type="range"]{padding:0;height:24px;accent-color:#a57be0}
+.pc-admin .pc-field input[type="file"]{font-size:12px}
+.pc-profile-preview{margin-top:10px;padding:14px;border-radius:12px;border:1px solid #55456e;background:#1b2638}
+.pc-profile-preview h4{margin:0 0 10px}
+.pc-profile-preview p{white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+.pc-winner-entry{border:1px solid #3d4b60;border-radius:10px;margin:8px 0;padding:10px;display:grid;gap:7px}
+.pc-winner-entry small{font-size:11px;color:#abb7c9}
+.pc-winner-entry .pc-actions{margin:2px 0}
+@media(max-width:520px){.pc-admin .pc-grid{grid-template-columns:1fr}}
+
 .pc-admin h3{font-size:16px;margin:12px 0}.pc-switches{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.pc-switches span{border:1px solid rgba(255,255,255,.15);padding:6px 10px;border-radius:10px;color:#b5c1d1;font-size:11px;font-weight:750}.pc-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.pc-summary{font-size:12px;color:#aab5c5;margin:10px 0}.pc-list{display:grid;gap:9px}.pc-entry{width:100%;text-align:left;background:#172030;color:inherit;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:10px;cursor:pointer}.pc-entry small{display:block;color:#aab5c5;margin-top:4px}.pc-entry em{font-style:normal;font-size:10px;color:#caafff}.pc-detail{background:#121b29;border:1px solid #614b80;border-radius:12px;padding:12px;margin-top:15px}.pc-admin .pc-field{display:block;margin:10px 0;font-size:11px;font-weight:800;color:#bcc7d5}.pc-admin .pc-field input,.pc-admin .pc-field textarea,.pc-admin .pc-field select{box-sizing:border-box;display:block;width:100%;margin-top:5px;padding:9px;background:#202a3a;color:#fff;border:1px solid #415066;border-radius:8px;font:inherit;font-weight:400}.pc-admin .pc-field textarea{min-height:70px;resize:vertical}.pc-admin .pc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.pc-admin .pc-check{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}.pc-admin .pc-check input{accent-color:#ab7bec}#pcPendingBadge:not(:empty){border-radius:12px;background:#55386e;padding:1px 5px;font-size:10px;margin-left:4px}
 </style>
 </head>
@@ -9584,7 +9598,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v684</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v685</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -9959,6 +9973,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="pc-switches"><span id="pcVisibility">Visibility: checking</span><span id="pcSubmissions">Submissions: checking</span></div>
     <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcLoad()">REFRESH</button><button type="button" class="admin-mini-btn" onclick="pcCreateTest()">CREATE TEST NOMINATION</button></div>
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
+    <section class="pc-winners"><h3>Private Winner Testing</h3><p class="admin-muted">TEST ONLY: selecting and publishing here never changes the public app.</p><div id="pcWinnersList">Loading winner history…</div></section>
     <div class="pc-actions" id="pcFilters">
       <button class="admin-mini-btn active" data-pc-filter="all" onclick="pcFilter('all')">ALL</button>
       <button class="admin-mini-btn" data-pc-filter="New" onclick="pcFilter('New')">NEW</button>
@@ -9969,8 +9984,10 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div id="pcList" class="pc-list" aria-live="polite"></div>
     <section id="pcDetail" class="pc-detail" hidden>
       <h3>Edit nomination</h3><div id="pcDetailFields"></div>
+      <section class="pc-photo"><h3>Fan Photo (Private)</h3><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><label class="pc-field">Upload JPEG, PNG or WebP, maximum 5 MB<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">UPLOAD PRIVATE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcRemovePhoto()" id="pcPhotoRemove" disabled>REMOVE PHOTO</button></div><label class="pc-field">Photo position horizontal <input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Photo position vertical <input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></section>
+      <section class="pc-winner-tools"><h3>Winner Selection · Test Mode</h3><p class="admin-muted">Only Eligible TEST nominations can be selected here. Public winners are blocked until launch.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(false)">SELECT FOR PUBLISH NOW</button><label class="pc-field">Schedule date & time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE TEST WINNER</button></div><p class="admin-muted">After selecting for Publish Now, use PUBLISH NOW in the private winner list above.</p></section>
       <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button></div>
-      <p class="admin-muted">Winner selection, scheduled publication and photo upload/approval are not enabled in this first Admin build. No public changes can be made here.</p>
+      <p class="admin-muted">Private test winner tools only. Public controls remain unavailable.</p>
     </section>
     <div class="admin-status" id="pcFeedback" aria-live="polite"></div>
   </div>
@@ -14778,11 +14795,11 @@ document.addEventListener('DOMContentLoaded',function(){
 window.addEventListener('offline',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);});
 window.addEventListener('online',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);try{refreshLiveChatAvailability();}catch(_){}});
 </script>
-<script id="pcAdminV684">
+<script id="pcAdminV685">
 /* Phan Central private Admin phase: do not expose client-side public data flows. */
 (function(){
 'use strict';
-var rows=[],selected=null,currentFilter='all',busy=false;
+var rows=[],selected=null,currentFilter='all',busy=false,winners=[],photoUrl='',settings=null;
 var editable=[['full_name','Full name','text'],['email','Private email address','email'],['fan_since','How long a Phantoms fan?','text'],['seating_section','Seating section','text'],['why_fan','Why a Phantoms fan?','textarea'],['favorite_memory','Favorite Phantoms memory','textarea'],['favorite_player','Favorite all-time player','text'],['favorite_podcast_moment','Favorite podcast moment','textarea'],['admin_notes','Private Admin notes','textarea']];
 var statuses=['New','Eligible','On Hold','Selected','Featured','Ineligible'];
 function el(id){return document.getElementById(id);}
@@ -14800,10 +14817,10 @@ function render(){
 }
 window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading private nominations…');try{
  if(!(await verified()))throw Error('Admin session expired. Please unlock Admin again.');
- var results=await Promise.all([dcSupabase.from('phan_central_settings').select('*').eq('id',1).single(),dcSupabase.from('phan_central_nominations').select('*').order('created_at',{ascending:false}).limit(500)]);
- if(results[0].error)throw results[0].error;if(results[1].error)throw results[1].error;
+ var results=await Promise.all([dcSupabase.from('phan_central_settings').select('*').eq('id',1).single(),dcSupabase.from('phan_central_nominations').select('*').order('created_at',{ascending:false}).limit(500),dcSupabase.from('phan_central_winners').select('*').order('created_at',{ascending:false}).limit(150)]);
+ if(results[0].error)throw results[0].error;if(results[1].error)throw results[1].error;if(results[2].error)throw results[2].error;settings=results[0].data;
  el('pcVisibility').textContent='PUBLIC VISIBILITY: '+(results[0].data.public_visible?'ON':'OFF');el('pcSubmissions').textContent='PUBLIC SUBMISSIONS: '+(results[0].data.submissions_open?'ON':'OFF');
- rows=results[1].data||[];render();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
+ rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
  }catch(e){feedback('Could not load nominations: '+(e.message||e));}finally{busy=false;}};
 window.pcFilter=function(v){currentFilter=v;el('pcFilters').querySelectorAll('[data-pc-filter]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-pc-filter')===v);});render();};
 window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;var body=el('pcDetailFields');
@@ -14811,7 +14828,7 @@ window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||n
  '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>'+
  '<label class="pc-field">Review status<select id="pcStatus">'+statuses.map(function(v){return '<option'+(selected.status===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></label>'+
  '<p class="admin-muted">Adult and consent confirmed: '+(selected.adult_confirmed&&selected.consent_confirmed?'YES':'NO')+' · Photo: '+(selected.photo_path?(selected.photo_approved?'approved':'awaiting approval'):'none')+' · '+(selected.is_test?'TEST DATA':'REAL SUBMISSION')+'</p>';
- el('pcDetail').hidden=false;el('pcDetail').scrollIntoView({behavior:'smooth',block:'nearest'});};
+ el('pcDetail').hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;el('pcDetail').scrollIntoView({behavior:'smooth',block:'nearest'});};
 window.pcClose=function(){selected=null;el('pcDetail').hidden=true;};
 window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedback('Admin session expired.');return;}
  try{var fields=el('pcDetailFields').querySelectorAll('[data-pc-field]'),patch={updated_at:new Date().toISOString()};fields.forEach(function(input){patch[input.getAttribute('data-pc-field')]=input.value;});patch.email=normalizedEmail(patch.email);patch.is_season_ticket_holder=el('pcSth').checked;patch.status=el('pcStatus').value;
@@ -14821,6 +14838,109 @@ window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedb
  var result=await dcSupabase.from('phan_central_nominations').update(patch).eq('id',selected.id).select('*').single();if(result.error)throw result.error;
  selected=result.data;feedback('Nomination saved.');pcClose();await pcLoad();
  }catch(e){feedback('Save failed: '+(e.message||e));}};
+
+function pcRenderWinners(){
+ var dest=el('pcWinnersList');if(!dest)return;
+ var tests=winners.filter(function(w){return w.is_test;});
+ if(!tests.length){dest.innerHTML='<p class="admin-muted">No test winners selected yet.</p>';return;}
+ dest.innerHTML=tests.map(function(w){var n=rows.find(function(x){return x.id===w.nomination_id;});
+  var caption=w.feature_at?' · '+esc(new Date(w.feature_at).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'}))+' ET':'';
+  return '<div class="pc-winner-entry"><b>'+esc(n?n.full_name:'Nomination '+w.nomination_id)+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(w.season)+caption+(w.failure_reason?' · '+esc(w.failure_reason):'')+'</small><div class="pc-actions">'+
+   (w.state==='scheduled'?'<button type="button" class="admin-mini-btn" data-pc-publish="'+esc(w.id)+'">PUBLISH NOW</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL SELECTION</button>':'')+
+   (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+'</div></div>';
+ }).join('');
+ dest.querySelectorAll('[data-pc-publish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('publish',b.dataset.pcPublish);});});
+ dest.querySelectorAll('[data-pc-cancel]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('cancel',b.dataset.pcCancel);});});
+ dest.querySelectorAll('[data-pc-unpublish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('unpublish',b.dataset.pcUnpublish);});});
+}
+async function pcApi(payload){
+ if(!(await verified()))throw Error('Admin session expired');
+ var res=await dcSupabase.functions.invoke('phan-central-admin',{body:payload});
+ if(res.error)throw Error(res.data?.error||res.error.message||'Backend action failed');
+ if(!res.data?.ok)throw Error(res.data?.error||'Backend rejected the action');
+ return res.data;
+}
+async function pcWinnerAction(action,winnerId){
+ var verb=action==='publish'?'publish immediately':action==='unpublish'?'unpublish':'cancel';
+ if(!confirm('Confirm '+verb+' for this private TEST winner?'))return;
+ try{await pcApi({action:action,winner_id:winnerId});feedback('Test winner updated.');await pcLoad();}catch(e){feedback('Winner action failed: '+(e.message||e));}
+}
+function easternParts(date){var ps=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);var o={};ps.forEach(function(p){o[p.type]=p.value;});return o;}
+function pcEasternUTC(value){
+ if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))throw Error('Select a valid Eastern date and time');
+ var wanted=Date.parse(value+':00Z'),epoch=wanted;
+ for(var i=0;i<4;i++){var v=easternParts(new Date(epoch));var local=Date.UTC(+v.year,+v.month-1,+v.day,+v.hour,+v.minute);epoch+=wanted-local;}
+ var check=easternParts(new Date(epoch));if([check.year,check.month,check.day].join('-')+'T'+check.hour+':'+check.minute!==value)throw Error('This local time does not exist in Eastern Time (DST change).');
+ if(epoch<=Date.now())throw Error('Schedule must be in the future');return new Date(epoch).toISOString();
+}
+window.pcSelectWinner=async function(scheduled){
+ if(!selected)return;
+ if(!selected.is_test){feedback('Real winners are locked until the public launch.');return;}
+ if(selected.status!=='Eligible'){feedback('Set this test nomination to Eligible and save first.');return;}
+ if(selected.photo_path&&!selected.photo_approved){feedback('Approve the uploaded photo or remove it before selection.');return;}
+ try{
+  var featureAt=scheduled?pcEasternUTC(el('pcScheduleTime').value):null;
+  var season=settings?.active_season||'2026-27';
+  if(!confirm('Select '+selected.full_name+' as a TEST winner for '+season+(scheduled?' at '+el('pcScheduleTime').value+' ET':' (awaiting Publish Now)')+'?'))return;
+  await pcApi({action:'select',nomination_id:selected.id,season:season,feature_at:featureAt});
+  feedback('Test winner selected. '+(scheduled?'Scheduled for automatic publication.':'Use PUBLISH NOW in the winner list.'));
+  pcClose();await pcLoad();
+ }catch(e){feedback('Could not select test winner: '+(e.message||e));}
+};
+window.pcPreview=function(){if(!selected)return;var n=selected,box=el('pcProfilePreview');
+ var answers=[['How long a fan?',n.fan_since],['Season ticket holder',n.is_season_ticket_holder?'Yes':'No'],['Seating section',n.seating_section||'Not provided'],['Why a fan?',n.why_fan],['Favorite memory',n.favorite_memory],['Favorite player',n.favorite_player],['Favorite podcast moment',n.favorite_podcast_moment]];
+ box.innerHTML='<h4>PHAN OF THE WEEK · PREVIEW</h4><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<p class="admin-muted">Phan Central branded photo placeholder</p>')+
+  answers.map(function(a){return '<p><b>'+esc(a[0])+'</b><br>'+esc(a[1])+'</p>';}).join('')+
+  '<small class="admin-muted">Private Admin preview · email and Admin notes are excluded.</small>';
+ box.hidden=false;
+};
+async function pcRenderPhoto(){
+ if(!selected)return;var id=selected.id,frame=el('pcPhotoPreview');
+ frame.textContent='No photo uploaded';photoUrl='';
+ el('pcPhotoX').value=selected.photo_position_x??50;el('pcPhotoY').value=selected.photo_position_y??50;
+ el('pcPhotoApprove').disabled=!selected.photo_path;el('pcPhotoRemove').disabled=!selected.photo_path;
+ el('pcPhotoStatus').textContent=selected.photo_path?(selected.photo_approved?'APPROVED':'AWAITING APPROVAL'):'No uploaded photo';
+ if(!selected.photo_path)return;
+ try{var res=await dcSupabase.storage.from('phan-central-private').createSignedUrl(selected.photo_path,180);
+  if(res.error)throw res.error;
+  if(!selected||selected.id!==id)return;
+  photoUrl=res.data.signedUrl;frame.innerHTML='';var img=document.createElement('img');img.alt='Private photo preview';img.src=photoUrl;frame.appendChild(img);pcPhotoMove();
+ }catch(e){frame.textContent='Could not load private photo: '+(e.message||e);}
+}
+window.pcPhotoMove=function(){var img=el('pcPhotoPreview')?.querySelector('img');if(img)img.style.objectPosition=el('pcPhotoX').value+'% '+el('pcPhotoY').value+'%';};
+window.pcSavePosition=async function(){if(!selected)return;
+ try{var patch={photo_position_x:+el('pcPhotoX').value,photo_position_y:+el('pcPhotoY').value,updated_at:new Date().toISOString()};
+ var res=await dcSupabase.from('phan_central_nominations').update(patch).eq('id',selected.id).select('*').single();if(res.error)throw res.error;
+ selected=res.data;feedback('Photo positioning saved.');await pcLoad();}catch(e){feedback('Position save failed: '+(e.message||e));}
+};
+window.pcUploadPhoto=async function(){if(!selected)return;
+ var file=el('pcPhotoFile').files[0];if(!file){feedback('Choose a photo first.');return;}
+ var types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+ if(!types[file.type]||file.size>5*1024*1024||file.size<=0){feedback('Use JPG, PNG or WebP under 5 MB.');return;}
+ if(!confirm('Upload this photo privately for '+selected.full_name+'? Photo approval will be reset.'))return;
+ try{
+  if(!(await verified()))throw Error('Admin session expired');
+  var path=selected.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+types[file.type];
+  var upload=await dcSupabase.storage.from('phan-central-private').upload(path,file,{contentType:file.type,upsert:false});if(upload.error)throw upload.error;
+  var oldPath=selected.photo_path;
+  var res=await dcSupabase.from('phan_central_nominations').update({photo_path:path,photo_approved:false,photo_position_x:50,photo_position_y:50,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();
+  if(res.error){await dcSupabase.storage.from('phan-central-private').remove([path]);throw res.error;}
+  selected=res.data;feedback('Photo uploaded privately, awaiting approval.');pcRenderPhoto();
+  if(oldPath)await dcSupabase.storage.from('phan-central-private').remove([oldPath]);
+ }catch(e){feedback('Photo upload failed: '+(e.message||e));}
+};
+window.pcApprovePhoto=async function(){if(!selected?.photo_path)return;
+ try{if(!confirm('Approve this photo for the fan profile?'))return;
+ var res=await dcSupabase.from('phan_central_nominations').update({photo_approved:true,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(res.error)throw res.error;
+ selected=res.data;pcRenderPhoto();feedback('Photo approved.');}catch(e){feedback('Photo approval failed: '+(e.message||e));}
+};
+window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
+ if(!confirm('Remove this private photo?'))return;
+ try{var path=selected.photo_path;
+ var res=await dcSupabase.from('phan_central_nominations').update({photo_path:null,photo_approved:false,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(res.error)throw res.error;
+ selected=res.data;await dcSupabase.storage.from('phan-central-private').remove([path]);pcRenderPhoto();feedback('Photo removed.');}catch(e){feedback('Remove failed: '+(e.message||e));}
+};
+
 window.pcCreateTest=async function(){if(!(await verified())){feedback('Admin session expired.');return;}if(!confirm('Create a private TEST nomination with fictional information?'))return;
  try{var suffix=Date.now().toString(36),sample={email:'test-'+suffix+'@example.invalid',full_name:'Test Phan '+suffix,fan_since:'2020',is_season_ticket_holder:false,seating_section:null,why_fan:'Test record only',favorite_memory:'Test memory',favorite_player:'Test player',favorite_podcast_moment:'Test podcast moment',adult_confirmed:true,consent_confirmed:true,status:'New',submitted_season:'2026-27',is_test:true,admin_notes:'PRIVATE TEST — delete before public launch'};
  var res=await dcSupabase.from('phan_central_nominations').insert(sample);if(res.error)throw res.error;feedback('Test nomination added.');await pcLoad();
