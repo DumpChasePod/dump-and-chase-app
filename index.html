@@ -5672,8 +5672,26 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcNominationForm label{display:block;font-size:13px;font-weight:700;margin-bottom:15px}
 #pcNominationForm label>span{color:#dcb3fb}
 #pcNominationForm input:not([type=checkbox]),#pcNominationForm select,#pcNominationForm textarea{display:block;width:100%;box-sizing:border-box;border-radius:9px;border:1px solid #55516c;background:#151b28;color:#fff;padding:12px;font-size:16px;margin-top:7px}
-#pcNominationForm .pc-consent{display:flex;align-items:flex-start;gap:10px;font-weight:500;line-height:1.45}
-#pcNominationForm .pc-consent input{margin-top:3px;flex:none}
+/* Explicit columns override older app label/checkbox layout rules. */
+#pcNominationForm label.pc-consent{display:grid!important;grid-template-columns:22px minmax(0,1fr)!important;align-items:start!important;column-gap:12px!important;width:100%!important;box-sizing:border-box!important;margin:17px 0!important;white-space:normal!important;text-align:left!important;font-weight:500;line-height:1.5}
+#pcNominationForm label.pc-consent input[type="checkbox"]{display:block!important;position:static!important;width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;margin:2px 0 0!important;padding:0!important;flex:none!important;accent-color:#a67adf;justify-self:start}
+#pcNominationForm label.pc-consent span{display:block!important;min-width:0!important;width:auto!important;overflow-wrap:break-word!important;white-space:normal!important;color:inherit!important}
+#pcNominationForm .pc-choice-field{border:0;padding:0;margin:0 0 15px;min-width:0}
+#pcNominationForm .pc-choice-field legend{font-size:13px;font-weight:700;margin:0 0 9px;padding:0;color:inherit}
+#pcNominationForm .pc-choice-field legend span{color:#dcb3fb}
+#pcNominationForm .pc-choice-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#pcNominationForm label.pc-choice{display:flex!important;position:relative;justify-content:center;align-items:center;gap:7px;margin:0!important;min-width:0;min-height:45px;padding:9px;border-radius:10px;border:1px solid #55516c;background:#151b28;color:#f4f3f9;font-size:14px;font-weight:750;cursor:pointer;box-sizing:border-box}
+#pcNominationForm label.pc-choice:has(input:checked){border:2px solid #b994f5;background:#463062;box-shadow:0 0 0 1px rgba(178,131,239,.24) inset}
+#pcNominationForm label.pc-choice > span:last-child{color:#fff!important}
+#pcNominationForm label.pc-choice:focus-within{outline:2px solid #b994f5;outline-offset:2px}
+#pcNominationForm .pc-choice input[type="radio"]{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;left:50%;top:50%;margin:0!important;pointer-events:none}
+#pcNominationForm .pc-choice-mark{display:none!important;color:#e7d6ff!important;font-weight:900}
+#pcNominationForm label.pc-choice:has(input:checked) .pc-choice-mark{display:inline!important}
+#pcThankYouView{z-index:13002}
+.pc-thanks-content{width:100%;max-width:500px;margin:auto;padding:24px 22px calc(28px + env(safe-area-inset-bottom));text-align:center;box-sizing:border-box}
+.pc-thanks-content h2{font-size:27px;margin:12px 0}.pc-thanks-content p{color:#bac5d7;font-size:15px;line-height:1.6}
+.pc-thanks-icon{width:62px;height:62px;border-radius:50%;background:#50366d;color:#e4d4ff;font-size:38px;font-weight:900;display:grid;place-items:center;margin:0 auto}
+.pc-thanks-content .pc-primary{margin-top:26px}
 .pc-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .pc-profile-backdrop{position:fixed;inset:0;z-index:13002;background:#000b;display:flex;align-items:flex-end;justify-content:center}
 .pc-profile-content{background:#171b2b;color:white;border-radius:20px 20px 0 0;max-height:90dvh;overflow-y:auto;padding:18px 16px calc(20px + env(safe-area-inset-bottom));max-width:700px;width:100%;box-sizing:border-box}
@@ -7047,7 +7065,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
       <label>What's your full name? <span>*</span><input name="full_name" maxlength="120" required></label>
       <label>What's your email address? <span>*</span><input name="email" type="email" maxlength="254" autocomplete="email" required></label>
       <label>How long have you been a Youngstown Phantoms fan? <span>*</span><input name="fan_since" maxlength="300" required></label>
-      <label>Are you a Phantoms season ticket holder? <span>*</span><select name="is_season_ticket_holder" required><option value="">Choose one</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+      <fieldset class="pc-choice-field"><legend>Are you a Phantoms season ticket holder? <span>*</span></legend><div class="pc-choice-row"><label class="pc-choice"><input type="radio" name="is_season_ticket_holder" value="yes" required><span class="pc-choice-mark" aria-hidden="true">✓</span><span>Yes</span></label><label class="pc-choice"><input type="radio" name="is_season_ticket_holder" value="no" required><span class="pc-choice-mark" aria-hidden="true">✓</span><span>No</span></label></div></fieldset>
       <label id="pcSectionField" hidden>What section do you sit in? (optional)<input name="seating_section" maxlength="100"></label>
       <label>Why are you a Youngstown Phantoms fan? <span>*</span><textarea name="why_fan" rows="3" maxlength="4000" required></textarea></label>
       <label>What's your favorite Phantoms memory? <span>*</span><textarea name="favorite_memory" rows="3" maxlength="4000" required></textarea></label>
@@ -7055,14 +7073,15 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
       <label>How long have you been listening to the Dump &amp; Chase Podcast? <span>*</span><input name="podcast_listener_since" maxlength="300" required></label>
       <label>What's your favorite moment from the Dump &amp; Chase Podcast? <span>*</span><textarea name="favorite_podcast_moment" rows="3" maxlength="4000" required></textarea></label>
       <label>Upload a photo of yourself (optional, up to 5 MB)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
-      <label class="pc-consent"><input type="checkbox" name="adult_confirmed" required> I confirm that I am at least 18 years old.</label>
-      <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required> I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app as part of Phan of the Week.</label>
+      <label class="pc-consent"><input type="checkbox" name="adult_confirmed" required><span>I confirm that I am at least 18 years old.</span></label>
+      <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required><span>I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app as part of Phan of the Week.</span></label>
       <div class="pc-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div id="pcSubmissionFeedback" role="status" aria-live="polite"></div>
       <button id="pcSubmitNomination" type="submit" class="pc-primary">SUBMIT NOMINATION</button>
     </form>
   </div>
 </section>
+<section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Nomination received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>Thank You!</h2><p>Your nomination has been received by the Dump &amp; Chase Podcast.</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
 <div id="pcProfileSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseProfile()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseProfile()" aria-label="Close profile">✕</button><div id="pcProfileBody"></div></div></div>
 <nav class="bottomnav nav-v200">
   <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
@@ -9656,7 +9675,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v686</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v687</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -14853,7 +14872,7 @@ document.addEventListener('DOMContentLoaded',function(){
 window.addEventListener('offline',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);});
 window.addEventListener('online',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);try{refreshLiveChatAvailability();}catch(_){}});
 </script>
-<script id="pcAdminV686">
+<script id="pcAdminV687">
 /* Phan Central private Admin phase: do not expose client-side public data flows. */
 (function(){
 'use strict';
@@ -15005,7 +15024,7 @@ window.pcCreateTest=async function(){if(!(await verified())){feedback('Admin ses
  }catch(e){feedback('Test creation failed: '+(e.message||e));}};
 })();
 </script>
-<script id="pcPublicV686">
+<script id="pcPublicV687">
 (function(){'use strict';
 var feed=[], preview=false, currentFeed=null;
 var $=id=>document.getElementById(id);
@@ -15028,7 +15047,7 @@ window.pcOpenPublic=async function(adminPreview){
  $('pcPublicView').hidden=false;$('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
  try{render(await api({action:'feed'}));}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
 };
-window.pcClosePublic=function(){$('pcPublicView').hidden=true;$('pcProfileSheet').hidden=true;};
+window.pcClosePublic=function(){$('pcPublicView').hidden=true;$('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;};
 window.pcCloseProfile=function(){$('pcProfileSheet').hidden=true;};
 function openProfile(id){var w=feed.find(x=>x.id===id);if(!w)return;var n=w.profile;
 var headings=[['Phantoms Fan Since',n.fan_since],['Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No'],['Seating Section',n.seating_section||'Not provided'],['Why I’m a Phantoms Fan',n.why_fan],['Favorite Phantoms Memory',n.favorite_memory],['All-Time Favorite Player',n.favorite_player],['How Long I’ve Listened to the Dump & Chase Podcast',n.podcast_listener_since],['Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment]];
@@ -15036,7 +15055,8 @@ $('pcProfileBody').innerHTML='<h2>'+safe(n.full_name)+'</h2>'+image(n)+'<p class
 }
 $('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcBeginNomination')){$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
 window.pcCloseNomination=function(){$('pcNominationView').hidden=true;};
-$('pcNominationForm').elements.is_season_ticket_holder.addEventListener('change',e=>{$('pcSectionField').hidden=e.target.value!=='yes';});
+window.pcReturnFromThanks=function(){$('pcThankYouView').hidden=true;$('pcNominationView').hidden=true;};
+$('pcNominationForm').addEventListener('change',e=>{if(e.target.name==='is_season_ticket_holder'){$('pcSectionField').hidden=e.target.value!=='yes';if(e.target.value!=='yes')$('pcNominationForm').elements.seating_section.value='';}});
 function fileBase64(file){return new Promise((resolve,reject)=>{var r=new FileReader();r.onerror=()=>reject(Error('Cannot read photo'));r.onload=()=>resolve(String(r.result).split(',')[1]);r.readAsDataURL(file);});}
 $('pcNominationForm').addEventListener('submit',async e=>{
  e.preventDefault();var form=e.currentTarget,btn=$('pcSubmitNomination'),output=$('pcSubmissionFeedback');if(!form.reportValidity())return;
@@ -15046,7 +15066,7 @@ $('pcNominationForm').addEventListener('submit',async e=>{
  try{
   var body={action:'submit',test:preview,full_name:d.get('full_name'),email:d.get('email'),fan_since:d.get('fan_since'),is_season_ticket_holder:d.get('is_season_ticket_holder')==='yes',seating_section:d.get('seating_section'),why_fan:d.get('why_fan'),favorite_memory:d.get('favorite_memory'),favorite_player:d.get('favorite_player'),podcast_listener_since:d.get('podcast_listener_since'),favorite_podcast_moment:d.get('favorite_podcast_moment'),adult_confirmed:d.get('adult_confirmed')==='on',consent_confirmed:d.get('consent_confirmed')==='on',website:d.get('website')};
   if(photo&&photo.size)body.photo={mime:photo.type,base64:await fileBase64(photo)};
-  await api(body);form.reset();$('pcSectionField').hidden=true;output.textContent='Your nomination has been received. Thank you!';
+  await api(body);form.reset();$('pcSectionField').hidden=true;output.textContent='';$('pcNominationView').hidden=true;$('pcThankYouView').hidden=false;
  }catch(err){output.textContent=err.message||'Submission failed';}
  finally{btn.disabled=false;}
 });
