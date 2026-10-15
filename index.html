@@ -5697,6 +5697,30 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 .pc-profile-content{background:#171b2b;color:white;border-radius:20px 20px 0 0;max-height:90dvh;overflow-y:auto;padding:18px 16px calc(20px + env(safe-area-inset-bottom));max-width:700px;width:100%;box-sizing:border-box}
 .pc-profile-close{float:right}.pc-profile-content h3{margin:13px 0}.pc-profile-answer{border-top:1px solid #393449;padding:12px 0;white-space:pre-wrap}.pc-profile-answer b{display:block;color:#d3b5ff;margin-bottom:5px}
 </style>
+<style id="pcIntegrationV688">
+/* Phan Central adopts the same dark card, muted purple, and subtle divider language as the rest of Dump & Chase. */
+.pc-public-view{background:#0b1018;color:var(--text,#f4f3f9)}
+.pc-public-head{background:#121825;border-bottom:1px solid rgba(173,134,229,.24);font-weight:850}
+.pc-public-head button,.pc-profile-close{background:#202638;border:1px solid rgba(173,134,229,.26)}
+.pc-public-scroll{box-sizing:border-box;max-width:700px;padding:16px 14px calc(28px + env(safe-area-inset-bottom));}
+.pc-feature{background:#151e2d;border:1px solid rgba(173,134,229,.28);border-radius:14px;box-shadow:none}
+.pc-feature .pc-muted{color:#b9bfd0}
+.pc-primary{background:#68469c;border:1px solid #805cb1;border-radius:11px;min-height:44px;font-weight:800}
+.pc-primary:active{filter:brightness(1.12)}
+.pc-archive-card{background:#172030;border:1px solid rgba(173,134,229,.23);border-radius:12px;min-height:0}
+.pc-archive-card:active{background:#242b40}
+.pc-portrait{background:linear-gradient(145deg,#33254d,#171e2e);border:1px solid rgba(173,134,229,.16)}
+.pc-public-scroll h2,.pc-archive-title{letter-spacing:-.02em}
+.pc-launch-controls{margin:12px 0 16px;display:grid;gap:9px}
+.pc-launch-control{background:#172030;border:1px solid rgba(173,134,229,.24);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pc-launch-control>div{min-width:0;display:grid;gap:4px}
+.pc-launch-control strong{font-size:12px;letter-spacing:.04em}
+.pc-launch-control small{font-size:11px;color:#aab5c5}
+.pc-launch-control button{flex:none;min-width:88px;margin:0}
+.pc-launch-control .pc-setting-on{border-color:#a984d5;color:#efe7ff;background:#49346a}
+.pc-launch-controls>.admin-muted{margin:2px 2px 0;font-size:11px;line-height:1.5}
+@media(max-width:380px){.pc-public-scroll{padding-left:12px;padding-right:12px}.pc-feature{padding:12px}.pc-archive-grid{gap:8px}.pc-archive-card{padding:7px}}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9675,7 +9699,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v687</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v688</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10047,7 +10071,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="eyebrow">PHAN CENTRAL · PRIVATE DEVELOPMENT</div>
     <h3>Nomination Management</h3>
     <p class="admin-muted">Admin only. Public Phan Central and fan submissions are disabled. Test nominations never appear publicly.</p>
-    <div class="pc-switches"><span id="pcVisibility">Visibility: checking</span><span id="pcSubmissions">Submissions: checking</span></div>
+    <div class="pc-launch-controls" aria-label="Phan Central launch controls">
+ <div class="pc-launch-control"><div><strong>PHAN CENTRAL PAGE</strong><small id="pcVisibility">Checking visibility…</small></div><button type="button" id="pcVisibilityButton" class="admin-mini-btn" onclick="pcChangeSetting('public_visible')" disabled>CHECKING</button></div>
+ <div class="pc-launch-control"><div><strong>PUBLIC NOMINATIONS</strong><small id="pcSubmissions">Checking submissions…</small></div><button type="button" id="pcSubmissionsButton" class="admin-mini-btn" onclick="pcChangeSetting('submissions_open')" disabled>CHECKING</button></div>
+ <p class="admin-muted">These two controls are independent. Opening nominations takes effect when the page is accessible.</p>
+ </div>
     <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcOpenPublic(true)">PREVIEW PHAN CENTRAL PAGE</button><button type="button" class="admin-mini-btn" onclick="pcLoad()">REFRESH</button><button type="button" class="admin-mini-btn" onclick="pcCreateTest()">CREATE TEST NOMINATION</button></div>
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
     <section class="pc-winners"><h3>Private Winner Testing</h3><p class="admin-muted">TEST ONLY: selecting and publishing here never changes the public app.</p><div id="pcWinnersList">Loading winner history…</div></section>
@@ -14872,7 +14900,7 @@ document.addEventListener('DOMContentLoaded',function(){
 window.addEventListener('offline',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);});
 window.addEventListener('online',function(){if(typeof window.dcSetReconnectMode==='function')window.dcSetReconnectMode(true);try{refreshLiveChatAvailability();}catch(_){}});
 </script>
-<script id="pcAdminV687">
+<script id="pcAdminV688">
 /* Phan Central private Admin phase: do not expose client-side public data flows. */
 (function(){
 'use strict';
@@ -14896,9 +14924,35 @@ window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading privat
  if(!(await verified()))throw Error('Admin session expired. Please unlock Admin again.');
  var results=await Promise.all([dcSupabase.from('phan_central_settings').select('*').eq('id',1).single(),dcSupabase.from('phan_central_nominations').select('*').order('created_at',{ascending:false}).limit(500),dcSupabase.from('phan_central_winners').select('*').order('created_at',{ascending:false}).limit(150)]);
  if(results[0].error)throw results[0].error;if(results[1].error)throw results[1].error;if(results[2].error)throw results[2].error;settings=results[0].data;
- el('pcVisibility').textContent='PUBLIC VISIBILITY: '+(results[0].data.public_visible?'ON':'OFF');el('pcSubmissions').textContent='PUBLIC SUBMISSIONS: '+(results[0].data.submissions_open?'ON':'OFF');
+ pcRenderSettings();
  rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
  }catch(e){feedback('Could not load nominations: '+(e.message||e));}finally{busy=false;}};
+function pcRenderSettings(){
+ if(!settings)return;
+ [['public_visible','pcVisibility','pcVisibilityButton'],['submissions_open','pcSubmissions','pcSubmissionsButton']].forEach(function(item){
+  var on=!!settings[item[0]],label=el(item[1]),button=el(item[2]);
+  if(label)label.textContent=on?'CURRENTLY ON':'CURRENTLY OFF';
+  if(button){button.disabled=false;button.textContent=on?'TURN OFF':'TURN ON';button.classList.toggle('pc-setting-on',on);button.setAttribute('aria-pressed',String(on));}
+ });
+}
+window.pcChangeSetting=async function(setting){
+ if(!settings||!['public_visible','submissions_open'].includes(setting))return;
+ if(!(await verified())){feedback('Admin session expired.');return;}
+ var next=!settings[setting];
+ var label=setting==='public_visible'?'Phan Central page visibility':'public nomination submissions';
+ var prompt=next?('Turn ON '+label+'? This changes the live public service.'):('Turn OFF '+label+'?');
+ if(!confirm(prompt))return;
+ if(next&&setting==='public_visible'&&!confirm('Confirm Phan Central public launch: make the fifth navigation section available to all listeners?'))return;
+ var btn=el(setting==='public_visible'?'pcVisibilityButton':'pcSubmissionsButton');
+ if(btn)btn.disabled=true;
+ try{
+  var r=await pcApi({action:'settings',setting:setting,enabled:next,launch_approved:next&&setting==='public_visible'});
+  settings=Object.assign({},settings,r.settings||{});
+  pcRenderSettings();
+  if(typeof window.pcRefreshNav==='function')await window.pcRefreshNav();
+  feedback(label+' is now '+(next?'ON':'OFF')+'.');
+ }catch(e){feedback('Setting could not be changed: '+(e.message||e));pcRenderSettings();}
+};
 window.pcFilter=function(v){currentFilter=v;el('pcFilters').querySelectorAll('[data-pc-filter]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-pc-filter')===v);});render();};
 window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;var body=el('pcDetailFields');
  body.innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]);return '<label class="pc-field">'+f[1]+(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">')+'</label>';}).join('')+'</div>'+
@@ -15024,7 +15078,7 @@ window.pcCreateTest=async function(){if(!(await verified())){feedback('Admin ses
  }catch(e){feedback('Test creation failed: '+(e.message||e));}};
 })();
 </script>
-<script id="pcPublicV687">
+<script id="pcPublicV688">
 (function(){'use strict';
 var feed=[], preview=false, currentFeed=null;
 var $=id=>document.getElementById(id);
@@ -15045,7 +15099,7 @@ window.pcOpenPublic=async function(adminPreview){
  preview=!!adminPreview;
  if(preview && !(await getAdmin()))return;
  $('pcPublicView').hidden=false;$('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
- try{render(await api({action:'feed'}));}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
+ try{render(await api({action:'feed',preview:preview}));}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
 };
 window.pcClosePublic=function(){$('pcPublicView').hidden=true;$('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;};
 window.pcCloseProfile=function(){$('pcProfileSheet').hidden=true;};
@@ -15071,6 +15125,7 @@ $('pcNominationForm').addEventListener('submit',async e=>{
  finally{btn.disabled=false;}
 });
 async function initialize(){try{var d=await api({action:'feed'});$('phanCentralNav').hidden=!d.visible;}catch(e){$('phanCentralNav').hidden=true;}}
+window.pcRefreshNav=initialize;
 window.addEventListener('load',initialize);
 })();
 </script>
