@@ -5921,6 +5921,13 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcList > #pcDetail{width:100%;min-width:0;box-sizing:border-box;margin:0 0 8px;}
 #pcList > .pc-entry[aria-expanded="true"]{border-color:#a06bd1;background:linear-gradient(150deg,#1b2638,#141d2c);}
 </style>
+<style id="v694-phan-final">
+#adminPhanCentralPanel .pc-cleanup-section{border:1px solid rgba(162,106,245,.20);border-radius:14px;padding:13px;margin-top:18px;background:linear-gradient(130deg,#151e2a,#0b101b)}
+#adminPhanCentralPanel .pc-cleanup-section h3{margin:0 0 6px;font-size:15px}
+#adminPhanCentralPanel .pc-cleanup-section .admin-muted{font-size:12px;line-height:1.5}
+#adminPhanCentralPanel .pc-entry[aria-expanded="true"]{border-color:rgba(167,114,249,.58);background:linear-gradient(120deg,#242139,#171d2a)}
+#adminPhanCentralPanel .pc-entry{scroll-margin-top:130px}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9917,7 +9924,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v693</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v694</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10286,17 +10293,17 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 
 <div class="admin-section-panel" id="adminPhanCentralPanel" role="tabpanel" aria-labelledby="adminTabPhanCentral" hidden>
   <div class="pc-admin">
-    <div class="eyebrow">PHAN CENTRAL · PRIVATE DEVELOPMENT</div>
+    <div class="eyebrow">PHAN CENTRAL · ADMIN</div>
     <h3>Nomination Management</h3>
-    <p class="admin-muted">Admin only. Public Phan Central and fan submissions are disabled. Test nominations never appear publicly.</p>
+    <p class="admin-muted">Manage nominations, featured listeners, and launch controls. Test entries stay separate from production.</p>
     <div class="pc-launch-controls" aria-label="Phan Central launch controls">
  <div class="pc-launch-control"><div><strong>PHAN CENTRAL PAGE</strong><small id="pcVisibility">Checking visibility…</small></div><button type="button" id="pcVisibilityButton" class="admin-mini-btn" onclick="pcChangeSetting('public_visible')" disabled>CHECKING</button></div>
  <div class="pc-launch-control"><div><strong>PUBLIC NOMINATIONS</strong><small id="pcSubmissions">Checking submissions…</small></div><button type="button" id="pcSubmissionsButton" class="admin-mini-btn" onclick="pcChangeSetting('submissions_open')" disabled>CHECKING</button></div>
  <p class="admin-muted">These two controls are independent. Opening nominations takes effect when the page is accessible.</p>
  </div>
-    <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcOpenPublic(true)">PREVIEW PHAN CENTRAL PAGE</button><button type="button" class="admin-mini-btn" onclick="pcLoad()">REFRESH</button><button type="button" class="admin-mini-btn" onclick="pcCreateTest()">CREATE TEST NOMINATION</button></div>
+    <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcOpenPublic(true)">PREVIEW PHAN CENTRAL PAGE</button><button type="button" class="admin-mini-btn" onclick="pcLoad()">REFRESH</button></div>
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
-    <section class="pc-winners"><h3>Private Winner Testing</h3><p class="admin-muted">TEST ONLY: selecting and publishing here never changes the public app.</p><div id="pcWinnersList">Loading winner history…</div></section>
+    <section class="pc-winners"><h3>Featured Listener Management</h3><div id="pcWinnersList">Loading winner history…</div></section>
     <div class="pc-actions" id="pcFilters">
       <button class="admin-mini-btn active" data-pc-filter="all" onclick="pcFilter('all')">ALL</button>
       <button class="admin-mini-btn" data-pc-filter="New" onclick="pcFilter('New')">NEW</button>
@@ -10308,10 +10315,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <section id="pcDetail" class="pc-detail" hidden>
       <h3>Edit nomination</h3><div id="pcDetailFields"></div>
       <section class="pc-photo"><h3>Fan Photo (Private)</h3><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><label class="pc-field">Upload JPEG, PNG or WebP, maximum 5 MB<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">UPLOAD PRIVATE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcRemovePhoto()" id="pcPhotoRemove" disabled>REMOVE PHOTO</button></div><label class="pc-field">Photo position horizontal <input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Photo position vertical <input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></section>
-      <section class="pc-winner-tools"><h3>Winner Selection · Test Mode</h3><p class="admin-muted">Only Eligible TEST nominations can be selected here. Public winners are blocked until launch.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(false)">SELECT FOR PUBLISH NOW</button><label class="pc-field">Schedule date & time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE TEST WINNER</button></div><p class="admin-muted">After selecting for Publish Now, use PUBLISH NOW in the private winner list above.</p></section>
+      <section class="pc-winner-tools"><h3>Winner Selection</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible nominees with consent can be selected. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(false)">SELECT FOR PUBLISH NOW</button><label class="pc-field">Schedule date & time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE WINNER</button></div><p class="admin-muted">After selecting for Publish Now, use PUBLISH NOW in the private winner list above.</p></section>
       <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button></div>
-      <p class="admin-muted">Private test winner tools only. Public controls remain unavailable.</p>
+      
     </section>
+    <section class="pc-cleanup-section"><h3>Test Data Cleanup</h3><p class="admin-muted">Remove fictional nominations, test winner history, and uploaded test photos. Production records and launch settings are preserved.</p><div class="pc-actions"><button type="button" class="admin-mini-btn" id="pcCleanupTests" onclick="pcCleanupTests()">DELETE ALL TEST RECORDS</button></div></section>
     <div class="admin-status" id="pcFeedback" aria-live="polite"></div>
   </div>
 </div>
@@ -15134,6 +15142,7 @@ function render(){
  var list=el('pcList');if(!list)return;
  var detail=el('pcDetail');if(detail&&list.contains(detail)){detail.hidden=true;list.after(detail);selected=null;}
  var filtered=rows.filter(function(r){return currentFilter==='all'||r.status===currentFilter;});
+ filtered.sort(function(a,b){return (a.status==='New'?0:1)-(b.status==='New'?0:1)||new Date(b.created_at||0)-new Date(a.created_at||0);});
  el('pcSummary').textContent=rows.length+' total nominations · '+rows.filter(function(x){return x.status==='New';}).length+' new · '+rows.filter(function(x){return x.is_test;}).length+' test';
  if(!filtered.length){list.innerHTML='<div class="admin-muted">No nominations in this category.</div>';return;}
  list.innerHTML=filtered.map(function(r){return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(r.fan_since)+' · '+(r.is_season_ticket_holder?'STH':'Non-STH')+' · '+esc(r.submitted_season)+'</small></span><span><em>'+esc(r.status)+(r.is_test?' · TEST':'')+'</em></span></button>';}).join('');
@@ -15180,6 +15189,7 @@ window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||n
  '<p class="admin-muted">Adult and consent confirmed: '+(selected.adult_confirmed&&selected.consent_confirmed?'YES':'NO')+' · Photo: '+(selected.photo_path?(selected.photo_approved?'approved':'awaiting approval'):'none')+' · '+(selected.is_test?'TEST DATA':'REAL SUBMISSION')+'</p>';
  var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(button){return button.getAttribute('data-pc-id')===id;});
  el('pcList').querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
+ var modeNote=el('pcWinnerModeNote');if(modeNote)modeNote.textContent=selected.is_test?'Private test nomination — winner is never shown publicly.':'Production nomination — will appear publicly when published.';
  if(anchor)anchor.after(detail);
  detail.hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;detail.scrollIntoView({behavior:'smooth',block:'nearest'});};
 window.pcClose=function(){selected=null;var detail=el('pcDetail');detail.hidden=true;var list=el('pcList');if(list){list.querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded','false');});if(list.contains(detail))list.after(detail);}};
@@ -15194,11 +15204,10 @@ window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedb
 
 function pcRenderWinners(){
  var dest=el('pcWinnersList');if(!dest)return;
- var tests=winners.filter(function(w){return w.is_test;});
- if(!tests.length){dest.innerHTML='<p class="admin-muted">No test winners selected yet.</p>';return;}
- dest.innerHTML=tests.map(function(w){var n=rows.find(function(x){return x.id===w.nomination_id;});
+ if(!winners.length){dest.innerHTML='<p class="admin-muted">No featured listeners selected yet.</p>';return;}
+ dest.innerHTML=winners.map(function(w){var n=rows.find(function(x){return x.id===w.nomination_id;});
   var caption=w.feature_at?' · '+esc(new Date(w.feature_at).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'}))+' ET':'';
-  return '<div class="pc-winner-entry"><b>'+esc(n?n.full_name:'Nomination '+w.nomination_id)+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(w.season)+caption+(w.failure_reason?' · '+esc(w.failure_reason):'')+'</small><div class="pc-actions">'+
+  return '<div class="pc-winner-entry"><b>'+esc(n?n.full_name:'Nomination '+w.nomination_id)+'</b><small>'+esc(w.state.toUpperCase())+' · '+(w.is_test?'TEST · ':'')+esc(w.season)+caption+(w.failure_reason?' · '+esc(w.failure_reason):'')+'</small><div class="pc-actions">'+
    (w.state==='scheduled'?'<button type="button" class="admin-mini-btn" data-pc-publish="'+esc(w.id)+'">PUBLISH NOW</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL SELECTION</button>':'')+
    (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+'</div></div>';
  }).join('');
@@ -15215,8 +15224,8 @@ async function pcApi(payload){
 }
 async function pcWinnerAction(action,winnerId){
  var verb=action==='publish'?'publish immediately':action==='unpublish'?'unpublish':'cancel';
- if(!confirm('Confirm '+verb+' for this private TEST winner?'))return;
- try{await pcApi({action:action,winner_id:winnerId});feedback('Test winner updated.');await pcLoad();}catch(e){feedback('Winner action failed: '+(e.message||e));}
+ if(!confirm('Confirm '+verb+' for this winner?'))return;
+ try{await pcApi({action:action,winner_id:winnerId});feedback('Winner updated.');await pcLoad();}catch(e){feedback('Winner action failed: '+(e.message||e));}
 }
 function easternParts(date){var ps=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);var o={};ps.forEach(function(p){o[p.type]=p.value;});return o;}
 function pcEasternUTC(value){
@@ -15228,15 +15237,15 @@ function pcEasternUTC(value){
 }
 window.pcSelectWinner=async function(scheduled){
  if(!selected)return;
- if(!selected.is_test){feedback('Real winners are locked until the public launch.');return;}
- if(selected.status!=='Eligible'){feedback('Set this test nomination to Eligible and save first.');return;}
+ if(!selected.is_test&&!settings?.public_visible){feedback('Enable the Phan Central page before selecting a production winner.');return;}
+ if(selected.status!=='Eligible'){feedback('Set this nomination to Eligible and save first.');return;}
  if(selected.photo_path&&!selected.photo_approved){feedback('Approve the uploaded photo or remove it before selection.');return;}
  try{
   var featureAt=scheduled?pcEasternUTC(el('pcScheduleTime').value):null;
   var season=settings?.active_season||'2026-27';
-  if(!confirm('Select '+selected.full_name+' as a TEST winner for '+season+(scheduled?' at '+el('pcScheduleTime').value+' ET':' (awaiting Publish Now)')+'?'))return;
+  if(!confirm('Select '+selected.full_name+' as a '+(selected.is_test?'TEST':'PRODUCTION')+' winner for '+season+(scheduled?' at '+el('pcScheduleTime').value+' ET':' (awaiting Publish Now)')+'?'))return;
   await pcApi({action:'select',nomination_id:selected.id,season:season,feature_at:featureAt});
-  feedback('Test winner selected. '+(scheduled?'Scheduled for automatic publication.':'Use PUBLISH NOW in the winner list.'));
+  feedback('Winner selected. '+(scheduled?'Scheduled for automatic publication.':'Use PUBLISH NOW in the winner list.'));
   pcClose();await pcLoad();
  }catch(e){feedback('Could not select test winner: '+(e.message||e));}
 };
@@ -15294,6 +15303,16 @@ window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
  selected=res.data;await dcSupabase.storage.from('phan-central-private').remove([path]);pcRenderPhoto();feedback('Photo removed.');}catch(e){feedback('Remove failed: '+(e.message||e));}
 };
 
+window.pcCleanupTests=async function(){
+ if(!(await verified())){feedback('Admin session expired.');return;}
+ var count=rows.filter(function(n){return n.is_test;}).length,history=winners.filter(function(w){return w.is_test;}).length;
+ if(!count&&!history){feedback('No test records remain.');return;}
+ if(!confirm('Delete '+count+' fictional nominations and '+history+' test winner records, including all their stored photos? This cannot be undone.'))return;
+ var btn=el('pcCleanupTests');if(btn)btn.disabled=true;
+ try{var result=await pcApi({action:'cleanup_tests'});feedback('Cleanup completed: '+result.nominations_removed+' test nominations and '+result.winners_removed+' test winner records removed.');pcClose();await pcLoad();}
+ catch(e){feedback('Cleanup failed: '+(e.message||e));}
+ finally{if(btn)btn.disabled=false;}
+};
 window.pcCreateTest=async function(){if(!(await verified())){feedback('Admin session expired.');return;}if(!confirm('Create a private TEST nomination with fictional information?'))return;
  try{var suffix=Date.now().toString(36),sample={email:'test-'+suffix+'@example.invalid',full_name:'Test Phan '+suffix,fan_since:'2020',is_season_ticket_holder:false,seating_section:null,why_fan:'Test record only',favorite_memory:'Test memory',favorite_player:'Test player',favorite_podcast_moment:'Test podcast moment',podcast_listener_since:'Since 2021',adult_confirmed:true,consent_confirmed:true,status:'New',submitted_season:'2026-27',is_test:true,admin_notes:'PRIVATE TEST — delete before public launch'};
  var res=await dcSupabase.from('phan_central_nominations').insert(sample);if(res.error)throw res.error;feedback('Test nomination added.');await pcLoad();
@@ -15311,10 +15330,9 @@ function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Pho
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
-html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first featured Dump &amp; Chase Podcast listener is coming soon.</p></section>';
+html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
 html+='<div class="pc-section-label pc-section-label-second">JOIN PHAN CENTRAL</div><section class="pc-feature pc-nominate-card"><strong>Think you should be Phan of the Week?</strong><p class="pc-muted">Tell the Dump &amp; Chase Podcast your story.</p>'+(d.submissions_open||preview?'<button class="pc-primary" id="pcBeginNomination">SUBMIT YOUR NOMINATION</button>':'<p class="pc-muted">Nominations are currently closed.</p>')+'</section>';
-var archive=feed.filter(x=>x.state==='archived'),seasons=[...new Set(archive.map(x=>x.season))].sort().reverse();html+='<div class="pc-section-label pc-archive-title">PREVIOUS PHANS OF THE WEEK</div>';
-if(!archive.length)html+='<div class="pc-archive-empty">Featured listeners from previous weeks will appear here.</div>';
+var archive=feed.filter(x=>x.state==='archived'),seasons=[...new Set(archive.map(x=>x.season))].sort().reverse();if(archive.length)html+='<div class="pc-section-label pc-archive-title">PREVIOUS PHANS OF THE WEEK</div>';
 seasons.forEach(season=>{html+='<h3 class="pc-season-label">'+safe(season)+' SEASON</h3><div class="pc-archive-grid">'+archive.filter(x=>x.season===season).map(card).join('')+'</div>';});
 target.innerHTML=html;
 }
