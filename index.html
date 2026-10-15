@@ -5817,7 +5817,7 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcThankYouView .pc-thanks-content{min-height:0;}
 @media(max-width:380px){#pcPublicView .pc-feature h2{font-size:18px;}}
 </style>
-<style id="v691-compact-nav-design">
+<style id="v692-compact-nav-design">
 /* Five destinations in the established dark/purple theme. Orange indicates active. */
 .bottomnav.nav-v200{
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -5907,6 +5907,14 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 @media(min-width:701px){
   .bottomnav.nav-v200 .navitem{min-height:51px}
 }
+</style>
+<style id="v692-phan-header-fix">
+/* Global section{margin-top:28px} must not offset fixed Phan Central pages. */
+#pcPublicView,#pcNominationView,#pcThankYouView{margin:0!important;inset:0!important;}
+/* Match the existing five-tab PHAN flag rather than a separate star symbol. */
+#pcPublicView .pc-head-flag{display:inline-flex;flex:0 0 28px;width:28px;height:30px;align-items:center;justify-content:center;color:#ab75fa;}
+#pcPublicView .pc-head-flag svg{display:block;width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round;}
+#pcPublicView .pc-head-flag svg text{fill:currentColor;stroke:none;font-family:Arial,sans-serif;font-size:6px;font-weight:900;letter-spacing:-.15px;}
 </style>
 </head>
 <body>
@@ -7265,7 +7273,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </div>
 
 <section id="pcPublicView" class="pc-public-view" hidden aria-label="Phan Central">
-  <div class="pc-public-head"><span class="pc-head-mark" aria-hidden="true">★</span><strong>Phan Central</strong><button type="button" id="pcClosePublicButton" onclick="pcClosePublic()" aria-label="Close Phan Central preview">✕</button></div>
+  <div class="pc-public-head"><span class="pc-head-mark pc-head-flag" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 22V3"/><path d="M4 4.3c5-2.2 9 2.2 16 0v12.3c-7 2.2-11-2.2-16 0Z"/><text x="12" y="11.75" text-anchor="middle">PHAN</text></svg></span><strong>Phan Central</strong><button type="button" id="pcClosePublicButton" onclick="pcClosePublic()" aria-label="Close Phan Central preview">✕</button></div>
   <div class="pc-public-scroll" id="pcPublicContent"><p>Loading Phan Central…</p></div>
 </section>
 <section id="pcNominationView" class="pc-public-view pc-form-view" hidden aria-label="Phan Central Nomination">
@@ -9887,7 +9895,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v691</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v692</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
