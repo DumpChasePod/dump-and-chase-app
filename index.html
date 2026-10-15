@@ -5817,6 +5817,97 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcThankYouView .pc-thanks-content{min-height:0;}
 @media(max-width:380px){#pcPublicView .pc-feature h2{font-size:18px;}}
 </style>
+<style id="v691-compact-nav-design">
+/* Five destinations in the established dark/purple theme. Orange indicates active. */
+.bottomnav.nav-v200{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  padding:4px 6px;
+  gap:1px;
+  border-radius:18px;
+  overflow:visible;
+  isolation:isolate;
+  background:linear-gradient(165deg,#172033,#0e1421 72%);
+}
+.bottomnav.nav-v200:has(#phanCentralNav:not([hidden])){
+  grid-template-columns:repeat(5,minmax(0,1fr));
+}
+.bottomnav.nav-v200 .navitem{
+  min-width:0;
+  min-height:49px;
+  padding:5px 1px 3px;
+  position:relative;
+  z-index:1;
+  background:transparent;
+  box-shadow:none;
+  color:#9ba4b7;
+  font-size:10px;
+  line-height:1.12;
+  border-radius:13px;
+}
+.bottomnav.nav-v200:has(#phanCentralNav:not([hidden])) .navitem{
+  font-size:9px;
+  padding:5px 1px 3px;
+}
+.bottomnav.nav-v200 .navitem.active{
+  background:transparent;
+  box-shadow:none;
+  color:#d3d8e1;
+}
+.bottomnav.nav-v200 .navitem .navicon{
+  color:#a56cff;
+  font-size:20px;
+  display:block;
+  margin-bottom:3px;
+  filter:none;
+  transition:color .18s ease,filter .18s ease;
+}
+.bottomnav.nav-v200 .navitem.active .navicon{
+  color:#ff994e;
+  filter:drop-shadow(0 0 5px rgba(255,145,64,.65)) drop-shadow(0 0 11px rgba(255,145,64,.27));
+}
+.bottomnav.nav-v200 .navitem-home .navicon svg{
+  width:28px;height:28px;
+}
+.bottomnav.nav-v200 .navitem-home{
+  transform:translateY(-3px);
+  overflow:visible;
+}
+/* The little raised dome is visible only in the five-item navigation. */
+.bottomnav.nav-v200:has(#phanCentralNav:not([hidden])) .navitem-home::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:62px;
+  height:32px;
+  left:50%;
+  top:-11px;
+  transform:translateX(-50%);
+  border-radius:40px 40px 0 0;
+  border-top:1px solid rgba(165,108,255,.55);
+  background:linear-gradient(180deg,#1d2035,#151b2b);
+  box-shadow:0 -3px 10px rgba(93,42,161,.13);
+  pointer-events:none;
+}
+.bottomnav.nav-v200 .navicon-phan-flag svg{
+  width:27px;
+  height:27px;
+}
+.bottomnav.nav-v200 .navicon-phan-flag svg text{
+  fill:currentColor;
+  stroke:none;
+  font-size:6px;
+  font-family:Arial,sans-serif;
+  font-weight:900;
+  letter-spacing:-.15px;
+}
+/* A compact bar keeps the existing mobile safe-area and keyboard behavior. */
+@media(max-width:700px){
+  .bottomnav.nav-v200{width:calc(100% - 16px)}
+}
+@media(min-width:701px){
+  .bottomnav.nav-v200 .navitem{min-height:51px}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7203,11 +7294,11 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 </section>
 <section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Nomination received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>Thank You!</h2><p>Your nomination has been received by the Dump &amp; Chase Podcast.</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
 <div id="pcProfileSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseProfile()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseProfile()" aria-label="Close profile">✕</button><div id="pcProfileBody"></div></div></div>
-<nav class="bottomnav nav-v200">
-  <button class="navitem active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
+<nav class="bottomnav nav-v200" aria-label="Main navigation">
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
-  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 7 4h10l3 1.5v5.2c0 4.5-2.8 7.9-8 10.3-5.2-2.4-8-5.8-8-10.3V5.5Z"/><path d="M7 4v2h10V4"/><text x="12" y="13.2" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>Phantoms HQ</button>
-  <button class="navitem" id="phanCentralNav" hidden aria-label="Phan Central" onclick="pcOpenPublic(false);setActive(this)"><span class="navicon">★</span>Phan Central</button>
+  <button class="navitem" id="phanCentralNav" hidden aria-label="Phan Central" onclick="pcOpenPublic(false);setActive(this)"><span class="navicon navicon-phan-flag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 22V3"/><path d="M4 4.3c5-2.2 9 2.2 16 0v12.3c-7 2.2-11-2.2-16 0Z"/><text x="12" y="11.75" text-anchor="middle">PHAN</text></svg></span>Phan Central</button>
+  <button class="navitem navitem-home active" aria-label="Home" onclick="goHome(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
+  <button class="navitem" aria-label="Phantoms HQ" onclick="openGameCenter();setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 7 4h10l3 1.5v5.2c0 4.5-2.8 7.9-8 10.3-5.2-2.4-8-5.8-8-10.3V5.5Z"/><path d="M7 4v2h10V4"/><text x="12" y="13.2" text-anchor="middle" class="nav-crest-text">YP</text></svg></span>HQ</button>
   <button class="navitem" aria-label="More" onclick="openSheet('more');setActive(this)"><span class="navicon navicon-more-plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.15 3.75h3.7v6.4h6.4v3.7h-6.4v6.4h-3.7v-6.4h-6.4v-3.7h6.4v-6.4Z"/></svg></span>More</button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -9796,7 +9887,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v690</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v691</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
