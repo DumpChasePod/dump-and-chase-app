@@ -5916,6 +5916,11 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcPublicView .pc-head-flag svg{display:block;width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round;}
 #pcPublicView .pc-head-flag svg text{fill:currentColor;stroke:none;font-family:Arial,sans-serif;font-size:6px;font-weight:900;letter-spacing:-.15px;}
 </style>
+<style id="v693-pc-admin-inline">
+/* V693: expanded nomination detail follows its own list entry. */
+#pcList > #pcDetail{width:100%;min-width:0;box-sizing:border-box;margin:0 0 8px;}
+#pcList > .pc-entry[aria-expanded="true"]{border-color:#a06bd1;background:linear-gradient(150deg,#1b2638,#141d2c);}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7637,6 +7642,18 @@ window.addEventListener('popstate',function(){
       dcVisualMinimizePlayer(closeIt);
       return;
     }
+    var pcView=document.getElementById('pcPublicView');
+    if(pcView&&!pcView.hidden&&pcView.classList.contains('pc-main-tab')){
+      var pcThanks=document.getElementById('pcThankYouView');
+      var pcForm=document.getElementById('pcNominationView');
+      var pcProfile=document.getElementById('pcProfileSheet');
+      if(pcProfile&&!pcProfile.hidden){if(typeof pcCloseProfile==='function')pcCloseProfile();}
+      else if(pcThanks&&!pcThanks.hidden){if(typeof pcReturnFromThanks==='function')pcReturnFromThanks();}
+      else if(pcForm&&!pcForm.hidden){if(typeof pcCloseNomination==='function')pcCloseNomination();}
+      if(typeof pcLeaveMainTab==='function')pcLeaveMainTab();
+      dcVisualHome();
+      return;
+    }
     var modal=document.getElementById('modal');
     if(modal&&modal.classList.contains('show')&&modal.dataset.dcHistorySheet==='phanqa'){
       dcCloseSharedSheetVisual();
@@ -7653,6 +7670,11 @@ window.addEventListener('popstate',function(){
 dcHistoryBase();
 
 function goHome(el){
+  var pcView=document.getElementById('pcPublicView');
+  if(!dcHistoryHandling&&pcView&&!pcView.hidden&&pcView.classList.contains('pc-main-tab')&&history.state&&history.state.dcView==='section'){
+    history.back();
+    return;
+  }
   if(el)setActive(el);
   var modal=document.getElementById('modal');
   if(!dcHistoryHandling&&modal&&modal.classList.contains('app-view')&&modal.classList.contains('show')&&history.state&&history.state.dcView==='section'){
@@ -9895,7 +9917,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v692</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v693</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -15110,6 +15132,7 @@ function verified(){return dcIsAdmin();}
 function normalizedEmail(v){return String(v||'').trim().toLowerCase();}
 function render(){
  var list=el('pcList');if(!list)return;
+ var detail=el('pcDetail');if(detail&&list.contains(detail)){detail.hidden=true;list.after(detail);selected=null;}
  var filtered=rows.filter(function(r){return currentFilter==='all'||r.status===currentFilter;});
  el('pcSummary').textContent=rows.length+' total nominations · '+rows.filter(function(x){return x.status==='New';}).length+' new · '+rows.filter(function(x){return x.is_test;}).length+' test';
  if(!filtered.length){list.innerHTML='<div class="admin-muted">No nominations in this category.</div>';return;}
@@ -15155,8 +15178,11 @@ window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||n
  '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>'+
  '<label class="pc-field">Review status<select id="pcStatus">'+statuses.map(function(v){return '<option'+(selected.status===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></label>'+
  '<p class="admin-muted">Adult and consent confirmed: '+(selected.adult_confirmed&&selected.consent_confirmed?'YES':'NO')+' · Photo: '+(selected.photo_path?(selected.photo_approved?'approved':'awaiting approval'):'none')+' · '+(selected.is_test?'TEST DATA':'REAL SUBMISSION')+'</p>';
- el('pcDetail').hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;el('pcDetail').scrollIntoView({behavior:'smooth',block:'nearest'});};
-window.pcClose=function(){selected=null;el('pcDetail').hidden=true;};
+ var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(button){return button.getAttribute('data-pc-id')===id;});
+ el('pcList').querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
+ if(anchor)anchor.after(detail);
+ detail.hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;detail.scrollIntoView({behavior:'smooth',block:'nearest'});};
+window.pcClose=function(){selected=null;var detail=el('pcDetail');detail.hidden=true;var list=el('pcList');if(list){list.querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded','false');});if(list.contains(detail))list.after(detail);}};
 window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedback('Admin session expired.');return;}
  try{var fields=el('pcDetailFields').querySelectorAll('[data-pc-field]'),patch={updated_at:new Date().toISOString()};fields.forEach(function(input){patch[input.getAttribute('data-pc-field')]=input.value;});patch.email=normalizedEmail(patch.email);patch.is_season_ticket_holder=el('pcSth').checked;patch.status=el('pcStatus').value;
  if(!patch.full_name.trim()||!patch.email.includes('@')||!patch.fan_since.trim()||!patch.why_fan.trim()||!patch.favorite_memory.trim()||!patch.favorite_player.trim()||!patch.favorite_podcast_moment.trim()||!String(patch.podcast_listener_since||'').trim())throw Error('Complete all required fields.');
@@ -15298,6 +15324,7 @@ window.pcOpenPublic=async function(adminPreview){
  var view=$('pcPublicView');
  view.classList.toggle('pc-admin-preview',preview);
  view.classList.toggle('pc-main-tab',!preview);
+ if(!preview&&typeof dcHistoryEnterSection==='function')dcHistoryEnterSection();
  view.hidden=false;
  $('pcPublicContent').scrollTop=0;
  $('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
