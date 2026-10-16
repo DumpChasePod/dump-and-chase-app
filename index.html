@@ -9860,7 +9860,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v705</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v706</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -9871,11 +9871,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       </div>
       <div class="admin-section-tabs dc-admin-subtabs" role="tablist" aria-label="Admin sections">
         <button type="button" data-admin-group="GAME" class="admin-section-tab active" id="adminTabGameDay" role="tab" aria-selected="true" aria-controls="adminGameDayPanel" onclick="selectAdminTab('game-day')">GAME CENTER</button>
-        <button type="button" data-admin-group="GAME" class="admin-section-tab" id="adminTabRecord" role="tab" aria-selected="false" aria-controls="adminRecordPanel" onclick="selectAdminTab('record')">RECORD</button>
+        <button type="button" data-admin-group="TEAM" class="admin-section-tab" id="adminTabRecord" role="tab" aria-selected="false" aria-controls="adminRecordPanel" onclick="selectAdminTab('record')">RECORD</button>
         <button type="button" data-admin-group="GAME" class="admin-section-tab" id="adminTabNotes" role="tab" aria-selected="false" aria-controls="adminNotesPanel" onclick="selectAdminTab('notes')">GAME NOTES</button>
         <button type="button" data-admin-group="TEAM" class="admin-section-tab" id="adminTabRoster" role="tab" aria-selected="false" aria-controls="adminRosterPanel" onclick="selectAdminTab('roster')">ROSTER</button>
         <button type="button" data-admin-group="TEAM" class="admin-section-tab" id="adminTabSchedule" role="tab" aria-selected="false" aria-controls="adminSchedulePanel" onclick="selectAdminTab('schedule')">SCHEDULE</button>
-        <button type="button" data-admin-group="COMMUNITY" class="admin-section-tab" id="adminTabLiveChat" role="tab" aria-selected="false" aria-controls="adminLiveChatPanel" onclick="selectAdminTab('live-chat')"><span class="live-chat-admin-tab-dot" id="adminLiveChatAlertDot" aria-hidden="true"></span>LIVE CHAT</button>
+        <button type="button" data-admin-group="GAME" class="admin-section-tab" id="adminTabLiveChat" role="tab" aria-selected="false" aria-controls="adminLiveChatPanel" onclick="selectAdminTab('live-chat')"><span class="live-chat-admin-tab-dot" id="adminLiveChatAlertDot" aria-hidden="true"></span>LIVE CHAT</button>
         <button type="button" data-admin-group="COMMUNITY" class="admin-section-tab admin-qna-tab" id="adminTabQna" role="tab" aria-selected="false" aria-controls="adminQnaPanel" onclick="selectAdminTab('qna')"><span class="admin-qna-dot" id="adminQnaDot" aria-hidden="true"></span><span>Q&amp;A</span></button>
         <button type="button" data-admin-group="COMMUNITY" class="admin-section-tab" id="adminTabPhanCentral" role="tab" aria-selected="false" aria-controls="adminPhanCentralPanel" onclick="selectAdminTab('phan-central')">PHAN CENTRAL <span id="pcPendingBadge"></span></button>
         <button type="button" data-admin-group="COMMUNITY" class="admin-section-tab" id="adminTabNews" role="tab" aria-selected="false" aria-controls="adminNewsPanel" onclick="selectAdminTab('news')">NEWS</button>
@@ -10713,7 +10713,7 @@ async function openAdmin(){
 
 
 let dcAdminLoadedTabs=new Set();
-const dcAdminCategories={GAME:['game-day','record','notes'],TEAM:['roster','schedule'],COMMUNITY:['live-chat','qna','phan-central','news'],TOOLS:['analytics']};
+const dcAdminCategories={GAME:['game-day','notes','live-chat'],TEAM:['roster','schedule','record'],COMMUNITY:['qna','phan-central','news'],TOOLS:['analytics']};
 let dcAdminLastGroupTab={GAME:'game-day',TEAM:'roster',COMMUNITY:'phan-central',TOOLS:'analytics'};
 function selectAdminCategory(category){
  if(!dcAdminCategories[category])return;
