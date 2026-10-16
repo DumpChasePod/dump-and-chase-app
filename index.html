@@ -5863,6 +5863,16 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 .pc-v705-selection{display:flex;flex-direction:column;gap:9px}
 .pc-v705-selection .pc-actions{margin:0}
 </style>
+<style id="v708-discard-dialog">
+#pcDiscardDialog[hidden]{display:none!important}
+#pcDiscardDialog{position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.78);display:flex;justify-content:center;align-items:center;padding:22px}
+#pcDiscardDialog .pc-discard-panel{width:min(100%,390px);padding:22px;background:#151e2d;border:1px solid #75519a;border-radius:14px;box-shadow:0 12px 45px #000a;color:#f5f0ff}
+#pcDiscardDialog h3{margin:0 0 12px;font-size:19px;color:#fff}
+#pcDiscardDialog p{margin:0 0 20px;line-height:1.5;color:#c9d0e1}
+#pcDiscardDialog .pc-discard-actions{display:flex;gap:10px;flex-wrap:wrap}
+#pcDiscardDialog .pc-discard-actions button{flex:1;min-width:125px;min-height:44px;border-radius:9px;font-weight:800}
+#pcDiscardStory{background:#242b3d;border:1px solid #9da7bc;color:white}
+</style>
 <style id="v707-form-field-appearance">
 /* Keep text fields consistently dark while typing, after blur, and when browser autofill applies. */
 #pcNominationForm input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
@@ -7266,12 +7276,12 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   <div class="pc-public-scroll" id="pcPublicContent"><p>Loading Phan Central…</p></div>
 </section>
 <section id="pcNominationView" class="pc-public-view pc-form-view" hidden aria-label="Phan Central Nomination">
-  <div class="pc-public-head"><strong>NOMINATE YOURSELF</strong><button type="button" onclick="pcCloseNomination()" aria-label="Close nomination form">✕</button></div>
+  <div class="pc-public-head"><strong>SHARE YOUR PHAN STORY</strong><button type="button" onclick="pcCloseNomination()" aria-label="Close nomination form">✕</button></div>
   <div class="pc-public-scroll">
-    <h2>Phan of the Week</h2><p>Tell the Dump &amp; Chase Podcast about yourself and your Phantoms fandom.</p>
+    <h2>TELL US YOUR PHAN STORY</h2><p>We want to get to know the people who listen to the Dump &amp; Chase Podcast! Tell us a little about yourself, your love for the Phantoms, and your favorite podcast memories for a chance to be our Phan of the Week.</p>
     <form id="pcNominationForm">
       <label>What's your full name? <span>*</span><input name="full_name" maxlength="120" required></label>
-      <label>What's your email address? <span>*</span><input name="email" type="email" maxlength="254" autocomplete="email" required><small class="pc-email-note">Your email stays private and will only be used if we need to verify your nomination.</small></label>
+      <label>What's your email address? <span>*</span><input name="email" type="email" maxlength="254" autocomplete="email" required><small class="pc-email-note">Your email stays private and will only be used if we need to verify your story.</small></label>
       <label>How long have you been a Youngstown Phantoms fan? <span>*</span><input name="fan_since" maxlength="300" required></label>
       <fieldset class="pc-choice-field"><legend>Are you a Phantoms season ticket holder? <span>*</span></legend><div class="pc-choice-row"><label class="pc-choice"><input type="radio" name="is_season_ticket_holder" value="yes" required><span class="pc-choice-mark" aria-hidden="true">✓</span><span>Yes</span></label><label class="pc-choice"><input type="radio" name="is_season_ticket_holder" value="no" required><span class="pc-choice-mark" aria-hidden="true">✓</span><span>No</span></label></div></fieldset>
       <label id="pcSectionField" hidden>What section do you sit in? (optional)<input name="seating_section" maxlength="100"></label>
@@ -7285,11 +7295,12 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
       <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required><span>I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app as part of Phan of the Week.</span></label>
       <div class="pc-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div id="pcSubmissionFeedback" role="status" aria-live="polite"></div>
-      <button id="pcSubmitNomination" type="submit" class="pc-primary">SUBMIT NOMINATION</button>
+      <button id="pcSubmitNomination" type="submit" class="pc-primary">SEND MY STORY</button>
     </form>
   </div>
 </section>
-<section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Nomination received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>Thank You!</h2><p>Your nomination has been received by the Dump &amp; Chase Podcast.</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
+<div id="pcDiscardDialog" class="pc-discard-backdrop" hidden role="presentation"><div class="pc-discard-panel" role="alertdialog" aria-modal="true" aria-labelledby="pcDiscardTitle" aria-describedby="pcDiscardText"><h3 id="pcDiscardTitle">Discard your story?</h3><p id="pcDiscardText">Your information hasn’t been sent to the Dump &amp; Chase Podcast.</p><div class="pc-discard-actions"><button type="button" class="pc-primary" id="pcKeepEditing" onclick="pcKeepEditing()">KEEP EDITING</button><button type="button" id="pcDiscardStory" onclick="pcDiscardStory()">DISCARD</button></div></div></div>
+<section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Story received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>THANKS FOR SHARING!</h2><p>Your story has been sent to the Dump &amp; Chase Podcast hosts. We’ll be choosing listeners to feature as our Phan of the Week!</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
 <div id="pcArchiveSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseArchive()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseArchive()" aria-label="Close previous Phans">✕</button><h2>Previous Phans of the Week</h2><div id="pcArchiveBody"></div></div></div>
 <div id="pcProfileSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseProfile()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseProfile()" aria-label="Close profile">✕</button><div id="pcProfileBody"></div></div></div>
 <nav class="bottomnav nav-v200" aria-label="Main navigation">
@@ -7631,10 +7642,12 @@ window.addEventListener('popstate',function(){
     if(pcView&&!pcView.hidden&&pcView.classList.contains('pc-main-tab')){
       var pcThanks=document.getElementById('pcThankYouView');
       var pcForm=document.getElementById('pcNominationView');
+      var pcDiscard=document.getElementById('pcDiscardDialog');
+      if(pcDiscard&&!pcDiscard.hidden){if(typeof pcKeepEditing==='function')pcKeepEditing();return;}
       var pcProfile=document.getElementById('pcProfileSheet');
       if(pcProfile&&!pcProfile.hidden){if(typeof pcCloseProfile==='function')pcCloseProfile();}
       else if(pcThanks&&!pcThanks.hidden){if(typeof pcReturnFromThanks==='function')pcReturnFromThanks();}
-      else if(pcForm&&!pcForm.hidden){if(typeof pcCloseNomination==='function')pcCloseNomination();}
+      else if(pcForm&&!pcForm.hidden){if(typeof pcCloseNomination==='function')pcCloseNomination();return;}
       if(typeof pcLeaveMainTab==='function')pcLeaveMainTab();
       dcVisualHome();
       return;
@@ -9902,7 +9915,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v707</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v708</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10269,7 +10282,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div class="pc-v705-section" data-pc-section-panel="fans">
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
-    <section class="pc-winners"><h3>Featured Listener Management</h3><div id="pcWinnersList">Loading winner history…</div></section>
+    <section class="pc-winners"><h3>Phan of the Week Management</h3><div id="pcWinnersList">Loading featured listener history…</div></section>
     <div class="pc-actions" id="pcFilters">
       <button class="admin-mini-btn active" data-pc-filter="all" onclick="pcFilter('all')">ALL</button>
       <button class="admin-mini-btn" data-pc-filter="New" onclick="pcFilter('New')">NEW</button>
@@ -10281,7 +10294,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <section id="pcDetail" class="pc-detail" hidden>
       <h3>Edit nomination</h3><div id="pcDetailFields"></div>
       <section class="pc-photo"><h3>Fan Photo (Private)</h3><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><label class="pc-field">Upload JPEG, PNG or WebP, maximum 5 MB<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">UPLOAD PRIVATE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcRemovePhoto()" id="pcPhotoRemove" disabled>REMOVE PHOTO</button></div><label class="pc-field">Photo position horizontal <input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Photo position vertical <input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></section>
-      <section class="pc-winner-tools"><h3>Feature this Listener</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible nominees with consent can be selected. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-v705-selection"><button type="button" class="btn primary" onclick="pcFeatureNow()">FEATURE NOW</button><details><summary>Or schedule for later</summary><label class="pc-field">Date &amp; time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE FEATURE</button></details></div></section>
+      <section class="pc-winner-tools"><h3>Feature this Listener</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible listeners with consent can be featured. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-v705-selection"><button type="button" class="btn primary" onclick="pcFeatureNow()">FEATURE NOW</button><details><summary>Or schedule for later</summary><label class="pc-field">Date &amp; time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE FEATURE</button></details></div></section>
       <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button><button type="button" class="admin-mini-btn pc-danger-action" id="pcDeleteNomination" onclick="pcDeleteNomination()">DELETE NOMINATION</button></div>
       
     </section>
@@ -15045,7 +15058,7 @@ function pcRenderWinners(){
    (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+
    '<button type="button" class="admin-mini-btn pc-danger-action" data-pc-delete-winner="'+esc(w.id)+'">DELETE WINNER</button></div></div>';
  }
- dest.innerHTML=activeWinners.map(winnerEntry).join('')+(pastWinners.length?'<details class="pc-history-collapsible"><summary>PREVIOUS WINNERS &amp; HISTORY ('+pastWinners.length+')</summary>'+pastWinners.map(winnerEntry).join('')+'</details>':'');
+ dest.innerHTML=activeWinners.map(winnerEntry).join('')+(pastWinners.length?'<details class="pc-history-collapsible"><summary>PREVIOUS PHANS &amp; HISTORY ('+pastWinners.length+')</summary>'+pastWinners.map(winnerEntry).join('')+'</details>':'');
  dest.querySelectorAll('[data-pc-publish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('publish',b.dataset.pcPublish);});});
  dest.querySelectorAll('[data-pc-cancel]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('cancel',b.dataset.pcCancel);});});
  dest.querySelectorAll('[data-pc-unpublish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('unpublish',b.dataset.pcUnpublish);});});
@@ -15089,9 +15102,9 @@ window.pcSelectWinner=async function(scheduled){
  try{
   var featureAt=scheduled?pcEasternUTC(el('pcScheduleTime').value):null;
   var season=settings?.active_season||'2026-27';
-  if(!confirm('Select '+selected.full_name+' as a '+'winner for '+season+(scheduled?' at '+el('pcScheduleTime').value+' ET':' (awaiting Publish Now)')+'?'))return;
+  if(!confirm('Feature '+selected.full_name+' as our Phan of the Week for '+season+(scheduled?' at '+el('pcScheduleTime').value+' ET':' (awaiting Publish Now)')+'?'))return;
   var result=await pcApi({action:'select',nomination_id:selected.id,season:season,feature_at:featureAt});
-  if(scheduled)feedback('Winner scheduled for automatic publication.');
+  if(scheduled)feedback('Listener scheduled to be featured.');
   pcClose();await pcLoad();return result;
  }catch(e){feedback('Could not select winner: '+(e.message||e));}
 };
@@ -15228,8 +15241,26 @@ function openProfile(id){var w=feed.find(x=>x.id===id);if(!w)return;var n=w.prof
 var headings=[['Phantoms Fan Since',n.fan_since],['Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No'],['Seating Section',n.seating_section||'Not provided'],['Why I’m a Phantoms Fan',n.why_fan],['Favorite Phantoms Memory',n.favorite_memory],['All-Time Favorite Player',n.favorite_player],['How Long I’ve Listened to the Dump & Chase Podcast',n.podcast_listener_since],['Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment]];
 $('pcProfileBody').innerHTML='<h2>'+safe(n.full_name)+'</h2>'+image(n)+'<p class="pc-muted">'+safe(w.season)+' Season</p>'+headings.map(a=>'<div class="pc-profile-answer"><b>'+safe(a[0])+'</b>'+safe(a[1]||'—')+'</div>').join('');$('pcProfileSheet').hidden=false;
 }
-$('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcViewArchive'))pcOpenArchive();if(e.target.closest('#pcBeginNomination')){$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
-window.pcCloseNomination=function(){$('pcNominationView').hidden=true;};
+$('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcViewArchive'))pcOpenArchive();if(e.target.closest('#pcBeginNomination')){$('pcDiscardDialog').hidden=true;$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
+function pcStoryHasChanges(){
+ var form=$('pcNominationForm');if(!form)return false;
+ return Array.from(form.elements).some(function(field){
+  if(!field.name||field.name==='website'||field.disabled)return false;
+  if(field.type==='checkbox'||field.type==='radio')return field.checked;
+  if(field.type==='file')return !!(field.files&&field.files.length);
+  return typeof field.value==='string'&&field.value.trim()!=='';
+ });
+}
+window.pcKeepEditing=function(){$('pcDiscardDialog').hidden=true;};
+window.pcDiscardStory=function(){
+ $('pcDiscardDialog').hidden=true;
+ $('pcNominationForm').reset();$('pcSectionField').hidden=true;
+ $('pcSubmissionFeedback').textContent='';$('pcNominationView').hidden=true;
+};
+window.pcCloseNomination=function(){
+ if(!pcStoryHasChanges()){pcDiscardStory();return;}
+ $('pcDiscardDialog').hidden=false;$('pcKeepEditing').focus();
+};
 window.pcReturnFromThanks=function(){$('pcThankYouView').hidden=true;$('pcNominationView').hidden=true;};
 $('pcArchiveBody').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item){pcCloseArchive();openProfile(item.getAttribute('data-pc-open'));}});
 $('pcNominationForm').addEventListener('change',e=>{if(e.target.name==='is_season_ticket_holder'){$('pcSectionField').hidden=e.target.value!=='yes';if(e.target.value!=='yes')$('pcNominationForm').elements.seating_section.value='';}});
@@ -15238,11 +15269,11 @@ $('pcNominationForm').addEventListener('submit',async e=>{
  e.preventDefault();var form=e.currentTarget,btn=$('pcSubmitNomination'),output=$('pcSubmissionFeedback');if(!form.reportValidity())return;
  var d=new FormData(form),photo=d.get('photo');
  if(photo&&photo.size){if(photo.size>5242880||!['image/jpeg','image/png','image/webp'].includes(photo.type)){output.textContent='Photo must be JPG, PNG, or WebP under 5 MB.';return;}}
- btn.disabled=true;output.textContent='Submitting nomination…';
+ btn.disabled=true;output.textContent='Sending your story…';
  try{
   var body={action:'submit',full_name:d.get('full_name'),email:d.get('email'),fan_since:d.get('fan_since'),is_season_ticket_holder:d.get('is_season_ticket_holder')==='yes',seating_section:d.get('seating_section'),why_fan:d.get('why_fan'),favorite_memory:d.get('favorite_memory'),favorite_player:d.get('favorite_player'),podcast_listener_since:d.get('podcast_listener_since'),favorite_podcast_moment:d.get('favorite_podcast_moment'),adult_confirmed:d.get('adult_confirmed')==='on',consent_confirmed:d.get('consent_confirmed')==='on',website:d.get('website')};
   if(photo&&photo.size)body.photo={mime:photo.type,base64:await fileBase64(photo)};
-  await api(body);form.reset();$('pcSectionField').hidden=true;output.textContent='';$('pcNominationView').hidden=true;$('pcThankYouView').hidden=false;
+  await api(body);form.reset();$('pcDiscardDialog').hidden=true;$('pcSectionField').hidden=true;output.textContent='';$('pcNominationView').hidden=true;$('pcThankYouView').hidden=false;
  }catch(err){output.textContent=err.message||'Submission failed';}
  finally{btn.disabled=false;}
 });
