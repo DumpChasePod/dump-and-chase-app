@@ -7290,7 +7290,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
       <label>Who's your favorite Phantoms player of all time? <span>*</span><input name="favorite_player" maxlength="300" required></label>
       <label>How long have you been listening to the Dump &amp; Chase Podcast? <span>*</span><input name="podcast_listener_since" maxlength="300" required></label>
       <label>What's your favorite moment from the Dump &amp; Chase Podcast? <span>*</span><textarea name="favorite_podcast_moment" rows="3" maxlength="4000" required></textarea></label>
-      <label>Upload a photo of yourself (optional, up to 5 MB)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      <label>Upload a photo of yourself (optional, JPG, PNG or WebP, up to 5 MB; on iPhone choose a compatible format if HEIC is selected)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
       <label class="pc-consent"><input type="checkbox" name="adult_confirmed" required><span>I confirm that I am at least 18 years old.</span></label>
       <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required><span>I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app as part of Phan of the Week.</span></label>
       <div class="pc-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
@@ -9915,7 +9915,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v708</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v709</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15367,6 +15367,51 @@ window.addEventListener('load',initialize);
   catch(e){note(e.message||'Could not save poll');}
   finally{btn.disabled=false;}
  };
+})();
+</script>
+
+<style id="v709-ios-compat">
+/* iOS standalone/Safari: keep editable overlays above the keyboard without moving the main navigation. */
+@supports (-webkit-touch-callout: none) {
+  #liveChatOverlay, #pcNominationView, #pcThankYouView { width:100%; max-width:100%; }
+  #liveChatOverlay.dc-ios-keyboard, #pcNominationView.dc-ios-keyboard {
+    height:var(--dc-ios-view-height,100dvh)!important;
+    max-height:var(--dc-ios-view-height,100dvh)!important;
+    bottom:auto!important;
+    padding-bottom:0!important;
+  }
+  #liveChatOverlay.dc-ios-keyboard .live-chat-composer-wrap {padding-bottom:8px!important;}
+  #pcNominationView.dc-ios-keyboard .pc-public-scroll {overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+  #pcNominationView input:not([type=checkbox]):not([type=radio]):not([type=file]),
+  #pcNominationView textarea, #liveChatOverlay textarea, #liveChatOverlay input,
+  #pcPublicView input:not([type=checkbox]):not([type=radio]):not([type=file]) {font-size:max(16px,1em);}
+}
+</style>
+<script id="v709-ios-viewport">
+(function(){
+  'use strict';
+  var isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(!isiOS||!window.visualViewport)return;
+  var vv=window.visualViewport, activeOverlay=null;
+  function update(){
+    var focused=document.activeElement;
+    var o=focused&&focused.closest&&focused.closest('#liveChatOverlay, #pcNominationView');
+    var field=focused&&/^(INPUT|TEXTAREA|SELECT)$/.test(focused.tagName)&&focused.type!=='file';
+    var open=!!(o&&field&&vv.height<window.innerHeight-110);
+    if(activeOverlay&&activeOverlay!==o){activeOverlay.classList.remove('dc-ios-keyboard');activeOverlay.style.removeProperty('--dc-ios-view-height');}
+    if(open){
+      o.style.setProperty('--dc-ios-view-height',Math.max(180,Math.round(vv.height+vv.offsetTop))+'px');
+      o.classList.add('dc-ios-keyboard');activeOverlay=o;
+    }else{
+      if(activeOverlay){activeOverlay.classList.remove('dc-ios-keyboard');activeOverlay.style.removeProperty('--dc-ios-view-height');}
+      activeOverlay=null;
+    }
+  }
+  document.addEventListener('focusin',function(){requestAnimationFrame(update);},{passive:true});
+  document.addEventListener('focusout',function(){setTimeout(update,150);},{passive:true});
+  vv.addEventListener('resize',update);vv.addEventListener('scroll',update);
+  window.addEventListener('pageshow',update);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)requestAnimationFrame(update);});
 })();
 </script>
 </body>
