@@ -9847,7 +9847,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v703</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v704</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -14955,11 +14955,13 @@ function pcRenderWinners(){
   var caption=w.feature_at?' · '+esc(new Date(w.feature_at).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'}))+' ET':'';
   return '<div class="pc-winner-entry"><b>'+esc(n?n.full_name:'Nomination '+w.nomination_id)+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(w.season)+caption+(w.failure_reason?' · '+esc(w.failure_reason):'')+'</small><div class="pc-actions">'+
    (w.state==='scheduled'?'<button type="button" class="admin-mini-btn" data-pc-publish="'+esc(w.id)+'">PUBLISH NOW</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL SELECTION</button>':'')+
-   (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+'</div></div>';
+   (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+
+   '<button type="button" class="admin-mini-btn pc-danger-action" data-pc-delete-winner="'+esc(w.id)+'">DELETE WINNER</button></div></div>';
  }).join('');
  dest.querySelectorAll('[data-pc-publish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('publish',b.dataset.pcPublish);});});
  dest.querySelectorAll('[data-pc-cancel]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('cancel',b.dataset.pcCancel);});});
  dest.querySelectorAll('[data-pc-unpublish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('unpublish',b.dataset.pcUnpublish);});});
+ dest.querySelectorAll('[data-pc-delete-winner]').forEach(function(b){b.addEventListener('click',function(){pcDeleteWinner(b.dataset.pcDeleteWinner);});});
 }
 async function pcApi(payload){
  if(!(await verified()))throw Error('Admin session expired');
@@ -14967,6 +14969,16 @@ async function pcApi(payload){
  if(res.error){var reason=res.data?.error;try{if(!reason&&res.error.context?.json){var decoded=await res.error.context.json();reason=decoded?.error;}}catch(_){}throw Error(reason||res.error.message||'Backend action failed');}
  if(!res.data?.ok)throw Error(res.data?.error||'Backend rejected the action');
  return res.data;
+}
+async function pcDeleteWinner(winnerId){
+ var w=winners.find(function(item){return item.id===winnerId;});if(!w)return;
+ var n=rows.find(function(item){return item.id===w.nomination_id;});
+ var name=n?n.full_name:'this listener';
+ if(!confirm('Permanently delete the '+w.season+' winner record for '+name+'? This removes them from winner history and the public archive. Their original nomination and photo will remain. This cannot be undone.'))return;
+ var btn=Array.from(el('pcWinnersList').querySelectorAll('[data-pc-delete-winner]')).find(function(item){return item.dataset.pcDeleteWinner===winnerId;});
+ if(btn)btn.disabled=true;
+ try{await pcApi({action:'delete_winner',winner_id:winnerId});await pcLoad();feedback('Winner record deleted. The nomination remains available for separate deletion.');}
+ catch(e){feedback('Delete winner failed: '+(e.message||e));if(btn)btn.disabled=false;}
 }
 async function pcWinnerAction(action,winnerId){
  var verb=action==='publish'?'publish immediately':action==='unpublish'?'unpublish':'cancel';
