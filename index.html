@@ -5863,6 +5863,48 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 .pc-v705-selection{display:flex;flex-direction:column;gap:9px}
 .pc-v705-selection .pc-actions{margin:0}
 </style>
+<style id="v707-form-field-appearance">
+/* Keep text fields consistently dark while typing, after blur, and when browser autofill applies. */
+#pcNominationForm input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+#pcNominationForm textarea,
+#pcNominationForm select,
+.phan-qa-form .admin-field input,
+.phan-qa-form .admin-field textarea,
+.pc-admin .pc-field input:not([type="range"]):not([type="file"]),
+.pc-admin .pc-field textarea,
+.pc-admin .pc-field select {
+  background-color:#0e1520 !important;
+  color:#f2f5fa !important;
+  -webkit-text-fill-color:#f2f5fa;
+  color-scheme:dark;
+  caret-color:#f2f5fa;
+}
+#pcNominationForm input:not([type="radio"]):not([type="checkbox"]):focus,
+#pcNominationForm textarea:focus,
+#pcNominationForm select:focus,
+.phan-qa-form .admin-field input:focus,
+.phan-qa-form .admin-field textarea:focus,
+.pc-admin .pc-field input:focus,
+.pc-admin .pc-field textarea:focus,
+.pc-admin .pc-field select:focus {background-color:#0e1520 !important;}
+#pcNominationForm input:-webkit-autofill,
+#pcNominationForm input:-webkit-autofill:hover,
+#pcNominationForm input:-webkit-autofill:focus,
+#pcNominationForm textarea:-webkit-autofill,
+.phan-qa-form .admin-field input:-webkit-autofill,
+.phan-qa-form .admin-field input:-webkit-autofill:hover,
+.phan-qa-form .admin-field input:-webkit-autofill:focus,
+.pc-admin .pc-field input:-webkit-autofill,
+.pc-admin .pc-field input:-webkit-autofill:hover,
+.pc-admin .pc-field input:-webkit-autofill:focus,
+.pc-admin .pc-field textarea:-webkit-autofill {
+  -webkit-box-shadow:0 0 0 1000px #0e1520 inset !important;
+  box-shadow:0 0 0 1000px #0e1520 inset !important;
+  -webkit-text-fill-color:#f2f5fa !important;
+  caret-color:#f2f5fa !important;
+  transition:background-color 9999s ease-out 0s;
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9860,7 +9902,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v706</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v707</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
