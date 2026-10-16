@@ -9936,7 +9936,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v698</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v699</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -15141,7 +15141,7 @@ function card(w){var n=w.profile;return '<button class="pc-archive-card" type="b
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
 html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
-html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true">✦</span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true">★</span><strong>PREVIOUS PHANS</strong></button></div>';
+html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="7.2" r="3.1"/><path d="M3.5 19.5v-1.3c0-3.2 2.6-5.8 5.8-5.8h.5c2.5 0 4.4 1.2 5.3 3.1"/><path d="M18.5 13.8v7M15 17.3h7"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true">★</span><strong>PREVIOUS PHANS</strong></button></div>';
 html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section>';
 target.innerHTML=html;
 }
@@ -15266,7 +15266,7 @@ window.addEventListener('load',initialize);
  function renderAdmin(){
   const target=$('pcPollAdminList');if(!target)return;
   if(!polls.length){target.innerHTML='<p class="admin-muted">No polls yet.</p>';return;}
-  target.innerHTML=polls.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join('');
+  target.innerHTML=polls.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join('');
  }
  $('pcPollAdminList').addEventListener('click',async e=>{
   const btn=e.target.closest('[data-poll-action]');if(!btn)return;
@@ -15277,11 +15277,12 @@ window.addEventListener('load',initialize);
    document.querySelectorAll('#pcPollOptionFields .pc-poll-opt').forEach((x,i)=>x.value=poll.options[i]||'');
    $('pcPollSave').textContent='SAVE CHANGES';$('pcPollQuestion').scrollIntoView({block:'nearest'});note(poll.results.total?'You can edit the question, but answers are locked after the first vote.':'Editing selected poll.');return;
   }
+  if(action==='reset'&&!confirm('Reset this poll? This permanently clears every vote and lets listeners vote again. The question and answers will stay the same.'))return;
   if(action==='delete'&&!confirm('Delete this poll and ALL its votes? This cannot be undone.'))return;
   if(action==='open'&&!confirm('Open this poll for listener voting?'))return;
   if(action==='closed'&&!confirm('Close voting for this poll?'))return;
   btn.disabled=true;
-  try{await call(action==='delete'?{action:'delete',id:poll.id}:{action:'set_status',id:poll.id,status:action});note(action==='delete'?'Poll deleted.':'Poll updated.');pcPollClearEditor();await window.pcPollAdminLoad();}
+  try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':'Poll updated.');}
   catch(err){note(err.message||'Operation failed');btn.disabled=false;}
  });
  window.pcPollSave=async function(){
