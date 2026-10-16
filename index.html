@@ -5904,6 +5904,41 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #adminPhanCentralPanel .pc-entry[aria-expanded="true"]{border-color:rgba(167,114,249,.58);background:linear-gradient(120deg,#242139,#171d2a)}
 #adminPhanCentralPanel .pc-entry{scroll-margin-top:130px}
 </style>
+<style id="pcWeeklyPollStylesV698">
+/* Phan Central tiles and weekly poll: reuse existing HQ-style dark gradients and subtle purple outlines. */
+#pcPublicView .pc-phancentral-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+#pcPublicView .pc-hub-tile{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-width:0;min-height:76px;padding:10px 6px;border-radius:13px;border:1px solid rgba(155,102,230,.28);background:linear-gradient(145deg,#1a2535,#111824);color:#eee9f9;font-size:11px;letter-spacing:.02em;font-weight:850}
+#pcPublicView .pc-hub-tile:active{border-color:#ed9a57;background:#211d2b}
+#pcPublicView .pc-hub-tile:disabled{opacity:.46}
+#pcPublicView .pc-hub-icon{color:#b98cff;font-size:22px;line-height:1}
+#pcPublicView .pc-weekly-poll{padding:13px 14px 15px}
+#pcPublicView .pc-poll-question{font-size:15px;font-weight:850;line-height:1.4;margin:2px 0 12px;color:#f2f3f7;overflow-wrap:anywhere}
+#pcPublicView .pc-poll-option{display:flex;align-items:center;gap:9px;width:100%;min-height:43px;text-align:left;padding:9px 11px;margin:7px 0;color:#e8eaf1;font-size:13px;font-weight:650;background:#192435;border:1px solid #354459;border-radius:11px;line-height:1.3}
+#pcPublicView .pc-poll-option[aria-pressed="true"]{border-color:#f2a25b;background:#332637;box-shadow:inset 0 0 0 1px rgba(243,162,91,.32)}
+#pcPublicView .pc-poll-radio{border:1px solid #9d8eae;border-radius:50%;width:17px;height:17px;display:grid;place-items:center;flex:none;font-size:12px;color:#efa45b}
+#pcPublicView .pc-poll-option[aria-pressed="true"] .pc-poll-radio{border-color:#efa45b}
+#pcPublicView .pc-poll-submit{margin-top:11px}
+#pcPublicView .pc-poll-bar{height:9px;border-radius:8px;overflow:hidden;background:#303748;margin-top:6px}
+#pcPublicView .pc-poll-bar>span{display:block;height:100%;border-radius:8px;background:#9b72d5}
+#pcPublicView .pc-poll-result{margin:12px 0;color:#e1e3ec;font-size:12px}
+#pcPublicView .pc-poll-result strong{font-weight:750}
+#pcPublicView .pc-poll-result.me .pc-poll-bar>span{background:#ed9a57}
+#pcPublicView .pc-poll-caption{font-size:11px;color:#a4adbf;margin:10px 0 0}
+#pcArchiveSheet[hidden]{display:none!important}
+#pcArchiveSheet .pc-archive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+#pcArchiveSheet .pc-archive-card{border:1px solid rgba(155,102,230,.24);background:linear-gradient(145deg,#192435,#101723);border-radius:12px;color:#f1f1f6;padding:9px;text-align:left;min-width:0}
+#pcArchiveSheet .pc-archive-card .pc-portrait{aspect-ratio:1.6/1}
+#pcArchiveSheet .pc-archive-card strong,#pcArchiveSheet .pc-archive-card small{display:block;overflow-wrap:anywhere;margin-top:5px}
+#pcArchiveSheet .pc-season-label{font-size:11px;color:#b98cff;margin:15px 0 7px}
+.pc-poll-admin{margin:12px 0;padding:12px;background:#151e2d;border:1px solid rgba(173,134,229,.24);border-radius:12px}
+.pc-poll-admin .pc-field{display:block;margin-top:9px}
+.pc-poll-admin-list{display:grid;gap:7px;margin-top:14px}
+.pc-poll-admin-item{background:#172030;border:1px solid #364359;border-radius:11px;padding:10px}
+.pc-poll-admin-item .pc-actions{margin-top:7px}
+.pc-poll-admin-item strong{font-size:13px;overflow-wrap:anywhere}
+.pc-poll-admin-item small{display:block;color:#aab5c5;font-size:11px;margin-top:3px}
+.pc-poll-feedback{font-size:12px;color:#cdb2f0;white-space:pre-wrap;margin:5px 0}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7289,6 +7324,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
   </div>
 </section>
 <section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Nomination received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>Thank You!</h2><p>Your nomination has been received by the Dump &amp; Chase Podcast.</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
+<div id="pcArchiveSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseArchive()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseArchive()" aria-label="Close previous Phans">✕</button><h2>Previous Phans of the Week</h2><div id="pcArchiveBody"></div></div></div>
 <div id="pcProfileSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseProfile()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseProfile()" aria-label="Close profile">✕</button><div id="pcProfileBody"></div></div></div>
 <nav class="bottomnav nav-v200" aria-label="Main navigation">
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
@@ -9900,7 +9936,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v697</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v698</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10260,6 +10296,21 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
  <p class="admin-muted">These two controls are independent. Opening nominations takes effect when the page is accessible.</p>
  </div>
     <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcOpenPublic(true)">PREVIEW PHAN CENTRAL PAGE</button><button type="button" class="admin-mini-btn" onclick="pcLoad()">REFRESH</button></div>
+    <section class="pc-poll-admin pc-winners" aria-label="Weekly Phan Poll management">
+      <h3>Weekly Phan Poll</h3>
+      <p class="admin-muted">One open poll at a time. Create, edit, close, or delete polls here.</p>
+      <div id="pcPollAdminStatus" class="pc-poll-feedback" aria-live="polite"></div>
+      <label class="pc-field">Poll question<input id="pcPollQuestion" maxlength="300" placeholder="What's your question?"></label>
+      <div id="pcPollOptionFields" class="pc-poll-option-fields">
+        <label class="pc-field">Answer 1<input class="pc-poll-opt" maxlength="120" placeholder="First answer"></label>
+        <label class="pc-field">Answer 2<input class="pc-poll-opt" maxlength="120" placeholder="Second answer"></label>
+        <label class="pc-field">Answer 3 (optional)<input class="pc-poll-opt" maxlength="120"></label>
+        <label class="pc-field">Answer 4 (optional)<input class="pc-poll-opt" maxlength="120"></label>
+        <label class="pc-field">Answer 5 (optional)<input class="pc-poll-opt" maxlength="120"></label>
+      </div>
+      <div class="pc-actions"><button type="button" id="pcPollSave" class="admin-mini-btn" onclick="pcPollSave()">SAVE NEW POLL</button><button type="button" class="admin-mini-btn" onclick="pcPollClearEditor()">CLEAR EDITOR</button></div>
+      <div id="pcPollAdminList" class="pc-poll-admin-list">Loading polls…</div>
+    </section>
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
     <section class="pc-winners"><h3>Featured Listener Management</h3><div id="pcWinnersList">Loading winner history…</div></section>
     <div class="pc-actions" id="pcFilters">
@@ -14926,7 +14977,7 @@ window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading privat
  var results=await Promise.all([dcSupabase.from('phan_central_settings').select('*').eq('id',1).single(),dcSupabase.from('phan_central_nominations').select('*').order('created_at',{ascending:false}).limit(500),dcSupabase.from('phan_central_winners').select('*').order('created_at',{ascending:false}).limit(150)]);
  if(results[0].error)throw results[0].error;if(results[1].error)throw results[1].error;if(results[2].error)throw results[2].error;settings=results[0].data;
  pcRenderSettings();
- rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
+ rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();if(typeof window.pcPollAdminLoad==='function')window.pcPollAdminLoad();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
  }catch(e){feedback('Could not load nominations: '+(e.message||e));}finally{busy=false;}};
 function pcRenderSettings(){
  if(!settings)return;
@@ -15090,9 +15141,8 @@ function card(w){var n=w.profile;return '<button class="pc-archive-card" type="b
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
 html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
-html+='<div class="pc-section-label pc-section-label-second">JOIN PHAN CENTRAL</div><section class="pc-feature pc-nominate-card"><strong>Think you should be Phan of the Week?</strong><p class="pc-muted">Tell the Dump &amp; Chase Podcast your story.</p>'+(d.submissions_open?'<button class="pc-primary" id="pcBeginNomination">SUBMIT YOUR NOMINATION</button>':'<p class="pc-muted">Nominations are currently closed.</p>')+'</section>';
-var archive=feed.filter(x=>x.state==='archived'),seasons=[...new Set(archive.map(x=>x.season))].sort().reverse();if(archive.length)html+='<div class="pc-section-label pc-archive-title">PREVIOUS PHANS OF THE WEEK</div>';
-seasons.forEach(season=>{html+='<h3 class="pc-season-label">'+safe(season)+' SEASON</h3><div class="pc-archive-grid">'+archive.filter(x=>x.season===season).map(card).join('')+'</div>';});
+html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true">✦</span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true">★</span><strong>PREVIOUS PHANS</strong></button></div>';
+html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section>';
 target.innerHTML=html;
 }
 window.pcOpenPublic=async function(adminPreview){
@@ -15105,12 +15155,12 @@ window.pcOpenPublic=async function(adminPreview){
  view.hidden=false;
  $('pcPublicContent').scrollTop=0;
  $('pcPublicContent').innerHTML='<p>Loading Phan Central…</p>';
- try{render(await api({action:'feed',preview:preview}));}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
+ try{render(await api({action:'feed',preview:preview}));if(typeof window.pcPollRefresh==='function')window.pcPollRefresh();}catch(e){$('pcPublicContent').textContent=e.message||'Phan Central unavailable';}
 };
 window.pcClosePublic=function(){
  var view=$('pcPublicView');
  view.hidden=true;view.classList.remove('pc-admin-preview','pc-main-tab');
- $('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+ $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
  if(!preview){
    var home=document.querySelector('.bottomnav .navitem[aria-label="Home"]');
    if(home&&typeof setActive==='function')setActive(home);
@@ -15121,17 +15171,25 @@ window.pcLeaveMainTab=function(){
  var view=$('pcPublicView');
  if(view&&!view.hidden&&!preview){
    view.hidden=true;view.classList.remove('pc-main-tab');
-   $('pcProfileSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+   $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
  }
+};
+window.pcCloseArchive=function(){$('pcArchiveSheet').hidden=true;};
+window.pcOpenArchive=function(){
+ var archive=feed.filter(x=>x.state==='archived'),seasons=[...new Set(archive.map(x=>x.season))].sort().reverse();
+ var html=archive.length?'':'<p class="pc-muted">No previous Phans of the Week yet.</p>';
+ seasons.forEach(season=>{html+='<h3 class="pc-season-label">'+safe(season)+' SEASON</h3><div class="pc-archive-grid">'+archive.filter(x=>x.season===season).map(card).join('')+'</div>';});
+ $('pcArchiveBody').innerHTML=html;$('pcArchiveSheet').hidden=false;
 };
 window.pcCloseProfile=function(){$('pcProfileSheet').hidden=true;};
 function openProfile(id){var w=feed.find(x=>x.id===id);if(!w)return;var n=w.profile;
 var headings=[['Phantoms Fan Since',n.fan_since],['Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No'],['Seating Section',n.seating_section||'Not provided'],['Why I’m a Phantoms Fan',n.why_fan],['Favorite Phantoms Memory',n.favorite_memory],['All-Time Favorite Player',n.favorite_player],['How Long I’ve Listened to the Dump & Chase Podcast',n.podcast_listener_since],['Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment]];
 $('pcProfileBody').innerHTML='<h2>'+safe(n.full_name)+'</h2>'+image(n)+'<p class="pc-muted">'+safe(w.season)+' Season</p>'+headings.map(a=>'<div class="pc-profile-answer"><b>'+safe(a[0])+'</b>'+safe(a[1]||'—')+'</div>').join('');$('pcProfileSheet').hidden=false;
 }
-$('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcBeginNomination')){$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
+$('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcViewArchive'))pcOpenArchive();if(e.target.closest('#pcBeginNomination')){$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
 window.pcCloseNomination=function(){$('pcNominationView').hidden=true;};
 window.pcReturnFromThanks=function(){$('pcThankYouView').hidden=true;$('pcNominationView').hidden=true;};
+$('pcArchiveBody').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item){pcCloseArchive();openProfile(item.getAttribute('data-pc-open'));}});
 $('pcNominationForm').addEventListener('change',e=>{if(e.target.name==='is_season_ticket_holder'){$('pcSectionField').hidden=e.target.value!=='yes';if(e.target.value!=='yes')$('pcNominationForm').elements.seating_section.value='';}});
 function fileBase64(file){return new Promise((resolve,reject)=>{var r=new FileReader();r.onerror=()=>reject(Error('Cannot read photo'));r.onload=()=>resolve(String(r.result).split(',')[1]);r.readAsDataURL(file);});}
 $('pcNominationForm').addEventListener('submit',async e=>{
@@ -15149,6 +15207,92 @@ $('pcNominationForm').addEventListener('submit',async e=>{
 async function initialize(){try{var d=await api({action:'feed'});$('phanCentralNav').hidden=!d.visible;}catch(e){$('phanCentralNav').hidden=true;}}
 window.pcRefreshNav=initialize;
 window.addEventListener('load',initialize);
+})();
+</script>
+<script id="pcWeeklyPollV698">
+(function(){'use strict';
+ const $=id=>document.getElementById(id);
+ let editing=null,polls=[],chosen=null,current=null,loading=false;
+ const escape=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function call(body){
+  const r=await dcSupabase.functions.invoke('phan-central-polls',{body});
+  if(r.error)throw Error(r.data?.error||r.error.message||'Poll service unavailable');
+  if(!r.data?.ok)throw Error(r.data?.error||'Poll operation failed');
+  return r.data;
+ }
+ function deviceToken(){
+  try{let token=localStorage.getItem('dc-weekly-poll-device-v1');if(!token||token.length<20){token=(crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(20)),x=>x.toString(16).padStart(2,'0')).join(''));localStorage.setItem('dc-weekly-poll-device-v1',token);}return token;}catch(_){return null;}
+ }
+ function renderPoll(p){
+  const box=$('pcWeeklyPoll');if(!box)return;
+  if(!p){box.innerHTML='<p class="pc-muted">This week’s question is coming soon.</p>';return;}
+  current=p;
+  let html='<div class="pc-poll-question">'+escape(p.question)+'</div>';
+  if(p.results){
+   const total=p.results.total||0;
+   p.options.forEach((name,i)=>{const pct=total?Math.round(100*(p.results.votes[i]||0)/total):0;
+    html+='<div class="pc-poll-result'+(p.my_vote===i?' me':'')+'"><div><strong>'+escape(name)+'</strong> · '+pct+'%'+(p.my_vote===i?' ✓':'')+'</div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
+   });
+   html+='<p class="pc-poll-caption">'+total+' vote'+(total===1?'':'s')+(p.status==='closed'?' · Final results':' · Thanks for voting!')+'</p>';
+  }else{
+   p.options.forEach((name,i)=>{html+='<button type="button" class="pc-poll-option" data-pc-poll-choice="'+i+'" aria-pressed="'+(chosen===i)+'"><span class="pc-poll-radio">'+(chosen===i?'✓':'')+'</span>'+escape(name)+'</button>';});
+   html+='<button type="button" id="pcPollVote" class="pc-primary pc-poll-submit"'+(chosen===null?' disabled':'')+'>SUBMIT VOTE</button><p class="pc-poll-caption">One vote per device, per poll.</p>';
+  }
+  box.innerHTML=html;
+ }
+ window.pcPollRefresh=async function(){
+  if(loading)return;loading=true;
+  try{const r=await call({action:'current',device_token:deviceToken()});
+   if(!current||current.id!==r.poll?.id)chosen=null;
+   current=r.poll;renderPoll(current);
+  }catch(e){const box=$('pcWeeklyPoll');if(box)box.innerHTML='<p class="pc-muted">Poll temporarily unavailable.</p>';}
+  finally{loading=false;}
+ };
+ $('pcPublicContent').addEventListener('click',async e=>{
+  const choice=e.target.closest('[data-pc-poll-choice]');
+  if(choice){chosen=Number(choice.dataset.pcPollChoice);renderPoll(current);return;}
+  if(e.target.closest('#pcPollVote')&&current&&chosen!==null){
+   const btn=$('pcPollVote');if(btn)btn.disabled=true;
+   try{const r=await call({action:'vote',poll_id:current.id,option_index:chosen,device_token:deviceToken()});current={...current,my_vote:r.my_vote,results:r.results};renderPoll(current);}
+   catch(err){alert('Vote not recorded: '+(err.message||err));await window.pcPollRefresh();}
+  }
+ });
+ const note=x=>{if($('pcPollAdminStatus'))$('pcPollAdminStatus').textContent=x;};
+ window.pcPollClearEditor=function(){editing=null;$('pcPollQuestion').value='';document.querySelectorAll('#pcPollOptionFields .pc-poll-opt').forEach(x=>x.value='');$('pcPollSave').textContent='SAVE NEW POLL';};
+ window.pcPollAdminLoad=async function(){
+  try{const r=await call({action:'admin_list'});polls=r.polls||[];renderAdmin();note('');}
+  catch(e){note('Could not load polls: '+(e.message||e));}
+ };
+ function renderAdmin(){
+  const target=$('pcPollAdminList');if(!target)return;
+  if(!polls.length){target.innerHTML='<p class="admin-muted">No polls yet.</p>';return;}
+  target.innerHTML=polls.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join('');
+ }
+ $('pcPollAdminList').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-poll-action]');if(!btn)return;
+  const poll=polls.find(x=>x.id===btn.dataset.pollId);if(!poll)return;
+  const action=btn.dataset.pollAction;
+  if(action==='edit'){
+   editing=poll.id;$('pcPollQuestion').value=poll.question;
+   document.querySelectorAll('#pcPollOptionFields .pc-poll-opt').forEach((x,i)=>x.value=poll.options[i]||'');
+   $('pcPollSave').textContent='SAVE CHANGES';$('pcPollQuestion').scrollIntoView({block:'nearest'});note(poll.results.total?'You can edit the question, but answers are locked after the first vote.':'Editing selected poll.');return;
+  }
+  if(action==='delete'&&!confirm('Delete this poll and ALL its votes? This cannot be undone.'))return;
+  if(action==='open'&&!confirm('Open this poll for listener voting?'))return;
+  if(action==='closed'&&!confirm('Close voting for this poll?'))return;
+  btn.disabled=true;
+  try{await call(action==='delete'?{action:'delete',id:poll.id}:{action:'set_status',id:poll.id,status:action});note(action==='delete'?'Poll deleted.':'Poll updated.');pcPollClearEditor();await window.pcPollAdminLoad();}
+  catch(err){note(err.message||'Operation failed');btn.disabled=false;}
+ });
+ window.pcPollSave=async function(){
+  const question=$('pcPollQuestion').value.trim();
+  const options=Array.from(document.querySelectorAll('#pcPollOptionFields .pc-poll-opt')).map(x=>x.value.trim()).filter(Boolean);
+  if(question.length<5||options.length<2){note('Enter a question and at least two answers.');return;}
+  const btn=$('pcPollSave');btn.disabled=true;
+  try{await call({action:'save',id:editing||null,question,options});pcPollClearEditor();await pcPollAdminLoad();note('Poll saved. Use OPEN when ready.');}
+  catch(e){note(e.message||'Could not save poll');}
+  finally{btn.disabled=false;}
+ };
 })();
 </script>
 </body>
