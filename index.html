@@ -5626,6 +5626,9 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 @media(max-width:520px){.pc-admin .pc-grid{grid-template-columns:1fr}}
 
 .pc-admin h3{font-size:16px;margin:12px 0}.pc-switches{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.pc-switches span{border:1px solid rgba(255,255,255,.15);padding:6px 10px;border-radius:10px;color:#b5c1d1;font-size:11px;font-weight:750}.pc-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.pc-summary{font-size:12px;color:#aab5c5;margin:10px 0}.pc-list{display:grid;gap:9px}.pc-entry{width:100%;text-align:left;background:#172030;color:inherit;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:10px;cursor:pointer}.pc-entry small{display:block;color:#aab5c5;margin-top:4px}.pc-entry em{font-style:normal;font-size:10px;color:#caafff}.pc-detail{background:#121b29;border:1px solid #614b80;border-radius:12px;padding:12px;margin-top:15px}.pc-admin .pc-field{display:block;margin:10px 0;font-size:11px;font-weight:800;color:#bcc7d5}.pc-admin .pc-field input,.pc-admin .pc-field textarea,.pc-admin .pc-field select{box-sizing:border-box;display:block;width:100%;margin-top:5px;padding:9px;background:#202a3a;color:#fff;border:1px solid #415066;border-radius:8px;font:inherit;font-weight:400}.pc-admin .pc-field textarea{min-height:70px;resize:vertical}.pc-admin .pc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.pc-admin .pc-check{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}.pc-admin .pc-check input{accent-color:#ab7bec}#pcPendingBadge:not(:empty){border-radius:12px;background:#55386e;padding:1px 5px;font-size:10px;margin-left:4px}
+
+#adminPhanCentralPanel .pc-danger-action{border-color:rgba(230,120,120,.45);color:#f0b2b2}
+#adminPhanCentralPanel .pc-danger-action[hidden]{display:none!important}
 </style>
 <style id="phanCentralPublicStyles">
 /* V701: one authoritative Phan Central surface. Metrics and colors align to Phantoms HQ. */
@@ -9844,7 +9847,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v702</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v703</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
@@ -10233,7 +10236,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <h3>Edit nomination</h3><div id="pcDetailFields"></div>
       <section class="pc-photo"><h3>Fan Photo (Private)</h3><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><label class="pc-field">Upload JPEG, PNG or WebP, maximum 5 MB<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">UPLOAD PRIVATE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcRemovePhoto()" id="pcPhotoRemove" disabled>REMOVE PHOTO</button></div><label class="pc-field">Photo position horizontal <input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Photo position vertical <input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></section>
       <section class="pc-winner-tools"><h3>Winner Selection</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible nominees with consent can be selected. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(false)">SELECT FOR PUBLISH NOW</button><label class="pc-field">Schedule date & time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE WINNER</button></div><p class="admin-muted">After selecting for Publish Now, use PUBLISH NOW in Featured Listener Management above.</p></section>
-      <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button></div>
+      <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button><button type="button" class="admin-mini-btn pc-danger-action" id="pcDeleteNomination" onclick="pcDeleteNomination()">DELETE NOMINATION</button></div>
       
     </section>
     <div class="admin-status" id="pcFeedback" aria-live="polite"></div>
@@ -14919,12 +14922,23 @@ window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||n
  '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>'+
  '<label class="pc-field">Review status<select id="pcStatus">'+statuses.map(function(v){return '<option'+(selected.status===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></label>'+
  '<p class="admin-muted">Adult and consent confirmed: '+(selected.adult_confirmed&&selected.consent_confirmed?'YES':'NO')+' · Photo: '+(selected.photo_path?(selected.photo_approved?'approved':'awaiting approval'):'none')+'</p>';
+ var delButton=el('pcDeleteNomination');if(delButton)delButton.hidden=winners.some(function(w){return w.nomination_id===id;});
  var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(button){return button.getAttribute('data-pc-id')===id;});
  el('pcList').querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
  var modeNote=el('pcWinnerModeNote');if(modeNote)modeNote.textContent='Selected listener will appear in Phan Central when published.';
  if(anchor)anchor.after(detail);
  detail.hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;detail.scrollIntoView({behavior:'smooth',block:'nearest'});};
 window.pcClose=function(){selected=null;var detail=el('pcDetail');detail.hidden=true;var list=el('pcList');if(list){list.querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded','false');});if(list.contains(detail))list.after(detail);}};
+window.pcDeleteNomination=async function(){
+ if(!selected)return;
+ var nominee=selected;
+ if(winners.some(function(w){return w.nomination_id===nominee.id;})){feedback('This listener is part of winner history and cannot be deleted.');return;}
+ if(!confirm('Permanently delete the nomination for '+nominee.full_name+' and its uploaded photos? This cannot be undone.'))return;
+ var button=el('pcDeleteNomination');if(button)button.disabled=true;
+ try{await pcApi({action:'delete_nomination',nomination_id:nominee.id});pcClose();await pcLoad();feedback('Nomination deleted.');}
+ catch(e){feedback('Delete failed: '+(e.message||e));}
+ finally{if(button)button.disabled=false;}
+};
 window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedback('Admin session expired.');return;}
  try{var fields=el('pcDetailFields').querySelectorAll('[data-pc-field]'),patch={updated_at:new Date().toISOString()};fields.forEach(function(input){patch[input.getAttribute('data-pc-field')]=input.value;});patch.email=normalizedEmail(patch.email);patch.is_season_ticket_holder=el('pcSth').checked;patch.status=el('pcStatus').value;
  if(!patch.full_name.trim()||!patch.email.includes('@')||!patch.fan_since.trim()||!patch.why_fan.trim()||!patch.favorite_memory.trim()||!patch.favorite_player.trim()||!patch.favorite_podcast_moment.trim()||!String(patch.podcast_listener_since||'').trim())throw Error('Complete all required fields.');
@@ -14950,7 +14964,7 @@ function pcRenderWinners(){
 async function pcApi(payload){
  if(!(await verified()))throw Error('Admin session expired');
  var res=await dcSupabase.functions.invoke('phan-central-admin',{body:payload});
- if(res.error)throw Error(res.data?.error||res.error.message||'Backend action failed');
+ if(res.error){var reason=res.data?.error;try{if(!reason&&res.error.context?.json){var decoded=await res.error.context.json();reason=decoded?.error;}}catch(_){}throw Error(reason||res.error.message||'Backend action failed');}
  if(!res.data?.ok)throw Error(res.data?.error||'Backend rejected the action');
  return res.data;
 }
@@ -15043,13 +15057,22 @@ var feed=[], preview=false, currentFeed=null;
 var $=id=>document.getElementById(id);
 var safe=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 var getAdmin=async()=>{try{var x=await dcSupabase.auth.getUser();return !!(x?.data?.user?.email&&x.data.user.email.toLowerCase()==='samolmsteadradio@gmail.com');}catch(e){return false;}};
-async function api(body){var r=await dcSupabase.functions.invoke('phan-central-public',{body});if(r.error)throw Error(r.data?.error||r.error.message||'Phan Central unavailable');if(!r.data?.ok)throw Error(r.data?.error||'Unable to load Phan Central');return r.data;}
+async function api(body){
+ var r=await dcSupabase.functions.invoke('phan-central-public',{body});
+ if(r.error){
+  var detail=r.data?.error;
+  try{if(!detail&&r.error.context?.json){var response=await r.error.context.json();detail=response?.error;}}catch(_){}
+  throw Error(detail||r.error.message||'Phan Central unavailable');
+ }
+ if(!r.data?.ok)throw Error(r.data?.error||'Unable to load Phan Central');
+ return r.data;
+}
 function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Photo of '+safe(n.full_name)+'" src="'+safe(n.photo_url)+'" style="object-position:'+Number(n.photo_position_x??50)+'% '+Number(n.photo_position_y??50)+'%">':'PHAN CENTRAL')+'</div>';}
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
 html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
-html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="7" r="4"/><path d="M3.5 21v-2.2a6.5 6.5 0 0 1 10.4-5.2"/><path d="m16 17 2.2 2.2 4-4"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8" r="5.5"/><path d="m8.5 12.6-1 8 4.5-2.5 4.5 2.5-1-8"/><circle cx="12" cy="8" r="2"/></svg></span><strong>PREVIOUS PHANS</strong></button></div>';
+html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open||preview?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="7" r="4"/><path d="M3.5 21v-2.2a6.5 6.5 0 0 1 10.4-5.2"/><path d="m16 17 2.2 2.2 4-4"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8" r="5.5"/><path d="m8.5 12.6-1 8 4.5-2.5 4.5 2.5-1-8"/><circle cx="12" cy="8" r="2"/></svg></span><strong>PREVIOUS PHANS</strong></button></div>';
 html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section>';
 target.innerHTML=html;
 }
