@@ -9915,7 +9915,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v710</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10284,17 +10284,11 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <div class="pc-v705-section" data-pc-section-panel="fans">
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
     <section class="pc-winners"><h3>Phan of the Week Management</h3><div id="pcWinnersList">Loading featured listener history…</div></section>
-    <div class="pc-actions" id="pcFilters">
-      <button class="admin-mini-btn active" data-pc-filter="all" onclick="pcFilter('all')">ALL</button>
-      <button class="admin-mini-btn" data-pc-filter="New" onclick="pcFilter('New')">NEW</button>
-      <button class="admin-mini-btn" data-pc-filter="Eligible" onclick="pcFilter('Eligible')">ELIGIBLE</button>
-      <button class="admin-mini-btn" data-pc-filter="On Hold" onclick="pcFilter('On Hold')">ON HOLD</button>
-      <button class="admin-mini-btn" data-pc-filter="Ineligible" onclick="pcFilter('Ineligible')">INELIGIBLE</button>
-    </div>
+    <h3 class="pc-v711-heading">LISTENER SUBMISSIONS</h3>
     <div id="pcList" class="pc-list" aria-live="polite"></div>
     <section id="pcDetail" class="pc-detail" hidden>
       <h3>Edit nomination</h3><div id="pcDetailFields"></div>
-      <section class="pc-photo"><h3>Fan Photo (Private)</h3><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><label class="pc-field">Upload JPEG, PNG or WebP, maximum 5 MB<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">UPLOAD PRIVATE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE PHOTO</button><button type="button" class="admin-mini-btn" onclick="pcRemovePhoto()" id="pcPhotoRemove" disabled>REMOVE PHOTO</button></div><label class="pc-field">Photo position horizontal <input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Photo position vertical <input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></section>
+      <details class="pc-photo pc-v711-photo" open><summary>LISTENER PHOTO</summary><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE</button><button type="button" class="admin-mini-btn" onclick="pcRejectPhoto()" id="pcPhotoRemove" disabled>REJECT</button></div><details class="pc-v711-photo-extras"><summary>Replace or adjust photo</summary><label class="pc-field">Upload JPG, PNG, or WebP (max 5 MB)<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">REPLACE PHOTO</button><label class="pc-field">Horizontal position<input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Vertical position<input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></details></details>
       <section class="pc-winner-tools"><h3>Feature this Listener</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible listeners with consent can be featured. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-v705-selection"><button type="button" class="btn primary" onclick="pcFeatureNow()">FEATURE NOW</button><details><summary>Or schedule for later</summary><label class="pc-field">Date &amp; time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE FEATURE</button></details></div></section>
       <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button><button type="button" class="admin-mini-btn pc-danger-action" id="pcDeleteNomination" onclick="pcDeleteNomination()">DELETE NOMINATION</button></div>
       
@@ -15006,12 +15000,12 @@ function verified(){return dcIsAdmin();}
 function normalizedEmail(v){return String(v||'').trim().toLowerCase();}
 function render(){
  var list=el('pcList');if(!list)return;
- var detail=el('pcDetail');if(detail&&list.contains(detail)){detail.hidden=true;list.after(detail);selected=null;}
- var filtered=rows.filter(function(r){return currentFilter==='all'||r.status===currentFilter;});
- filtered.sort(function(a,b){return (a.status==='New'?0:1)-(b.status==='New'?0:1)||new Date(b.created_at||0)-new Date(a.created_at||0);});
- el('pcSummary').textContent=rows.length+' total nominations · '+rows.filter(function(x){return x.status==='New';}).length+' new';
- if(!filtered.length){list.innerHTML='<div class="admin-muted">No nominations in this category.</div>';return;}
- list.innerHTML=filtered.map(function(r){return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(r.fan_since)+' · '+(r.is_season_ticket_holder?'STH':'Non-STH')+' · '+esc(r.submitted_season)+'</small></span><span><em>'+esc(r.status)+'</em></span></button>';}).join('');
+ var detail=el('pcDetail');if(detail&&list.contains(detail)){detail.hidden=true;list.after(detail);}
+ var filtered=rows.slice().sort(function(a,b){return new Date(b.created_at||0)-new Date(a.created_at||0);});
+ var count=rows.filter(function(x){return x.status==='New'&&!x.viewed_at;}).length;
+ el('pcSummary').textContent=rows.length+' submissions · '+count+' new';
+ if(!filtered.length){list.innerHTML='<div class="admin-muted">No listener submissions yet.</div>';return;}
+ list.innerHTML=filtered.map(function(r){var date=r.created_at?new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(date)+'</small></span><span><em>'+esc(r.status==='New'&&r.viewed_at?'Reviewed':r.status)+'</em>'+(r.status==='New'&&!r.viewed_at?' <strong class="pc-v711-new">NEW</strong>':'')+'</span></button>';}).join('');
  list.querySelectorAll('[data-pc-id]').forEach(function(b){b.addEventListener('click',function(){window.pcOpen(b.getAttribute('data-pc-id'));});});
 }
 window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading private nominations…');try{
@@ -15047,18 +15041,37 @@ window.pcChangeSetting=async function(setting){
   feedback(label+' is now '+(next?'ON':'OFF')+'.');
  }catch(e){feedback('Setting could not be changed: '+(e.message||e));pcRenderSettings();}
 };
-window.pcFilter=function(v){currentFilter=v;el('pcFilters').querySelectorAll('[data-pc-filter]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-pc-filter')===v);});render();};
-window.pcOpen=function(id){selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;var body=el('pcDetailFields');
- body.innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]);return '<label class="pc-field">'+f[1]+(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">')+'</label>';}).join('')+'</div>'+
- '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>'+
- '<label class="pc-field">Review status<select id="pcStatus">'+statuses.map(function(v){return '<option'+(selected.status===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></label>'+
- '<p class="admin-muted">Adult and consent confirmed: '+(selected.adult_confirmed&&selected.consent_confirmed?'YES':'NO')+' · Photo: '+(selected.photo_path?(selected.photo_approved?'approved':'awaiting approval'):'none')+'</p>';
- var delButton=el('pcDeleteNomination');if(delButton)delButton.hidden=winners.some(function(w){return w.nomination_id===id;});
- var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(button){return button.getAttribute('data-pc-id')===id;});
+window.pcOpen=async function(id){
+ selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;
+ if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});}catch(e){feedback('Could not mark submission as viewed: '+(e.message||e));}}
+ editing=false;pcDrawSubmission();render();
+ var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(b){return b.dataset.pcId===id;});
+ if(anchor)anchor.after(detail);detail.hidden=false;
  el('pcList').querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
- var modeNote=el('pcWinnerModeNote');if(modeNote)modeNote.textContent='Selected listener will appear in Phan Central when published.';
- if(anchor)anchor.after(detail);
- detail.hidden=false;pcRenderPhoto();el('pcProfilePreview').hidden=true;detail.scrollIntoView({behavior:'smooth',block:'nearest'});};
+ await pcRenderPhoto();el('pcProfilePreview').hidden=true;
+ var badge=el('pcPendingBadge');if(badge){var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;badge.textContent=c?String(c):'';}
+ detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+function pcDrawSubmission(){if(!selected)return;
+ el('pcDetailTitle').textContent=selected.full_name+' · LISTENER STORY';
+ el('pcDetailFields').innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]);return '<label class="pc-field">'+esc(f[1])+(editing?(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">'):'<div class="pc-v711-answer">'+(val||'Not provided')+'</div>')+'</label>';}).join('')+'</div>'+
+ '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+(editing?'':' disabled')+'> Season ticket holder</label>'+
+ '<p class="admin-muted">Age and publication consent: '+(selected.adult_confirmed&&selected.consent_confirmed?'CONFIRMED':'MISSING')+'</p>';
+ el('pcHostNotes').value=selected.admin_notes||'';
+ var status=el('pcStatus');status.innerHTML=statuses.map(function(v){return '<option value="'+v+'">'+(v==='New'?'New — Awaiting Review':v)+'</option>';}).join('');
+ if(!statuses.includes(selected.status)){status.innerHTML='<option value="'+esc(selected.status)+'">'+esc(selected.status)+' (automatic)</option>'+status.innerHTML;status.disabled=true;}else{status.disabled=false;status.value=selected.status;}
+ el('pcReviewActions').hidden=editing;el('pcEditActions').hidden=!editing;
+ el('pcDeleteNomination').hidden=winners.some(function(w){return w.nomination_id===selected.id;});
+ el('pcWinnerModeNote').textContent='Feature an Eligible listener with confirmed consent. Only approved photos appear publicly; otherwise the podcast placeholder is used.';
+ el('pcProfilePreview').hidden=true;
+}
+window.pcStartEdit=function(){if(!selected)return;editing=true;pcDrawSubmission();};
+window.pcCancelEdit=function(){editing=false;pcDrawSubmission();};
+window.pcChangeReviewStatus=async function(){if(!selected)return;var status=el('pcStatus').value;if(!statuses.includes(status)||status===selected.status)return;
+ if(!confirm('Change '+selected.full_name+' to '+status+'?')){el('pcStatus').value=selected.status;return;}
+ try{var r=await dcSupabase.from('phan_central_nominations').update({status:status,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(r.error)throw r.error;selected=r.data;rows=rows.map(function(x){return x.id===selected.id?selected:x;});feedback('Review status updated.');pcDrawSubmission();}catch(e){feedback('Status update failed: '+(e.message||e));el('pcStatus').value=selected.status;}
+};
+window.pcSaveNotes=async function(){if(!selected)return;try{var r=await dcSupabase.from('phan_central_nominations').update({admin_notes:el('pcHostNotes').value,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(r.error)throw r.error;selected=r.data;feedback('Host notes saved.');}catch(e){feedback('Could not save notes: '+(e.message||e));}};
 window.pcClose=function(){selected=null;var detail=el('pcDetail');detail.hidden=true;var list=el('pcList');if(list){list.querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded','false');});if(list.contains(detail))list.after(detail);}};
 window.pcDeleteNomination=async function(){
  if(!selected)return;
@@ -15070,32 +15083,42 @@ window.pcDeleteNomination=async function(){
  catch(e){feedback('Delete failed: '+(e.message||e));}
  finally{if(button)button.disabled=false;}
 };
-window.pcSave=async function(){if(!selected)return;if(!(await verified())){feedback('Admin session expired.');return;}
- try{var fields=el('pcDetailFields').querySelectorAll('[data-pc-field]'),patch={updated_at:new Date().toISOString()};fields.forEach(function(input){patch[input.getAttribute('data-pc-field')]=input.value;});patch.email=normalizedEmail(patch.email);patch.is_season_ticket_holder=el('pcSth').checked;patch.status=el('pcStatus').value;
+window.pcSave=async function(){if(!selected||!editing)return;if(!(await verified())){feedback('Admin session expired.');return;}
+ try{var fields=el('pcDetailFields').querySelectorAll('[data-pc-field]'),patch={updated_at:new Date().toISOString()};fields.forEach(function(input){patch[input.getAttribute('data-pc-field')]=input.value;});patch.email=normalizedEmail(patch.email);patch.is_season_ticket_holder=el('pcSth').checked;
  if(!patch.full_name.trim()||!patch.email.includes('@')||!patch.fan_since.trim()||!patch.why_fan.trim()||!patch.favorite_memory.trim()||!patch.favorite_player.trim()||!patch.favorite_podcast_moment.trim()||!String(patch.podcast_listener_since||'').trim())throw Error('Complete all required fields.');
- if((patch.status==='Selected'||patch.status==='Featured')&&selected.status!==patch.status)throw Error('Selection and publication must use the protected winner workflow, not a status edit.');
  if(!confirm('Save changes to '+selected.full_name+'?'))return;
  var result=await dcSupabase.from('phan_central_nominations').update(patch).eq('id',selected.id).select('*').single();if(result.error)throw result.error;
- selected=result.data;feedback('Nomination saved.');pcClose();await pcLoad();
+ selected=result.data;editing=false;rows=rows.map(function(x){return x.id===selected.id?selected:x;});pcDrawSubmission();feedback('Submission saved.');
  }catch(e){feedback('Save failed: '+(e.message||e));}};
 
 function pcRenderWinners(){
  var dest=el('pcWinnersList');if(!dest)return;
- if(!winners.length){dest.innerHTML='<p class="admin-muted">No featured listeners selected yet.</p>';return;}
- var activeWinners=winners.filter(function(w){return ['current','scheduled'].includes(w.state);});
- var pastWinners=winners.filter(function(w){return !['current','scheduled'].includes(w.state);});
- function winnerEntry(w){var n=rows.find(function(x){return x.id===w.nomination_id;});
-  var caption=w.feature_at?' · '+esc(new Date(w.feature_at).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'}))+' ET':'';
-  return '<div class="pc-winner-entry"><b>'+esc(n?n.full_name:'Nomination '+w.nomination_id)+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(w.season)+caption+(w.failure_reason?' · '+esc(w.failure_reason):'')+'</small><div class="pc-actions">'+
-   (w.state==='scheduled'?'<button type="button" class="admin-mini-btn" data-pc-publish="'+esc(w.id)+'">PUBLISH NOW</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL SELECTION</button>':'')+
-   (['current','archived'].includes(w.state)?'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button>':'')+
-   '<button type="button" class="admin-mini-btn pc-danger-action" data-pc-delete-winner="'+esc(w.id)+'">DELETE WINNER</button></div></div>';
- }
- dest.innerHTML=activeWinners.map(winnerEntry).join('')+(pastWinners.length?'<details class="pc-history-collapsible"><summary>PREVIOUS PHANS &amp; HISTORY ('+pastWinners.length+')</summary>'+pastWinners.map(winnerEntry).join('')+'</details>':'');
- dest.querySelectorAll('[data-pc-publish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('publish',b.dataset.pcPublish);});});
+ var current=winners.filter(function(w){return w.state==='current';}),upcoming=winners.filter(function(w){return w.state==='scheduled';}),past=winners.filter(function(w){return !['current','scheduled'].includes(w.state);});
+ function name(w){var n=rows.find(function(r){return r.id===w.nomination_id;});return n?n.full_name:'Listener record';}
+ function date(w){var raw=w.feature_at||w.published_at||w.created_at;return raw?new Date(raw).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'})+' ET':'';}
+ function preview(w){return '<button type="button" class="admin-mini-btn" data-pc-winner-preview="'+esc(w.id)+'">PREVIEW PROFILE</button>';}
+ var html='<section class="pc-v711-winner-group"><h4>CURRENT PHAN</h4>'+(current.length?current.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Featured '+esc(date(w))+'</small><div class="pc-actions">'+preview(w)+'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button></div></div>';}).join(''):'<p class="admin-muted">No listener currently featured.</p>')+'</section>';
+ if(upcoming.length)html+='<section class="pc-v711-winner-group"><h4>UPCOMING PHANS</h4>'+upcoming.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Scheduled: '+esc(date(w))+'</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-reschedule="'+esc(w.id)+'">RESCHEDULE</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL</button></div><div class="pc-v711-scheduler" id="pcScheduler-'+esc(w.id)+'" hidden><label class="pc-field">New date and time (Eastern)<input type="datetime-local"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-save-reschedule="'+esc(w.id)+'">SAVE DATE</button><button type="button" class="admin-mini-btn" data-pc-dismiss-reschedule="'+esc(w.id)+'">KEEP ORIGINAL</button></div></div></div>';}).join('')+'</section>';
+ if(past.length)html+='<details class="pc-history-collapsible"><summary>PREVIOUS PHANS &amp; HISTORY ('+past.length+')</summary>'+past.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(date(w))+'</small><div class="pc-actions">'+preview(w)+'<button type="button" class="admin-mini-btn pc-danger-action" data-pc-delete-winner="'+esc(w.id)+'">DELETE</button></div></div>';}).join('')+'</details>';
+ dest.innerHTML=html;
  dest.querySelectorAll('[data-pc-cancel]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('cancel',b.dataset.pcCancel);});});
  dest.querySelectorAll('[data-pc-unpublish]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('unpublish',b.dataset.pcUnpublish);});});
  dest.querySelectorAll('[data-pc-delete-winner]').forEach(function(b){b.addEventListener('click',function(){pcDeleteWinner(b.dataset.pcDeleteWinner);});});
+ dest.querySelectorAll('[data-pc-winner-preview]').forEach(function(b){b.addEventListener('click',function(){pcPreviewWinner(b.dataset.pcWinnerPreview);});});
+ dest.querySelectorAll('[data-pc-reschedule]').forEach(function(b){b.addEventListener('click',function(){pcShowReschedule(b.dataset.pcReschedule);});});
+ dest.querySelectorAll('[data-pc-save-reschedule]').forEach(function(b){b.addEventListener('click',function(){pcSaveReschedule(b.dataset.pcSaveReschedule);});});
+ dest.querySelectorAll('[data-pc-dismiss-reschedule]').forEach(function(b){b.addEventListener('click',function(){var x=el('pcScheduler-'+b.dataset.pcDismissReschedule);if(x)x.hidden=true;});});
+}
+function pcPreviewWinner(id){var w=winners.find(function(x){return x.id===id;});if(!w)return;var n=rows.find(function(x){return x.id===w.nomination_id;});if(!n){feedback('Original listener submission not available.');return;}window.pcOpen(n.id).then(function(){pcPreview();el('pcProfilePreview').scrollIntoView({behavior:'smooth',block:'nearest'});});}
+function pcShowReschedule(id){var w=winners.find(function(x){return x.id===id;});var area=el('pcScheduler-'+id);if(!w||!area)return;area.hidden=!area.hidden;
+ if(area.hidden)return;var t=w.feature_at?easternParts(new Date(w.feature_at)):null;
+ area.querySelector('input').value=t?[t.year,t.month,t.day].join('-')+'T'+t.hour+':'+t.minute:'';
+}
+async function pcSaveReschedule(id){var w=winners.find(function(x){return x.id===id;});var area=el('pcScheduler-'+id);if(!w||!area)return;
+ var entered=area.querySelector('input').value;
+ try{var time=pcEasternUTC(entered);if(!confirm('Reschedule this Phan for '+entered+' Eastern Time?'))return;
+ await pcApi({action:'reschedule',winner_id:id,feature_at:time});await pcLoad();feedback('Upcoming Phan rescheduled.');}
+ catch(e){feedback('Reschedule failed: '+(e.message||e));}
 }
 async function pcApi(payload){
  if(!(await verified()))throw Error('Admin session expired');
@@ -15131,7 +15154,6 @@ window.pcSelectWinner=async function(scheduled){
  if(!selected)return;
  if(!selected.is_test&&!settings?.public_visible){feedback('Enable the Phan Central page before selecting a production winner.');return;}
  if(selected.status!=='Eligible'){feedback('Set this nomination to Eligible and save first.');return;}
- if(selected.photo_path&&!selected.photo_approved){feedback('Approve the uploaded photo or remove it before selection.');return;}
  try{
   var featureAt=scheduled?pcEasternUTC(el('pcScheduleTime').value):null;
   var season=settings?.active_season||'2026-27';
@@ -15163,7 +15185,7 @@ async function pcRenderPhoto(){
  if(!selected)return;var id=selected.id,frame=el('pcPhotoPreview');
  frame.textContent='No photo uploaded';photoUrl='';
  el('pcPhotoX').value=selected.photo_position_x??50;el('pcPhotoY').value=selected.photo_position_y??50;
- el('pcPhotoApprove').disabled=!selected.photo_path;el('pcPhotoRemove').disabled=!selected.photo_path;
+ el('pcPhotoApprove').disabled=!selected.photo_path||!!selected.photo_approved;el('pcPhotoRemove').disabled=!selected.photo_path||!selected.photo_approved;
  el('pcPhotoStatus').textContent=selected.photo_path?(selected.photo_approved?'APPROVED':'AWAITING APPROVAL'):'No uploaded photo';
  if(!selected.photo_path)return;
  try{var res=await dcSupabase.storage.from('phan-central-private').createSignedUrl(selected.photo_path,180);
@@ -15198,6 +15220,10 @@ window.pcApprovePhoto=async function(){if(!selected?.photo_path)return;
  try{if(!confirm('Approve this photo for the fan profile?'))return;
  var res=await dcSupabase.from('phan_central_nominations').update({photo_approved:true,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(res.error)throw res.error;
  selected=res.data;pcRenderPhoto();feedback('Photo approved.');}catch(e){feedback('Photo approval failed: '+(e.message||e));}
+};
+window.pcRejectPhoto=async function(){if(!selected?.photo_path)return;
+ if(!confirm('Reject this photo? The podcast placeholder will be shown instead.'))return;
+ try{var r=await dcSupabase.from('phan_central_nominations').update({photo_approved:false,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(r.error)throw r.error;selected=r.data;pcRenderPhoto();feedback('Photo rejected. Default placeholder will be used.');}catch(e){feedback('Photo rejection failed: '+(e.message||e));}
 };
 window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
  if(!confirm('Remove this private photo?'))return;
