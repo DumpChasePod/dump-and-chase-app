@@ -10283,16 +10283,55 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div class="pc-v705-section" data-pc-section-panel="fans">
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
-    <section class="pc-winners"><h3>Phan of the Week Management</h3><div id="pcWinnersList">Loading featured listener history…</div></section>
     <h3 class="pc-v711-heading">LISTENER SUBMISSIONS</h3>
     <div id="pcList" class="pc-list" aria-live="polite"></div>
     <section id="pcDetail" class="pc-detail" hidden>
-      <h3>Edit nomination</h3><div id="pcDetailFields"></div>
-      <details class="pc-photo pc-v711-photo" open><summary>LISTENER PHOTO</summary><div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div><p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p><div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE</button><button type="button" class="admin-mini-btn" onclick="pcRejectPhoto()" id="pcPhotoRemove" disabled>REJECT</button></div><details class="pc-v711-photo-extras"><summary>Replace or adjust photo</summary><label class="pc-field">Upload JPG, PNG, or WebP (max 5 MB)<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label><button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">REPLACE PHOTO</button><label class="pc-field">Horizontal position<input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><label class="pc-field">Vertical position<input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label><button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button></details></details>
-      <section class="pc-winner-tools"><h3>Feature this Listener</h3><p class="admin-muted" id="pcWinnerModeNote">Eligible listeners with consent can be featured. Photo approval is required when a photo exists.</p><button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PUBLIC PROFILE</button><div id="pcProfilePreview" class="pc-profile-preview" hidden></div><div class="pc-v705-selection"><button type="button" class="btn primary" onclick="pcFeatureNow()">FEATURE NOW</button><details><summary>Or schedule for later</summary><label class="pc-field">Date &amp; time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE FEATURE</button></details></div></section>
-      <div class="pc-actions"><button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE</button><button type="button" class="admin-mini-btn pc-danger-action" id="pcDeleteNomination" onclick="pcDeleteNomination()">DELETE NOMINATION</button></div>
-      
+      <h3 id="pcDetailTitle">LISTENER STORY</h3>
+      <div id="pcDetailFields"></div>
+      <div class="pc-actions" id="pcReviewActions">
+        <button type="button" class="admin-mini-btn" onclick="pcStartEdit()">EDIT SUBMISSION</button>
+        <button type="button" class="admin-mini-btn" onclick="pcPreview()">PREVIEW PROFILE</button>
+      </div>
+      <div class="pc-actions" id="pcEditActions" hidden>
+        <button type="button" class="btn primary" onclick="pcSave()">SAVE CHANGES</button>
+        <button type="button" class="admin-mini-btn" onclick="pcCancelEdit()">CANCEL</button>
+      </div>
+      <label class="pc-field">REVIEW STATUS
+        <select id="pcStatus" onchange="pcChangeReviewStatus()">
+          <option value="New">New — Awaiting Review</option><option value="Eligible">Eligible</option><option value="On Hold">On Hold</option><option value="Ineligible">Ineligible</option>
+        </select>
+      </label>
+      <details class="pc-v711-notes"><summary>HOST NOTES (PRIVATE)</summary>
+        <label class="pc-field">Private notes<textarea id="pcHostNotes" rows="3"></textarea></label>
+        <button type="button" class="admin-mini-btn" onclick="pcSaveNotes()">SAVE NOTES</button>
+      </details>
+      <details class="pc-photo pc-v711-photo" open><summary>LISTENER PHOTO</summary>
+        <div id="pcPhotoPreview" class="pc-photo-preview">No photo uploaded</div>
+        <p class="admin-muted" id="pcPhotoStatus">Photo status unavailable</p>
+        <div class="pc-actions">
+          <button type="button" class="admin-mini-btn" onclick="pcApprovePhoto()" id="pcPhotoApprove" disabled>APPROVE</button>
+          <button type="button" class="admin-mini-btn" onclick="pcRejectPhoto()" id="pcPhotoRemove" disabled>REJECT</button>
+        </div>
+        <details class="pc-v711-photo-extras"><summary>Replace or adjust photo</summary>
+          <label class="pc-field">Upload JPG, PNG, or WebP (max 5 MB)<input type="file" id="pcPhotoFile" accept="image/jpeg,image/png,image/webp"></label>
+          <button type="button" class="admin-mini-btn" onclick="pcUploadPhoto()">REPLACE PHOTO</button>
+          <label class="pc-field">Horizontal position<input type="range" id="pcPhotoX" min="0" max="100" value="50" oninput="pcPhotoMove()"></label>
+          <label class="pc-field">Vertical position<input type="range" id="pcPhotoY" min="0" max="100" value="50" oninput="pcPhotoMove()"></label>
+          <button type="button" class="admin-mini-btn" onclick="pcSavePosition()">SAVE PHOTO POSITION</button>
+        </details>
+      </details>
+      <section class="pc-winner-tools"><h3>FEATURE THIS LISTENER</h3>
+        <p class="admin-muted" id="pcWinnerModeNote">Eligible listeners with consent can be featured.</p>
+        <div id="pcProfilePreview" class="pc-profile-preview" hidden></div>
+        <div class="pc-v705-selection">
+          <button type="button" class="btn primary" onclick="pcFeatureNow()">FEATURE NOW</button>
+          <details><summary>Or schedule for later</summary><label class="pc-field">Date &amp; time · Eastern<input type="datetime-local" id="pcScheduleTime"></label><button type="button" class="admin-mini-btn" onclick="pcSelectWinner(true)">SCHEDULE FEATURE</button></details>
+        </div>
+      </section>
+      <div class="pc-actions"><button type="button" class="admin-mini-btn" onclick="pcClose()">CLOSE SUBMISSION</button></div>
+      <div class="pc-v711-danger"><button type="button" class="admin-mini-btn pc-danger-action" id="pcDeleteNomination" onclick="pcDeleteNomination()">DELETE SUBMISSION</button></div>
     </section>
+    <section class="pc-winners pc-v711-management"><h3>FEATURED PHANS</h3><div id="pcWinnersList">Loading featured listener history…</div></section>
     <div class="admin-status" id="pcFeedback" aria-live="polite"></div>
     </div>
     <div class="pc-v705-section" data-pc-section-panel="polls" hidden>
@@ -14990,9 +15029,9 @@ window.addEventListener('online',function(){if(typeof window.dcSetReconnectMode=
 /* Phan Central private Admin phase: do not expose client-side public data flows. */
 (function(){
 'use strict';
-var rows=[],selected=null,currentFilter='all',busy=false,winners=[],photoUrl='',settings=null;
-var editable=[['full_name','Full name','text'],['email','Private email address','email'],['fan_since','How long a Phantoms fan?','text'],['seating_section','Seating section','text'],['why_fan','Why a Phantoms fan?','textarea'],['favorite_memory','Favorite Phantoms memory','textarea'],['favorite_player','Favorite all-time player','text'],['favorite_podcast_moment','Favorite moment from the Dump & Chase Podcast?','textarea'],['podcast_listener_since','How long a Dump & Chase Podcast listener?','text'],['admin_notes','Private Admin notes','textarea']];
-var statuses=['New','Eligible','On Hold','Selected','Featured','Ineligible'];
+var rows=[],selected=null,busy=false,winners=[],photoUrl='',settings=null,editing=false;
+var editable=[['full_name','Full name','text'],['email','Private email address','email'],['fan_since','How long a Phantoms fan?','text'],['seating_section','Seating section','text'],['why_fan','Why a Phantoms fan?','textarea'],['favorite_memory','Favorite Phantoms memory','textarea'],['favorite_player','Favorite all-time player','text'],['favorite_podcast_moment','Favorite moment from the Dump & Chase Podcast?','textarea'],['podcast_listener_since','How long a Dump & Chase Podcast listener?','text']];
+var statuses=['New','Eligible','On Hold','Ineligible'];
 function el(id){return document.getElementById(id);}
 function esc(s){return escapeHtml(String(s==null?'':s));}
 function feedback(message){if(el('pcFeedback'))el('pcFeedback').textContent=message;}
@@ -15043,7 +15082,6 @@ window.pcChangeSetting=async function(setting){
 };
 window.pcOpen=async function(id){
  selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;
- if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});}catch(e){feedback('Could not mark submission as viewed: '+(e.message||e));}}
  editing=false;pcDrawSubmission();render();
  var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(b){return b.dataset.pcId===id;});
  if(anchor)anchor.after(detail);detail.hidden=false;
@@ -15051,6 +15089,7 @@ window.pcOpen=async function(id){
  await pcRenderPhoto();el('pcProfilePreview').hidden=true;
  var badge=el('pcPendingBadge');if(badge){var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;badge.textContent=c?String(c):'';}
  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+ if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;var badge=el('pcPendingBadge');if(badge)badge.textContent=c?String(c):'';el('pcSummary').textContent=rows.length+' submissions · '+c+' new';var active=el('pcList').querySelector('[data-pc-id=+id+]');if(active){var newMark=active.querySelector('.pc-v711-new');if(newMark)newMark.remove();}}catch(e){feedback('Story opened, but viewed status could not be saved: '+(e.message||e));}}
 };
 function pcDrawSubmission(){if(!selected)return;
  el('pcDetailTitle').textContent=selected.full_name+' · LISTENER STORY';
