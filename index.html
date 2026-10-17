@@ -9946,7 +9946,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.9</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.0</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -13655,7 +13655,7 @@ function dcStartGoalSequence(team,source,details){
     if(dcPublicGoalFx&&dcPublicGoalFx.details){
       dcPublicGoalFx.phase='spotlight';
       refreshPublicGameDay();
-      dcPublicGoalFxTimer=setTimeout(dcFinishGoalSequence,4000);
+      dcPublicGoalFxTimer=setTimeout(dcFinishGoalSequence,10000); // V712.0: readable scorer spotlight
       return;
     }
     dcFinishGoalSequence();
@@ -14650,7 +14650,16 @@ body.game-live #publicGameDayCard.dc-gd-modern .gameday-pp-slot:has(.gameday-spe
 function liveChatControl(gameKey){return dcSupabase.from('live_chat_game_controls').select('*').eq('game_key',gameKey).maybeSingle().then(function(r){if(!r.error)currentControl=r.data||null;return currentControl;});}
   function unreadKey(){return UNREAD_PREFIX+currentGameKey;}
   function bumpUnread(){try{var n=Number(localStorage.getItem(unreadKey())||0)+1;localStorage.setItem(unreadKey(),String(Math.min(99,n)));}catch(_){} updateGameDayLiveChatBadge();}
-  function updateGameDayLiveChatBadge(){try{var active=currentGameInfo();if(!active||!active.g)return;var b=document.querySelector('#publicGameDayCard .dc-live-chat-unread');if(b){var n=dcLiveChatUnreadCount(dcLiveChatGameKey(active.g));b.textContent=n>99?'99+':n;b.hidden=n<=0;}}catch(_){} }
+  function updateGameDayLiveChatBadge(){
+    try{
+      var active=currentGameInfo();if(!active||!active.g)return;
+      var button=document.querySelector('#publicGameDayCard .dc-live-chat-action');if(!button)return;
+      var n=dcLiveChatUnreadCount(dcLiveChatGameKey(active.g));
+      var b=button.querySelector('.dc-live-chat-unread');
+      if(n>0&&!b){b=document.createElement('span');b.className='dc-live-chat-unread';button.appendChild(b);}
+      if(b){b.textContent=n>99?'99+':String(n);b.hidden=n<=0;}
+    }catch(_){}
+  }
   window.updateGameDayLiveChatBadge=updateGameDayLiveChatBadge;
   function scoreFromCurrent(){var st=getAdminGameState();var eff=dcEffectivePublicState(currentGame&&currentGame.g?currentGame.g:null,st);var s=teamScoreText(currentGame&&currentGame.g?currentGame.g:null,{phantoms_score:eff.phantoms,opponent_score:eff.opponent});var period=eff.period||st.adminPeriod||'';var clock=eff.clock||st.adminClock||'';var state=eff.status==='final'?(dcFinalLabel(st,period,eff.snapshot)||'FINAL'):eff.status==='live'?'LIVE':(period&&clock==='INT'?period+' INT':'UPCOMING');return {y:s.y,o:s.o,period:period,clock:clock,state:state,opp:currentGame&&currentGame.g?currentGame.g[1]:'Opponent'};}
   function renderScore(){var x=scoreFromCurrent();var full=document.getElementById('liveChatScoreFull'),collapsed=document.getElementById('liveChatScoreCollapsed');if(!full)return;full.innerHTML='<div class="live-chat-score-team">'+escapeHtml('YNG')+'</div><div><div class="live-chat-score-num">'+x.y+' – '+x.o+'</div><div class="live-chat-score-meta">'+escapeHtml(x.state==='LIVE'?(x.period+(x.period&&x.clock?' • ':'')+displayGameClock(x.clock||'')):x.state)+'</div></div><div class="live-chat-score-team">'+escapeHtml(dcTeamAbbr(x.opp))+'</div>';collapsed.textContent='YNG '+x.y+' – '+x.o+' • '+(x.clock&&x.clock!=='INT'?displayGameClock(x.clock):x.state);}
@@ -15021,6 +15030,30 @@ window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveC
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'live_chat_messages',filter:'game_key=eq.'+key},function(p){if(!chatOpen&&p.new&&p.new.sender_type!=='system'){bumpUnread();}})
       .subscribe();
   }
+  // V712.0: reconcile missed realtime events when Android's installed PWA resumes.
+  // Count by message ID since last read, so reconnects never double-count inserts.
+  var dcBadgeCheckBusy=false,dcBadgeCheckedAt=0;
+  async function dcReconcileBackgroundUnread(force){
+    if(chatOpen||document.hidden||!navigator.onLine||dcBadgeCheckBusy)return;
+    if(!force&&Date.now()-dcBadgeCheckedAt<14000)return;
+    var active=currentGameInfo(),key=active&&active.g?dcLiveChatGameKey(active.g):'';
+    if(!key||typeof dcSupabase==='undefined')return;
+    dcBadgeCheckBusy=true;dcBadgeCheckedAt=Date.now();
+    try{
+      var read=dcLastReadMessageId(key);
+      var q=await dcSupabase.from('live_chat_messages').select('id',{count:'exact',head:true})
+        .eq('game_key',key).gt('id',read).neq('sender_type','system').is('deleted_at',null);
+      if(q.error)throw q.error;
+      if(chatOpen||dcLiveChatGameKey((currentGameInfo()||{}).g)!==key)return;
+      var n=Math.max(0,Math.min(99,Number(q.count)||0));
+      try{if(n)localStorage.setItem(UNREAD_PREFIX+key,String(n));else localStorage.removeItem(UNREAD_PREFIX+key);}catch(_){}
+      updateGameDayLiveChatBadge();
+    }catch(_){/* Retain existing unread count on network or permission failures. */}
+    finally{dcBadgeCheckBusy=false;}
+  }
+  setInterval(function(){dcReconcileBackgroundUnread(false);},15000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)dcReconcileBackgroundUnread(true);});
+  window.addEventListener('pageshow',function(){dcReconcileBackgroundUnread(true);});
   async function refreshAdminPresenceChannel(){
     if(!window.dcLiveChatAdminUnlocked)return;
     var active=currentGameInfo();if(!active?.g)return;
@@ -15035,7 +15068,7 @@ window.selectLiveChatAdminSubtab=function(tab){var owningGroup=Object.keys(liveC
 
   // Initial button refresh and keyboard-safe behavior.
   document.addEventListener('visibilitychange',function(){if(chatOpen&&document.hidden&&chatChannel){try{chatChannel.untrack();}catch(_){}}else if(chatOpen&&!document.hidden){dcLiveChatSyncLatest();if(chatChannel){try{chatChannel.track({device_id:deviceId,visible:true,admin:chatAdmin});}catch(_){}}else if(currentGameKey){subscribeChat(currentGameKey).catch(function(){});}}});window.addEventListener('pageshow',function(){if(chatOpen){dcLiveChatSyncLatest();if(!chatChannel&&currentGameKey)subscribeChat(currentGameKey).catch(function(){});}});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){updateGameDayLiveChatBadge();},{once:true});else updateGameDayLiveChatBadge();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){updateGameDayLiveChatBadge();dcReconcileBackgroundUnread(true);},{once:true});else{updateGameDayLiveChatBadge();dcReconcileBackgroundUnread(true);}
 })();
 </script>
 
