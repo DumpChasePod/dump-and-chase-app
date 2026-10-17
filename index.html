@@ -9946,7 +9946,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.5</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.6</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15331,10 +15331,13 @@ window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
 
 <style id="pc-v7115-spotlight-style">
 .pc-spotlight{color:#f5f3fa;font-size:14px;line-height:1.55;max-width:720px;margin:0 auto}
-.pc-spotlight-header{position:relative;text-align:center;padding:24px 16px 20px;border:1px solid rgba(174,125,252,.38);border-radius:17px;background:radial-gradient(ellipse at 50% 0%,rgba(130,71,220,.22),transparent 70%),linear-gradient(160deg,#1c1830,#111c2b);overflow:hidden}
-.pc-spotlight-eyebrow{color:#ef9b40;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
-.pc-spotlight-header h2{font-size:clamp(24px,6vw,34px)!important;line-height:1.12;margin:10px 0 4px!important;color:#fff;overflow-wrap:anywhere}
-.pc-spotlight-sub{font-size:12px;color:#cdb7ed;font-weight:700;letter-spacing:.025em}
+/* V711.6: self-contained, reusable Phan of the Week hero. Keep text dynamically rendered. */
+.pc-spotlight .pc-spotlight-header{box-sizing:border-box;position:relative;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;text-align:center!important;float:none!important;width:100%!important;min-height:0!important;padding:23px 16px 25px!important;margin:0!important;border:1px solid rgba(164,109,238,.48)!important;border-radius:15px!important;overflow:hidden!important;background:radial-gradient(ellipse 75% 75% at 50% 0%,rgba(133,76,198,.18),transparent),linear-gradient(180deg,#191d2d,#101b2b)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important}
+.pc-spotlight .pc-spotlight-header::before{content:"";display:block;position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#8f5bdb,#eb8b37,#8f5bdb);opacity:.88;pointer-events:none}
+.pc-spotlight .pc-spotlight-eyebrow{display:block!important;position:relative;width:100%;font-size:10px!important;line-height:1.45!important;font-weight:800!important;letter-spacing:.15em!important;text-transform:uppercase!important;color:#eb9a55!important;white-space:normal!important;float:none!important;margin:0!important}
+.pc-spotlight .pc-spotlight-feature-title{display:block!important;position:relative;width:100%;padding:0!important;margin:9px 0 0!important;font-size:clamp(18px,5vw,28px)!important;line-height:1.14!important;font-weight:950!important;letter-spacing:.045em!important;color:#f6f3fd!important;text-transform:uppercase!important;white-space:normal!important;overflow-wrap:normal!important;float:none!important;text-shadow:0 2px 14px rgba(120,70,190,.22)}
+.pc-spotlight .pc-spotlight-name{display:block!important;position:relative;width:100%;max-width:100%;padding:15px 0 0!important;margin:15px 0 0!important;border:0!important;border-top:1px solid rgba(194,159,234,.25)!important;background:none!important;box-shadow:none!important;float:none!important;white-space:normal!important;overflow-wrap:anywhere!important;font-size:clamp(26px,6.3vw,39px)!important;line-height:1.12!important;font-weight:850!important;letter-spacing:-.025em!important;color:#fff!important;text-align:center!important;text-shadow:none!important}
+@media(max-width:380px){.pc-spotlight .pc-spotlight-header{padding:20px 12px 22px!important}.pc-spotlight .pc-spotlight-feature-title{font-size:20px!important}.pc-spotlight .pc-spotlight-name{font-size:29px!important}}
 .pc-spotlight-photo{margin:14px 0 12px;border:2px solid rgba(155,93,250,.48);border-radius:15px;overflow:hidden;background:#090d18;box-shadow:0 8px 26px #0006;aspect-ratio: 5 / 3;display:flex;align-items:center;justify-content:center}
 .pc-spotlight-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .pc-spotlight-photo.is-placeholder img{object-fit:contain}
@@ -15360,7 +15363,7 @@ window.pcSpotlightMarkup=function(n,photo,opts){
  var posX=Number(n.photo_position_x??50),posY=Number(n.photo_position_y??50);
  var pos='object-position:'+Math.max(0,Math.min(100,posX))+'% '+Math.max(0,Math.min(100,posY))+'%';
  return '<article class="pc-spotlight">'+
- '<header class="pc-spotlight-header"><div class="pc-spotlight-eyebrow">DUMP &amp; CHASE PODCAST</div><div class="pc-spotlight-sub">★ PHAN OF THE WEEK ★</div><h2>'+safe(n.full_name)+'</h2><div class="pc-spotlight-sub">Listener Spotlight</div></header>'+
+ '<header class="pc-spotlight-header"><div class="pc-spotlight-eyebrow">DUMP &amp; CHASE PODCAST</div><div class="pc-spotlight-feature-title">PHAN OF THE WEEK</div><h2 class="pc-spotlight-name">'+safe(n.full_name)+'</h2></header>'+
  '<div class="pc-spotlight-photo'+(hasPhoto?'':' is-placeholder')+'"><img src="'+safe(url)+'" alt="'+(hasPhoto?'Featured Phan photo':'Phan of the Week podcast placeholder')+'" style="'+pos+'"></div>'+
  '<div class="pc-spotlight-facts">'+fact('Phantoms Phan',n.fan_since)+fact('Podcast Listener',n.podcast_listener_since)+fact('Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No')+(n.is_season_ticket_holder&&n.seating_section?fact('Seating Section',n.seating_section):'')+'</div>'+
  section('Why I’m a Phan',n.why_fan)+section('Favorite Phantoms Memory',n.favorite_memory)+section('Favorite All-Time Player',n.favorite_player)+section('Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment)+
