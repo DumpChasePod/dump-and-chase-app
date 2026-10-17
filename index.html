@@ -5915,6 +5915,22 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
   transition:background-color 9999s ease-out 0s;
 }
 </style>
+<style id="pc-v7112-story-layout">
+/* V711.2: read-only listener stories: compact facts, readable full-width answers. */
+#pcDetail .pc-v7112-header{display:flex;flex-direction:column;gap:3px;padding-bottom:14px}
+#pcDetail .pc-v7112-header strong{font-size:1.13rem;line-height:1.3;color:#f7f6fb}
+#pcDetail .pc-v7112-header span{font-size:.81rem;color:#9daec3}
+#pcDetail .pc-v7112-section{padding:16px 0;border-top:1px solid rgba(169,136,226,.22);min-width:0}
+#pcDetail .pc-v7112-section h4{margin:0 0 15px;color:#bd9bf3;font-size:.79rem;letter-spacing:.055em;font-weight:750}
+#pcDetail .pc-v7112-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 14px}
+#pcDetail .pc-v7112-label{font-weight:650;font-size:.79rem;line-height:1.4;color:#a5b3c7;margin-bottom:4px}
+#pcDetail .pc-v7112-value{font-size:.95rem;line-height:1.55;font-weight:450;color:#eff2f8;white-space:pre-wrap;overflow-wrap:anywhere}
+#pcDetail .pc-v7112-story-answer{margin-bottom:18px;min-width:0}
+#pcDetail .pc-v7112-story-answer:last-child{margin-bottom:0}
+#pcDetail .pc-v7112-consent{font-size:.84rem;color:#b2c1d2;line-height:1.5;margin:14px 0 0}
+#pcDetail .pc-v7112-private .pc-v7112-fact{max-width:100%}
+@media(max-width:420px){#pcDetail .pc-v7112-facts{gap:14px 10px}#pcDetail .pc-v7112-value{font-size:.91rem}}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -9915,7 +9931,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.2</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10283,7 +10299,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div class="pc-v705-section" data-pc-section-panel="fans">
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
-    <h3 class="pc-v712-heading">LISTENER SUBMISSIONS</h3>
+    <h3 class="pc-v711-heading">LISTENER SUBMISSIONS</h3>
     <div id="pcList" class="pc-list" aria-live="polite"></div>
     <section id="pcDetail" class="pc-detail" hidden>
       <h3 id="pcDetailTitle">LISTENER STORY</h3>
@@ -10347,8 +10363,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <label class="pc-field">Answer 4 (optional)<input class="pc-poll-opt" maxlength="120"></label>
         <label class="pc-field">Answer 5 (optional)<input class="pc-poll-opt" maxlength="120"></label>
       </div>
-      <div class="pc-actions"><button type="button" id="pcPollSave" class="admin-mini-btn" onclick="pcPollSave('draft')">SAVE DRAFT</button><button type="button" id="pcPollPublish" class="btn primary" onclick="pcPollSave('publish')">PUBLISH POLL</button><button type="button" class="admin-mini-btn" onclick="pcPollClearEditor()">CANCEL EDITING</button></div>
-      <h4 class="pc-v712-heading">CURRENT POLL</h4>
+      <div class="pc-actions"><button type="button" id="pcPollSave" class="admin-mini-btn" onclick="pcPollSave()">SAVE NEW POLL</button><button type="button" class="admin-mini-btn" onclick="pcPollClearEditor()">CLEAR EDITOR</button></div>
       <div id="pcPollAdminList" class="pc-poll-admin-list">Loading polls…</div>
     </section>
     </div>
@@ -15045,7 +15060,7 @@ function render(){
  var count=rows.filter(function(x){return x.status==='New'&&!x.viewed_at;}).length;
  el('pcSummary').textContent=rows.length+' submissions · '+count+' new';
  if(!filtered.length){list.innerHTML='<div class="admin-muted">No listener submissions yet.</div>';return;}
- list.innerHTML=filtered.map(function(r){var date=r.created_at?new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(date)+'</small></span><span><em>'+esc(r.status==='New'&&r.viewed_at?'Reviewed':r.status)+'</em>'+(r.status==='New'&&!r.viewed_at?' <strong class="pc-v712-new">NEW</strong>':'')+'</span></button>';}).join('');
+ list.innerHTML=filtered.map(function(r){var date=r.created_at?new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(date)+'</small></span><span><em>'+esc(r.status==='New'&&r.viewed_at?'Reviewed':r.status)+'</em>'+(r.status==='New'&&!r.viewed_at?' <strong class="pc-v711-new">NEW</strong>':'')+'</span></button>';}).join('');
  list.querySelectorAll('[data-pc-id]').forEach(function(b){b.addEventListener('click',function(){window.pcOpen(b.getAttribute('data-pc-id'));});});
 }
 window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading private nominations…');try{
@@ -15093,10 +15108,26 @@ window.pcOpen=async function(id){
  if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;var badge=el('pcPendingBadge');if(badge)badge.textContent=c?String(c):'';el('pcSummary').textContent=rows.length+' submissions · '+c+' new';var active=el('pcList').querySelector('[data-pc-id=+id+]');if(active){var newMark=active.querySelector('.pc-v711-new');if(newMark)newMark.remove();}}catch(e){feedback('Story opened, but viewed status could not be saved: '+(e.message||e));}}
 };
 function pcDrawSubmission(){if(!selected)return;
- el('pcDetailTitle').textContent=selected.full_name+' · LISTENER STORY';
- el('pcDetailFields').innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]);return '<label class="pc-field">'+esc(f[1])+(editing?(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">'):'<div class="pc-v712-answer">'+(val||'Not provided')+'</div>')+'</label>';}).join('')+'</div>'+
- '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+(editing?'':' disabled')+'> Season ticket holder</label>'+
- '<p class="admin-muted">Age and publication consent: '+(selected.adult_confirmed&&selected.consent_confirmed?'CONFIRMED':'MISSING')+'</p>';
+ var heading=el('pcDetailTitle');heading.textContent='LISTENER STORY';
+ var container=el('pcDetailFields');
+ function content(field){var value=selected[field];return value===null||value===undefined||String(value).trim()===''?'Not provided':String(value);}
+ function fact(label,value){return '<div class="pc-v7112-fact"><div class="pc-v7112-label">'+esc(label)+'</div><div class="pc-v7112-value">'+esc(value)+'</div></div>';}
+ function answer(label,field){return '<div class="pc-v7112-story-answer"><div class="pc-v7112-label">'+esc(label)+'</div><div class="pc-v7112-value">'+esc(content(field))+'</div></div>';}
+ if(editing){
+  container.innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]||'');return '<label class="pc-field">'+esc(f[1])+(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">')+'</label>';}).join('')+'</div>'+
+   '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>';
+ }else{
+  var submitted=selected.created_at?new Date(selected.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';
+  container.innerHTML='<div class="pc-v7112-header"><strong>'+esc(content('full_name'))+'</strong><span>Submitted '+esc(submitted)+'</span></div>'+
+   '<section class="pc-v7112-section"><h4>LISTENER INFORMATION</h4><div class="pc-v7112-facts">'+
+   fact('Phantoms fan',content('fan_since'))+fact('Podcast listener',content('podcast_listener_since'))+
+   fact('Season ticket holder',selected.is_season_ticket_holder?'Yes':'No')+fact('Seating section',content('seating_section'))+'</div></section>'+
+   '<section class="pc-v7112-section"><h4>MY PHAN STORY</h4>'+answer('Why I’m a Phantoms fan','why_fan')+
+   answer('Favorite Phantoms memory','favorite_memory')+answer('Favorite all-time player','favorite_player')+
+   answer('Favorite Dump & Chase Podcast moment','favorite_podcast_moment')+'</section>'+
+   '<section class="pc-v7112-section pc-v7112-private"><h4>PRIVATE ADMIN INFORMATION</h4>'+fact('Email address',content('email'))+
+   '<p class="pc-v7112-consent">'+(selected.adult_confirmed&&selected.consent_confirmed?'✓ Age and publication consent confirmed':'⚠ Age or publication consent missing')+'</p></section>';
+ }
  el('pcHostNotes').value=selected.admin_notes||'';
  var status=el('pcStatus');status.innerHTML=statuses.map(function(v){return '<option value="'+v+'">'+(v==='New'?'New — Awaiting Review':v)+'</option>';}).join('');
  if(!statuses.includes(selected.status)){status.innerHTML='<option value="'+esc(selected.status)+'">'+esc(selected.status)+' (automatic)</option>'+status.innerHTML;status.disabled=true;}else{status.disabled=false;status.value=selected.status;}
@@ -15137,8 +15168,8 @@ function pcRenderWinners(){
  function name(w){var n=rows.find(function(r){return r.id===w.nomination_id;});return n?n.full_name:'Listener record';}
  function date(w){var raw=w.feature_at||w.published_at||w.created_at;return raw?new Date(raw).toLocaleString('en-US',{timeZone:'America/New_York',dateStyle:'medium',timeStyle:'short'})+' ET':'';}
  function preview(w){return '<button type="button" class="admin-mini-btn" data-pc-winner-preview="'+esc(w.id)+'">PREVIEW PROFILE</button>';}
- var html='<section class="pc-v712-winner-group"><h4>CURRENT PHAN</h4>'+(current.length?current.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Featured '+esc(date(w))+'</small><div class="pc-actions">'+preview(w)+'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button></div></div>';}).join(''):'<p class="admin-muted">No listener currently featured.</p>')+'</section>';
- if(upcoming.length)html+='<section class="pc-v712-winner-group"><h4>UPCOMING PHANS</h4>'+upcoming.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Scheduled: '+esc(date(w))+'</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-reschedule="'+esc(w.id)+'">RESCHEDULE</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL</button></div><div class="pc-v711-scheduler" id="pcScheduler-'+esc(w.id)+'" hidden><label class="pc-field">New date and time (Eastern)<input type="datetime-local"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-save-reschedule="'+esc(w.id)+'">SAVE DATE</button><button type="button" class="admin-mini-btn" data-pc-dismiss-reschedule="'+esc(w.id)+'">KEEP ORIGINAL</button></div></div></div>';}).join('')+'</section>';
+ var html='<section class="pc-v711-winner-group"><h4>CURRENT PHAN</h4>'+(current.length?current.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Featured '+esc(date(w))+'</small><div class="pc-actions">'+preview(w)+'<button type="button" class="admin-mini-btn" data-pc-unpublish="'+esc(w.id)+'">UNPUBLISH</button></div></div>';}).join(''):'<p class="admin-muted">No listener currently featured.</p>')+'</section>';
+ if(upcoming.length)html+='<section class="pc-v711-winner-group"><h4>UPCOMING PHANS</h4>'+upcoming.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>Scheduled: '+esc(date(w))+'</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-reschedule="'+esc(w.id)+'">RESCHEDULE</button><button type="button" class="admin-mini-btn" data-pc-cancel="'+esc(w.id)+'">CANCEL</button></div><div class="pc-v711-scheduler" id="pcScheduler-'+esc(w.id)+'" hidden><label class="pc-field">New date and time (Eastern)<input type="datetime-local"></label><div class="pc-actions"><button type="button" class="admin-mini-btn" data-pc-save-reschedule="'+esc(w.id)+'">SAVE DATE</button><button type="button" class="admin-mini-btn" data-pc-dismiss-reschedule="'+esc(w.id)+'">KEEP ORIGINAL</button></div></div></div>';}).join('')+'</section>';
  if(past.length)html+='<details class="pc-history-collapsible"><summary>PREVIOUS PHANS &amp; HISTORY ('+past.length+')</summary>'+past.map(function(w){return '<div class="pc-winner-entry"><b>'+esc(name(w))+'</b><small>'+esc(w.state.toUpperCase())+' · '+esc(date(w))+'</small><div class="pc-actions">'+preview(w)+'<button type="button" class="admin-mini-btn pc-danger-action" data-pc-delete-winner="'+esc(w.id)+'">DELETE</button></div></div>';}).join('')+'</details>';
  dest.innerHTML=html;
  dest.querySelectorAll('[data-pc-cancel]').forEach(function(b){b.addEventListener('click',function(){pcWinnerAction('cancel',b.dataset.pcCancel);});});
@@ -15436,14 +15467,9 @@ window.addEventListener('load',initialize);
   catch(e){note('Could not load polls: '+(e.message||e));}
  };
  function renderAdmin(){
-  const target=$('pcPollAdminList'),archive=$('pcPollAdminArchive');if(!target||!archive)return;
-  const current=polls.filter(p=>p.status!=='archived');const history=polls.filter(p=>p.status==='archived');
-  if(!current.length)target.innerHTML='<p class="admin-muted">No current poll. Create a draft or publish a new one above.</p>';
-  else target.innerHTML=current.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions">'+
-    '<button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+
-    (p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE POLL</button>':p.status==='closed'?'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">REOPEN POLL</button>':'')+
-    '<details class="pc-v712-more"><summary>MORE OPTIONS</summary><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn pc-danger-action" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE POLL</button></div></details></div></div>').join('');
-  archive.innerHTML=history.length?history.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>Archived '+escape(p.archived_at?new Date(p.archived_at).toLocaleDateString('en-US'):'')+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="results" data-poll-id="'+p.id+'">VIEW RESULTS</button><button type="button" class="admin-mini-btn pc-danger-action" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div><div class="pc-v712-admin-results" id="pcPollResult-'+p.id+'" hidden></div></div>').join(''):'<p class="admin-muted">No archived polls yet.</p>';
+  const target=$('pcPollAdminList');if(!target)return;
+  if(!polls.length){target.innerHTML='<p class="admin-muted">No polls yet.</p>';return;}
+  target.innerHTML=polls.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join('');
  }
  $('pcPollAdminList').addEventListener('click',async e=>{
   const btn=e.target.closest('[data-poll-action]');if(!btn)return;
@@ -15462,26 +15488,14 @@ window.addEventListener('load',initialize);
   try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':'Poll updated.');}
   catch(err){note(err.message||'Operation failed');btn.disabled=false;}
  });
- window.pcPollSave=async function(mode){
+ window.pcPollSave=async function(){
   const question=$('pcPollQuestion').value.trim();
-  const opts=Array.from(document.querySelectorAll('#pcPollOptionFields .pc-poll-opt'));
-  const original=editing?polls.find(p=>p.id===editing):null;
-  const options=original&&original.results.total?original.options:opts.map(x=>x.value.trim()).filter(Boolean);
+  const options=Array.from(document.querySelectorAll('#pcPollOptionFields .pc-poll-opt')).map(x=>x.value.trim()).filter(Boolean);
   if(question.length<5||options.length<2){note('Enter a question and at least two answers.');return;}
-  if(mode==='publish'&&!confirm('Publish this poll now? The current poll will be moved into Past Polls with its final results.'))return;
-  if(mode!=='publish'&&original?.status==='open'&&!confirm('Save changes to the live poll?'))return;
-  const btn=$('pcPollPublish');btn.disabled=true;$('pcPollSave').disabled=true;
-  try{
-    let id=editing;
-    const saved=await call({action:'save',id:id||null,question,options});
-    id=id||saved.id;
-    if(mode==='publish'){
-      if(!id)throw Error('Draft saved but new poll could not be identified. Reload and publish it from Edit.');
-      const x=await call({action:'publish',id});note('New poll published. Previous poll archived ('+(x.archived||0)+').');
-    }else note(original?(original.status==='open'?'Changes saved to the live poll.':'Poll changes saved.'):'Draft saved. It is not visible to listeners.');
-    pcPollClearEditor();await pcPollAdminLoad();
-  }catch(e){note(e.message||'Could not save poll');}
-  finally{btn.disabled=false;$('pcPollSave').disabled=false;}
+  const btn=$('pcPollSave');btn.disabled=true;
+  try{await call({action:'save',id:editing||null,question,options});pcPollClearEditor();await pcPollAdminLoad();note('Poll saved. Use OPEN when ready.');}
+  catch(e){note(e.message||'Could not save poll');}
+  finally{btn.disabled=false;}
  };
 })();
 </script>
