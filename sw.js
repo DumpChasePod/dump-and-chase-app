@@ -1,4 +1,4 @@
-const CACHE='dump-chase-v7114-admin-initial-render';
+const CACHE='dump-chase-v7115-phan-spotlight';
 const ASSETS=['./','./index.html','./phan-of-the-week-placeholder.webp','./dump-chase-logo.png','./sam-olmstead.jpg','./justin-irwin.jpg','./dan-conley-v163.jpg','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./favicon-32.png','./og-card.png','./captain-a.png','./captain-c.png'];
 self.addEventListener('install',e=>{e.waitUntil(
   caches.open(CACHE)

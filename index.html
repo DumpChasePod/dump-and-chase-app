@@ -9946,7 +9946,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.4</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.5</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15271,11 +15271,8 @@ window.pcAdminSection=function(name){
  document.querySelectorAll('#adminPhanCentralPanel [data-pc-section]').forEach(function(node){node.classList.toggle('active',node.dataset.pcSection===name);});
 };
 window.pcPreview=function(){if(!selected)return;var n=selected,box=el('pcProfilePreview');
- var answers=[['How long a fan?',n.fan_since],['Season ticket holder',n.is_season_ticket_holder?'Yes':'No'],['Seating section',n.seating_section||'Not provided'],['Why a fan?',n.why_fan],['Favorite memory',n.favorite_memory],['Favorite player',n.favorite_player],['Favorite moment from the Dump & Chase Podcast',n.favorite_podcast_moment],['How long a Dump & Chase Podcast listener?',n.podcast_listener_since]];
- box.innerHTML='<div class="pc-v7113-preview-top"><strong>PHAN OF THE WEEK · PREVIEW</strong><button type="button" class="admin-mini-btn" onclick="pcCloseProfilePreview()">CLOSE ✕</button></div><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<img src="./phan-of-the-week-placeholder.webp" alt="Phan of the Week placeholder" style="display:block;width:100%;max-height:220px;object-fit:contain;border-radius:9px">')+
-  answers.map(function(a){return '<p><b>'+esc(a[0])+'</b><br>'+esc(a[1])+'</p>';}).join('')+
-  '<small class="admin-muted">Private Admin preview · email and Admin notes are excluded.</small>';
- box.hidden=false;box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Phan of the Week profile preview');
+ box.innerHTML='<div class="pc-v7113-preview-top"><strong>PHAN OF THE WEEK · PREVIEW</strong><button type="button" class="admin-mini-btn" onclick="pcCloseProfilePreview()">CLOSE ✕</button></div>'+window.pcSpotlightMarkup(n,n.photo_approved?photoUrl:'')+'<small class="admin-muted">Private Admin preview · email and Admin notes are excluded.</small>';
+ box.hidden=false;box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Phan of the Week profile preview');box.scrollTop=0;
 };
 window.pcCloseProfilePreview=function(){var box=el('pcProfilePreview');if(box)box.hidden=true;};
 async function pcRenderPhoto(){
@@ -15331,6 +15328,45 @@ window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
 
 })();
 </script>
+
+<style id="pc-v7115-spotlight-style">
+.pc-spotlight{color:#f5f3fa;font-size:14px;line-height:1.55;max-width:720px;margin:0 auto}
+.pc-spotlight-header{position:relative;text-align:center;padding:24px 16px 20px;border:1px solid rgba(174,125,252,.38);border-radius:17px;background:radial-gradient(ellipse at 50% 0%,rgba(130,71,220,.22),transparent 70%),linear-gradient(160deg,#1c1830,#111c2b);overflow:hidden}
+.pc-spotlight-eyebrow{color:#ef9b40;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+.pc-spotlight-header h2{font-size:clamp(24px,6vw,34px)!important;line-height:1.12;margin:10px 0 4px!important;color:#fff;overflow-wrap:anywhere}
+.pc-spotlight-sub{font-size:12px;color:#cdb7ed;font-weight:700;letter-spacing:.025em}
+.pc-spotlight-photo{margin:14px 0 12px;border:2px solid rgba(155,93,250,.48);border-radius:15px;overflow:hidden;background:#090d18;box-shadow:0 8px 26px #0006;aspect-ratio: 5 / 3;display:flex;align-items:center;justify-content:center}
+.pc-spotlight-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.pc-spotlight-photo.is-placeholder img{object-fit:contain}
+.pc-spotlight-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0 18px}
+.pc-spotlight-fact{padding:11px;border:1px solid rgba(171,130,231,.22);border-radius:11px;background:#1b2637;min-width:0}
+.pc-spotlight-fact-label{font-size:10px;color:#c7a4f6;font-weight:850;letter-spacing:.055em;text-transform:uppercase}
+.pc-spotlight-fact-value{font-size:13px;font-weight:750;color:#fff;margin-top:3px;overflow-wrap:anywhere}
+.pc-spotlight-section{margin:11px 0;padding:16px;border:1px solid rgba(165,127,230,.2);border-radius:13px;background:linear-gradient(160deg,#1c283a,#151f2e)}
+.pc-spotlight-section h3{margin:0 0 9px!important;color:#d9b9ff;font-size:13px!important;line-height:1.35;letter-spacing:.025em;text-transform:uppercase}
+.pc-spotlight-section p{margin:0!important;color:#e6e9f0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:14px}
+.pc-spotlight-footer{text-align:center;padding:13px 4px 4px;font-size:10px;font-weight:800;letter-spacing:.09em;color:#9e87c4;text-transform:uppercase}
+#pcProfilePreview .pc-spotlight,#pcProfileBody .pc-spotlight{max-width:700px}
+#pcProfilePreview .pc-spotlight-photo{max-height:none}
+@media(max-width:380px){.pc-spotlight-header{padding:19px 10px}.pc-spotlight-section{padding:13px}.pc-spotlight-facts{gap:7px}}
+</style>
+<script id="pcV7115SpotlightRenderer">
+window.pcSpotlightMarkup=function(n,photo,opts){
+ var safe=function(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})};
+ var hasPhoto=!!photo;
+ var url=hasPhoto?photo:'./phan-of-the-week-placeholder.webp';
+ var fact=function(label,val){return '<div class="pc-spotlight-fact"><div class="pc-spotlight-fact-label">'+safe(label)+'</div><div class="pc-spotlight-fact-value">'+safe(val||'—')+'</div></div>'};
+ var section=function(label,val){return '<section class="pc-spotlight-section"><h3>'+safe(label)+'</h3><p>'+safe(val||'—')+'</p></section>'};
+ var posX=Number(n.photo_position_x??50),posY=Number(n.photo_position_y??50);
+ var pos='object-position:'+Math.max(0,Math.min(100,posX))+'% '+Math.max(0,Math.min(100,posY))+'%';
+ return '<article class="pc-spotlight">'+
+ '<header class="pc-spotlight-header"><div class="pc-spotlight-eyebrow">DUMP &amp; CHASE PODCAST</div><div class="pc-spotlight-sub">★ PHAN OF THE WEEK ★</div><h2>'+safe(n.full_name)+'</h2><div class="pc-spotlight-sub">Listener Spotlight</div></header>'+
+ '<div class="pc-spotlight-photo'+(hasPhoto?'':' is-placeholder')+'"><img src="'+safe(url)+'" alt="'+(hasPhoto?'Featured Phan photo':'Phan of the Week podcast placeholder')+'" style="'+pos+'"></div>'+
+ '<div class="pc-spotlight-facts">'+fact('Phantoms Phan',n.fan_since)+fact('Podcast Listener',n.podcast_listener_since)+fact('Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No')+(n.is_season_ticket_holder&&n.seating_section?fact('Seating Section',n.seating_section):'')+'</div>'+
+ section('Why I’m a Phan',n.why_fan)+section('Favorite Phantoms Memory',n.favorite_memory)+section('Favorite All-Time Player',n.favorite_player)+section('Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment)+
+ '<footer class="pc-spotlight-footer">Dump &amp; Chase Podcast · Phan Central</footer></article>';
+};
+</script>
 <script id="pcPublicV689">
 (function(){'use strict';
 var feed=[], preview=false, currentFeed=null;
@@ -15351,7 +15387,7 @@ function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Pho
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
-html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Fan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
+html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Phan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
 html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open||preview?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="7" r="4"/><path d="M3.5 21v-2.2a6.5 6.5 0 0 1 10.4-5.2"/><path d="m16 17 2.2 2.2 4-4"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8" r="5.5"/><path d="m8.5 12.6-1 8 4.5-2.5 4.5 2.5-1-8"/><circle cx="12" cy="8" r="2"/></svg></span><strong>PREVIOUS PHANS</strong></button></div>';
 html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section>';
 target.innerHTML=html;
@@ -15394,8 +15430,8 @@ window.pcOpenArchive=function(){
 };
 window.pcCloseProfile=function(){$('pcProfileSheet').hidden=true;};
 function openProfile(id){var w=feed.find(x=>x.id===id);if(!w)return;var n=w.profile;
-var headings=[['Phantoms Fan Since',n.fan_since],['Season Ticket Holder',n.is_season_ticket_holder?'Yes':'No'],['Seating Section',n.seating_section||'Not provided'],['Why I’m a Phantoms Fan',n.why_fan],['Favorite Phantoms Memory',n.favorite_memory],['All-Time Favorite Player',n.favorite_player],['How Long I’ve Listened to the Dump & Chase Podcast',n.podcast_listener_since],['Favorite Dump & Chase Podcast Moment',n.favorite_podcast_moment]];
-$('pcProfileBody').innerHTML='<h2>'+safe(n.full_name)+'</h2>'+image(n)+'<p class="pc-muted">'+safe(w.season)+' Season</p>'+headings.map(a=>'<div class="pc-profile-answer"><b>'+safe(a[0])+'</b>'+safe(a[1]||'—')+'</div>').join('');$('pcProfileSheet').hidden=false;
+ $('pcProfileBody').innerHTML=window.pcSpotlightMarkup(n,n.photo_url||'');$('pcProfileSheet').hidden=false;
+ var panel=$('pcProfileSheet').querySelector('.pc-profile-content');if(panel)panel.scrollTop=0;
 }
 $('pcPublicContent').addEventListener('click',e=>{var item=e.target.closest('[data-pc-open]');if(item)openProfile(item.getAttribute('data-pc-open'));if(e.target.closest('#pcViewArchive'))pcOpenArchive();if(e.target.closest('#pcBeginNomination')){$('pcDiscardDialog').hidden=true;$('pcNominationView').hidden=false;$('pcSubmissionFeedback').textContent='';}});
 function pcStoryHasChanges(){
