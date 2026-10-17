@@ -5915,7 +5915,7 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
   transition:background-color 9999s ease-out 0s;
 }
 </style>
-<style id="pc-v7112-story-layout">
+<style id="pc-v7113-story-edit-preview">
 /* V711.2: read-only listener stories: compact facts, readable full-width answers. */
 #pcDetail .pc-v7112-header{display:flex;flex-direction:column;gap:3px;padding-bottom:14px}
 #pcDetail .pc-v7112-header strong{font-size:1.13rem;line-height:1.3;color:#f7f6fb}
@@ -5930,6 +5930,21 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcDetail .pc-v7112-consent{font-size:.84rem;color:#b2c1d2;line-height:1.5;margin:14px 0 0}
 #pcDetail .pc-v7112-private .pc-v7112-fact{max-width:100%}
 @media(max-width:420px){#pcDetail .pc-v7112-facts{gap:14px 10px}#pcDetail .pc-v7112-value{font-size:.91rem}}
+</style>
+<style id="pc-v7113-edit-preview-fix">
+#pcDetail .pc-v7113-edit-facts{display:flex;flex-direction:column;gap:8px}
+#pcDetail .pc-v7113-edit-field{display:block;width:100%;max-width:100%;min-width:0;margin:0 0 16px;color:#a5b3c7;font-size:.8rem;font-weight:650}
+#pcDetail .pc-v7113-edit-field span{display:block;margin-bottom:6px}
+#pcDetail .pc-v7113-edit-field input,#pcDetail .pc-v7113-edit-field textarea{display:block;width:100%;box-sizing:border-box;min-width:0;background:#202a3a;color:#fff;border:1px solid #415066;border-radius:8px;padding:11px;font-size:16px;font-weight:400;line-height:1.45;margin:0}
+#pcDetail .pc-v7113-edit-field textarea{min-height:115px;resize:vertical}
+#pcDetail .pc-v7113-check{display:flex;align-items:center;gap:10px;margin:4px 0 16px;color:#eff2f8;font-size:.93rem}
+#pcDetail .pc-v7113-check input{accent-color:#a67be7;width:18px;height:18px;flex:none}
+#pcProfilePreview[hidden]{display:none!important}
+#pcProfilePreview:not([hidden]){display:block!important;position:fixed;z-index:2147483000;inset:0;overflow-y:auto;overscroll-behavior:contain;background:#101b2c;color:#f5f6fa;border:0;border-radius:0;padding:max(18px,env(safe-area-inset-top)) 18px max(30px,env(safe-area-inset-bottom));margin:0;box-sizing:border-box;max-height:100dvh}
+#pcProfilePreview .pc-v7113-preview-top{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:#101b2c;padding:10px 0 14px;z-index:1;border-bottom:1px solid #55456e}
+#pcProfilePreview .pc-v7113-preview-top strong{font-size:.83rem;color:#c7a9f7}
+#pcProfilePreview h3{margin:16px 0}
+#pcProfilePreview p{max-width:760px;line-height:1.55}
 </style>
 </head>
 <body>
@@ -9931,7 +9946,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.2</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v711.3</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15114,8 +15129,15 @@ function pcDrawSubmission(){if(!selected)return;
  function fact(label,value){return '<div class="pc-v7112-fact"><div class="pc-v7112-label">'+esc(label)+'</div><div class="pc-v7112-value">'+esc(value)+'</div></div>';}
  function answer(label,field){return '<div class="pc-v7112-story-answer"><div class="pc-v7112-label">'+esc(label)+'</div><div class="pc-v7112-value">'+esc(content(field))+'</div></div>';}
  if(editing){
-  container.innerHTML='<div class="pc-grid">'+editable.map(function(f){var val=esc(selected[f[0]]||'');return '<label class="pc-field">'+esc(f[1])+(f[2]==='textarea'?'<textarea data-pc-field="'+f[0]+'">'+val+'</textarea>':'<input data-pc-field="'+f[0]+'" type="'+f[2]+'" value="'+val+'">')+'</label>';}).join('')+'</div>'+
-   '<label class="pc-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>';
+  function field(key,label,type){var v=selected[key]==null?'':String(selected[key]);return '<label class="pc-field pc-v7113-edit-field"><span>'+esc(label)+'</span>'+(type==='textarea'?'<textarea data-pc-field="'+key+'" rows="4">'+esc(v)+'</textarea>':'<input data-pc-field="'+key+'" type="'+type+'" value="'+esc(v)+'">')+'</label>';}
+  container.innerHTML='<div class="pc-v7112-header"><strong>'+esc(content('full_name'))+'</strong><span>EDIT LISTENER STORY</span></div>'+
+   '<section class="pc-v7112-section"><h4>LISTENER INFORMATION</h4><div class="pc-v7113-edit-facts">'+
+   field('full_name','Full name','text')+field('fan_since','How long a Phantoms fan?','text')+field('podcast_listener_since','How long a Dump & Chase Podcast listener?','text')+
+   '<label class="pc-v7113-check"><input type="checkbox" id="pcSth"'+(selected.is_season_ticket_holder?' checked':'')+'> Season ticket holder</label>'+field('seating_section','Seating section','text')+'</div></section>'+
+   '<section class="pc-v7112-section"><h4>MY PHAN STORY</h4>'+field('why_fan','Why I’m a Phantoms fan','textarea')+field('favorite_memory','Favorite Phantoms memory','textarea')+
+   field('favorite_player','Favorite all-time player','text')+field('favorite_podcast_moment','Favorite Dump & Chase Podcast moment','textarea')+'</section>'+
+   '<section class="pc-v7112-section pc-v7112-private"><h4>PRIVATE ADMIN INFORMATION</h4>'+field('email','Private email address','email')+
+   '<p class="pc-v7112-consent">'+(selected.adult_confirmed&&selected.consent_confirmed?'✓ Age and publication consent confirmed':'⚠ Age or publication consent missing')+'</p></section>';
  }else{
   var submitted=selected.created_at?new Date(selected.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';
   container.innerHTML='<div class="pc-v7112-header"><strong>'+esc(content('full_name'))+'</strong><span>Submitted '+esc(submitted)+'</span></div>'+
@@ -15180,7 +15202,7 @@ function pcRenderWinners(){
  dest.querySelectorAll('[data-pc-save-reschedule]').forEach(function(b){b.addEventListener('click',function(){pcSaveReschedule(b.dataset.pcSaveReschedule);});});
  dest.querySelectorAll('[data-pc-dismiss-reschedule]').forEach(function(b){b.addEventListener('click',function(){var x=el('pcScheduler-'+b.dataset.pcDismissReschedule);if(x)x.hidden=true;});});
 }
-function pcPreviewWinner(id){var w=winners.find(function(x){return x.id===id;});if(!w)return;var n=rows.find(function(x){return x.id===w.nomination_id;});if(!n){feedback('Original listener submission not available.');return;}window.pcOpen(n.id).then(function(){pcPreview();el('pcProfilePreview').scrollIntoView({behavior:'smooth',block:'nearest'});});}
+function pcPreviewWinner(id){var w=winners.find(function(x){return x.id===id;});if(!w)return;var n=rows.find(function(x){return x.id===w.nomination_id;});if(!n){feedback('Original listener submission not available.');return;}window.pcOpen(n.id).then(function(){pcPreview();});}
 function pcShowReschedule(id){var w=winners.find(function(x){return x.id===id;});var area=el('pcScheduler-'+id);if(!w||!area)return;area.hidden=!area.hidden;
  if(area.hidden)return;var t=w.feature_at?easternParts(new Date(w.feature_at)):null;
  area.querySelector('input').value=t?[t.year,t.month,t.day].join('-')+'T'+t.hour+':'+t.minute:'';
@@ -15247,11 +15269,12 @@ window.pcAdminSection=function(name){
 };
 window.pcPreview=function(){if(!selected)return;var n=selected,box=el('pcProfilePreview');
  var answers=[['How long a fan?',n.fan_since],['Season ticket holder',n.is_season_ticket_holder?'Yes':'No'],['Seating section',n.seating_section||'Not provided'],['Why a fan?',n.why_fan],['Favorite memory',n.favorite_memory],['Favorite player',n.favorite_player],['Favorite moment from the Dump & Chase Podcast',n.favorite_podcast_moment],['How long a Dump & Chase Podcast listener?',n.podcast_listener_since]];
- box.innerHTML='<h4>PHAN OF THE WEEK · PREVIEW</h4><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<img src="./phan-of-the-week-placeholder.webp" alt="Phan of the Week placeholder" style="display:block;width:100%;max-height:220px;object-fit:contain;border-radius:9px">')+
+ box.innerHTML='<div class="pc-v7113-preview-top"><strong>PHAN OF THE WEEK · PREVIEW</strong><button type="button" class="admin-mini-btn" onclick="pcCloseProfilePreview()">CLOSE ✕</button></div><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<img src="./phan-of-the-week-placeholder.webp" alt="Phan of the Week placeholder" style="display:block;width:100%;max-height:220px;object-fit:contain;border-radius:9px">')+
   answers.map(function(a){return '<p><b>'+esc(a[0])+'</b><br>'+esc(a[1])+'</p>';}).join('')+
   '<small class="admin-muted">Private Admin preview · email and Admin notes are excluded.</small>';
- box.hidden=false;
+ box.hidden=false;box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Phan of the Week profile preview');
 };
+window.pcCloseProfilePreview=function(){var box=el('pcProfilePreview');if(box)box.hidden=true;};
 async function pcRenderPhoto(){
  if(!selected)return;var id=selected.id,frame=el('pcPhotoPreview');
  frame.textContent='No photo uploaded';photoUrl='';
