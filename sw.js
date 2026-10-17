@@ -1,5 +1,5 @@
-const CACHE='dump-chase-v709';
-const ASSETS=['./','./index.html','./dump-chase-logo.png','./sam-olmstead.jpg','./justin-irwin.jpg','./dan-conley-v163.jpg','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./favicon-32.png','./og-card.png','./captain-a.png','./captain-c.png'];
+const CACHE='dump-chase-v710';
+const ASSETS=['./','./index.html','./phan-of-the-week-placeholder.webp','./dump-chase-logo.png','./sam-olmstead.jpg','./justin-irwin.jpg','./dan-conley-v163.jpg','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./favicon-32.png','./og-card.png','./captain-a.png','./captain-c.png'];
 self.addEventListener('install',e=>{e.waitUntil(
   caches.open(CACHE)
     .then(c=>Promise.all(ASSETS.map(asset=>c.add(asset).catch(()=>null))))
@@ -12,7 +12,7 @@ self.addEventListener('fetch',e=>{
   const url=new URL(req.url);
   if(url.origin!==location.origin)return;
   if(req.mode==='navigate'){
-    e.respondWith(fetch(req).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return r;}).catch(()=>caches.match('./index.html')));
+    e.respondWith(fetch(req).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html','./phan-of-the-week-placeholder.webp',copy));return r;}).catch(()=>caches.match('./index.html')));
     return;
   }
   e.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(req,copy));return r;})));

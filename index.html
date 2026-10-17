@@ -7947,7 +7947,7 @@ function setAdminPeriod(value){
   if(String(value).toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'){
     var state=dcNormalizeShootoutState(typeof dcAdminShootoutState!=='undefined'?dcAdminShootoutState:null);
     if(!state.attempts.length&&!state.first){
-      state.base_score={phantoms:Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0),opponent:Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0)};
+      state.base_score=dcShootoutBaseFromInputs();
       dcAdminShootoutState=state;
     }
   }
@@ -9915,7 +9915,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v709</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v710</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10020,7 +10020,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">4</span><div><b>OVERTIME / SHOOTOUT</b><small>Use only if the game continues beyond regulation.</small></div></div>
   <div class="admin-quick-section"><div class="admin-quick-label">Extra Time</div><div class="admin-chip-row admin-extra-time-flow"><button type="button" class="admin-chip" data-admin-period="OT" onclick="setAdminPeriod('OT')">OT</button><button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SHOOTOUT</button></div></div>
   <div class="admin-shootout-live" id="adminShootoutLive" hidden>
-        <div class="admin-group-title">SHOOTOUT TRACKER</div>
+        <div class="admin-group-title">SHOOTOUT TRACKER · LIVE GOALS SHOWN 0–0; FINAL RESTORES OT SCORE + 1</div>
         <div class="admin-so-live-first">
           <span>FIRST SHOOTER</span>
           <div class="admin-chip-row">
@@ -10051,6 +10051,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
           </div>
         </div>
         <div class="admin-so-live-result" id="adminShootoutResult" hidden></div>
+        <button type="button" class="btn secondary admin-so-live-undo" onclick="adminShootoutCorrectScore()">CORRECT OVERTIME SCORE</button>
         <button type="button" class="btn secondary admin-so-live-undo" id="adminShootoutUndo" onclick="adminShootoutUndo()">UNDO LAST</button>
         <div class="admin-status admin-feedback" id="adminShootoutFeedback"></div>
       </div>
@@ -13293,6 +13294,23 @@ function dcCurrentOpponentName(){
   }catch(_){}
   return 'Opponent';
 }
+function dcShootoutBaseFromInputs(){
+  var ph=Number(document.getElementById('adminPhantomsScore')?.value),op=Number(document.getElementById('adminOpponentScore')?.value);
+  var ht=null;
+  try{var active=dcGameCenterHockeyTechTarget(new Date());var snap=active&&dcLiveStatsSnapshot(active.g);ht=snap&&dcLiveSides(snap);}catch(_){}
+  if(ht){var hy=Number(ht.yng.score),ho=Number(ht.opp.score);if(Number.isFinite(hy)&&Number.isFinite(ho)&&hy>=0&&hy===ho){ph=hy;op=ho;}}
+  return {phantoms:Math.max(0,Number.isFinite(ph)?ph:0),opponent:Math.max(0,Number.isFinite(op)?op:0)};
+}
+function dcShootoutOfficialScore(state,winner){
+  state=dcNormalizeShootoutState(state);return {phantoms:state.base_score.phantoms+(winner==='phantoms'?1:0),opponent:state.base_score.opponent+(winner==='opponent'?1:0)};
+}
+function dcShootoutScoreForDisplay(state,winner){
+  return winner?dcShootoutOfficialScore(state,winner):{phantoms:dcShootoutGoals(state,'phantoms'),opponent:dcShootoutGoals(state,'opponent')};
+}
+function dcShootoutWriteInputs(score){
+  var ph=document.getElementById('adminPhantomsScore'),op=document.getElementById('adminOpponentScore');
+  if(ph)ph.value=String(score.phantoms);if(op)op.value=String(score.opponent);
+}
 function syncAdminShootoutVisibility(){
   var panel=document.getElementById('adminShootoutLive');
   if(!panel)return;
@@ -13403,12 +13421,13 @@ async function dcPublishShootoutState(options){
 }
 async function adminShootoutSetFirst(team){
   if(dcAdminShootoutState.attempts&&dcAdminShootoutState.attempts.length)return;
-  var ph=Math.max(0,Number(document.getElementById('adminPhantomsScore')?.value||0)||0);
-  var op=Math.max(0,Number(document.getElementById('adminOpponentScore')?.value||0)||0);
-  dcAdminShootoutState={first:team==='opponent'?'opponent':'phantoms',attempts:[],base_score:{phantoms:ph,opponent:op}};
+  var base=dcNormalizeShootoutState(dcAdminShootoutState).base_score;
+  if(!base.phantoms&&!base.opponent)base=dcShootoutBaseFromInputs();
+  dcAdminShootoutState={first:team==='opponent'?'opponent':'phantoms',attempts:[],base_score:base};
   var status=document.getElementById('adminGameStatus');if(status)status.value='live';
   var period=document.getElementById('adminPeriod');if(period)period.value='SO';
   var clock=document.getElementById('adminClock');if(clock)clock.value='0:00';
+  dcShootoutWriteInputs({phantoms:0,opponent:0});
   syncAdminClockDigits('0:00');syncAdminQuickControls();renderAdminShootoutTracker();
   await dcPublishShootoutState();
 }
@@ -13421,10 +13440,7 @@ async function adminShootoutAttempt(team,goal){
   state.attempts.push({team:team,goal:!!goal});
   dcAdminShootoutState=state;
   var winner=dcShootoutDecision(state);
-  var phScore=state.base_score.phantoms+(winner==='phantoms'?1:0);
-  var opScore=state.base_score.opponent+(winner==='opponent'?1:0);
-  var ph=document.getElementById('adminPhantomsScore'),op=document.getElementById('adminOpponentScore');
-  if(ph)ph.value=String(phScore);if(op)op.value=String(opScore);
+  dcShootoutWriteInputs(dcShootoutScoreForDisplay(state,winner));
   var status=document.getElementById('adminGameStatus'),result=document.getElementById('adminResult');
   if(winner){
     if(status)status.value='final';
@@ -13437,6 +13453,21 @@ async function adminShootoutAttempt(team,goal){
   if(pp)pp.value='';if(en)en.value='';
   syncAdminQuickControls();renderAdminShootoutTracker();
   await dcPublishShootoutState({goalTeam:goal?team:null});
+}
+async function adminShootoutCorrectScore(){
+  var state=dcNormalizeShootoutState(dcAdminShootoutState);
+  if(!state.first){setAdminFeedback('adminShootoutFeedback','error','Choose the first shooter before correcting the score.');return;}
+  var current=state.base_score;
+  var raw=prompt('Correct the tied score at the end of overtime (Youngstown–Opponent). Shootout attempts will be preserved.',current.phantoms+'-'+current.opponent);
+  if(raw===null)return;
+  var m=raw.trim().match(/^(\d{1,2})\s*[-–:]\s*(\d{1,2})$/);
+  if(!m||m[1]!==m[2]){setAdminFeedback('adminShootoutFeedback','error','Enter a tied overtime score, for example 2-2.');return;}
+  state.base_score={phantoms:Number(m[1]),opponent:Number(m[2])};
+  dcAdminShootoutState=state;
+  var winner=dcShootoutDecision(state);
+  dcShootoutWriteInputs(dcShootoutScoreForDisplay(state,winner));
+  renderAdminShootoutTracker();
+  await dcPublishShootoutState();
 }
 async function dcReverseShootoutFinalRecord(){
   try{
@@ -13459,8 +13490,7 @@ async function adminShootoutUndo(){
   var wasFinal=String(document.getElementById('adminGameStatus')?.value||'')==='final';
   state.attempts.pop();
   dcAdminShootoutState=state;
-  var ph=document.getElementById('adminPhantomsScore'),op=document.getElementById('adminOpponentScore');
-  if(ph)ph.value=String(state.base_score.phantoms);if(op)op.value=String(state.base_score.opponent);
+  dcShootoutWriteInputs(dcShootoutScoreForDisplay(state,''));
   var status=document.getElementById('adminGameStatus'),result=document.getElementById('adminResult');
   if(status)status.value='live';if(result)result.value='';
   syncAdminQuickControls();renderAdminShootoutTracker();
@@ -13660,12 +13690,12 @@ function dcPublicShootoutTeam(team,label,homeAway,attemptTeam,state,nextTeam,sho
 }
 function dcRenderPublicShootout(box,g,st){
   var state=dcNormalizeShootoutState(st.adminShootoutState);
-  if(!state.first&&!state.attempts.length)return false;
   var status=String(st.adminGameStatus||'').toLowerCase();
+  if(!state.first&&!state.attempts.length&&status==='final')return false;
   if(status!=='live'&&status!=='final')return false;
   var opp=String(g[1]||'Opponent').toUpperCase();
-  var ph=st.adminPhantomsScore!==undefined&&st.adminPhantomsScore!==''?st.adminPhantomsScore:'—';
-  var os=st.adminOpponentScore!==undefined&&st.adminOpponentScore!==''?st.adminOpponentScore:'—';
+  var shown=dcShootoutScoreForDisplay(state,status==='final'?dcShootoutDecision(state):'');
+  var ph=shown.phantoms,os=shown.opponent;
   var phRole=featuredHomeAwayRole(g),isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME';
   var leftTeam=isHome?g[1]:'Youngstown Phantoms',rightTeam=isHome?'Youngstown Phantoms':g[1];
   var leftLabel=isHome?opp:'YOUNGSTOWN PHANTOMS',rightLabel=isHome?'YOUNGSTOWN PHANTOMS':opp;
@@ -13884,6 +13914,9 @@ function dcSyncManualAuthorityUi(forceOn){
   var note=document.getElementById('adminAuthorityNote');if(note)note.textContent=on?'EMERGENCY OVERRIDE ACTIVE — manual score, period and clock are controlling the public Game Day card.':'AUTO MODE — score, period and clock follow HockeyTech. Turn on Emergency Override only if the feed fails.';
   var selectors=['.admin-score-stepper button','#adminPhantomsScore','#adminOpponentScore','.admin-clock-digits button','.admin-period-flow button','.admin-extra-time-flow [data-admin-period="OT"]'];
   selectors.forEach(function(sel){document.querySelectorAll('#adminGameDayPanel '+sel).forEach(function(el){el.disabled=!on;});});
+  var so=String(document.getElementById('adminPeriod')?.value||'').toUpperCase()==='SO';
+  var correction=document.querySelector('#adminShootoutLive button[onclick="adminShootoutCorrectScore()"]');
+  if(correction)correction.disabled=false;
 }
 async function dcToggleManualOverride(){
   var btn=document.getElementById('adminHtManualOverride');if(btn)btn.disabled=true;
@@ -15121,7 +15154,7 @@ window.pcAdminSection=function(name){
 };
 window.pcPreview=function(){if(!selected)return;var n=selected,box=el('pcProfilePreview');
  var answers=[['How long a fan?',n.fan_since],['Season ticket holder',n.is_season_ticket_holder?'Yes':'No'],['Seating section',n.seating_section||'Not provided'],['Why a fan?',n.why_fan],['Favorite memory',n.favorite_memory],['Favorite player',n.favorite_player],['Favorite moment from the Dump & Chase Podcast',n.favorite_podcast_moment],['How long a Dump & Chase Podcast listener?',n.podcast_listener_since]];
- box.innerHTML='<h4>PHAN OF THE WEEK · PREVIEW</h4><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<p class="admin-muted">Phan Central branded photo placeholder</p>')+
+ box.innerHTML='<h4>PHAN OF THE WEEK · PREVIEW</h4><h3>'+esc(n.full_name)+'</h3>'+ (n.photo_approved&&photoUrl?'<img src="'+esc(photoUrl)+'" alt="Approved fan photo" style="display:block;width:100%;max-height:220px;object-fit:cover;object-position:'+Number(n.photo_position_x||50)+'% '+Number(n.photo_position_y||50)+'%;border-radius:9px">':'<img src="./phan-of-the-week-placeholder.webp" alt="Phan of the Week placeholder" style="display:block;width:100%;max-height:220px;object-fit:contain;border-radius:9px">')+
   answers.map(function(a){return '<p><b>'+esc(a[0])+'</b><br>'+esc(a[1])+'</p>';}).join('')+
   '<small class="admin-muted">Private Admin preview · email and Admin notes are excluded.</small>';
  box.hidden=false;
@@ -15191,7 +15224,7 @@ async function api(body){
  if(!r.data?.ok)throw Error(r.data?.error||'Unable to load Phan Central');
  return r.data;
 }
-function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Photo of '+safe(n.full_name)+'" src="'+safe(n.photo_url)+'" style="object-position:'+Number(n.photo_position_x??50)+'% '+Number(n.photo_position_y??50)+'%">':'PHAN CENTRAL')+'</div>';}
+function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Photo of '+safe(n.full_name)+'" src="'+safe(n.photo_url)+'" style="object-position:'+Number(n.photo_position_x??50)+'% '+Number(n.photo_position_y??50)+'%">':'<img alt="Phan of the Week podcast placeholder" src="./phan-of-the-week-placeholder.webp">')+'</div>';}
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
