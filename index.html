@@ -9946,7 +9946,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.0</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.1</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10809,21 +10809,19 @@ async function openAdmin(){
  if(dash)dash.style.display='none';
  if(unlocked){
   window.dcLiveChatAdminUnlocked=true;
-  dcAdminLoadedTabs.clear();
-  startAdminQnaWatch();
-  await refreshAdminQnaIndicator();
-  await loadAdminUpdates();
-  syncAdminQuickControls();await syncCompletedResults();renderAdminRecentResults();
+  // V712.1: Noncritical Admin loads must not strand the whole dashboard hidden.
+  try{dcAdminLoadedTabs.clear();startAdminQnaWatch();}catch(err){console.warn('Admin setup',err);}
+  try{await refreshAdminQnaIndicator();}catch(err){console.warn('Admin Q&A',err);}
+  try{await loadAdminUpdates();}catch(err){console.warn('Admin updates',err);}
+  try{syncAdminQuickControls();await syncCompletedResults();renderAdminRecentResults();}catch(err){console.warn('Admin game state',err);}
   var lastAdminTab='game-day';
   try{lastAdminTab=localStorage.getItem('dcAdminLastTab')||'game-day';}catch(_){}
-  selectAdminTab(lastAdminTab,true);
-  // Reveal only after category visibility and panel selection are synchronized.
+  try{selectAdminTab(lastAdminTab,true);}catch(err){console.warn('Admin tab selection',err);}
+  // Never leave an authorized dashboard blank after a noncritical load failure.
   if(dash)dash.style.display='block';
-  restoreAdminSavedLabel();
-  updateAdminConnectionStatus();
-  restoreAdminScroll();
-  var cached=getAdminGameState();
-  if(cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
+  try{restoreAdminSavedLabel();updateAdminConnectionStatus();restoreAdminScroll();}catch(err){console.warn('Admin display restore',err);}
+  var cached=null;try{cached=getAdminGameState();}catch(err){console.warn('Admin cached state',err);}
+  if(cached&&cached.adminGameStatus==='final'&&finalHoldExpired(cached.updatedAt)){
     var gs=document.getElementById('adminGameStatus');if(gs)gs.value='upcoming';
     ['adminPhantomsScore','adminOpponentScore','adminPeriod','adminClock','adminResult','adminPowerPlay','adminPowerPlayTime','adminManpowerSituation','adminEmptyNet','adminStoppageStatus'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     if(typeof dcAdminShootoutState!=='undefined')dcAdminShootoutState={first:null,attempts:[],base_score:{phantoms:0,opponent:0}};
