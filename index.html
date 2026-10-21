@@ -9948,7 +9948,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.5</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v713</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15450,6 +15450,12 @@ target.innerHTML=html;
 window.pcOpenPublic=async function(adminPreview){
  preview=!!adminPreview;
  if(preview && !(await getAdmin()))return;
+ // V713: switch out of the shared Episodes/HQ/More surface before opening this tab.
+ // Without this, the old app-view remains above the Phan Central page.
+ if(!preview){
+   var previous=document.getElementById('modal');
+   if(previous&&previous.classList.contains('show')&&previous.classList.contains('app-view')&&typeof dcCloseSharedSheetVisual==='function')dcCloseSharedSheetVisual();
+ }
  var view=$('pcPublicView');
  view.classList.toggle('pc-admin-preview',preview);
  view.classList.toggle('pc-main-tab',!preview);
