@@ -7333,6 +7333,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
 <div id="pcDiscardDialog" class="pc-discard-backdrop" hidden role="presentation"><div class="pc-discard-panel" role="alertdialog" aria-modal="true" aria-labelledby="pcDiscardTitle" aria-describedby="pcDiscardText"><h3 id="pcDiscardTitle">Discard your story?</h3><p id="pcDiscardText">Your information hasn’t been sent to the Dump &amp; Chase Podcast.</p><div class="pc-discard-actions"><button type="button" class="pc-primary" id="pcKeepEditing" onclick="pcKeepEditing()">KEEP EDITING</button><button type="button" id="pcDiscardStory" onclick="pcDiscardStory()">DISCARD</button></div></div></div>
 <section id="pcThankYouView" class="pc-public-view pc-form-view" hidden aria-label="Story received"><div class="pc-public-head"><strong>PHAN CENTRAL</strong><button type="button" onclick="pcReturnFromThanks()" aria-label="Return to Phan Central">✕</button></div><div class="pc-thanks-content"><div class="pc-thanks-icon" aria-hidden="true">✓</div><h2>THANKS FOR SHARING!</h2><p>Your story has been sent to the Dump &amp; Chase Podcast hosts. We’ll be choosing listeners to feature as our Phan of the Week!</p><p>Thanks for listening and being part of Phan Central!</p><button type="button" class="pc-primary" onclick="pcReturnFromThanks()">RETURN TO PHAN CENTRAL</button></div></section>
 <div id="pcArchiveSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseArchive()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseArchive()" aria-label="Close previous Phans">✕</button><h2>Previous Phans of the Week</h2><div id="pcArchiveBody"></div></div></div>
+<div id="pcPollArchiveSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcPollCloseArchive()"><div class="pc-profile-content pc-poll-archive-content"><button type="button" class="pc-profile-close" onclick="pcPollCloseArchive()" aria-label="Close previous polls">✕</button><h2>Previous Polls</h2><div id="pcPollArchiveBody" aria-live="polite"></div></div></div>
 <div id="pcProfileSheet" class="pc-profile-backdrop" hidden onclick="if(event.target===this)pcCloseProfile()"><div class="pc-profile-content"><button type="button" class="pc-profile-close" onclick="pcCloseProfile()" aria-label="Close profile">✕</button><div id="pcProfileBody"></div></div></div>
 <nav class="bottomnav nav-v200" aria-label="Main navigation">
   <button class="navitem" aria-label="Episodes" onclick="openSheet('episodes');setActive(this)"><span class="navicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 18V6l10 6-10 6Z"/><path d="M4 6v12"/></svg></span>Episodes</button>
@@ -9946,7 +9947,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.1</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.2</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10379,7 +10380,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <label class="pc-field">Answer 5 (optional)<input class="pc-poll-opt" maxlength="120"></label>
       </div>
       <div class="pc-actions"><button type="button" id="pcPollSave" class="admin-mini-btn" onclick="pcPollSave()">SAVE NEW POLL</button><button type="button" class="admin-mini-btn" onclick="pcPollClearEditor()">CLEAR EDITOR</button></div>
-      <div id="pcPollAdminList" class="pc-poll-admin-list">Loading polls…</div>
+      <div id="pcPollAdminList" class="pc-poll-admin-list">Loading polls…</div><h3 class="pc-poll-admin-archive-heading">ARCHIVED POLLS</h3><div id="pcPollAdminArchive" class="pc-poll-admin-list"></div>
     </section>
     </div>
     <div class="pc-v705-section" data-pc-section-panel="settings" hidden>
@@ -10809,7 +10810,7 @@ async function openAdmin(){
  if(dash)dash.style.display='none';
  if(unlocked){
   window.dcLiveChatAdminUnlocked=true;
-  // V712.1: Noncritical Admin loads must not strand the whole dashboard hidden.
+  // V712.2: Noncritical Admin loads must not strand the whole dashboard hidden.
   try{dcAdminLoadedTabs.clear();startAdminQnaWatch();}catch(err){console.warn('Admin setup',err);}
   try{await refreshAdminQnaIndicator();}catch(err){console.warn('Admin Q&A',err);}
   try{await loadAdminUpdates();}catch(err){console.warn('Admin updates',err);}
@@ -15390,6 +15391,17 @@ window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
 #pcProfilePreview .pc-spotlight-photo{max-height:none}
 @media(max-width:380px){.pc-spotlight-header{padding:19px 10px}.pc-spotlight-section{padding:13px}.pc-spotlight-facts{gap:7px}}
 </style>
+<style id="pc-v7122-poll-history-styles">
+#pcPublicView .pc-poll-history-link{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin:9px 0 2px;min-height:41px;border:1px solid rgba(137,82,224,.32);border-radius:11px;background:linear-gradient(150deg,#1c283a,#131b29);color:#e8eaf2;font-size:11px;font-weight:900;letter-spacing:.055em}
+#pcPublicView .pc-poll-history-link span{font-size:21px;color:#e69e61;line-height:1}
+.pc-poll-archive-content .pc-poll-history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:8px 0;padding:13px 12px;border-radius:12px;background:#1b2536;border:1px solid #3b3655;text-align:left;color:#f5f4fa}
+.pc-poll-history-item strong,.pc-poll-history-item small{display:block;overflow-wrap:anywhere}.pc-poll-history-item strong{font-size:13px;line-height:1.4}.pc-poll-history-item small{margin-top:5px;color:#abb6c8;font-size:11px}.pc-poll-history-item>span:last-child{color:#e7a568;font-size:22px}
+.pc-poll-history-back{border:0;background:none;color:#f0a362;font-weight:800;font-size:12px;padding:8px 0 18px}
+.pc-poll-archive-content .pc-poll-question{font-size:16px;font-weight:900;line-height:1.35;margin:0 0 18px}
+.pc-poll-archive-content .pc-poll-result,.pc-poll-admin-results .pc-poll-result{margin:12px 0}.pc-poll-result-heading{display:flex;justify-content:space-between;gap:8px;color:#e3e8f4;font-size:12px}.pc-poll-result-heading>span{flex:none;color:#b7bad1}
+.pc-poll-archive-content .pc-poll-bar,.pc-poll-admin-results .pc-poll-bar{height:8px;border-radius:8px;overflow:hidden;background:#303748;margin-top:7px}.pc-poll-archive-content .pc-poll-bar span,.pc-poll-admin-results .pc-poll-bar span{display:block;height:100%;background:#9463d4;border-radius:8px}
+.pc-poll-archive-content .pc-poll-caption{margin-top:18px;color:#bec6d2;font-size:12px}.pc-poll-admin-archive-heading{margin:20px 0 10px;font-size:13px}.pc-poll-admin-results{padding:12px;background:#101827;border-radius:11px;margin-top:10px}
+</style>
 <script id="pcV7115SpotlightRenderer">
 window.pcSpotlightMarkup=function(n,photo,opts){
  var safe=function(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})};
@@ -15431,7 +15443,7 @@ function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.s
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
 html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Phan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
 html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open||preview?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="7" r="4"/><path d="M3.5 21v-2.2a6.5 6.5 0 0 1 10.4-5.2"/><path d="m16 17 2.2 2.2 4-4"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8" r="5.5"/><path d="m8.5 12.6-1 8 4.5-2.5 4.5 2.5-1-8"/><circle cx="12" cy="8" r="2"/></svg></span><strong>PREVIOUS PHANS</strong></button></div>';
-html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section>';
+html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section><button type="button" class="pc-poll-history-link" id="pcViewPreviousPolls">PREVIOUS POLLS <span aria-hidden="true">›</span></button>';
 target.innerHTML=html;
 }
 window.pcOpenPublic=async function(adminPreview){
@@ -15449,7 +15461,7 @@ window.pcOpenPublic=async function(adminPreview){
 window.pcClosePublic=function(){
  var view=$('pcPublicView');
  view.hidden=true;view.classList.remove('pc-admin-preview','pc-main-tab');
- $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+ $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;const pollSheet=$('pcPollArchiveSheet');if(pollSheet)pollSheet.hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
  if(!preview){
    var home=document.querySelector('.bottomnav .navitem[aria-label="Home"]');
    if(home&&typeof setActive==='function')setActive(home);
@@ -15460,7 +15472,7 @@ window.pcLeaveMainTab=function(){
  var view=$('pcPublicView');
  if(view&&!view.hidden&&!preview){
    view.hidden=true;view.classList.remove('pc-main-tab');
-   $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
+   $('pcProfileSheet').hidden=true;$('pcArchiveSheet').hidden=true;const pollSheet=$('pcPollArchiveSheet');if(pollSheet)pollSheet.hidden=true;$('pcNominationView').hidden=true;$('pcThankYouView').hidden=true;
  }
 };
 window.pcCloseArchive=function(){$('pcArchiveSheet').hidden=true;};
@@ -15564,6 +15576,32 @@ window.addEventListener('load',initialize);
    catch(err){const msg=$('pcPollVoteMessage')||document.createElement('p');msg.id='pcPollVoteMessage';msg.className='pc-poll-feedback';msg.setAttribute('role','alert');msg.textContent='Vote not recorded: '+(err.message||'Please try again.');$('pcWeeklyPoll')?.appendChild(msg);if(btn)btn.disabled=false;}
   }
  });
+ let archivedPolls=[];
+ function pollDate(value){if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+ function pollResults(p){
+  const total=Number(p.results?.total)||0;
+  let html='<div class="pc-poll-question">'+escape(p.question)+'</div>';
+  (p.options||[]).forEach((option,i)=>{const votes=Number(p.results?.votes?.[i])||0,pct=total?Math.round(votes*100/total):0;
+   html+='<div class="pc-poll-result"><div class="pc-poll-result-heading"><strong>'+escape(option)+'</strong><span>'+pct+'% · '+votes+' vote'+(votes===1?'':'s')+'</span></div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
+  });
+  return html+'<p class="pc-poll-caption">'+total+' total vote'+(total===1?'':'s')+' · Final results</p>';
+ }
+ window.pcPollCloseArchive=function(){const sheet=$('pcPollArchiveSheet');if(sheet)sheet.hidden=true;};
+ window.pcPollOpenArchive=async function(){
+  const sheet=$('pcPollArchiveSheet'),body=$('pcPollArchiveBody');if(!sheet||!body)return;
+  sheet.hidden=false;body.innerHTML='<p class="pc-muted">Loading previous polls…</p>';
+  try{const r=await call({action:'archive'});archivedPolls=r.polls||[];
+   body.innerHTML=archivedPolls.length?archivedPolls.map((p,i)=>'<button type="button" class="pc-poll-history-item" data-pc-archive-index="'+i+'"><span><strong>'+escape(p.question)+'</strong><small>'+escape(pollDate(p.archived_at))+' · '+Number(p.results?.total||0)+' votes</small></span><span aria-hidden="true">›</span></button>').join(''):'<p class="pc-muted">No previous polls yet.</p>';
+  }catch(e){body.innerHTML='<p class="pc-muted">Unable to load previous polls. Please try again.</p>';}
+ };
+ $('pcPublicContent').addEventListener('click',e=>{if(e.target.closest('#pcViewPreviousPolls'))pcPollOpenArchive();});
+ $('pcPollArchiveBody').addEventListener('click',e=>{const button=e.target.closest('[data-pc-archive-index]');if(!button)return;
+  const item=archivedPolls[Number(button.dataset.pcArchiveIndex)];if(!item)return;
+  $('pcPollArchiveBody').innerHTML='<button type="button" class="pc-poll-history-back" id="pcPollArchiveBack">‹ ALL PREVIOUS POLLS</button>'+pollResults(item);
+ });
+ $('pcPollArchiveBody').addEventListener('click',e=>{if(e.target.closest('#pcPollArchiveBack')){
+  $('pcPollArchiveBody').innerHTML=archivedPolls.map((p,i)=>'<button type="button" class="pc-poll-history-item" data-pc-archive-index="'+i+'"><span><strong>'+escape(p.question)+'</strong><small>'+escape(pollDate(p.archived_at))+' · '+Number(p.results?.total||0)+' votes</small></span><span aria-hidden="true">›</span></button>').join('');
+ }});
  const note=x=>{if($('pcPollAdminStatus'))$('pcPollAdminStatus').textContent=x;};
  window.pcPollClearEditor=function(){editing=null;$('pcPollQuestion').value='';document.querySelectorAll('#pcPollOptionFields .pc-poll-opt').forEach(x=>x.value='');$('pcPollSave').textContent='SAVE NEW POLL';};
  window.pcPollAdminLoad=async function(){
@@ -15571,10 +15609,16 @@ window.addEventListener('load',initialize);
   catch(e){note('Could not load polls: '+(e.message||e));}
  };
  function renderAdmin(){
-  const target=$('pcPollAdminList');if(!target)return;
-  if(!polls.length){target.innerHTML='<p class="admin-muted">No polls yet.</p>';return;}
-  target.innerHTML=polls.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join('');
+  const target=$('pcPollAdminList'),archive=$('pcPollAdminArchive');if(!target||!archive)return;
+  const active=polls.filter(p=>p.status!=='archived'),history=polls.filter(p=>p.status==='archived');
+  target.innerHTML=active.length?active.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join(''):'<p class="admin-muted">No current or draft polls.</p>';
+  archive.innerHTML=history.length?history.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(pollDate(p.archived_at))+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="results" data-poll-id="'+p.id+'">VIEW RESULTS</button></div><div class="pc-poll-admin-results" id="pcPollResult-'+p.id+'" hidden></div></div>').join(''):'<p class="admin-muted">No previous polls yet.</p>';
  }
+ $('pcPollAdminArchive').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-poll-action="results"]');if(!btn)return;
+  const poll=polls.find(p=>p.id===btn.dataset.pollId);if(!poll)return;
+  const el=$('pcPollResult-'+poll.id);if(!el)return;el.hidden=!el.hidden;if(!el.hidden)el.innerHTML=pollResults(poll);
+ });
  $('pcPollAdminList').addEventListener('click',async e=>{
   const btn=e.target.closest('[data-poll-action]');if(!btn)return;
   const poll=polls.find(x=>x.id===btn.dataset.pollId);if(!poll)return;
@@ -15586,10 +15630,10 @@ window.addEventListener('load',initialize);
   }
   if(action==='reset'&&!confirm('Reset this poll? This permanently clears every vote and lets listeners vote again. The question and answers will stay the same.'))return;
   if(action==='delete'&&!confirm('Delete this poll and ALL its votes? This cannot be undone.'))return;
-  if(action==='open'&&!confirm('Open this poll for listener voting?'))return;
+  if(action==='open'&&!confirm('Publish this poll? The previous poll and its results will be archived.'))return;
   if(action==='closed'&&!confirm('Close voting for this poll?'))return;
   btn.disabled=true;
-  try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':'Poll updated.');}
+  try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:action==='open'?{action:'publish',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':action==='open'?'Poll published. Previous poll archived.':'Poll updated.');}
   catch(err){note(err.message||'Operation failed');btn.disabled=false;}
  });
  window.pcPollSave=async function(){
