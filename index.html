@@ -9947,7 +9947,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.3</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.4</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10810,7 +10810,7 @@ async function openAdmin(){
  if(dash)dash.style.display='none';
  if(unlocked){
   window.dcLiveChatAdminUnlocked=true;
-  // V712.3: Noncritical Admin loads must not strand the whole dashboard hidden.
+  // V712.4: Noncritical Admin loads must not strand the whole dashboard hidden.
   try{dcAdminLoadedTabs.clear();startAdminQnaWatch();}catch(err){console.warn('Admin setup',err);}
   try{await refreshAdminQnaIndicator();}catch(err){console.warn('Admin Q&A',err);}
   try{await loadAdminUpdates();}catch(err){console.warn('Admin updates',err);}
@@ -15611,7 +15611,7 @@ window.addEventListener('load',initialize);
  function renderAdmin(){
   const target=$('pcPollAdminList'),archive=$('pcPollAdminArchive');if(!target||!archive)return;
   const active=polls.filter(p=>p.status!=='archived'),history=polls.filter(p=>p.status==='archived');
-  target.innerHTML=active.length?active.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join(''):'<p class="admin-muted">No current or draft polls.</p>';
+  target.innerHTML=active.length?active.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(p.status.toUpperCase())+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="edit" data-poll-id="'+p.id+'">EDIT</button>'+(p.status==='open'?'<button type="button" class="admin-mini-btn" data-poll-action="closed" data-poll-id="'+p.id+'">CLOSE</button>':'<button type="button" class="admin-mini-btn" data-poll-action="open" data-poll-id="'+p.id+'">OPEN</button>')+(p.status==='closed'?'<button type="button" class="admin-mini-btn" data-poll-action="archive" data-poll-id="'+p.id+'">ARCHIVE</button>':'')+'<button type="button" class="admin-mini-btn" data-poll-action="reset" data-poll-id="'+p.id+'">RESET VOTES</button><button type="button" class="admin-mini-btn" data-poll-action="delete" data-poll-id="'+p.id+'">DELETE</button></div></div>').join(''):'<p class="admin-muted">No current or draft polls.</p>';
   archive.innerHTML=history.length?history.map(p=>'<div class="pc-poll-admin-item"><strong>'+escape(p.question)+'</strong><small>'+escape(pollDate(p.archived_at))+' · '+p.results.total+' votes</small><div class="pc-actions"><button type="button" class="admin-mini-btn" data-poll-action="results" data-poll-id="'+p.id+'">VIEW RESULTS</button></div><div class="pc-poll-admin-results" id="pcPollResult-'+p.id+'" hidden></div></div>').join(''):'<p class="admin-muted">No previous polls yet.</p>';
  }
  $('pcPollAdminArchive').addEventListener('click',e=>{
@@ -15632,8 +15632,9 @@ window.addEventListener('load',initialize);
   if(action==='delete'&&!confirm('Delete this poll and ALL its votes? This cannot be undone.'))return;
   if(action==='open'&&!confirm('Publish this poll? The previous poll and its results will be archived.'))return;
   if(action==='closed'&&!confirm('Close voting for this poll?'))return;
+  if(action==='archive'&&!confirm('Archive this closed poll? Its final vote results will be preserved and shown in Previous Polls.'))return;
   btn.disabled=true;
-  try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:action==='open'?{action:'publish',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':action==='open'?'Poll published. Previous poll archived.':'Poll updated.');}
+  try{await call(action==='delete'?{action:'delete',id:poll.id}:action==='reset'?{action:'reset',id:poll.id}:action==='open'?{action:'publish',id:poll.id}:action==='archive'?{action:'archive_one',id:poll.id}:{action:'set_status',id:poll.id,status:action});pcPollClearEditor();await window.pcPollAdminLoad();note(action==='reset'?'Poll votes reset. Everyone can vote again.':action==='delete'?'Poll deleted.':action==='open'?'Poll published. Previous poll archived.':action==='archive'?'Poll archived with its final results.':'Poll updated.');}
   catch(err){note(err.message||'Operation failed');btn.disabled=false;}
  });
  window.pcPollSave=async function(){
