@@ -5703,7 +5703,7 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcNominationForm label.pc-consent{display:grid!important;grid-template-columns:22px minmax(0,1fr)!important;align-items:start!important;column-gap:12px!important;width:100%!important;box-sizing:border-box!important;margin:16px 0!important;white-space:normal!important;text-align:left!important;font-weight:500;line-height:1.5;color:#c9d1df}
 #pcNominationForm label.pc-consent input[type="checkbox"]{display:block!important;position:static!important;width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;margin:2px 0 0!important;padding:0!important;flex:none!important;accent-color:#a67adf;justify-self:start}
 #pcNominationForm label.pc-consent span{display:block!important;min-width:0!important;width:auto!important;overflow-wrap:break-word!important;white-space:normal!important;color:inherit!important}
-#pcSectionField[hidden]{display:none!important}.pc-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+#pcPollArchiveSheet[hidden]{display:none!important;}#pcSectionField[hidden]{display:none!important}.pc-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 #pcThankYouView{z-index:13002}#pcThankYouView .pc-thanks-content{width:100%;max-width:500px;margin:auto;padding:24px 22px calc(28px + env(safe-area-inset-bottom));text-align:center;box-sizing:border-box}
 #pcThankYouView .pc-thanks-icon{width:62px;height:62px;border-radius:50%;background:linear-gradient(160deg,#34244b,#211a31);border:1px solid rgba(139,82,255,.35);color:#c9a9ff;font-size:38px;font-weight:900;display:grid;place-items:center;margin:auto}
 #pcThankYouView .pc-thanks-content h2{font-size:22px;margin:12px 0}#pcThankYouView .pc-thanks-content p{font-size:13px;line-height:1.6;color:#a6b2c4}
@@ -9947,7 +9947,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.2</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v712.3</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10810,7 +10810,7 @@ async function openAdmin(){
  if(dash)dash.style.display='none';
  if(unlocked){
   window.dcLiveChatAdminUnlocked=true;
-  // V712.2: Noncritical Admin loads must not strand the whole dashboard hidden.
+  // V712.3: Noncritical Admin loads must not strand the whole dashboard hidden.
   try{dcAdminLoadedTabs.clear();startAdminQnaWatch();}catch(err){console.warn('Admin setup',err);}
   try{await refreshAdminQnaIndicator();}catch(err){console.warn('Admin Q&A',err);}
   try{await loadAdminUpdates();}catch(err){console.warn('Admin updates',err);}
