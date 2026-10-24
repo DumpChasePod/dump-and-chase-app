@@ -5948,6 +5948,14 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcProfilePreview p{max-width:760px;line-height:1.55}
 </style>
 
+<style id="v715-chicago-steel-logo-balance">
+/* Chicago Steel artwork has more internal negative space than other logos.
+   Scale only its Game Day artwork; preserve aspect ratio and layout dimensions. */
+#publicGameDayCard .gameday-logo-wrap img.matchup-logo[src*="Chicago-Steel.png"] {
+  transform:scale(1.30);
+  transform-origin:center center;
+}
+</style>
 <style id="v714-game-center-control-readability">
 /* V714: readable controls without oversized buttons; limit to live manual console. */
 #adminGameDayPanel .admin-live-manual-console{padding:14px 15px;margin:8px 0 10px}
@@ -9971,7 +9979,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v714</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v715</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
