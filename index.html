@@ -5947,6 +5947,29 @@ html.dc-player-full-open,body.dc-player-full-open{overflow:hidden!important;over
 #pcProfilePreview h3{margin:16px 0}
 #pcProfilePreview p{max-width:760px;line-height:1.55}
 </style>
+
+<style id="v714-game-center-control-readability">
+/* V714: readable controls without oversized buttons; limit to live manual console. */
+#adminGameDayPanel .admin-live-manual-console{padding:14px 15px;margin:8px 0 10px}
+#adminGameDayPanel .admin-live-console-title{font-size:13px;letter-spacing:.08em;margin-bottom:12px}
+#adminGameDayPanel .admin-live-manual-console .admin-quick-label{font-size:14px;letter-spacing:.055em;margin-bottom:7px}
+#adminGameDayPanel .admin-live-manual-console .admin-special-sub-label{margin-top:13px}
+#adminGameDayPanel .admin-live-manual-console .admin-chip{font-size:16px;font-weight:850;min-height:44px;line-height:1.15;padding:9px 8px;border-radius:10px;letter-spacing:0;white-space:normal}
+#adminGameDayPanel .admin-live-manual-console .admin-chip-row{display:grid;gap:8px}
+#adminGameDayPanel .admin-live-manual-console .admin-special-team-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+#adminGameDayPanel .admin-live-manual-console .admin-manpower-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+#adminGameDayPanel .admin-live-manual-console .admin-live-console-split{gap:12px;margin-top:14px}
+#adminGameDayPanel .admin-live-manual-console .admin-stoppage-row,
+#adminGameDayPanel .admin-live-manual-console .admin-onice-row{display:grid;grid-template-columns:1fr;gap:7px}
+#adminGameDayPanel .admin-live-manual-console .admin-stoppage-row .admin-chip,
+#adminGameDayPanel .admin-live-manual-console .admin-onice-row .admin-chip{font-size:15px;min-height:42px;padding:8px 10px;white-space:normal}
+@media(max-width:390px){
+ #adminGameDayPanel .admin-live-manual-console{padding:12px 10px}
+ #adminGameDayPanel .admin-live-manual-console .admin-chip{font-size:14px;padding:8px 4px;min-height:42px}
+ #adminGameDayPanel .admin-live-manual-console .admin-stoppage-row .admin-chip,
+ #adminGameDayPanel .admin-live-manual-console .admin-onice-row .admin-chip{font-size:14px}
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7862,7 +7885,7 @@ function updateAdminGameDayPreview(){
   var lt=document.getElementById('adminPreviewLeftTeam'),rt=document.getElementById('adminPreviewRightTeam');
   var ls=document.getElementById('adminPreviewLeftScore'),rs=document.getElementById('adminPreviewRightScore');
   if(lt)lt.textContent=leftTeam;if(rt)rt.textContent=rightTeam;if(ls)ls.textContent=String(leftScore);if(rs)rs.textContent=String(rightScore);
-  var manpower=String(document.getElementById('adminManpowerSituation')?.value||'');var previewFour=manpower==='4-on-4';var pp=previewFour?'':String(document.getElementById('adminPowerPlay')?.value||'');var ppTime=String(document.getElementById('adminPowerPlayTime')?.value||'');
+  var manpower=String(document.getElementById('adminManpowerSituation')?.value||'');var previewFour=manpower==='4-on-4'||manpower==='3-on-3';var pp=previewFour?'':String(document.getElementById('adminPowerPlay')?.value||'');var ppTime=String(document.getElementById('adminPowerPlayTime')?.value||'');
   var en=String(document.getElementById('adminEmptyNet')?.value||'');
   var leftPP=document.getElementById('adminPreviewLeftPP'),rightPP=document.getElementById('adminPreviewRightPP');
   var leftEN=document.getElementById('adminPreviewLeftEN'),rightEN=document.getElementById('adminPreviewRightEN');
@@ -7949,10 +7972,10 @@ function setAdminPowerPlay(value){
  el.value=next;
  if(next){
    if(time&&!time.value)time.value='2:00';
-   if(man&&(!man.value||man.value==='4-on-4'))man.value='5-on-4';
+   if(man)man.value='5-on-4';
  }else{
    if(time)time.value='';
-   if(man&&['5-on-4','5-on-3','4-on-3'].includes(man.value))man.value='';
+   if(man&&['5-on-4','5-on-3','4-on-3','6-on-4','6-on-3'].includes(man.value))man.value='';
  }
  var four=document.getElementById('adminFourOnFour');if(four)four.value=(man&&man.value==='4-on-4')?'true':'false';
  syncAdminQuickControls();markGameDayDirty();
@@ -7963,7 +7986,7 @@ function setAdminPowerPlayTime(value){
 function setAdminManpowerSituation(value){
  var el=document.getElementById('adminManpowerSituation'),pp=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime');if(!el)return;
  el.value=String(value||'');
- if(el.value==='4-on-4'){if(pp)pp.value='';if(time)time.value='';}
+ if(el.value==='4-on-4'||el.value==='3-on-3'){if(pp)pp.value='';if(time)time.value='';}
  var four=document.getElementById('adminFourOnFour');if(four)four.value=el.value==='4-on-4'?'true':'false';
  syncAdminQuickControls();markGameDayDirty();
 }
@@ -9948,7 +9971,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v713</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v714</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10018,6 +10041,10 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-chip" data-admin-manpower="5-on-3" onclick="setAdminManpowerSituation('5-on-3')">5 ON 3</button>
         <button type="button" class="admin-chip" data-admin-manpower="4-on-3" onclick="setAdminManpowerSituation('4-on-3')">4 ON 3</button>
         <button type="button" class="admin-chip" data-admin-manpower="4-on-4" onclick="setAdminManpowerSituation('4-on-4')">4 ON 4</button>
+        <button type="button" class="admin-chip" data-admin-manpower="3-on-3" onclick="setAdminManpowerSituation('3-on-3')">3 ON 3</button>
+        <button type="button" class="admin-chip" data-admin-manpower="6-on-5" onclick="setAdminManpowerSituation('6-on-5')">6 ON 5</button>
+        <button type="button" class="admin-chip" data-admin-manpower="6-on-4" onclick="setAdminManpowerSituation('6-on-4')">6 ON 4</button>
+        <button type="button" class="admin-chip" data-admin-manpower="6-on-3" onclick="setAdminManpowerSituation('6-on-3')">6 ON 3</button>
         <button type="button" class="admin-chip" data-admin-manpower="" onclick="setAdminManpowerSituation('')">EVEN</button>
       </div>
     </div>
@@ -12876,7 +12903,7 @@ function dcRenderPublicGameDayBase(){
       var pp=String(st.adminPowerPlay||'');
       var ppTime=String(st.adminPowerPlayTime||'');
       var manpower=String(st.adminManpowerSituation||(st.adminFourOnFour?'4-on-4':''));
-      if(manpower==='4-on-4')pp='';
+      if(manpower==='4-on-4'||manpower==='3-on-3')pp='';
       var en=String(st.adminEmptyNet||'');
       var leftPp=(pp==='phantoms'&&!isHome)||(pp==='opponent'&&isHome);
       var rightPp=(pp==='phantoms'&&isHome)||(pp==='opponent'&&!isHome);
@@ -13810,7 +13837,7 @@ function dcRenderPublicGameDayDecorated(){
   syncMoreWrrForGameDay();
   box=document.getElementById('publicGameDayCard');if(!box)return;
   var st=getAdminGameState();
-  dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(String(st.adminManpowerSituation||'')==='4-on-4')box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
+  dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);if(['4-on-4','3-on-3'].includes(String(st.adminManpowerSituation||'')))box.querySelectorAll('.gameday-pp').forEach(function(el){el.style.display='none';});
   if(String(st.adminPeriod||'').toUpperCase()==='SO'){
     if(dcRenderPublicShootout(box,active.g,st)){
       dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,active.g);dcApplyStoppagePill(box,st);
@@ -14260,7 +14287,7 @@ async function toggleGameDayWrrAudio(){
 function dcProductionSpecialHtml(team,st,effective){
   if(effective.status!=='live'||effective.manualSO)return '';
   var pp=String(st.adminPowerPlay||''),ppTime=String(st.adminPowerPlayTime||''),en=String(st.adminEmptyNet||''),man=String(st.adminManpowerSituation||'');
-  var hasPp=man!=='4-on-4'&&pp===team,hasEn=en===team,out='';
+  var hasPp=man!=='4-on-4'&&man!=='3-on-3'&&pp===team,hasEn=en===team,out='';
   if(hasPp)out+='<div class="gameday-special gameday-pp">PP'+(ppTime?' • '+escapeHtml(ppTime):'')+'</div>';
   if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';
   return out;
