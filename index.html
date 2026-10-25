@@ -9980,7 +9980,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v717</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v718</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -13380,7 +13380,7 @@ function dcShootoutRound(state){
   state=dcNormalizeShootoutState(state);
   var y=dcShootoutTeamAttempts(state,'phantoms').length,o=dcShootoutTeamAttempts(state,'opponent').length;
   if(Math.min(y,o)<3)return Math.min(y,o)+1;
-  return Math.max(y,o)+1;
+  return Math.min(y,o)+1;
 }
 function dcShootoutAttemptMarks(state,team,publicMode){
   var a=dcShootoutTeamAttempts(state,team);
@@ -14352,9 +14352,33 @@ function dcProductionSpecialHtml(team,st,effective){
   if(hasEn)out+='<div class="gameday-special gameday-en">EMPTY NET</div>';
   return out;
 }
+function dcProductionShootoutTracker(g,state){
+  state=dcNormalizeShootoutState(state);
+  var round=dcShootoutRound(state),next=dcShootoutNext(state),sudden=round>3;
+  // The three-round phase always shows all three round columns. Sudden death adds columns as needed.
+  var columns=Math.max(3,round),first=state.first;
+  function attemptRow(team,label){
+    var a=dcShootoutTeamAttempts(state,team),cells='';
+    for(var i=0;i<columns;i++){
+      var attempt=a[i],isNext=!attempt&&next===team&&i===a.length;
+      var c=attempt?(attempt.goal?' goal':' miss'):(isNext?' next':' pending');
+      var symbol=attempt?(attempt.goal?'\u2713':'\u00d7'):(isNext?'\u2022':'\u2013');
+      var word=attempt?(attempt.goal?'GOAL':'MISS'):(isNext?'NEXT':'');
+      cells+='<div class="dc-so-v718-tile'+c+'" aria-label="Round '+(i+1)+' '+escapeHtml(label)+' '+(word||'pending')+'"><span class="dc-so-v718-symbol">'+symbol+'</span><span class="dc-so-v718-word">'+word+'</span></div>';
+    }
+    return '<div class="dc-so-v718-row"><div class="dc-so-v718-team">'+escapeHtml(label)+'</div><div class="dc-so-v718-cells">'+cells+'</div></div>';
+  }
+  var yFirst=first!=='opponent';
+  var y=attemptRow('phantoms','YNG'),o=attemptRow('opponent',dcTeamAbbr(g&&g[1]));
+  return '<section class="dc-so-v718" aria-label="Live shootout results">'+
+    '<div class="dc-so-v718-heading"><span>SHOOTOUT</span><strong>'+(sudden?'SUDDEN DEATH &middot; ':'')+'ROUND '+round+'</strong></div>'+
+    '<div class="dc-so-v718-scroll"><div class="dc-so-v718-columns">'+
+    '<div class="dc-so-v718-number-head"><div class="dc-so-v718-team"></div><div class="dc-so-v718-cells">'+Array.from({length:columns},function(_,i){return '<span>'+(i+1)+'</span>';}).join('')+'</div></div>'+
+    (yFirst?y+o:o+y)+'</div></div></section>';
+}
 function dcProductionShootoutTeam(team,homeAway,attemptTeam,state,next){
   var isYoungstown=String(team||'').trim()==='Youngstown Phantoms';
-  var record=isYoungstown?dcPhantomsRecord:((typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null)||opponentRecordFor(team));return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'<div class="dc-so-public-next'+(next===attemptTeam?' show':'')+'">NEXT</div>'+dcShootoutAttemptMarks(state,attemptTeam,true)+'</div>';
+  var record=isYoungstown?dcPhantomsRecord:((typeof gcGameDayOfficialRecord==='function'?gcGameDayOfficialRecord(team):null)||opponentRecordFor(team));return '<div class="gameday-team"><div class="gameday-logo-wrap">'+matchupLogo(team)+'</div><div class="gameday-team-name"><span class="matchup-name-stack">'+teamNameStack(team)+'</span></div>'+(homeAway?'<div class="homeaway">'+escapeHtml(homeAway)+'</div>':'')+(record?'<div class="team-record-pill">'+formatRecordPill(record)+'</div>':'')+'</div>';
 }
 function dcRenderProductionActiveGame(box,g,st,effective){
   var phRole=featuredHomeAwayRole(g),isHome=phRole==='HOME',oppRole=isHome?'AWAY':'HOME',opp=String(g[1]||'Opponent').toUpperCase();
@@ -14362,14 +14386,14 @@ function dcRenderProductionActiveGame(box,g,st,effective){
   var leftKey=isHome?'opponent':'phantoms',rightKey=isHome?'phantoms':'opponent',leftScore=isHome?effective.opponent:effective.phantoms,rightScore=isHome?effective.phantoms:effective.opponent;
   var state=dcNormalizeShootoutState(st.adminShootoutState),activeSO=effective.manualSO&&effective.status!=='final',next=dcShootoutNext(state);
   var finalLabel=dcFinalLabel(st,effective.period,effective.snapshot),statusText=effective.status==='final'?finalLabel:'LIVE',statusClass=effective.status==='final'?'gameday-final':'gameday-live';
-  var periodText='';if(effective.status==='final')periodText=finalLabel;else if(activeSO)periodText='SHOOTOUT';else if(String(effective.clock||'')==='INT')periodText=(String(effective.period||'')+' INT').trim();else periodText=(effective.period+(effective.period&&effective.clock?' • ':'')+displayGameClock(effective.clock||'')).trim();
+  var periodText='';if(effective.status==='final')periodText=finalLabel;else if(activeSO)periodText='ROUND '+dcShootoutRound(state);else if(String(effective.clock||'')==='INT')periodText=(String(effective.period||'')+' INT').trim();else periodText=(effective.period+(effective.period&&effective.clock?' • ':'')+displayGameClock(effective.clock||'')).trim();
   function standardTeam(team,role){return gameDayTeam(team,String(team).toUpperCase(),role);}
   var leftTeamHtml=activeSO?dcProductionShootoutTeam(leftTeam,leftRole,leftKey,state,next):standardTeam(leftTeam,leftRole);
   var rightTeamHtml=activeSO?dcProductionShootoutTeam(rightTeam,rightRole,rightKey,state,next):standardTeam(rightTeam,rightRole);
   var middle='<div class="gameday-matchup gameday-matchup-visual">'+leftTeamHtml+'<div class="gameday-scoreboard"><div class="gameday-score-pair"><div class="gameday-score-cell"><div class="gameday-pp-slot">'+dcProductionSpecialHtml(leftKey,st,effective)+'</div><div class="gameday-score">'+escapeHtml(String(leftScore))+'</div></div><div class="gameday-score-cell"><div class="gameday-pp-slot">'+dcProductionSpecialHtml(rightKey,st,effective)+'</div><div class="gameday-score">'+escapeHtml(String(rightScore))+'</div></div></div><div class="gameday-periodbox"><div class="gameday-period">'+escapeHtml(periodText)+'</div></div></div>'+rightTeamHtml+'</div>';
   var venue={arena:'',city:g[2]};try{if(typeof scheduleVenue==='function')venue=scheduleVenue(g);}catch(_){}var arena=venue.arena||'Arena TBA',city=venue.city||g[2]||'';
   box.className='card gameday-card dc-gd-modern';box.style.cssText='';
-  box.innerHTML='<div class="gameday-status '+statusClass+'">'+statusText+'</div>'+middle+(activeSO?'':dcProductionStatStrip(g,effective,st))+'<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+dcGameDayActions(g,effective,st)+dcGameNotesGameDayHtml();
+  box.innerHTML='<div class="gameday-status '+statusClass+'">'+statusText+'</div>'+middle+(activeSO?dcProductionShootoutTracker(g,state):dcProductionStatStrip(g,effective,st))+'<div class="gameday-meta gameday-venue">'+escapeHtml((arena?arena+' — ':'')+city)+'</div>'+dcGameDayActions(g,effective,st)+dcGameNotesGameDayHtml();
   document.body.classList.remove('game-pregame','game-live','game-final','game-upcoming');document.body.classList.add(effective.status==='final'?'game-final':'game-live');
   if(effective.status==='live'){dcApplyManpowerPill(box,st);dcApplyTeamTimeoutPill(box,st,g);dcApplyStoppagePill(box,st);}
 }
@@ -15787,6 +15811,28 @@ window.addEventListener('load',initialize);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)requestAnimationFrame(update);});
 })();
 </script>
+
+<style id="v718-game-day-shootout-tracker">
+/* V718: live shootout takes the place of the period-by-period table. */
+#publicGameDayCard .dc-so-v718{margin:12px 0 11px;padding:11px 10px 12px;border:1px solid #4c3c68;border-radius:12px;background:linear-gradient(140deg,#151e31,#20172f 95%);color:#f7f7fc;overflow:hidden}
+#publicGameDayCard .dc-so-v718-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;font-weight:900;letter-spacing:.07em}
+#publicGameDayCard .dc-so-v718-heading span{color:#caa6fa}
+#publicGameDayCard .dc-so-v718-heading strong{font-size:13px;color:#fff;text-align:right}
+#publicGameDayCard .dc-so-v718-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+#publicGameDayCard .dc-so-v718-columns{min-width:100%}
+#publicGameDayCard .dc-so-v718-number-head,#publicGameDayCard .dc-so-v718-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+#publicGameDayCard .dc-so-v718-team{flex:0 0 43px;width:43px;font-size:11px;font-weight:950;color:#fff}
+#publicGameDayCard .dc-so-v718-cells{display:grid;grid-auto-columns:minmax(44px,1fr);grid-auto-flow:column;gap:7px;flex:1;min-width:max-content}
+#publicGameDayCard .dc-so-v718-number-head .dc-so-v718-cells span{text-align:center;color:#a9b5ce;font-size:10px;font-weight:800}
+#publicGameDayCard .dc-so-v718-tile{min-height:53px;border:1px solid #42516b;border-radius:9px;background:#222d40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#publicGameDayCard .dc-so-v718-symbol{font-size:23px;font-weight:950;line-height:1}
+#publicGameDayCard .dc-so-v718-word{font-size:9px;line-height:1.2;font-weight:950;letter-spacing:.035em}
+#publicGameDayCard .dc-so-v718-tile.goal{border-color:#269f72;background:#123c2d;color:#66efae}
+#publicGameDayCard .dc-so-v718-tile.miss{border-color:#b34a60;background:#462432;color:#ff9ca9}
+#publicGameDayCard .dc-so-v718-tile.next{border-color:#e4a253;background:#463323;color:#ffd199;box-shadow:inset 0 0 0 1px #e4a25366}
+#publicGameDayCard .dc-so-v718-tile.pending{color:#758198}
+@media(max-width:380px){#publicGameDayCard .dc-so-v718{padding:10px 7px}#publicGameDayCard .dc-so-v718-team{flex-basis:35px;width:35px;font-size:10px}#publicGameDayCard .dc-so-v718-cells{grid-auto-columns:minmax(39px,1fr);gap:5px}}
+</style>
 </body>
 </html>
 
