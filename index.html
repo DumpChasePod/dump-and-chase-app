@@ -9980,7 +9980,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v718</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v719</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -15514,6 +15514,14 @@ window.pcRemovePhoto=async function(){if(!selected?.photo_path)return;
 .pc-poll-archive-content .pc-poll-bar,.pc-poll-admin-results .pc-poll-bar{height:8px;border-radius:8px;overflow:hidden;background:#303748;margin-top:7px}.pc-poll-archive-content .pc-poll-bar span,.pc-poll-admin-results .pc-poll-bar span{display:block;height:100%;background:#9463d4;border-radius:8px}
 .pc-poll-archive-content .pc-poll-caption{margin-top:18px;color:#bec6d2;font-size:12px}.pc-poll-admin-archive-heading{margin:20px 0 10px;font-size:13px}.pc-poll-admin-results{padding:12px;background:#101827;border-radius:11px;margin-top:10px}
 </style>
+<style>
+/* V719: long weekly poll choices remain readable in current and archived results. */
+#pcPublicView .pc-poll-result,.pc-poll-archive-content .pc-poll-result,.pc-poll-admin-results .pc-poll-result{margin:0 0 17px;min-width:0}
+#pcPublicView .pc-poll-answer,.pc-poll-archive-content .pc-poll-answer,.pc-poll-admin-results .pc-poll-answer{display:block;color:#edf0f7;font-size:12.5px;font-weight:650;line-height:1.5;overflow-wrap:anywhere;white-space:normal}
+#pcPublicView .pc-poll-result-meta,.pc-poll-archive-content .pc-poll-result-meta,.pc-poll-admin-results .pc-poll-result-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px 9px;margin-top:6px;color:#b6c0d3;font-size:11px;font-weight:650;line-height:1.4}
+#pcPublicView .pc-poll-your-vote{color:#f0ab6b;font-size:10.5px;font-weight:800;border:1px solid rgba(240,171,107,.42);padding:3px 8px;border-radius:99px;background:rgba(240,171,107,.09);white-space:nowrap}
+#pcPublicView .pc-poll-result .pc-poll-bar,.pc-poll-archive-content .pc-poll-result .pc-poll-bar,.pc-poll-admin-results .pc-poll-result .pc-poll-bar{margin-top:8px}
+</style>
 <script id="pcV7115SpotlightRenderer">
 window.pcSpotlightMarkup=function(n,photo,opts){
  var safe=function(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})};
@@ -15668,7 +15676,7 @@ window.addEventListener('load',initialize);
   if(p.results){
    const total=p.results.total||0;
    p.options.forEach((name,i)=>{const pct=total?Math.round(100*(p.results.votes[i]||0)/total):0;
-    html+='<div class="pc-poll-result'+(p.my_vote===i?' me':'')+'"><div><strong>'+escape(name)+'</strong> · '+pct+'%'+(p.my_vote===i?' ✓':'')+'</div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
+    html+='<div class="pc-poll-result'+(p.my_vote===i?' me':'')+'"><div class="pc-poll-answer">'+escape(name)+'</div><div class="pc-poll-result-meta"><span>'+pct+'% · '+Number(p.results.votes[i]||0)+' vote'+(Number(p.results.votes[i]||0)===1?'':'s')+'</span>'+(p.my_vote===i?'<span class="pc-poll-your-vote">&#10003; Your vote</span>':'')+'</div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
    });
    html+='<p class="pc-poll-caption">'+total+' vote'+(total===1?'':'s')+(p.status==='closed'?' · Final results':' · Thanks for voting!')+'</p>';
   }else{
@@ -15700,7 +15708,7 @@ window.addEventListener('load',initialize);
   const total=Number(p.results?.total)||0;
   let html='<div class="pc-poll-question">'+escape(p.question)+'</div>';
   (p.options||[]).forEach((option,i)=>{const votes=Number(p.results?.votes?.[i])||0,pct=total?Math.round(votes*100/total):0;
-   html+='<div class="pc-poll-result"><div class="pc-poll-result-heading"><strong>'+escape(option)+'</strong><span>'+pct+'% · '+votes+' vote'+(votes===1?'':'s')+'</span></div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
+   html+='<div class="pc-poll-result"><div class="pc-poll-answer">'+escape(option)+'</div><div class="pc-poll-result-meta"><span>'+pct+'% · '+votes+' vote'+(votes===1?'':'s')+'</span></div><div class="pc-poll-bar"><span style="width:'+pct+'%"></span></div></div>';
   });
   return html+'<p class="pc-poll-caption">'+total+' total vote'+(total===1?'':'s')+' · Final results</p>';
  }
