@@ -9980,7 +9980,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v719</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v720</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10352,8 +10352,9 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div class="pc-v705-section" data-pc-section-panel="fans">
     <div class="pc-summary" id="pcSummary">Loading nominations…</div>
-    <h3 class="pc-v711-heading">LISTENER SUBMISSIONS</h3>
+    <h3 class="pc-v711-heading">ACTIVE SUBMISSIONS</h3>
     <div id="pcList" class="pc-list" aria-live="polite"></div>
+    <details id="pcFeaturedSubmissions" class="pc-v720-featured-archive" style="margin:14px 0;border:1px solid #3c3354;border-radius:12px;padding:12px;background:#151824"><summary style="cursor:pointer;font-weight:850;color:#e9ddff">PREVIOUSLY FEATURED <span id="pcFeaturedCount">(0)</span></summary><div id="pcFeaturedList" class="pc-list" style="margin-top:12px"></div></details>
     <section id="pcDetail" class="pc-detail" hidden>
       <h3 id="pcDetailTitle">LISTENER STORY</h3>
       <div id="pcDetailFields"></div>
@@ -15215,22 +15216,29 @@ function esc(s){return escapeHtml(String(s==null?'':s));}
 function feedback(message){if(el('pcFeedback'))el('pcFeedback').textContent=message;}
 function verified(){return dcIsAdmin();}
 function normalizedEmail(v){return String(v||'').trim().toLowerCase();}
+function pcHasBeenFeatured(id){return winners.some(function(w){return w.nomination_id===id&&!w.is_test&&['current','archived','unpublished'].includes(w.state)&&!!w.published_at;});}
+function pcEntry(r){var date=r.created_at?new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';var featured=pcHasBeenFeatured(r.id);return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(date)+'</small></span><span><em>'+esc(featured?'Featured':r.status==='New'&&r.viewed_at?'Reviewed':r.status)+'</em>'+(r.status==='New'&&!r.viewed_at&&!featured?' <strong class="pc-v711-new">NEW</strong>':'')+'</span></button>';}
 function render(){
  var list=el('pcList');if(!list)return;
- var detail=el('pcDetail');if(detail&&list.contains(detail)){detail.hidden=true;list.after(detail);}
- var filtered=rows.slice().sort(function(a,b){return new Date(b.created_at||0)-new Date(a.created_at||0);});
- var count=rows.filter(function(x){return x.status==='New'&&!x.viewed_at;}).length;
- el('pcSummary').textContent=rows.length+' submissions · '+count+' new';
- if(!filtered.length){list.innerHTML='<div class="admin-muted">No listener submissions yet.</div>';return;}
- list.innerHTML=filtered.map(function(r){var date=r.created_at?new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date unavailable';return '<button type="button" class="pc-entry" data-pc-id="'+esc(r.id)+'"><span><b>'+esc(r.full_name)+'</b><small>'+esc(date)+'</small></span><span><em>'+esc(r.status==='New'&&r.viewed_at?'Reviewed':r.status)+'</em>'+(r.status==='New'&&!r.viewed_at?' <strong class="pc-v711-new">NEW</strong>':'')+'</span></button>';}).join('');
- list.querySelectorAll('[data-pc-id]').forEach(function(b){b.addEventListener('click',function(){window.pcOpen(b.getAttribute('data-pc-id'));});});
+ var detail=el('pcDetail');if(detail&&detail.parentNode){detail.hidden=true;list.after(detail);}
+ var sorted=rows.slice().sort(function(a,b){return new Date(b.created_at||0)-new Date(a.created_at||0);});
+ var active=sorted.filter(function(r){return !pcHasBeenFeatured(r.id);});
+ var featured=sorted.filter(function(r){return pcHasBeenFeatured(r.id);});
+ var count=active.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;
+ el('pcSummary').textContent=active.length+' active submissions · '+count+' new';
+ list.innerHTML=active.length?active.map(pcEntry).join(''):'<div class="admin-muted">No active submissions.</div>';
+ var archive=el('pcFeaturedSubmissions'),old=el('pcFeaturedList');
+ el('pcFeaturedCount').textContent='('+featured.length+')';
+ archive.hidden=!featured.length;
+ old.innerHTML=featured.map(pcEntry).join('');
+ [list,old].forEach(function(container){container.querySelectorAll('[data-pc-id]').forEach(function(b){b.addEventListener('click',function(){window.pcOpen(b.getAttribute('data-pc-id'));});});});
 }
 window.pcLoad=async function(){if(busy)return;busy=true;feedback('Loading private nominations…');try{
  if(!(await verified()))throw Error('Admin session expired. Please unlock Admin again.');
  var results=await Promise.all([dcSupabase.from('phan_central_settings').select('*').eq('id',1).single(),dcSupabase.from('phan_central_nominations').select('*').order('created_at',{ascending:false}).limit(500),dcSupabase.from('phan_central_winners').select('*').order('created_at',{ascending:false}).limit(150)]);
  if(results[0].error)throw results[0].error;if(results[1].error)throw results[1].error;if(results[2].error)throw results[2].error;settings=results[0].data;
  pcRenderSettings();
- rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();if(typeof window.pcPollAdminLoad==='function')window.pcPollAdminLoad();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
+ rows=results[1].data||[];winners=results[2].data||[];render();pcRenderWinners();if(typeof window.pcPollAdminLoad==='function')window.pcPollAdminLoad();var badge=el('pcPendingBadge');if(badge){var cnt=rows.filter(function(x){return !pcHasBeenFeatured(x.id)&&x.status==='New';}).length;badge.textContent=cnt?String(cnt):'';}feedback('');
  }catch(e){feedback('Could not load nominations: '+(e.message||e));}finally{busy=false;}};
 function pcRenderSettings(){
  if(!settings)return;
@@ -15261,13 +15269,13 @@ window.pcChangeSetting=async function(setting){
 window.pcOpen=async function(id){
  selected=rows.find(function(r){return r.id===id;})||null;if(!selected)return;
  editing=false;pcDrawSubmission();render();
- var detail=el('pcDetail'),anchor=Array.from(el('pcList').querySelectorAll('[data-pc-id]')).find(function(b){return b.dataset.pcId===id;});
- if(anchor)anchor.after(detail);detail.hidden=false;
- el('pcList').querySelectorAll('[data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
+ var detail=el('pcDetail'),anchor=Array.from(document.querySelectorAll('#pcList [data-pc-id],#pcFeaturedList [data-pc-id]')).find(function(b){return b.dataset.pcId===id;});
+ if(anchor){if(pcHasBeenFeatured(id))el('pcFeaturedSubmissions').open=true;anchor.after(detail);}detail.hidden=false;
+ document.querySelectorAll('#pcList [data-pc-id],#pcFeaturedList [data-pc-id]').forEach(function(b){b.setAttribute('aria-expanded',String(b===anchor));});
  await pcRenderPhoto();el('pcProfilePreview').hidden=true;
- var badge=el('pcPendingBadge');if(badge){var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;badge.textContent=c?String(c):'';}
+ var badge=el('pcPendingBadge');if(badge){var c=rows.filter(function(r){return !pcHasBeenFeatured(r.id)&&r.status==='New'&&!r.viewed_at;}).length;badge.textContent=c?String(c):'';}
  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
- if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});var c=rows.filter(function(r){return r.status==='New'&&!r.viewed_at;}).length;var badge=el('pcPendingBadge');if(badge)badge.textContent=c?String(c):'';el('pcSummary').textContent=rows.length+' submissions · '+c+' new';var active=el('pcList').querySelector('[data-pc-id=+id+]');if(active){var newMark=active.querySelector('.pc-v711-new');if(newMark)newMark.remove();}}catch(e){feedback('Story opened, but viewed status could not be saved: '+(e.message||e));}}
+ if(!selected.viewed_at){try{var viewed=await dcSupabase.from('phan_central_nominations').update({viewed_at:new Date().toISOString()}).eq('id',id).select('*').single();if(viewed.error)throw viewed.error;selected=viewed.data;rows=rows.map(function(r){return r.id===id?selected:r;});var c=rows.filter(function(r){return !pcHasBeenFeatured(r.id)&&r.status==='New'&&!r.viewed_at;}).length;var badge=el('pcPendingBadge');if(badge)badge.textContent=c?String(c):'';render();var active=el('pcList').querySelector('[data-pc-id=+id+]');if(active){var newMark=active.querySelector('.pc-v711-new');if(newMark)newMark.remove();}}catch(e){feedback('Story opened, but viewed status could not be saved: '+(e.message||e));}}
 };
 function pcDrawSubmission(){if(!selected)return;
  var heading=el('pcDetailTitle');heading.textContent='LISTENER STORY';
@@ -15298,8 +15306,8 @@ function pcDrawSubmission(){if(!selected)return;
    '<p class="pc-v7112-consent">'+(selected.adult_confirmed&&selected.consent_confirmed?'✓ Age and publication consent confirmed':'⚠ Age or publication consent missing')+'</p></section>';
  }
  el('pcHostNotes').value=selected.admin_notes||'';
- var status=el('pcStatus');status.innerHTML=statuses.map(function(v){return '<option value="'+v+'">'+(v==='New'?'New — Awaiting Review':v)+'</option>';}).join('');
- if(!statuses.includes(selected.status)){status.innerHTML='<option value="'+esc(selected.status)+'">'+esc(selected.status)+' (automatic)</option>'+status.innerHTML;status.disabled=true;}else{status.disabled=false;status.value=selected.status;}
+ var status=el('pcStatus');var alreadyFeatured=pcHasBeenFeatured(selected.id);status.innerHTML=statuses.map(function(v){return '<option value="'+v+'">'+(v==='New'?'New — Awaiting Review':v)+'</option>';}).join('');
+ if(alreadyFeatured){status.innerHTML='<option value="Featured">Featured (history)</option>';status.value='Featured';status.disabled=true;}else if(!statuses.includes(selected.status)){status.innerHTML='<option value="'+esc(selected.status)+'">'+esc(selected.status)+' (automatic)</option>'+status.innerHTML;status.disabled=true;}else{status.disabled=false;status.value=selected.status;}
  el('pcReviewActions').hidden=editing;el('pcEditActions').hidden=!editing;
  el('pcDeleteNomination').hidden=winners.some(function(w){return w.nomination_id===selected.id;});
  el('pcWinnerModeNote').textContent='Feature an Eligible listener with confirmed consent. Only approved photos appear publicly; otherwise the podcast placeholder is used.';
@@ -15307,7 +15315,7 @@ function pcDrawSubmission(){if(!selected)return;
 }
 window.pcStartEdit=function(){if(!selected)return;editing=true;pcDrawSubmission();};
 window.pcCancelEdit=function(){editing=false;pcDrawSubmission();};
-window.pcChangeReviewStatus=async function(){if(!selected)return;var status=el('pcStatus').value;if(!statuses.includes(status)||status===selected.status)return;
+window.pcChangeReviewStatus=async function(){if(!selected||pcHasBeenFeatured(selected.id))return;var status=el('pcStatus').value;if(!statuses.includes(status)||status===selected.status)return;
  if(!confirm('Change '+selected.full_name+' to '+status+'?')){el('pcStatus').value=selected.status;return;}
  try{var r=await dcSupabase.from('phan_central_nominations').update({status:status,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(r.error)throw r.error;selected=r.data;rows=rows.map(function(x){return x.id===selected.id?selected:x;});feedback('Review status updated.');pcDrawSubmission();}catch(e){feedback('Status update failed: '+(e.message||e));el('pcStatus').value=selected.status;}
 };
@@ -15392,6 +15400,7 @@ function pcEasternUTC(value){
 }
 window.pcSelectWinner=async function(scheduled){
  if(!selected)return;
+ if(pcHasBeenFeatured(selected.id)){feedback('This listener has already been featured.');return;}
  if(!selected.is_test&&!settings?.public_visible){feedback('Enable the Phan Central page before selecting a production winner.');return;}
  if(selected.status!=='Eligible'){feedback('Set this nomination to Eligible and save first.');return;}
  try{
