@@ -5980,7 +5980,7 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 }
 </style>
 
-<style id="dc-v722-game-center-workflow">
+<style id="dc-v723-game-center-workflow">
 /* Tighten the long Game Center form while preserving editable controls. */
 #adminGameDayPanel .admin-gameday-step {margin:12px 0;padding:14px 13px}
 #adminGameDayPanel .admin-gameday-step-head {margin-bottom:9px}
@@ -5996,6 +5996,48 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 #adminGameDayPanel .admin-stage-fold {margin:0 0 10px;border:1px solid rgba(162,122,213,.25);border-radius:12px;overflow:hidden}
 #adminGameDayPanel .admin-stage-fold summary {padding:12px 14px;font-size:13px;font-weight:850;color:#e8dbff;cursor:pointer;list-style:auto;background:#171d2c}
 #adminGameDayPanel .admin-stage-fold .admin-gameday-step {margin:0;border:0;border-radius:0}
+</style>
+<style id="dc-v723-game-center">
+#adminGameDayPanel .admin-ht-live-strip{margin-bottom:12px;padding:10px 12px}
+#adminGameDayPanel #adminHtLiveStrip>.admin-ht-live-controls{display:none!important}
+#adminGameDayPanel .dc723-layout{margin:8px 0 12px}
+#adminGameDayPanel .dc723-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+#adminGameDayPanel .dc723-heading strong{display:block;font-size:19px;letter-spacing:.03em;color:#f7f3ff}
+#adminGameDayPanel .dc723-heading small{display:block;color:#a4adc2;font-size:11px;margin-top:3px}
+#adminGameDayPanel #dc723StageState{font-size:10px;font-weight:900;letter-spacing:.09em;color:#d5b9ff;background:#382351;border:1px solid #684589;border-radius:99px;padding:7px 10px;white-space:nowrap}
+#adminGameDayPanel .dc723-stage-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:12px}
+#adminGameDayPanel .dc723-stage-tabs button{min-height:46px;padding:8px 2px;font-size:12px;font-weight:800;color:#aeb6c8;border:1px solid #39435a;background:#161c2b;border-radius:10px;cursor:pointer}
+#adminGameDayPanel .dc723-stage-tabs button.active{color:#fff;border-color:#a064df;background:linear-gradient(145deg,#49265f,#27223e);box-shadow:inset 0 -3px #e49146}
+#adminGameDayPanel .dc723-working-area{background:linear-gradient(160deg,#171d31,#101a29);border:1px solid #3b405f;border-radius:17px;padding:13px;min-height:100px}
+#adminGameDayPanel .dc723-working-area .admin-gameday-step{margin:0;padding:0;border:0;background:none;box-shadow:none;opacity:1}
+#adminGameDayPanel .dc723-working-area .admin-gameday-step-head{display:none}
+#adminGameDayPanel .dc723-working-area .admin-stage-fold{margin:0;border:0;background:none}
+#adminGameDayPanel .dc723-working-area .admin-stage-fold>summary{display:none}
+#adminGameDayPanel .dc723-working-area .admin-stage-fold>.admin-gameday-step{padding:0}
+#adminGameDayPanel .dc723-working-area .admin-step-status-row{margin-bottom:10px}
+#adminGameDayPanel .dc723-working-area .admin-game-audio-card{margin:12px 0 0;padding:12px}
+#adminGameDayPanel .dc723-working-area .admin-authority-note{font-size:11px;margin:0 0 10px;padding:8px 10px}
+#adminGameDayPanel .dc723-working-area .admin-live-manual-console{margin:0;padding:10px}
+#adminGameDayPanel .dc723-working-area .admin-live-console-title{display:none}
+#adminGameDayPanel .dc723-working-area .admin-chip{font-size:12px;min-height:42px}
+#adminGameDayPanel .dc723-working-area .admin-quick-label{font-size:12px}
+#adminGameDayPanel .dc723-working-area .admin-so-live-actions button{font-size:13px}
+#adminGameDayPanel .dc723-working-area .admin-step-primary-action{margin-top:10px}
+#adminGameDayPanel .dc723-working-area .admin-quick-section{margin-top:10px}
+#adminGameDayPanel .dc723-working-area .admin-field{margin-top:9px}
+#adminGameDayPanel .dc723-corrections{margin-top:10px;border:1px solid #364155;border-radius:12px;background:#121b2a;overflow:hidden}
+#adminGameDayPanel .dc723-corrections>summary{cursor:pointer;padding:13px;color:#c4cee0;font-size:12px;font-weight:800}
+#adminGameDayPanel .dc723-corrections[open]>summary{border-bottom:1px solid #384356}
+#adminGameDayPanel #dc723CorrectionContent{padding:12px}
+#adminGameDayPanel #dc723CorrectionContent .admin-score-card{margin-top:10px}
+#adminGameDayPanel #dc723CorrectionContent .admin-emergency-controls-label{margin:0 0 8px}
+#adminGameDayPanel #dc723CorrectionContent .admin-ht-manual-toggle{width:100%;margin-bottom:10px;font-size:12px}
+#adminGameDayPanel .dc723-stage-note{color:#9eaabd;font-size:11px;line-height:1.5;margin:0 0 12px}
+#adminGameDayPanel .dc723-stage-live-note{color:#c1bdd0;font-size:12px;margin-bottom:10px}
+#adminGameDayPanel #dc723WorkingArea .admin-live-game-actions{display:none!important}
+#adminGameDayPanel #dc723WorkingArea .admin-step-primary-action .admin-final-game-wide{min-height:46px}
+#adminGameDayPanel .admin-reset-row{margin:12px 0}
+@media(max-width:390px){#adminGameDayPanel .dc723-stage-tabs button{font-size:11px;padding-left:0;padding-right:0}}
 </style>
 </head>
 <body>
@@ -9999,7 +10041,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v722</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v723</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10028,6 +10070,17 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="admin-ht-live-controls"><button type="button" class="admin-ht-manual-toggle" id="adminHtManualOverride" aria-pressed="false" onclick="dcToggleManualOverride()">EMERGENCY OVERRIDE: OFF</button></div>
   <div id="adminHtLiveBody" class="admin-ht-live-empty">Waiting for the current game feed.</div>
   </div>
+<div class="dc723-layout" id="dc723Layout">
+  <div class="dc723-heading"><div><strong>GAME CENTER</strong><small id="dc723MatchLabel">Official feed · HockeyTech</small></div><span id="dc723StageState">PREGAME</span></div>
+  <div class="dc723-stage-tabs" role="tablist" aria-label="Game Center stages">
+    <button type="button" data-dc723-stage="pregame" class="active" aria-selected="true">Pregame</button>
+    <button type="button" data-dc723-stage="live" aria-selected="false">Live</button>
+    <button type="button" data-dc723-stage="extra" aria-selected="false">OT / SO</button>
+    <button type="button" data-dc723-stage="final" aria-selected="false">Final</button>
+  </div>
+  <div class="dc723-working-area" id="dc723WorkingArea" aria-live="off"></div>
+  <details class="dc723-corrections" id="dc723Corrections"><summary>Score, clock &amp; emergency corrections</summary><div id="dc723CorrectionContent"></div></details>
+</div>
 <section class="admin-gameday-step admin-gameday-step-1">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">1</span><div><b>PREGAME SETUP</b><small>Prepare the game before the Game Day card goes live.</small></div></div>
   <div class="admin-step-status-row"><button type="button" class="admin-chip" data-admin-status="upcoming" onclick="setAdminStatus('upcoming')">UPCOMING</button></div>
@@ -15893,43 +15946,78 @@ window.addEventListener('load',initialize);
 #publicGameDayCard .dc-so-v718-tile.pending{color:#758198}
 @media(max-width:380px){#publicGameDayCard .dc-so-v718{padding:10px 7px}#publicGameDayCard .dc-so-v718-team{flex-basis:35px;width:35px;font-size:10px}#publicGameDayCard .dc-so-v718-cells{grid-auto-columns:minmax(39px,1fr);gap:5px}}
 </style>
-<script id="dc-v722-stage-organization">
+<script id="dc-v723-game-center-flow">
 (function(){
-  function updateStages(){
-    var status=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
-    var period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
-    var active=status==='final'?5:status==='upcoming'?1:(period==='OT'||period==='SO'?4:3);
-    var key=status+':'+period;
-    document.querySelectorAll('#adminGameDayPanel [data-dc-v722-step]').forEach(function(d){
-      var num=Number(d.getAttribute('data-dc-v722-step'));
-      var host=d.closest('.admin-gameday-step');
-      if(host)host.classList.toggle('is-inactive-stage',num!==active);
-      if(d.dataset.lastStage!==key){d.open=num===active;d.dataset.lastStage=key;}
-    });
-  }
-  function init(){
-    var groups=[
-      ['.admin-gameday-step-1','1 · Pregame setup'],
-      ['.admin-gameday-step-2','2 · Start game'],
-      ['.admin-gameday-step-3','3 · Live game controls'],
-      ['.admin-gameday-step-4','4 · Overtime / Shootout'],
-      ['.admin-gameday-step-5','5 · Finalize game']
-    ];
-    groups.forEach(function(pair,i){
-      var section=document.querySelector('#adminGameDayPanel '+pair[0]);
-      if(!section||section.querySelector('[data-dc-v722-step]'))return;
-      var details=document.createElement('details');details.className='admin-stage-fold';details.setAttribute('data-dc-v722-step',String(i+1));
-      var summary=document.createElement('summary');summary.textContent=pair[1];details.appendChild(summary);
-      while(section.firstChild)details.appendChild(section.firstChild);
-      section.appendChild(details);
-    });
-    var panel=document.getElementById('adminGameDayPanel');
-    if(!panel)return;
-    panel.addEventListener('click',function(){requestAnimationFrame(updateStages);});
-    panel.addEventListener('change',updateStages);
-    updateStages();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ var selected=null,previousAuto='',manualSelection=false;
+ function el(id){return document.getElementById(id);}
+ function stageFromData(){
+   var status=String(el('adminGameStatus')?.value||'upcoming').toLowerCase();
+   var period=String(el('adminPeriod')?.value||'').toUpperCase();
+   if(status==='final')return 'final';
+   if(status==='upcoming')return 'pregame';
+   if(period==='OT'||period==='SO')return 'extra';
+   return 'live';
+ }
+ function showStage(stage,manual){
+   var area=el('dc723WorkingArea');if(!area)return;
+   if(manual)manualSelection=true;
+   selected=stage;
+   for(var name of ['pregame','live','extra','final']){
+     var block=el('dc723Panel-'+name);if(!block)continue;
+     block.hidden=name!==stage;block.style.display=name===stage?'block':'none';
+   }
+   document.querySelectorAll('[data-dc723-stage]').forEach(function(btn){
+     var on=btn.dataset.dc723Stage===stage;btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));
+   });
+   var badge=el('dc723StageState');if(badge)badge.textContent={pregame:'PREGAME',live:'LIVE',extra:'OT / SHOOTOUT',final:'FINAL'}[stage]||'PREGAME';
+ }
+ function update(){
+   var auto=stageFromData();
+   if(auto!==previousAuto){previousAuto=auto;manualSelection=false;showStage(auto,false);}
+   else if(!manualSelection&&auto!==selected)showStage(auto,false);
+ }
+ function move(target,selector){var node=document.querySelector('#adminGameDayPanel '+selector);if(node&&target)target.appendChild(node);}
+ function init(){
+   var area=el('dc723WorkingArea');if(!area||area.dataset.ready)return;
+   area.dataset.ready='1';
+   var panels={};
+   for(var name of ['pregame','live','extra','final']){
+     var p=document.createElement('div');p.id='dc723Panel-'+name;p.hidden=true;area.appendChild(p);panels[name]=p;
+   }
+   // Move controls, never duplicate their IDs or event handlers.
+   move(panels.pregame,'.admin-gameday-step-1');
+   move(panels.pregame,'.admin-game-audio-card');
+   move(panels.pregame,'.admin-gameday-step-2');
+   move(panels.live,'.admin-gameday-step-3');
+   move(panels.extra,'.admin-gameday-step-4');
+   move(panels.final,'.admin-gameday-step-5');
+   // Keep the existing emergency score/clock fields available at every stage.
+   var correction=el('dc723CorrectionContent');
+   move(correction,'.admin-ht-live-controls');
+   move(correction,'.admin-emergency-controls-label');
+   // Relocate emergency score/clock controls from the live section.
+   var live=panels.live;
+   for(var selector of ['.admin-quick-section-first','.admin-score-card','.admin-field:has(#adminClock)']){
+      var node=live?.querySelector(selector);if(node)correction.appendChild(node);
+   }
+   // Move the optional final shortcut out of the live section: the stage tab supplies that navigation.
+   // Keep all game-state hidden inputs in the DOM with their original IDs.
+   var action=live?.querySelector('.admin-live-game-actions');if(action)action.remove();
+   var intro=document.createElement('div');intro.className='dc723-stage-live-note';intro.textContent='Game situations · updates publish with Save & Publish';
+   live?.insertBefore(intro,live.firstChild);
+   var extraInfo=document.createElement('div');extraInfo.className='dc723-stage-note';extraInfo.textContent='Choose OT or Shootout as needed. Shootout results stay provisional until you confirm FINAL-SO.';
+   panels.extra.insertBefore(extraInfo,panels.extra.firstChild);
+   var finalInfo=document.createElement('div');finalInfo.className='dc723-stage-note';finalInfo.textContent='Review the result before publishing. Shootouts must be finalized from the shootout tracker.';
+   panels.final.insertBefore(finalInfo,panels.final.firstChild);
+   document.querySelectorAll('[data-dc723-stage]').forEach(function(btn){btn.addEventListener('click',function(){showStage(btn.dataset.dc723Stage,true);});});
+   var panel=el('adminGameDayPanel');
+   panel?.addEventListener('click',function(){requestAnimationFrame(update);});
+   panel?.addEventListener('change',function(){requestAnimationFrame(update);});
+   // Reflect remote state updates without forcing a user out of a correction tab.
+   setInterval(update,1200);
+   update();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </body>
