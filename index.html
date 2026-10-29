@@ -5979,6 +5979,24 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
  #adminGameDayPanel .admin-live-manual-console .admin-onice-row .admin-chip{font-size:14px}
 }
 </style>
+
+<style id="dc-v722-game-center-workflow">
+/* Tighten the long Game Center form while preserving editable controls. */
+#adminGameDayPanel .admin-gameday-step {margin:12px 0;padding:14px 13px}
+#adminGameDayPanel .admin-gameday-step-head {margin-bottom:9px}
+#adminGameDayPanel .admin-gameday-step-head small {font-size:11px;line-height:1.4}
+#adminGameDayPanel .admin-shootout-confirm {margin-top:12px;width:100%;min-height:46px;font-size:14px;font-weight:900}
+#adminGameDayPanel .admin-shootout-confirm[hidden] {display:none!important}
+#adminGameDayPanel .admin-so-live-result[hidden] {display:none!important}
+#adminGameDayPanel .admin-ht-live-controls {margin-top:6px}
+#adminGameDayPanel .admin-ht-manual-toggle {font-size:11px;min-height:40px}
+#adminGameDayPanel .admin-gameday-step .admin-quick-label {font-size:12px}
+#adminGameDayPanel .admin-so-live-actions button {min-height:44px;font-size:13px}
+#adminGameDayPanel .admin-gameday-step.is-inactive-stage {opacity:.85}
+#adminGameDayPanel .admin-stage-fold {margin:0 0 10px;border:1px solid rgba(162,122,213,.25);border-radius:12px;overflow:hidden}
+#adminGameDayPanel .admin-stage-fold summary {padding:12px 14px;font-size:13px;font-weight:850;color:#e8dbff;cursor:pointer;list-style:auto;background:#171d2c}
+#adminGameDayPanel .admin-stage-fold .admin-gameday-step {margin:0;border:0;border-radius:0}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -7821,6 +7839,7 @@ function dcCurrentHockeyTechFinalScores(){
   return {phantoms:ph,opponent:op,source:'HockeyTech'};
 }
 function finalizeAdminGame(){
+  if(String(document.getElementById('adminPeriod')?.value||'').toUpperCase()==='SO'){setAdminFeedback('adminSaveStatus','error','Use CONFIRM FINAL-SO in the Shootout Tracker after the winning attempt.');return;}
   var ps=document.getElementById('adminPhantomsScore'),os=document.getElementById('adminOpponentScore');
   if(dcAdminManualAuthorityActive()){
     if(!ps||!os||String(ps.value).trim()===''||String(os.value).trim()===''){setAdminFeedback('adminSaveStatus','error','Enter both scores before going FINAL in Emergency Override.');return;}
@@ -9980,7 +9999,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v721</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v722</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10120,6 +10139,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
           </div>
         </div>
         <div class="admin-so-live-result" id="adminShootoutResult" hidden></div>
+        <button type="button" class="btn primary admin-shootout-confirm" id="adminShootoutConfirm" onclick="adminShootoutConfirmFinal()" hidden>CONFIRM FINAL-SO</button>
         <button type="button" class="btn secondary admin-so-live-undo" onclick="adminShootoutCorrectScore()">CORRECT OVERTIME SCORE</button>
         <button type="button" class="btn secondary admin-so-live-undo" id="adminShootoutUndo" onclick="adminShootoutUndo()">UNDO LAST</button>
         <div class="admin-status admin-feedback" id="adminShootoutFeedback"></div>
@@ -12638,6 +12658,7 @@ async function saveAdminUpdates(){
   const period=document.getElementById('adminPeriod')?.value||null;
   const payload={status:document.getElementById('adminGameStatus')?.value||'upcoming',phantoms_score:document.getElementById('adminPhantomsScore')?.value||null,opponent_score:document.getElementById('adminOpponentScore')?.value||null,period:period,clock:document.getElementById('adminClock')?.value||null,result:document.getElementById('adminResult')?.value||null,power_play:document.getElementById('adminPowerPlay')?.value||null,power_play_time:document.getElementById('adminPowerPlayTime')?.value||null,manpower_situation:document.getElementById('adminManpowerSituation')?.value||null,empty_net:document.getElementById('adminEmptyNet')?.value||null,stoppage_status:document.getElementById('adminStoppageStatus')?.value||null,four_on_four:document.getElementById('adminFourOnFour')?.value==='true',team_timeout:document.getElementById('adminTeamTimeout')?.value||null,shootout_state:String(period||'').toUpperCase()==='SO'&&typeof dcNormalizeShootoutState==='function'?dcNormalizeShootoutState(dcAdminShootoutState):null};
   if(payload.status==='live'&&(payload.phantoms_score===null||payload.opponent_score===null)){if(st)st.textContent='Enter both scores before publishing LIVE.';return;}
+  if(payload.status==='final'&&String(payload.period||'').toUpperCase()==='SO'){setAdminFeedback(st,'error','Finalize shootouts using CONFIRM FINAL-SO in the Shootout Tracker.');return;}
   if(payload.status==='final'){
     var finalScoreSource='Emergency Override';
     if(!dcAdminManualAuthorityActive()){
@@ -13462,10 +13483,12 @@ function renderAdminShootoutTracker(){
       status.textContent=(round>3?'Sudden Death · Round '+round:'Round '+round)+' · '+(next==='phantoms'?'Youngstown':opp)+' shoots next';
     }
   }
+  var confirmButton=document.getElementById('adminShootoutConfirm');
+  if(confirmButton)confirmButton.hidden=!winner||String(document.getElementById('adminGameStatus')?.value||'')==='final';
   var result=document.getElementById('adminShootoutResult');
   if(result){
     result.hidden=!winner;
-    if(winner)result.innerHTML='<b>'+(winner==='phantoms'?'Youngstown':opp)+' wins · FINAL-SO</b><span>Winning shootout goal added automatically. UNDO LAST reopens the game.</span>';
+    if(winner)result.innerHTML='<b>'+(winner==='phantoms'?'Youngstown':opp)+' wins the shootout</b><span>Review the attempts, then confirm the final score below. Undo remains available.</span>';
   }
   ['PhantomsGoal','PhantomsMiss','OpponentGoal','OpponentMiss'].forEach(function(suffix){
     var btn=document.getElementById('adminShootout'+suffix);if(!btn)return;
@@ -13547,11 +13570,12 @@ async function adminShootoutAttempt(team,goal){
   state.attempts.push({team:team,goal:!!goal});
   dcAdminShootoutState=state;
   var winner=dcShootoutDecision(state);
-  dcShootoutWriteInputs(dcShootoutScoreForDisplay(state,winner));
+  dcShootoutWriteInputs(dcShootoutScoreForDisplay(state,''));
   var status=document.getElementById('adminGameStatus'),result=document.getElementById('adminResult');
   if(winner){
-    if(status)status.value='final';
-    if(result)result.value=winner==='phantoms'?'W_SO':'L_SO';
+    // Winner is provisional until Admin confirms the final score.
+    if(status)status.value='live';
+    if(result)result.value='';
   }else{
     if(status)status.value='live';
     if(result)result.value='';
@@ -13560,6 +13584,21 @@ async function adminShootoutAttempt(team,goal){
   if(pp)pp.value='';if(en)en.value='';
   syncAdminQuickControls();renderAdminShootoutTracker();
   await dcPublishShootoutState({goalTeam:goal?team:null});
+}
+async function adminShootoutConfirmFinal(){
+  var state=dcNormalizeShootoutState(dcAdminShootoutState);
+  var winner=dcShootoutDecision(state);
+  if(!winner){setAdminFeedback('adminShootoutFeedback','error','Complete the shootout before confirming.');return;}
+  var finalScore=dcShootoutOfficialScore(state,winner);
+  var label=winner==='phantoms'?'Youngstown':'Opponent';
+  if(!confirm('Confirm FINAL-SO? '+label+' wins '+finalScore.phantoms+'–'+finalScore.opponent+'. This will publish the completed game.'))return;
+  var status=document.getElementById('adminGameStatus'),result=document.getElementById('adminResult');
+  if(status)status.value='final';
+  if(result)result.value=winner==='phantoms'?'W_SO':'L_SO';
+  dcShootoutWriteInputs(finalScore);
+  syncAdminQuickControls();renderAdminShootoutTracker();
+  var ok=await dcPublishShootoutState();
+  if(!ok){if(status)status.value='live';if(result)result.value='';syncAdminQuickControls();renderAdminShootoutTracker();}
 }
 async function adminShootoutCorrectScore(){
   var state=dcNormalizeShootoutState(dcAdminShootoutState);
@@ -15854,6 +15893,45 @@ window.addEventListener('load',initialize);
 #publicGameDayCard .dc-so-v718-tile.pending{color:#758198}
 @media(max-width:380px){#publicGameDayCard .dc-so-v718{padding:10px 7px}#publicGameDayCard .dc-so-v718-team{flex-basis:35px;width:35px;font-size:10px}#publicGameDayCard .dc-so-v718-cells{grid-auto-columns:minmax(39px,1fr);gap:5px}}
 </style>
+<script id="dc-v722-stage-organization">
+(function(){
+  function updateStages(){
+    var status=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
+    var period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
+    var active=status==='final'?5:status==='upcoming'?1:(period==='OT'||period==='SO'?4:3);
+    var key=status+':'+period;
+    document.querySelectorAll('#adminGameDayPanel [data-dc-v722-step]').forEach(function(d){
+      var num=Number(d.getAttribute('data-dc-v722-step'));
+      var host=d.closest('.admin-gameday-step');
+      if(host)host.classList.toggle('is-inactive-stage',num!==active);
+      if(d.dataset.lastStage!==key){d.open=num===active;d.dataset.lastStage=key;}
+    });
+  }
+  function init(){
+    var groups=[
+      ['.admin-gameday-step-1','1 · Pregame setup'],
+      ['.admin-gameday-step-2','2 · Start game'],
+      ['.admin-gameday-step-3','3 · Live game controls'],
+      ['.admin-gameday-step-4','4 · Overtime / Shootout'],
+      ['.admin-gameday-step-5','5 · Finalize game']
+    ];
+    groups.forEach(function(pair,i){
+      var section=document.querySelector('#adminGameDayPanel '+pair[0]);
+      if(!section||section.querySelector('[data-dc-v722-step]'))return;
+      var details=document.createElement('details');details.className='admin-stage-fold';details.setAttribute('data-dc-v722-step',String(i+1));
+      var summary=document.createElement('summary');summary.textContent=pair[1];details.appendChild(summary);
+      while(section.firstChild)details.appendChild(section.firstChild);
+      section.appendChild(details);
+    });
+    var panel=document.getElementById('adminGameDayPanel');
+    if(!panel)return;
+    panel.addEventListener('click',function(){requestAnimationFrame(updateStages);});
+    panel.addEventListener('change',updateStages);
+    updateStages();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body>
 </html>
 
