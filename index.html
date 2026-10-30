@@ -6039,6 +6039,22 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 #adminGameDayPanel .admin-reset-row{margin:12px 0}
 @media(max-width:390px){#adminGameDayPanel .dc723-stage-tabs button{font-size:11px;padding-left:0;padding-right:0}}
 </style>
+
+<style id="v724-bottom-nav-surface-fix">
+/* Keep app-view backing opaque across the bottom safe area. The navigation
+   sits above these views (z-index 20 vs 18). Reserve scroll room internally. */
+.modal.app-view.show {
+  inset:0!important;
+  box-sizing:border-box!important;
+  padding:0 0 calc(78px + env(safe-area-inset-bottom, 0px))!important;
+  background:#070b11!important;
+}
+.modal.app-view.show > .sheet {
+  height:100%!important;
+  max-height:none!important;
+  box-sizing:border-box!important;
+}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -10041,7 +10057,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v723</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v724</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
