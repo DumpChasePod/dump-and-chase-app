@@ -6040,7 +6040,7 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 @media(max-width:390px){#adminGameDayPanel .dc723-stage-tabs button{font-size:11px;padding-left:0;padding-right:0}}
 </style>
 
-<style id="v724-bottom-nav-surface-fix">
+<style id="v725-bottom-nav-surface-fix">
 /* Keep app-view backing opaque across the bottom safe area. The navigation
    sits above these views (z-index 20 vs 18). Reserve scroll room internally. */
 .modal.app-view.show {
@@ -10057,7 +10057,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v724</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v725</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -13774,24 +13774,48 @@ function dcHandleGoalEvent(state){
 /* V717: reconcile late scoring details against a pending score change or goal event.
    No goal flash is replayed. Only real scorer names trigger a spotlight. */
 function dcHtHasScorerDetails(goal){return !!(goal&&goal.scorer&&dcGoalPlayerName(goal.scorer));}
+/* V725: normalized HockeyTech IDs can change when a scorer is attributed.
+   A game-local event position is more stable across snapshots. */
+function dcHtStableGoalKey(goal,snapshot){
+  if(!goal)return '';
+  var goals=Array.isArray(snapshot&&snapshot.goals)?snapshot.goals:[];
+  var at=goals.indexOf(goal);
+  var team=dcHtGoalTeam(goal,snapshot);
+  var period=String(goal.period==null?'':goal.period);
+  var time=String(goal.time||'').trim();
+  return team+'|'+period+'|'+time+'|'+(at>=0?at:'?');
+}
+function dcHtGoalIdentity(goal,snapshot){
+  return dcHtStableGoalKey(goal,snapshot)||dcHtGoalEventId(goal);
+}
+function dcGoalTrace(message,p){
+  try{console.info('[Game Day scorer]',message,p||'');}catch(_){}
+}
 function dcQueuePendingHtGoal(team,goal,gameId,snapshot){
   if(team!=='phantoms'&&team!=='opponent')return;
-  var id=dcHtGoalEventId(goal),now=Date.now();
+  var id=dcHtGoalEventId(goal),stable=dcHtStableGoalKey(goal,snapshot),now=Date.now();
   dcPendingHtGoals=dcPendingHtGoals.filter(function(x){return x.gameId===String(gameId)&&now-x.at<DC_PENDING_HT_GOAL_MS&&!x.shown;});
-  if(id&&dcShownHtGoalIds[String(gameId)+':'+id])return;
-  if(id&&dcPendingHtGoals.some(function(x){return x.id===id&&x.gameId===String(gameId);} ))return;
-  var sameTeam=dcPendingHtGoals.find(function(x){return x.gameId===String(gameId)&&x.team===team&&!x.id&&now-x.at<12000;});
-  if(sameTeam){if(id)sameTeam.id=id;return;}
-  var alreadyComplete={};(Array.isArray(snapshot&&snapshot.goals)?snapshot.goals:[]).forEach(function(g){if(dcHtHasScorerDetails(g)){var gid=dcHtGoalEventId(g);if(gid)alreadyComplete[gid]=true;}});
-  if(id&&dcHtHasScorerDetails(goal))delete alreadyComplete[id];
-  dcPendingHtGoals.push({team:team,id:id,gameId:String(gameId),at:now,shown:false,alreadyComplete:alreadyComplete});
+  var identity=String(gameId)+':'+(stable||id);
+  if((stable||id)&&dcShownHtGoalIds[identity])return;
+  if(dcPendingHtGoals.some(function(x){return x.gameId===String(gameId)&&((stable&&x.stable===stable)||(id&&x.id===id));}))return;
+  var sameTeam=dcPendingHtGoals.find(function(x){return x.gameId===String(gameId)&&x.team===team&&!x.stable&&now-x.at<12000;});
+  if(sameTeam){if(id)sameTeam.id=id;if(stable)sameTeam.stable=stable;return;}
+  var completed={};
+  (Array.isArray(snapshot&&snapshot.goals)?snapshot.goals:[]).forEach(function(g){
+    if(dcHtHasScorerDetails(g)){var k=dcHtGoalIdentity(g,snapshot);if(k)completed[k]=true;}
+  });
+  if(goal&&dcHtHasScorerDetails(goal))delete completed[stable||id];
+  dcPendingHtGoals.push({team:team,id:id,stable:stable,gameId:String(gameId),at:now,shown:false,alreadyComplete:completed});
+  dcGoalTrace('pending',{team:team,gameId:String(gameId),id:id,stable:stable});
 }
 function dcShowLateHtGoal(team,goal){
   if(!dcHtHasScorerDetails(goal))return false;
   if(dcPublicGoalFx){
     if(dcPublicGoalFx.team!==team)return false;
-    if(!dcPublicGoalFx.details){dcPublicGoalFx.details=goal;
-      if(dcPublicGoalFx.phase==='spotlight')refreshPublicGameDay();}
+    if(!dcPublicGoalFx.details){
+      dcPublicGoalFx.details=goal;
+      if(dcPublicGoalFx.phase==='spotlight')refreshPublicGameDay();
+    }
     return true;
   }
   if(dcPublicGoalFxTimer){clearTimeout(dcPublicGoalFxTimer);dcPublicGoalFxTimer=null;}
@@ -13803,15 +13827,31 @@ function dcShowLateHtGoal(team,goal){
 }
 function dcReconcilePendingHtGoals(snapshot,gameId){
   var now=Date.now(),goals=Array.isArray(snapshot&&snapshot.goals)?snapshot.goals:[];
-  dcPendingHtGoals=dcPendingHtGoals.filter(function(x){return x.gameId===String(gameId)&&now-x.at<DC_PENDING_HT_GOAL_MS&&!x.shown;});
+  dcPendingHtGoals=dcPendingHtGoals.filter(function(x){
+    var active=x.gameId===String(gameId)&&now-x.at<DC_PENDING_HT_GOAL_MS&&!x.shown;
+    if(!active&&!x.shown)dcGoalTrace('expired/unmatched',{gameId:x.gameId,id:x.id,stable:x.stable});
+    return active;
+  });
   dcPendingHtGoals.forEach(function(p){
     var possible=goals.filter(function(g){
-      var id=dcHtGoalEventId(g);return dcHtHasScorerDetails(g)&&dcHtGoalTeam(g,snapshot)===p.team&&
-      (!p.id||id===p.id)&&(!id||(!p.alreadyComplete[id]&&!dcShownHtGoalIds[String(gameId)+':'+id]));
+      var id=dcHtGoalEventId(g),stable=dcHtStableGoalKey(g,snapshot);
+      if(!dcHtHasScorerDetails(g)||dcHtGoalTeam(g,snapshot)!==p.team)return false;
+      var matched=(p.stable&&stable===p.stable)||(p.id&&id===p.id);
+      if(!matched&&!p.stable&&!p.id){
+        // Score-change fallback: only accept a single unmatched, newly attributed goal.
+        matched=true;
+      }
+      if(!matched)return false;
+      var identity=String(gameId)+':'+(stable||id);
+      return !dcShownHtGoalIds[identity]&&!p.alreadyComplete[stable||id];
     });
-    var match=possible[possible.length-1];if(!match)return;
+    if(!possible.length)return;
+    var match=possible[possible.length-1];
     if(dcShowLateHtGoal(p.team,match)){
-      p.shown=true;var id=dcHtGoalEventId(match);if(id)dcShownHtGoalIds[String(gameId)+':'+id]=true;
+      p.shown=true;
+      var identity=dcHtGoalIdentity(match,snapshot);
+      if(identity)dcShownHtGoalIds[String(gameId)+':'+identity]=true;
+      dcGoalTrace('spotlight',{gameId:String(gameId),identity:identity});
     }
   });
   dcPendingHtGoals=dcPendingHtGoals.filter(function(x){return !x.shown;});
@@ -14259,12 +14299,12 @@ function dcHtGoalTeam(goal,snapshot){
   return dcHtBridgeTeamIsYoungstown(target)?'phantoms':'opponent';
 }
 function dcHtNewGoal(prior,next,gameId){
-  var nextGoals=next&&Array.isArray(next.goals)?next.goals:[];if(!nextGoals.length)return null;
-  var storeKey=DC_HT_GOAL_SEEN_PREFIX+String(gameId||''),seen='';try{seen=localStorage.getItem(storeKey)||'';}catch(_){}
-  if(!prior){var initial=dcHtGoalEventId(nextGoals[nextGoals.length-1]);if(initial)try{localStorage.setItem(storeKey,initial);}catch(_){}return null;}
-  var priorIds={};(Array.isArray(prior.goals)?prior.goals:[]).forEach(function(x){var id=dcHtGoalEventId(x);if(id)priorIds[id]=true;});
-  var fresh=nextGoals.filter(function(x){var id=dcHtGoalEventId(x);return id&&!priorIds[id];});if(!fresh.length)return null;
-  var goal=fresh[fresh.length-1],id=dcHtGoalEventId(goal);if(id&&seen===id)return null;if(id)try{localStorage.setItem(storeKey,id);}catch(_){}return goal;
+  var nextGoals=next&&Array.isArray(next.goals)?next.goals:[];
+  if(!nextGoals.length||!prior)return null;
+  var oldGoals=Array.isArray(prior.goals)?prior.goals:[];
+  var oldKeys={};oldGoals.forEach(function(g){var key=dcHtStableGoalKey(g,prior);if(key)oldKeys[key]=true;});
+  var fresh=nextGoals.filter(function(g){var key=dcHtStableGoalKey(g,next);return key&&!oldKeys[key];});
+  return fresh.length?fresh[fresh.length-1]:null;
 }
 async function dcSyncLiveStats(force){
   var active=dcGameCenterHockeyTechTarget(new Date());
