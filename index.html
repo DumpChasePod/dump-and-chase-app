@@ -6040,7 +6040,7 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 @media(max-width:390px){#adminGameDayPanel .dc723-stage-tabs button{font-size:11px;padding-left:0;padding-right:0}}
 </style>
 
-<style id="v725-bottom-nav-surface-fix">
+<style id="v726-bottom-nav-surface-fix">
 /* Keep app-view backing opaque across the bottom safe area. The navigation
    sits above these views (z-index 20 vs 18). Reserve scroll room internally. */
 .modal.app-view.show {
@@ -6054,6 +6054,35 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
   max-height:none!important;
   box-sizing:border-box!important;
 }
+</style>
+<style id="v726-final-controls-unblock">
+/* V723 moved final controls into a stage selector. Override status-based
+   hiding from the old five-section layout so Final remains usable while Live. */
+#adminDashboard #adminGameDayPanel #dc723Panel-final .admin-gameday-step-5,
+#adminDashboard.admin-is-live #adminGameDayPanel #dc723Panel-final .admin-gameday-step-5{
+ display:block!important;opacity:1!important;
+}
+#adminDashboard #adminGameDayPanel #dc723Panel-final #adminFinalResultControls,
+#adminDashboard:not(.admin-is-final) #adminGameDayPanel #dc723Panel-final .admin-final-controls{
+ display:block!important;opacity:1!important;
+}
+#adminGameDayPanel #dc723Panel-final .admin-final-result-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#adminGameDayPanel #dc723Panel-final .admin-final-result-buttons button{min-height:44px}
+/* Never reveal hidden stages even if old admin status styles target their children. */
+#adminGameDayPanel [id^="dc723Panel-"][hidden]{display:none!important}
+</style>
+<style id="v727-final-stage-fix">
+#adminDashboard #adminGameDayPanel #dc723Panel-final:not([hidden]) .admin-gameday-step-5,
+#adminDashboard #adminGameDayPanel #dc723Panel-final:not([hidden]) #adminFinalResultControls,
+#adminDashboard:not(.admin-is-final) #adminGameDayPanel #dc723Panel-final:not([hidden]) #adminFinalResultControls,
+#adminDashboard:not(.admin-is-final) #adminGameDayPanel #dc723Panel-final:not([hidden]) .admin-final-controls,
+#adminDashboard.admin-is-live #adminGameDayPanel #dc723Panel-final:not([hidden]) .admin-live-controls{
+ display:block!important;opacity:1!important;visibility:visible!important;
+}
+#adminGameDayPanel #dc723Panel-final .admin-final-result-buttons{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px}
+#adminGameDayPanel #dc723Panel-final .admin-final-result-buttons .admin-chip{display:block!important;visibility:visible!important;min-height:44px}
+#adminGameDayPanel #dc723Panel-final .dc727-final-hint{font-size:12px;line-height:1.45;color:#e2d5f7;margin:0 0 10px}
+#adminGameDayPanel [id^="dc723Panel-"][hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -7906,7 +7935,19 @@ function finalizeAdminGame(){
     if(!htFinal){setAdminFeedback('adminSaveStatus','error','HockeyTech has not reported a valid FINAL score yet. Wait for the feed to show FINAL, or use Emergency Override.');return;}
     if(ps)ps.value=String(htFinal.phantoms);if(os)os.value=String(htFinal.opponent);
   }
-  setAdminStatus('final');syncAdminQuickControls();markAdminDirty('Game Day changes');
+  var period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
+  if(period==='OT'){
+   var current=document.getElementById('adminResult');
+   if(current&&!['W_OT','L_OT'].includes(current.value)){setAdminFeedback('adminSaveStatus','error','Choose W OT or L OT before finalizing overtime.');return;}
+  }else{
+   var finalResult=document.getElementById('adminResult');
+   var y=Number(ps?.value),o=Number(os?.value);
+   if(y===o){setAdminFeedback('adminSaveStatus','error','Final regulation scores cannot be tied. Check HockeyTech.');return;}
+   if(finalResult&&!['W','L'].includes(finalResult.value))finalResult.value=y>o?'W':'L';
+   if(finalResult&&finalResult.value!==(y>o?'W':'L')){setAdminFeedback('adminSaveStatus','error','Selected W/L does not match the final score. Correct the result first.');return;}
+  }
+  setAdminStatus('final');syncAdminQuickControls();markGameDayDirty();
+  var note=document.getElementById('dc727FinalHint');if(note)note.textContent='Final result ready. Review the score, then tap Save & Publish.';
 }
 function saveNewsDraft(){
   var form=document.getElementById('adminNewsForm');if(!form||!form.classList.contains('show'))return;
@@ -8051,7 +8092,21 @@ function setAdminStatus(value){
    },80);
  }
 }
-function setAdminResult(value){const el=document.getElementById('adminResult');if(el){el.value=value;syncAdminQuickControls();markGameDayDirty();}}
+function setAdminResult(value){
+ const el=document.getElementById('adminResult');if(!el)return;
+ const period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
+ if((value==='W_SO'||value==='L_SO')&&period!=='SO'){
+  setAdminFeedback('adminSaveStatus','error','Shootout results must be confirmed in the Shootout Tracker.');return;
+ }
+ if((value==='W_OT'||value==='L_OT')&&period!=='OT'){
+  setAdminFeedback('adminSaveStatus','error','Select OT as the game period before choosing an overtime result.');return;
+ }
+ if((value==='W'||value==='L')&&(period==='SO'||period==='OT')){
+  setAdminFeedback('adminSaveStatus','error','For a regulation result, first correct the game period to 3rd.');return;
+ }
+ el.value=value;syncAdminQuickControls();markGameDayDirty();
+ var note=document.getElementById('dc727FinalHint');if(note)note.textContent='Selected: '+(value==='W'?'Regulation win':value==='L'?'Regulation loss':value.replace('_',' '))+'. Tap GO FINAL, then Save & Publish.';
+}
 function setAdminPowerPlay(value){
  const el=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime'),man=document.getElementById('adminManpowerSituation');if(!el)return;
  var next=String(value||'');
@@ -10057,7 +10112,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v725</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">v727</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10218,7 +10273,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <section class="admin-gameday-step admin-gameday-step-5">
   <div class="admin-gameday-step-head"><span class="admin-gameday-step-num">5</span><div><b>FINALIZE GAME</b><small>Set the result and close out Game Day.</small></div></div>
   <div class="admin-step-primary-action admin-status-group admin-live-controls"><button type="button" class="btn primary admin-final-game-wide" data-admin-status="final" onclick="finalizeAdminGame()">GO FINAL</button></div>
-  <div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div>
+  <div class="admin-field admin-final-result-field admin-status-group admin-final-controls" id="adminFinalResultControls"><input id="adminResult" type="hidden" value=""><div id="dc727FinalHint" class="dc727-final-hint" role="status">For regulation: choose W or L, then GO FINAL and Save &amp; Publish.</div><div class="admin-chip-row admin-final-result-buttons" role="group" aria-label="Final Result"><button type="button" class="admin-chip" data-admin-result="W" onclick="setAdminResult('W')">W</button><button type="button" class="admin-chip" data-admin-result="W_OT" onclick="setAdminResult('W_OT')">W OT</button><button type="button" class="admin-chip" data-admin-result="W_SO" onclick="setAdminResult('W_SO')">W SO</button><button type="button" class="admin-chip" data-admin-result="L" onclick="setAdminResult('L')">L</button><button type="button" class="admin-chip" data-admin-result="L_OT" onclick="setAdminResult('L_OT')">L OT</button><button type="button" class="admin-chip" data-admin-result="L_SO" onclick="setAdminResult('L_SO')">L SO</button></div></div>
 </section>
 
 <div class="admin-actions admin-reset-row"><button class="btn secondary" type="button" onclick="resetAdminGame()">RESET GAME</button></div>
@@ -12743,6 +12798,15 @@ async function saveAdminUpdates(){
     }
     if(payload.phantoms_score===null||payload.opponent_score===null||String(payload.phantoms_score).trim()===''||String(payload.opponent_score).trim()===''){setAdminFeedback(st,'error','Enter both final scores before publishing FINAL.');return;}
     if(!payload.result){setAdminFeedback(st,'error','Choose a Final Result before publishing FINAL.');return;}
+    var phase=String(payload.period||'').toUpperCase();
+    if(phase!=='SO'&&['W_SO','L_SO'].includes(payload.result)){setAdminFeedback(st,'error','Shootout results require Shootout Tracker confirmation.');return;}
+    if(phase!=='OT'&&['W_OT','L_OT'].includes(payload.result)){setAdminFeedback(st,'error','Overtime result selected for a non-OT game.');return;}
+    if(phase!=='OT'){
+      var fy=Number(payload.phantoms_score),fo=Number(payload.opponent_score);
+      if(fy===fo){setAdminFeedback(st,'error','Final regulation score cannot be tied.');return;}
+      if(payload.result!==(fy>fo?'W':'L')){setAdminFeedback(st,'error','W/L selection disagrees with final score.');return;}
+    }
+
     if(!confirmFinalPublish(payload,finalScoreSource)){setAdminFeedback(st,'','Final publish cancelled.');return;}
   }
   var publishBtn=document.querySelector('#adminGameDayPanel .admin-publish-bar .btn');if(publishBtn){publishBtn.disabled=true;publishBtn.textContent='PUBLISHING…';}
@@ -13774,7 +13838,7 @@ function dcHandleGoalEvent(state){
 /* V717: reconcile late scoring details against a pending score change or goal event.
    No goal flash is replayed. Only real scorer names trigger a spotlight. */
 function dcHtHasScorerDetails(goal){return !!(goal&&goal.scorer&&dcGoalPlayerName(goal.scorer));}
-/* V725: normalized HockeyTech IDs can change when a scorer is attributed.
+/* V726: normalized HockeyTech IDs can change when a scorer is attributed.
    A game-local event position is more stable across snapshots. */
 function dcHtStableGoalKey(goal,snapshot){
   if(!goal)return '';
@@ -16047,6 +16111,12 @@ window.addEventListener('load',initialize);
    move(panels.live,'.admin-gameday-step-3');
    move(panels.extra,'.admin-gameday-step-4');
    move(panels.final,'.admin-gameday-step-5');
+   // Final result choices must precede GO FINAL for a clear operator sequence.
+   var finalStep=panels.final.querySelector('.admin-gameday-step-5');
+   var finalChoices=finalStep?.querySelector('#adminFinalResultControls');
+   var goFinal=finalStep?.querySelector('.admin-step-primary-action');
+   if(finalChoices&&goFinal)finalStep.insertBefore(finalChoices,goFinal);
+
    // Keep the existing emergency score/clock fields available at every stage.
    var correction=el('dc723CorrectionContent');
    move(correction,'.admin-ht-live-controls');
