@@ -6145,7 +6145,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 }
 </style>
 
-<style id="v735-penalty-list-cleanup">
+<style id="v736-penalty-list-cleanup">
 /* Keep penalty details above actions. Older row and column flex layouts are overridden. */
 #adminGameDayPanel .dc728-penalty-admin-head{margin-bottom:4px!important}
 #adminGameDayPanel .dc728-penalty-admin-head small{display:block;font-size:10px!important;line-height:1.35!important}
@@ -6172,6 +6172,13 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 }
 #adminGameDayPanel .dc730-row-actions .dc730-delete-btn{background:#2b1a27!important;color:#ffb6b6!important;border-color:#864452!important}
 #adminGameDayPanel .dc728-penalty-add{margin-top:9px!important}
+</style>
+<style id="v736-penalty-spotlight">
+#publicGameDayCard{position:relative}
+#publicGameDayCard .dc736-penalty-spotlight{position:absolute;inset:0;z-index:9;background:linear-gradient(145deg,#161b31,#241833);border:2px solid #a56cff;border-radius:inherit;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:10px;padding:15px;box-sizing:border-box;pointer-events:none}
+.dc736-penalty-spotlight b{color:#ff974d;letter-spacing:.13em;font-size:20px}
+.dc736-penalty-spotlight strong{color:#fff;font-size:15px}
+.dc736-penalty-spotlight span{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -10203,7 +10210,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V735</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V736</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -14774,7 +14781,7 @@ function renderPublicGameDay(){
   var st=getAdminGameState();
   var effective=dcEffectivePublicState(active.g,st);
   if(effective.status==='upcoming'){dcUpgradePregameActions(box,active.g,st);syncMoreWrrForGameDay();return;}
-  dcRenderProductionActiveGame(box,active.g,st,effective);syncMoreWrrForGameDay();syncGameDayHomePriority();
+  dcRenderProductionActiveGame(box,active.g,st,effective);dc736RenderPenaltySpotlight();syncMoreWrrForGameDay();syncGameDayHomePriority();
 }
 
 
@@ -14787,8 +14794,38 @@ function dcPenaltyPillsHtml(team){
  var matches=dc728Penalties.filter(function(p){return p.displayed&&p.team===team;});
  if(!matches.length)return '';
  return '<div class="dc728-penalty-pills">'+matches.slice(0,4).map(function(p){
-  return '<div class="dc728-penalty-pill" title="'+escapeHtml(p.infraction||'')+'">'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'—')+' · '+escapeHtml(p.infraction||'Penalty')+'</div>';
+  return '<div class="dc728-penalty-pill" title="'+escapeHtml(p.infraction||'')+'">'+escapeHtml(dc736PenaltyLabel(p))+'</div>';
  }).join('')+(matches.length>4?'<div class="dc728-penalty-more">+'+(matches.length-4)+' MORE</div>':'')+'</div>';
+}
+/* V736: penalty spotlight only for newly displayed, complete records. */
+var dc736PenaltySeen={},dc736ReadyKey='',dc736PenaltyQueue=[],dc736PenaltyUntil=0;
+function dc736PenaltyLabel(p){
+ var player=String(p.player||'').trim(),reason=String(p.infraction||'').trim(),minutes=String(p.duration||'').trim();
+ if(/^\d+$/.test(minutes))minutes+=':00';
+ if(!player||/player not identified/i.test(player))player='Penalty details pending';
+ if(!reason||/^\d+$/.test(reason))reason='Infraction pending';
+ return player+' · '+minutes+' · '+reason;
+}
+function dc736PenaltyComplete(p){return !!(p&&p.player&&p.infraction&&!/player not identified/i.test(p.player)&&!/^\d+$/.test(String(p.infraction).trim()));}
+function dc736ObservePenalties(key,records){
+ if(dc736ReadyKey!==key){dc736ReadyKey=key;dc736PenaltySeen={};records.forEach(function(p){dc736PenaltySeen[p.id]=!!p.displayed;});return;}
+ records.forEach(function(p){
+  var prev=dc736PenaltySeen[p.id];
+  if(p.displayed&&(prev===false||prev===undefined)&&dc736PenaltyComplete(p))dc736PenaltyQueue.push({id:p.id,label:dc736PenaltyLabel(p),team:p.team});
+  dc736PenaltySeen[p.id]=!!p.displayed;
+ });
+ var active={};records.forEach(function(p){active[p.id]=true;});Object.keys(dc736PenaltySeen).forEach(function(id){if(!active[id])delete dc736PenaltySeen[id];});
+}
+function dc736RenderPenaltySpotlight(){
+ var box=document.getElementById('publicGameDayCard');if(!box)return;
+ var old=box.querySelector('.dc736-penalty-spotlight');if(old)old.remove();
+ if(dcPublicGoalFx)return;
+ var now=Date.now();
+ if(now>=dc736PenaltyUntil){if(!dc736PenaltyQueue.length)return;var next=dc736PenaltyQueue.shift();window.dc736PenaltyActive=next;dc736PenaltyUntil=now+8000;}
+ var p=window.dc736PenaltyActive;if(!p)return;
+ var el=document.createElement('div');el.className='dc736-penalty-spotlight';el.setAttribute('role','status');
+ el.innerHTML='<b>PENALTY</b><strong>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN PHANTOMS':'OPPONENT')+'</strong><span>'+escapeHtml(p.label)+'</span>';
+ box.appendChild(el);
 }
 function dc728RenderAdmin(){
  var root=document.getElementById('dc728PenaltyRows');if(!root)return;
@@ -14804,7 +14841,7 @@ async function dc728Request(action,params){
 async function dc728LoadPenalties(){
  var key=dc728GameKey();if(!key){dc731FeedStatus('Waiting for HockeyTech game connection. Manual penalties require an identified game.');return;}if(dc728LoadBusy)return;dc728LoadBusy=true;
  try{var res=await fetch(DC_SUPABASE_URL+'/functions/v1/game-day-penalties?game_key='+encodeURIComponent(key),{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});var b=await res.json();if(!res.ok||!b.ok)throw Error(b.error||'Penalty service unavailable');
- var old=JSON.stringify(dc728Penalties);dc728LastKey=key;dc728Penalties=Array.isArray(b.penalties)?b.penalties:[];dc728RenderAdmin();if(old!==JSON.stringify(dc728Penalties)&&typeof refreshPublicGameDay==='function')refreshPublicGameDay();
+ var old=JSON.stringify(dc728Penalties);dc728LastKey=key;dc728Penalties=Array.isArray(b.penalties)?b.penalties:[];dc736ObservePenalties(key,dc728Penalties);dc728RenderAdmin();if(old!==JSON.stringify(dc728Penalties)&&typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent='Penalty data unavailable: '+e.message;}finally{dc728LoadBusy=false;}
 }
 async function dc728TogglePenalty(id,displayed){
@@ -14895,6 +14932,12 @@ async function dc728SyncDetectedPenalties(){
   var source=String(p.id||[p.team_id,p.period,p.time,i].join(':'));if(!source)continue;
   var stable=key+':'+source;if(dc728KnownFeed[stable])continue;
   var name=String(p.player_name||((p.player_number?'#'+p.player_number:'')||'Player not identified'));var duration=String(p.duration||'Not reported');var infraction=String(p.infraction||'Penalty');
+  if(/^\d+(?:\.\d+)?$/.test(infraction)||!p.player_name){
+    dc731LastImportError='HockeyTech returned incomplete penalty details; use EDIT or enter the penalty manually.';
+    console.warn('[Game Day penalties] Incomplete penalty feed entry:',p);
+    continue;
+  }
+  if(/^\d+$/.test(duration))duration=duration+':00';
   await dc728Request('import',{source_key:source,team:team,player:name,duration:duration,infraction:infraction,period:p.period,game_time:p.time,displayed:wasInit});
   dc728KnownFeed[stable]=true;
  }
