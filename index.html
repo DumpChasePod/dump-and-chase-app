@@ -6112,7 +6112,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 </style>
 
 <style id="v729-penalty-compact-controls">
-/* V729: penalty manager belongs immediately after manpower, collapsed by default. */
+/* V730: penalty manager belongs immediately after manpower, collapsed by default. */
 #adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
 #adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
 #adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
@@ -8152,6 +8152,7 @@ function setAdminResult(value){
 function setAdminPowerPlay(value){
  const el=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime'),man=document.getElementById('adminManpowerSituation');if(!el)return;
  var next=String(value||'');
+ var wasActive=!!el.value;
  el.value=next;
  if(next){
    if(time&&!time.value)time.value='2:00';
@@ -8162,6 +8163,7 @@ function setAdminPowerPlay(value){
  }
  var four=document.getElementById('adminFourOnFour');if(four)four.value=(man&&man.value==='4-on-4')?'true':'false';
  syncAdminQuickControls();markGameDayDirty();
+ if(wasActive&&!next&&typeof dc730ShowPpOffPrompt==='function')dc730ShowPpOffPrompt();
 }
 function setAdminPowerPlayTime(value){
  var el=document.getElementById('adminPowerPlayTime');if(!el)return;el.value=String(value||'');syncAdminQuickControls();markGameDayDirty();
@@ -14703,7 +14705,7 @@ function dcPenaltyPillsHtml(team){
 function dc728RenderAdmin(){
  var root=document.getElementById('dc728PenaltyRows');if(!root)return;
  if(!dc728Penalties.length){root.innerHTML='<span class="dc728-penalty-empty">No penalties imported for this game. HockeyTech detections will appear here, or add one manually.</span>';return;}
- root.innerHTML=dc728Penalties.map(function(p){return '<div class="dc728-penalty-row"><div class="dc728-penalty-description"><b>'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</b><small>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN':'OPPONENT')+' · '+escapeHtml([p.period,p.game_time].filter(Boolean).join(' · '))+(p.source_key?' · HockeyTech':' · Manual')+'</small></div><button type="button" class="admin-chip" onclick="dc728TogglePenalty(\''+p.id+'\','+(!p.displayed)+')">'+(p.displayed?'REMOVE':'SHOW')+'</button></div>';}).join('');
+ root.innerHTML=dc728Penalties.map(function(p){return '<div class="dc728-penalty-row"><div class="dc728-penalty-description"><b>'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</b><small>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN':'OPPONENT')+' · '+escapeHtml([p.period,p.game_time].filter(Boolean).join(' · '))+(p.source_key?' · HockeyTech':' · Manual')+'</small></div><div class="dc730-row-actions"><button type="button" class="admin-chip" onclick="dc728TogglePenalty(\''+p.id+'\','+(!p.displayed)+')">'+(p.displayed?'HIDE':'SHOW')+'</button><button type="button" class="admin-chip dc730-delete-btn" onclick="dc730DeletePenalty(\''+p.id+'\')">DELETE</button></div></div>';}).join('');
 }
 async function dc728Request(action,params){
  var key=dc728GameKey();if(!key)throw Error('Waiting for HockeyTech game ID.');
@@ -14725,6 +14727,33 @@ async function dc728AddPenalty(){
  var p={team:document.getElementById('dc728PenaltyTeam')?.value,player:document.getElementById('dc728PenaltyPlayer')?.value.trim(),duration:document.getElementById('dc728PenaltyDuration')?.value.trim(),infraction:document.getElementById('dc728PenaltyInfraction')?.value.trim(),period:String(document.getElementById('adminPeriod')?.value||''),game_time:String(document.getElementById('adminClock')?.value||'')};
  try{await dc728Request('add',p);await dc728LoadPenalties();for(var id of ['dc728PenaltyPlayer','dc728PenaltyDuration','dc728PenaltyInfraction'])document.getElementById(id).value='';}
  catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
+}
+
+/* V730: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
+function dc730ShowPpOffPrompt(){
+ var active=dc728Penalties.filter(function(p){return p.displayed;});
+ if(!active.length)return;
+ var overlay=document.getElementById('dc730PenaltyPrompt');if(!overlay)return;
+ var list=document.getElementById('dc730PenaltyChoices');
+ list.innerHTML=active.map(function(p){return '<label class="dc730-choice"><input type="checkbox" value="'+escapeHtml(p.id)+'"><span><b>'+escapeHtml(p.team==='phantoms'?'YNG':'OPP')+' · '+escapeHtml(p.player||'Player')+'</b><small>'+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</small></span></label>';}).join('');
+ overlay.hidden=false;document.getElementById('dc730ClearSelected').disabled=true;
+ list.onchange=function(){document.getElementById('dc730ClearSelected').disabled=!list.querySelector('input:checked');};
+}
+function dc730DismissPrompt(){var el=document.getElementById('dc730PenaltyPrompt');if(el)el.hidden=true;}
+async function dc730RemoveSelected(){
+ var btn=document.getElementById('dc730ClearSelected'),list=document.getElementById('dc730PenaltyChoices');
+ var checked=Array.from(list.querySelectorAll('input:checked')).map(function(x){return x.value;});
+ if(!checked.length)return;
+ btn.disabled=true;btn.textContent='REMOVING…';
+ try{for(var id of checked)await dc728Request('visibility',{id:id,displayed:false});await dc728LoadPenalties();dc730DismissPrompt();}
+ catch(e){document.getElementById('dc730PromptError').textContent='Could not hide all selected penalties: '+e.message;await dc728LoadPenalties();}
+ finally{btn.textContent='REMOVE SELECTED';btn.disabled=false;}
+}
+async function dc730DeletePenalty(id){
+ var p=dc728Penalties.find(function(x){return x.id===id;});if(!p)return;
+ if(!confirm('Delete '+(p.player||'this penalty')+' from the Admin list? This also hides it from Game Day and it cannot be restored.'))return;
+ try{await dc728Request('archive',{id:id});await dc728LoadPenalties();}
+ catch(e){var el=document.getElementById('dc728PenaltyFeedback');if(el)el.textContent='Delete failed: '+e.message;}
 }
 function dc728FeedPenaltyTeam(p,snap){
  var id=String(p.team_id||''),code=String(p.team_code||'').toUpperCase();
@@ -16273,6 +16302,17 @@ window.addEventListener('load',initialize);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+<div id="dc730PenaltyPrompt" class="dc730-prompt" hidden role="dialog" aria-modal="true" aria-labelledby="dc730PromptTitle">
+ <div class="dc730-prompt-panel"><h3 id="dc730PromptTitle">POWER PLAY ENDED</h3><p>Remove any penalties that have ended? You can keep the others displayed.</p>
+ <div id="dc730PenaltyChoices" class="dc730-choices"></div><div id="dc730PromptError" role="status"></div>
+ <div class="dc730-prompt-actions"><button type="button" onclick="dc730DismissPrompt()">KEEP ALL</button><button type="button" id="dc730ClearSelected" onclick="dc730RemoveSelected()" disabled>REMOVE SELECTED</button></div></div>
+</div>
+<style id="v730-penalties">
+.dc730-prompt[hidden]{display:none!important}.dc730-prompt{position:fixed;inset:0;z-index:11050;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:18px}
+.dc730-prompt-panel{background:#141d2a;color:#fff;border:1px solid #544270;border-radius:16px;padding:20px;width:min(420px,100%);max-height:85vh;overflow-y:auto;box-shadow:0 18px 60px #0008}
+.dc730-prompt-panel h3{font-size:16px;margin:0 0 8px;letter-spacing:.05em}.dc730-prompt-panel p{color:#bec5d3;font-size:13px;line-height:1.5;margin:0 0 12px}
+.dc730-choices{display:grid;gap:8px;max-height:45vh;overflow-y:auto}.dc730-choice{display:flex;align-items:center;gap:11px;background:#202b3b;border:1px solid #3c475c;border-radius:10px;padding:11px;cursor:pointer}.dc730-choice input{width:21px;height:21px;accent-color:#9d6ae4}.dc730-choice span{display:grid;gap:4px}.dc730-choice small{color:#a8b5c8}.dc730-prompt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}.dc730-prompt-actions button{border:1px solid #7852a6;border-radius:9px;background:#293448;color:#fff;min-height:44px;font-size:11px;font-weight:850}.dc730-prompt-actions #dc730ClearSelected{background:#7941b8}.dc730-prompt-actions button:disabled{opacity:.45}.dc730-row-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}.dc730-delete-btn{color:#ffb6b6!important;border-color:#8b414b!important;background:#311d29!important}
+</style>
 </body>
 </html>
 
