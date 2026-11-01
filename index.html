@@ -6112,7 +6112,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 </style>
 
 <style id="v729-penalty-compact-controls">
-/* V730: penalty manager belongs immediately after manpower, collapsed by default. */
+/* V731: penalty manager belongs immediately after manpower, collapsed by default. */
 #adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
 #adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
 #adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
@@ -10247,6 +10247,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
 <details class="dc728-penalty-admin" id="dc728PenaltyAdmin">
   <summary class="dc729-penalty-toggle">PENALTIES <span class="dc729-chevron" aria-hidden="true">⌄</span></summary>
   <div class="dc728-penalty-admin-head"><small>HockeyTech detections appear here. SHOW puts a penalty under its team; REMOVE hides it without deleting it.</small></div>
+  <div id="dc728PenaltyFeedStatus" class="dc728-penalty-feedback" role="status">Checking HockeyTech penalty feed…</div>
   <div id="dc728PenaltyRows" class="dc728-penalty-rows"><span class="dc728-penalty-empty">Waiting for penalty data…</span></div>
   <details class="dc728-penalty-add"><summary>ADD PENALTY MANUALLY</summary>
    <div class="dc728-penalty-add-grid">
@@ -14693,8 +14694,9 @@ function renderPublicGameDay(){
 
 
 /* V728: Admin-controlled, game-scoped penalties; intermission does not clear them. */
-var dc728Penalties=[],dc728LastKey='',dc728LoadBusy=false,dc728KnownFeed={},dc728FeedInit={},dc728SyncBusy=false;
+var dc728Penalties=[],dc728LastKey='',dc728LoadBusy=false,dc728KnownFeed={},dc728FeedInit={},dc728SyncBusy=false,dc731LastImportError='';
 function dc728GameKey(){return String(dcLiveStatsState&&dcLiveStatsState.gameId||'');}
+function dc731FeedStatus(message){var el=document.getElementById('dc728PenaltyFeedStatus');if(el)el.textContent=message;}
 function dcPenaltyPillsHtml(team){
  var matches=dc728Penalties.filter(function(p){return p.displayed&&p.team===team;});
  if(!matches.length)return '';
@@ -14714,7 +14716,7 @@ async function dc728Request(action,params){
  var body=await res.json();if(!res.ok||!body.ok)throw Error(body.error||'Penalty update failed');return body;
 }
 async function dc728LoadPenalties(){
- var key=dc728GameKey();if(!key||dc728LoadBusy)return;dc728LoadBusy=true;
+ var key=dc728GameKey();if(!key){dc731FeedStatus('Waiting for HockeyTech game connection. Manual penalties require an identified game.');return;}if(dc728LoadBusy)return;dc728LoadBusy=true;
  try{var res=await fetch(DC_SUPABASE_URL+'/functions/v1/game-day-penalties?game_key='+encodeURIComponent(key),{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});var b=await res.json();if(!res.ok||!b.ok)throw Error(b.error||'Penalty service unavailable');
  var old=JSON.stringify(dc728Penalties);dc728LastKey=key;dc728Penalties=Array.isArray(b.penalties)?b.penalties:[];dc728RenderAdmin();if(old!==JSON.stringify(dc728Penalties)&&typeof refreshPublicGameDay==='function')refreshPublicGameDay();
  }catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent='Penalty data unavailable: '+e.message;}finally{dc728LoadBusy=false;}
@@ -14729,7 +14731,7 @@ async function dc728AddPenalty(){
  catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
 }
 
-/* V730: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
+/* V731: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
 function dc730ShowPpOffPrompt(){
  var active=dc728Penalties.filter(function(p){return p.displayed;});
  if(!active.length)return;
@@ -14762,20 +14764,20 @@ function dc728FeedPenaltyTeam(p,snap){
  if(id&&id===String(sides.opp.id)||code&&code===String(sides.opp.code||'').toUpperCase())return 'opponent';return '';
 }
 async function dc728SyncDetectedPenalties(){
- var snap=dcLiveStatsState.snapshot,key=dc728GameKey();if(!key||!snap||!Array.isArray(snap.penalties)||dc728SyncBusy)return;
+ var snap=dcLiveStatsState.snapshot,key=dc728GameKey();if(!key||!snap){dc731FeedStatus('Waiting for HockeyTech game data.');return;}if(!Array.isArray(snap.penalties)){dc731FeedStatus('HockeyTech penalty list not available in this feed response.');return;}if(dc728SyncBusy)return;
  var ctl=document.getElementById('dc728PenaltyAdmin');if(!ctl||!ctl.closest('#adminGameDayPanel'))return;
- var penalties=snap.penalties,wasInit=!!dc728FeedInit[key];
+ var penalties=snap.penalties,wasInit=!!dc728FeedInit[key];dc731FeedStatus('HockeyTech reported '+penalties.length+' penalty event(s) for this game. Checking import…');
  if(!wasInit)dc728FeedInit[key]=true;
  dc728SyncBusy=true;
  try{for(var i=0;i<penalties.length;i++){
-  var p=penalties[i],team=dc728FeedPenaltyTeam(p,snap);if(!team)continue;
+  var p=penalties[i],team=dc728FeedPenaltyTeam(p,snap);if(!team){dc731LastImportError='Unrecognized team for one penalty';continue;}
   var source=String(p.id||[p.team_id,p.period,p.time,i].join(':'));if(!source)continue;
   var stable=key+':'+source;if(dc728KnownFeed[stable])continue;
-  if(!p.player_name||!p.infraction||!p.duration)continue;
-  await dc728Request('import',{source_key:source,team:team,player:p.player_name,duration:p.duration,infraction:p.infraction,period:p.period,game_time:p.time,displayed:wasInit});
+  var name=String(p.player_name||((p.player_number?'#'+p.player_number:'')||'Player not identified'));var duration=String(p.duration||'Not reported');var infraction=String(p.infraction||'Penalty');
+  await dc728Request('import',{source_key:source,team:team,player:name,duration:duration,infraction:infraction,period:p.period,game_time:p.time,displayed:wasInit});
   dc728KnownFeed[stable]=true;
  }
- }catch(e){console.warn('[Game Day penalties] Feed import:',e.message);}finally{dc728SyncBusy=false;await dc728LoadPenalties();}
+ }catch(e){dc731LastImportError=e.message;console.warn('[Game Day penalties] Feed import:',e.message);}finally{dc728SyncBusy=false;await dc728LoadPenalties();dc731FeedStatus(dc731LastImportError?'Penalty import issue: '+dc731LastImportError:'HockeyTech: '+penalties.length+' penalty event(s) · '+dc728Penalties.length+' in Admin');}
 }
 setInterval(function(){dc728LoadPenalties();dc728SyncDetectedPenalties();},12000);
 setTimeout(function(){dc728LoadPenalties();dc728SyncDetectedPenalties();},1600);
@@ -16307,7 +16309,7 @@ window.addEventListener('load',initialize);
  <div id="dc730PenaltyChoices" class="dc730-choices"></div><div id="dc730PromptError" role="status"></div>
  <div class="dc730-prompt-actions"><button type="button" onclick="dc730DismissPrompt()">KEEP ALL</button><button type="button" id="dc730ClearSelected" onclick="dc730RemoveSelected()" disabled>REMOVE SELECTED</button></div></div>
 </div>
-<style id="v730-penalties">
+<style id="v731-penalties">
 .dc730-prompt[hidden]{display:none!important}.dc730-prompt{position:fixed;inset:0;z-index:11050;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:18px}
 .dc730-prompt-panel{background:#141d2a;color:#fff;border:1px solid #544270;border-radius:16px;padding:20px;width:min(420px,100%);max-height:85vh;overflow-y:auto;box-shadow:0 18px 60px #0008}
 .dc730-prompt-panel h3{font-size:16px;margin:0 0 8px;letter-spacing:.05em}.dc730-prompt-panel p{color:#bec5d3;font-size:13px;line-height:1.5;margin:0 0 12px}
