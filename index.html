@@ -6110,6 +6110,22 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 #adminGameDayPanel .dc728-penalty-add-grid input,#adminGameDayPanel .dc728-penalty-add-grid select{width:100%;min-width:0;font-size:12px}
 #adminGameDayPanel .dc728-penalty-feedback{font-size:10px;color:#ffb689;margin-top:7px}
 </style>
+
+<style id="v729-penalty-compact-controls">
+/* V729: penalty manager belongs immediately after manpower, collapsed by default. */
+#adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
+#adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
+#adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
+#adminGameDayPanel .dc729-penalty-toggle::-webkit-details-marker{display:none}
+#adminGameDayPanel .dc729-chevron{font-size:17px;color:#b998e3;transition:transform .15s}
+#adminGameDayPanel details[open] > .dc729-penalty-toggle .dc729-chevron{transform:rotate(180deg)}
+#adminGameDayPanel .dc728-penalty-admin-head,#adminGameDayPanel .dc728-penalty-rows,#adminGameDayPanel .dc728-penalty-add,#adminGameDayPanel .dc728-penalty-feedback{margin-left:12px;margin-right:12px}
+#adminGameDayPanel .dc728-penalty-admin-head{margin-top:12px}
+#adminGameDayPanel .dc728-penalty-feedback{margin-bottom:12px}
+#adminGameDayPanel .dc729-add-penalty-btn{display:block!important;width:100%;min-height:42px;background:#7b41bc!important;color:#fff!important;border:1px solid #ad79ec!important;font-size:11px!important;font-weight:900!important;letter-spacing:.045em;opacity:1!important;text-shadow:none!important}
+#adminGameDayPanel .dc729-add-penalty-btn:hover{background:#9256d3!important;color:#fff!important}
+#adminGameDayPanel .dc729-add-penalty-btn:focus-visible{outline:2px solid #ffad63;outline-offset:2px}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -10226,6 +10242,20 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-chip" data-admin-manpower="" onclick="setAdminManpowerSituation('')">EVEN</button>
       </div>
     </div>
+<details class="dc728-penalty-admin" id="dc728PenaltyAdmin">
+  <summary class="dc729-penalty-toggle">PENALTIES <span class="dc729-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="dc728-penalty-admin-head"><small>HockeyTech detections appear here. SHOW puts a penalty under its team; REMOVE hides it without deleting it.</small></div>
+  <div id="dc728PenaltyRows" class="dc728-penalty-rows"><span class="dc728-penalty-empty">Waiting for penalty data…</span></div>
+  <details class="dc728-penalty-add"><summary>ADD PENALTY MANUALLY</summary>
+   <div class="dc728-penalty-add-grid">
+    <select id="dc728PenaltyTeam" aria-label="Penalized team"><option value="phantoms">Youngstown</option><option value="opponent">Opponent</option></select>
+    <input id="dc728PenaltyPlayer" maxlength="90" placeholder="Player surname" aria-label="Player name">
+    <input id="dc728PenaltyDuration" maxlength="24" placeholder="2:00 or 5+10" aria-label="Penalty duration">
+    <input id="dc728PenaltyInfraction" maxlength="100" placeholder="Hooking / Fighting" aria-label="Infraction">
+   </div><button type="button" class="btn dc729-add-penalty-btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
+  </details>
+  <div id="dc728PenaltyFeedback" class="dc728-penalty-feedback" role="status"></div>
+</details>
     <div class="admin-live-console-split">
       <div>
         <div class="admin-quick-label">Game Stoppage</div>
@@ -10252,19 +10282,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <button type="button" class="admin-chip" data-admin-period="SO" onclick="setAdminPeriod('SO')">SHOOTOUT</button>
     <button type="button" class="admin-chip admin-live-final-btn" onclick="finalizeAdminGame()">GO FINAL</button>
   </div>
-<div class="dc728-penalty-admin" id="dc728PenaltyAdmin">
-  <div class="dc728-penalty-admin-head"><b>PENALTIES</b><small>HockeyTech detections appear here. SHOW puts a penalty under its team; REMOVE hides it without deleting it.</small></div>
-  <div id="dc728PenaltyRows" class="dc728-penalty-rows"><span class="dc728-penalty-empty">Waiting for penalty data…</span></div>
-  <details class="dc728-penalty-add"><summary>ADD PENALTY MANUALLY</summary>
-   <div class="dc728-penalty-add-grid">
-    <select id="dc728PenaltyTeam" aria-label="Penalized team"><option value="phantoms">Youngstown</option><option value="opponent">Opponent</option></select>
-    <input id="dc728PenaltyPlayer" maxlength="90" placeholder="Player surname" aria-label="Player name">
-    <input id="dc728PenaltyDuration" maxlength="24" placeholder="2:00 or 5+10" aria-label="Penalty duration">
-    <input id="dc728PenaltyInfraction" maxlength="100" placeholder="Hooking / Fighting" aria-label="Infraction">
-   </div><button type="button" class="btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
-  </details>
-  <div id="dc728PenaltyFeedback" class="dc728-penalty-feedback" role="status"></div>
-</div>
+
 </section>
 
 <section class="admin-gameday-step admin-gameday-step-4 admin-status-group admin-live-controls">
