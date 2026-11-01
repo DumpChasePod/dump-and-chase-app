@@ -6112,7 +6112,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 </style>
 
 <style id="v729-penalty-compact-controls">
-/* V733: penalty manager belongs immediately after manpower, collapsed by default. */
+/* V734: penalty manager belongs immediately after manpower, collapsed by default. */
 #adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
 #adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
 #adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
@@ -6126,7 +6126,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 #adminGameDayPanel .dc729-add-penalty-btn:hover{background:#9256d3!important;color:#fff!important}
 #adminGameDayPanel .dc729-add-penalty-btn:focus-visible{outline:2px solid #ffad63;outline-offset:2px}
 </style>
-<style id="v733-penalty-form-compact">
+<style id="v734-penalty-form-compact">
 #adminGameDayPanel .dc728-penalty-add{padding:10px!important}
 #adminGameDayPanel .dc728-penalty-add-grid{gap:8px!important;margin:10px 0 12px!important;align-items:stretch}
 #adminGameDayPanel .dc728-penalty-add-grid input,
@@ -10267,7 +10267,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
   <div class="dc728-penalty-admin-head"><small>HockeyTech detections appear here. SHOW puts a penalty under its team; REMOVE hides it without deleting it.</small></div>
   <div id="dc728PenaltyFeedStatus" class="dc728-penalty-feedback" role="status">Checking HockeyTech penalty feed…</div>
   <div id="dc728PenaltyRows" class="dc728-penalty-rows"><span class="dc728-penalty-empty">Waiting for penalty data…</span></div>
-  <details class="dc728-penalty-add"><summary>ADD PENALTY MANUALLY</summary>
+  <details class="dc728-penalty-add" id="dc728PenaltyAddForm"><summary>ADD PENALTY MANUALLY</summary>
    <div class="dc728-penalty-add-grid">
     <select id="dc728PenaltyTeam" aria-label="Penalized team"><option value="phantoms">Youngstown</option><option value="opponent">Opponent</option></select>
     <input id="dc728PenaltyPlayer" maxlength="90" placeholder="Player surname" aria-label="Player name">
@@ -10279,38 +10279,39 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <option value="5+Game">5+Game</option>
     </select>
     <select id="dc728PenaltyInfraction" aria-label="Penalty infraction">
-      <option value="Hooking">Hooking</option>
-      <option value="Holding">Holding</option>
-      <option value="Holding the Stick">Holding the Stick</option>
-      <option value="Tripping">Tripping</option>
-      <option value="Slashing">Slashing</option>
-      <option value="High-Sticking">High-Sticking</option>
-      <option value="Cross-Checking">Cross-Checking</option>
-      <option value="Spearing">Spearing</option>
-      <option value="Butt-Ending">Butt-Ending</option>
-      <option value="Interference">Interference</option>
-      <option value="Goalkeeper Interference">Goalkeeper Interference</option>
+      <option value="Abuse of Officials">Abuse of Officials</option>
+      <option value="Aggressor">Aggressor</option>
       <option value="Boarding">Boarding</option>
+      <option value="Butt-Ending">Butt-Ending</option>
       <option value="Charging">Charging</option>
       <option value="Checking from Behind">Checking from Behind</option>
       <option value="Checking to the Head">Checking to the Head</option>
-      <option value="Elbowing">Elbowing</option>
-      <option value="Kneeing">Kneeing</option>
-      <option value="Roughing">Roughing</option>
-      <option value="Fighting">Fighting</option>
-      <option value="Instigating">Instigating</option>
-      <option value="Aggressor">Aggressor</option>
-      <option value="Slew-Footing">Slew-Footing</option>
       <option value="Clipping">Clipping</option>
+      <option value="Cross-Checking">Cross-Checking</option>
       <option value="Delay of Game">Delay of Game</option>
-      <option value="Too Many Men on the Ice">Too Many Men on the Ice</option>
-      <option value="Illegal Equipment">Illegal Equipment</option>
-      <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
-      <option value="Abuse of Officials">Abuse of Officials</option>
       <option value="Diving / Embellishment">Diving / Embellishment</option>
+      <option value="Elbowing">Elbowing</option>
+      <option value="Fighting">Fighting</option>
+      <option value="Goalkeeper Interference">Goalkeeper Interference</option>
+      <option value="High-Sticking">High-Sticking</option>
+      <option value="Holding">Holding</option>
+      <option value="Holding the Stick">Holding the Stick</option>
+      <option value="Hooking">Hooking</option>
+      <option value="Illegal Equipment">Illegal Equipment</option>
+      <option value="Instigating">Instigating</option>
+      <option value="Interference">Interference</option>
+      <option value="Kneeing">Kneeing</option>
       <option value="Puck Over Glass">Puck Over Glass</option>
+      <option value="Roughing">Roughing</option>
+      <option value="Slashing">Slashing</option>
+      <option value="Slew-Footing">Slew-Footing</option>
+      <option value="Spearing">Spearing</option>
+      <option value="Too Many Men on the Ice">Too Many Men on the Ice</option>
+      <option value="Tripping">Tripping</option>
+      <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
     </select>
-   </div><button type="button" class="btn dc729-add-penalty-btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
+   </div><button id="dc734PenaltySave" type="button" class="btn dc729-add-penalty-btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
+   <button id="dc734PenaltyCancel" type="button" class="admin-chip" hidden onclick="dc734CancelEdit()">CANCEL EDIT</button>
   </details>
   <div id="dc728PenaltyFeedback" class="dc728-penalty-feedback" role="status"></div>
 </details>
@@ -14749,6 +14750,7 @@ function renderPublicGameDay(){
 
 
 /* V728: Admin-controlled, game-scoped penalties; intermission does not clear them. */
+var dc734EditingPenaltyId=null;
 var dc728Penalties=[],dc728LastKey='',dc728LoadBusy=false,dc728KnownFeed={},dc728FeedInit={},dc728SyncBusy=false,dc731LastImportError='';
 function dc728GameKey(){return String(dcLiveStatsState&&dcLiveStatsState.gameId||'');}
 function dc731FeedStatus(message){var el=document.getElementById('dc728PenaltyFeedStatus');if(el)el.textContent=message;}
@@ -14762,7 +14764,7 @@ function dcPenaltyPillsHtml(team){
 function dc728RenderAdmin(){
  var root=document.getElementById('dc728PenaltyRows');if(!root)return;
  if(!dc728Penalties.length){root.innerHTML='<span class="dc728-penalty-empty">No penalties imported for this game. HockeyTech detections will appear here, or add one manually.</span>';return;}
- root.innerHTML=dc728Penalties.map(function(p){return '<div class="dc728-penalty-row"><div class="dc728-penalty-description"><b>'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</b><small>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN':'OPPONENT')+' · '+escapeHtml([p.period,p.game_time].filter(Boolean).join(' · '))+(p.source_key?' · HockeyTech':' · Manual')+'</small></div><div class="dc730-row-actions"><button type="button" class="admin-chip" onclick="dc728TogglePenalty(\''+p.id+'\','+(!p.displayed)+')">'+(p.displayed?'HIDE':'SHOW')+'</button><button type="button" class="admin-chip dc730-delete-btn" onclick="dc730DeletePenalty(\''+p.id+'\')">DELETE</button></div></div>';}).join('');
+ root.innerHTML=dc728Penalties.map(function(p){return '<div class="dc728-penalty-row"><div class="dc728-penalty-description"><b>'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</b><small>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN':'OPPONENT')+' · '+escapeHtml([p.period,p.game_time].filter(Boolean).join(' · '))+(p.source_key?' · HockeyTech':' · Manual')+'</small></div><div class="dc730-row-actions"><button type="button" class="admin-chip" onclick="dc728TogglePenalty(\''+p.id+'\','+(!p.displayed)+')">'+(p.displayed?'HIDE':'SHOW')+'</button><button type="button" class="admin-chip" onclick="dc734EditPenalty(\''+p.id+'\')">EDIT</button><button type="button" class="admin-chip dc730-delete-btn" onclick="dc730DeletePenalty(\''+p.id+'\')">DELETE</button></div></div>';}).join('');
 }
 async function dc728Request(action,params){
  var key=dc728GameKey();if(!key)throw Error('Waiting for HockeyTech game ID.');
@@ -14780,13 +14782,48 @@ async function dc728TogglePenalty(id,displayed){
  try{await dc728Request('visibility',{id:id,displayed:displayed});await dc728LoadPenalties();}
  catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
 }
+function dc734CancelEdit(){
+ dc734EditingPenaltyId=null;
+ var add=document.getElementById('dc734PenaltySave'),cancel=document.getElementById('dc734PenaltyCancel');
+ if(add)add.textContent='ADD & SHOW';if(cancel)cancel.hidden=true;
+ var form=document.getElementById('dc728PenaltyAddForm');if(form)form.open=false;
+ var f=document.getElementById('dc728PenaltyFeedback');if(f)f.textContent='';
+}
+function dc734EditPenalty(id){
+ var p=dc728Penalties.find(function(x){return x.id===id;});if(!p)return;
+ dc734EditingPenaltyId=id;
+ document.getElementById('dc728PenaltyTeam').value=p.team;
+ document.getElementById('dc728PenaltyPlayer').value=p.player||'';
+ var d=document.getElementById('dc728PenaltyDuration');
+ if(!Array.from(d.options).some(function(x){return x.value===p.duration;})){
+   var o=document.createElement('option');o.value=p.duration;o.textContent=p.duration;d.appendChild(o);
+ }
+ d.value=p.duration;
+ var f=document.getElementById('dc728PenaltyInfraction');
+ if(!Array.from(f.options).some(function(x){return x.value===p.infraction;})){
+   var o=document.createElement('option');o.value=p.infraction;o.textContent=p.infraction+' (HockeyTech)';f.appendChild(o);
+ }
+ f.value=p.infraction;
+ var form=document.getElementById('dc728PenaltyAddForm');
+ if(form){form.open=true;form.scrollIntoView({behavior:'smooth',block:'nearest'});}
+ document.getElementById('dc734PenaltySave').textContent='SAVE CHANGES';
+ document.getElementById('dc734PenaltyCancel').hidden=false;
+}
 async function dc728AddPenalty(){
  var p={team:document.getElementById('dc728PenaltyTeam')?.value,player:document.getElementById('dc728PenaltyPlayer')?.value.trim(),duration:document.getElementById('dc728PenaltyDuration')?.value.trim(),infraction:document.getElementById('dc728PenaltyInfraction')?.value.trim(),period:String(document.getElementById('adminPeriod')?.value||''),game_time:String(document.getElementById('adminClock')?.value||'')};
- try{await dc728Request('add',p);await dc728LoadPenalties();for(var id of ['dc728PenaltyPlayer','dc728PenaltyInfraction'])document.getElementById(id).value='';document.getElementById('dc728PenaltyDuration').value='2:00';}
- catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
+ var status=document.getElementById('dc728PenaltyFeedback');
+ try{
+  if(dc734EditingPenaltyId)await dc728Request('edit',Object.assign({id:dc734EditingPenaltyId},p));
+  else await dc728Request('add',p);
+  dc734CancelEdit();await dc728LoadPenalties();
+  document.getElementById('dc728PenaltyPlayer').value='';
+  document.getElementById('dc728PenaltyDuration').value='2:00';
+  document.getElementById('dc728PenaltyInfraction').value='Abuse of Officials';
+  if(status)status.textContent='Penalty saved.';
+ }catch(e){if(status)status.textContent=e.message;}
 }
 
-/* V733: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
+/* V734: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
 function dc730ShowPpOffPrompt(){
  var active=dc728Penalties.filter(function(p){return p.displayed;});
  if(!active.length)return;
@@ -16364,7 +16401,7 @@ window.addEventListener('load',initialize);
  <div id="dc730PenaltyChoices" class="dc730-choices"></div><div id="dc730PromptError" role="status"></div>
  <div class="dc730-prompt-actions"><button type="button" onclick="dc730DismissPrompt()">KEEP ALL</button><button type="button" id="dc730ClearSelected" onclick="dc730RemoveSelected()" disabled>REMOVE SELECTED</button></div></div>
 </div>
-<style id="v733-penalties">
+<style id="v734-penalties">
 .dc730-prompt[hidden]{display:none!important}.dc730-prompt{position:fixed;inset:0;z-index:11050;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:18px}
 .dc730-prompt-panel{background:#141d2a;color:#fff;border:1px solid #544270;border-radius:16px;padding:20px;width:min(420px,100%);max-height:85vh;overflow-y:auto;box-shadow:0 18px 60px #0008}
 .dc730-prompt-panel h3{font-size:16px;margin:0 0 8px;letter-spacing:.05em}.dc730-prompt-panel p{color:#bec5d3;font-size:13px;line-height:1.5;margin:0 0 12px}
