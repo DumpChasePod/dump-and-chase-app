@@ -6112,7 +6112,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 </style>
 
 <style id="v729-penalty-compact-controls">
-/* V732: penalty manager belongs immediately after manpower, collapsed by default. */
+/* V733: penalty manager belongs immediately after manpower, collapsed by default. */
 #adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
 #adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
 #adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
@@ -6126,7 +6126,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 #adminGameDayPanel .dc729-add-penalty-btn:hover{background:#9256d3!important;color:#fff!important}
 #adminGameDayPanel .dc729-add-penalty-btn:focus-visible{outline:2px solid #ffad63;outline-offset:2px}
 </style>
-<style id="v732-penalty-form-compact">
+<style id="v733-penalty-form-compact">
 #adminGameDayPanel .dc728-penalty-add{padding:10px!important}
 #adminGameDayPanel .dc728-penalty-add-grid{gap:8px!important;margin:10px 0 12px!important;align-items:stretch}
 #adminGameDayPanel .dc728-penalty-add-grid input,
@@ -10278,7 +10278,38 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
       <option value="5+10">5+10</option>
       <option value="5+Game">5+Game</option>
     </select>
-    <input id="dc728PenaltyInfraction" maxlength="100" placeholder="Hooking / Fighting" aria-label="Infraction">
+    <select id="dc728PenaltyInfraction" aria-label="Penalty infraction">
+      <option value="Hooking">Hooking</option>
+      <option value="Holding">Holding</option>
+      <option value="Holding the Stick">Holding the Stick</option>
+      <option value="Tripping">Tripping</option>
+      <option value="Slashing">Slashing</option>
+      <option value="High-Sticking">High-Sticking</option>
+      <option value="Cross-Checking">Cross-Checking</option>
+      <option value="Spearing">Spearing</option>
+      <option value="Butt-Ending">Butt-Ending</option>
+      <option value="Interference">Interference</option>
+      <option value="Goalkeeper Interference">Goalkeeper Interference</option>
+      <option value="Boarding">Boarding</option>
+      <option value="Charging">Charging</option>
+      <option value="Checking from Behind">Checking from Behind</option>
+      <option value="Checking to the Head">Checking to the Head</option>
+      <option value="Elbowing">Elbowing</option>
+      <option value="Kneeing">Kneeing</option>
+      <option value="Roughing">Roughing</option>
+      <option value="Fighting">Fighting</option>
+      <option value="Instigating">Instigating</option>
+      <option value="Aggressor">Aggressor</option>
+      <option value="Slew-Footing">Slew-Footing</option>
+      <option value="Clipping">Clipping</option>
+      <option value="Delay of Game">Delay of Game</option>
+      <option value="Too Many Men on the Ice">Too Many Men on the Ice</option>
+      <option value="Illegal Equipment">Illegal Equipment</option>
+      <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
+      <option value="Abuse of Officials">Abuse of Officials</option>
+      <option value="Diving / Embellishment">Diving / Embellishment</option>
+      <option value="Puck Over Glass">Puck Over Glass</option>
+    </select>
    </div><button type="button" class="btn dc729-add-penalty-btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
   </details>
   <div id="dc728PenaltyFeedback" class="dc728-penalty-feedback" role="status"></div>
@@ -14755,7 +14786,7 @@ async function dc728AddPenalty(){
  catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
 }
 
-/* V732: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
+/* V733: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
 function dc730ShowPpOffPrompt(){
  var active=dc728Penalties.filter(function(p){return p.displayed;});
  if(!active.length)return;
@@ -16333,7 +16364,7 @@ window.addEventListener('load',initialize);
  <div id="dc730PenaltyChoices" class="dc730-choices"></div><div id="dc730PromptError" role="status"></div>
  <div class="dc730-prompt-actions"><button type="button" onclick="dc730DismissPrompt()">KEEP ALL</button><button type="button" id="dc730ClearSelected" onclick="dc730RemoveSelected()" disabled>REMOVE SELECTED</button></div></div>
 </div>
-<style id="v732-penalties">
+<style id="v733-penalties">
 .dc730-prompt[hidden]{display:none!important}.dc730-prompt{position:fixed;inset:0;z-index:11050;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:18px}
 .dc730-prompt-panel{background:#141d2a;color:#fff;border:1px solid #544270;border-radius:16px;padding:20px;width:min(420px,100%);max-height:85vh;overflow-y:auto;box-shadow:0 18px 60px #0008}
 .dc730-prompt-panel h3{font-size:16px;margin:0 0 8px;letter-spacing:.05em}.dc730-prompt-panel p{color:#bec5d3;font-size:13px;line-height:1.5;margin:0 0 12px}
