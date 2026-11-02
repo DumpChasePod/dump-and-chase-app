@@ -6180,6 +6180,42 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 .dc736-penalty-spotlight strong{color:#fff;font-size:15px}
 .dc736-penalty-spotlight span{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
 </style>
+<style id="v739-featured-phan-refresh">
+/* A focused editorial presentation for the public Phan of the Week tile. */
+#pcPublicView .pc-feature.pc-feature-main{
+ position:relative;overflow:hidden;border:1px solid rgba(171,117,241,.48)!important;
+ border-radius:19px!important;background:linear-gradient(165deg,#182238 0%,#0e1627 70%,#151727 100%)!important;
+ box-shadow:0 15px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06);
+}
+#pcPublicView .pc-feature-main:before{content:"";display:block;height:3px;background:linear-gradient(90deg,#9b5cf2 0%,#df9e55 53%,transparent 100%)}
+#pcPublicView .pc-feature-main .pc-feature-heading{
+ position:relative;padding:20px 18px 17px!important;border-bottom:0!important;
+ background:radial-gradient(ellipse at 92% 0%,rgba(152,91,229,.18),transparent 58%)!important;
+}
+#pcPublicView .pc-feature-main .pc-feature-overline{
+ color:#d4afff!important;font-size:10px!important;font-weight:900!important;letter-spacing:.19em!important;
+ text-transform:uppercase;line-height:1.3; margin:0 0 10px;
+}
+#pcPublicView .pc-feature-main .pc-feature-heading h2{
+ color:#fff!important;font-weight:950!important;font-size:clamp(24px,5.4vw,34px)!important;
+ line-height:1.09!important;letter-spacing:-.035em!important;margin:0!important;
+ text-shadow:0 2px 16px rgba(0,0,0,.28);
+}
+#pcPublicView .pc-feature-main>.pc-portrait{
+ margin:0 12px!important;width:calc(100% - 24px)!important;box-sizing:border-box!important;
+ border-radius:13px!important;border:1px solid rgba(184,139,240,.26)!important;
+ box-shadow:0 6px 20px rgba(0,0,0,.27)!important;
+}
+#pcPublicView .pc-feature-main .pc-feature-bottom{padding:15px 12px 16px!important}
+#pcPublicView .pc-feature-main .pc-feature-bottom .pc-primary{
+ width:100%;min-height:46px;border-radius:11px!important;
+ background:linear-gradient(115deg,#7540c6,#9d5df1)!important;
+ border:1px solid rgba(213,178,255,.5)!important;color:#fff!important;
+ box-shadow:0 5px 15px rgba(91,43,151,.23)!important;letter-spacing:.065em!important;
+ font-weight:900!important;font-size:11px!important;
+}
+#pcPublicView .pc-feature-main .pc-feature-bottom .pc-primary:active{transform:translateY(1px)}
+</style>
 </head>
 <body>
 <div class="app-launch-screen" id="appLaunchScreen" aria-hidden="true"><img src="dump-chase-logo.png" alt=""></div>
@@ -10210,7 +10246,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V738</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V739</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -16120,7 +16156,7 @@ function image(n){return '<div class="pc-portrait">'+(n.photo_url?'<img alt="Pho
 function card(w){var n=w.profile;return '<button class="pc-archive-card" type="button" data-pc-open="'+safe(w.id)+'">'+image(n)+'<strong>'+safe(n.full_name)+'</strong><small>'+safe(w.published_at?new Date(w.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):w.season)+'</small></button>';}
 function render(d){feed=d.winners||[];currentFeed=d;var current=feed.find(x=>x.state==='current');var target=$('pcPublicContent');
 var html='<div class="pc-section-label">FEATURED LISTENER</div>';
-html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2><div class="pc-muted">'+safe(current.profile.fan_since)+' · '+(current.profile.is_season_ticket_holder?'Season Ticket Holder':'Phantoms Phan')+'</div></div>'+image(current.profile)+'<div class="pc-feature-bottom"><p>'+safe(current.profile.why_fan).slice(0,210)+'</p><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
+html+=current?'<section class="pc-feature pc-feature-main"><div class="pc-feature-heading"><div class="pc-feature-overline">PHAN OF THE WEEK</div><h2>'+safe(current.profile.full_name)+'</h2></div>'+image(current.profile)+'<div class="pc-feature-bottom"><button class="pc-primary" data-pc-open="'+safe(current.id)+'">VIEW FULL PROFILE</button></div></section>':'<section class="pc-feature pc-feature-empty"><div class="pc-feature-overline">PHAN OF THE WEEK</div><p>Our first Dump &amp; Chase Podcast Phan of the Week is coming soon.</p></section>';
 html+='<div class="pc-phancentral-options"><button type="button" id="pcBeginNomination" class="pc-hub-tile"'+(d.submissions_open||preview?'':' disabled')+'><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="7" r="4"/><path d="M3.5 21v-2.2a6.5 6.5 0 0 1 10.4-5.2"/><path d="m16 17 2.2 2.2 4-4"/></svg></span><strong>GET FEATURED</strong></button><button type="button" id="pcViewArchive" class="pc-hub-tile"><span class="pc-hub-icon" aria-hidden="true"><svg class="pc-hub-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="8" r="5.5"/><path d="m8.5 12.6-1 8 4.5-2.5 4.5 2.5-1-8"/><circle cx="12" cy="8" r="2"/></svg></span><strong>PREVIOUS PHANS</strong></button></div>';
 html+='<div class="pc-section-label pc-section-label-second">WEEKLY PHAN POLL</div><section class="pc-feature pc-weekly-poll" id="pcWeeklyPoll" aria-live="polite"><p class="pc-muted">Loading weekly poll…</p></section><button type="button" class="pc-poll-history-link" id="pcViewPreviousPolls">PREVIOUS POLLS <span aria-hidden="true">›</span></button>';
 target.innerHTML=html;
