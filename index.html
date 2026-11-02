@@ -6180,7 +6180,7 @@ body.game-live #publicGameDayCard .team-record-pill{display:none!important}
 .dc736-penalty-spotlight strong{color:#fff;font-size:15px}
 .dc736-penalty-spotlight span{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
 </style>
-<style id="v739-featured-phan-refresh">
+<style id="v740-featured-phan-refresh">
 /* A focused editorial presentation for the public Phan of the Week tile. */
 #pcPublicView .pc-feature.pc-feature-main{
  position:relative;overflow:hidden;border:1px solid rgba(171,117,241,.48)!important;
@@ -8665,7 +8665,11 @@ function cleanEpisodeDescription(raw){
   textarea.innerHTML=text;
   text=textarea.value;
   // Strip Buzzsprout boilerplate and everything after it.
-  text=text.split(/send us fan mail/i)[0];
+  // Buzzsprout can prepend a 'Send us Fan Mail' link before the real summary.
+  // Remove only that call-to-action rather than truncating everything after it.
+  text=text.replace(/\bsend us fan mail\b/gi,' ');
+  // Strip promotional footer from the end without throwing away the actual episode write-up.
+  text=text.split(/\bOfficial App\/Website\b/i)[0];
   // Remove leftover escaped entity fragments and normalize whitespace.
   text=text.replace(/&(?:amp|apos|quot|lt|gt|nbsp);/gi,' ');
   text=text.replace(/\s+/g,' ').trim();
@@ -10246,7 +10250,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V739</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V740</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
