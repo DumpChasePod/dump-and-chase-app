@@ -6084,102 +6084,6 @@ img.matchup-logo[src*="Chicago-Steel.png"] {
 #adminGameDayPanel #dc723Panel-final .dc727-final-hint{font-size:12px;line-height:1.45;color:#e2d5f7;margin:0 0 10px}
 #adminGameDayPanel [id^="dc723Panel-"][hidden]{display:none!important}
 </style>
-<style id="v728-game-day-penalties">
-/* Live score strip gets reduced vertical height; score/logo sizes are preserved. */
-body.game-live #publicGameDayCard .team-record-pill{display:none!important}
-#publicGameDayCard .dc-live-stat-strip{margin-top:7px!important;margin-bottom:6px!important;padding-top:3px!important;padding-bottom:3px!important}
-#publicGameDayCard .dc-live-stat-row{min-height:0!important;margin:0!important;padding-top:2px!important;padding-bottom:2px!important;line-height:1.1!important}
-#publicGameDayCard .dc-live-stat-cell{min-height:0!important;padding-top:2px!important;padding-bottom:2px!important;line-height:1.12!important}
-#publicGameDayCard .dc728-penalty-pills{display:flex;flex-direction:column;gap:4px;align-items:center;max-width:100%;margin:5px 0 2px}
-#publicGameDayCard .dc728-penalty-pill{background:#302044;border:1px solid #674b82;color:#f4eafd;border-radius:15px;max-width:100%;box-sizing:border-box;padding:5px 7px;font-size:9px;line-height:1.25;font-weight:850;text-align:center;overflow-wrap:anywhere}
-#publicGameDayCard .dc728-penalty-more{font-size:8px;font-weight:900;color:#cbb0e6}
-#adminGameDayPanel .dc728-penalty-admin{margin:15px 0 8px;padding:13px;border-radius:13px;border:1px solid #39455a;background:#101825}
-#adminGameDayPanel .dc728-penalty-admin-head{display:grid;gap:5px;margin-bottom:10px}
-#adminGameDayPanel .dc728-penalty-admin-head b{font-size:12px;letter-spacing:.08em}
-#adminGameDayPanel .dc728-penalty-admin-head small{font-size:10px;line-height:1.45;color:#aab4c2}
-#adminGameDayPanel .dc728-penalty-rows{display:grid;gap:8px}
-#adminGameDayPanel .dc728-penalty-row{display:flex;justify-content:space-between;align-items:center;gap:9px;border:1px solid #2c3748;border-radius:10px;padding:9px}
-#adminGameDayPanel .dc728-penalty-description{display:grid;gap:4px;min-width:0}
-#adminGameDayPanel .dc728-penalty-description b{font-size:11px;overflow-wrap:anywhere}
-#adminGameDayPanel .dc728-penalty-description small{font-size:9px;color:#aab4c2}
-#adminGameDayPanel .dc728-penalty-row button{flex-shrink:0;min-width:74px;min-height:38px}
-#adminGameDayPanel .dc728-penalty-empty{color:#aab4c2;font-size:10px;line-height:1.5}
-#adminGameDayPanel .dc728-penalty-add{margin-top:11px;padding:10px;border:1px solid #354155;border-radius:10px}
-#adminGameDayPanel .dc728-penalty-add summary{font-size:10px;font-weight:850;cursor:pointer}
-#adminGameDayPanel .dc728-penalty-add-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
-#adminGameDayPanel .dc728-penalty-add-grid input,#adminGameDayPanel .dc728-penalty-add-grid select{width:100%;min-width:0;font-size:12px}
-#adminGameDayPanel .dc728-penalty-feedback{font-size:10px;color:#ffb689;margin-top:7px}
-</style>
-
-<style id="v729-penalty-compact-controls">
-/* V734: penalty manager belongs immediately after manpower, collapsed by default. */
-#adminGameDayPanel details.dc728-penalty-admin{display:block;margin:12px 0 13px;padding:0;border:1px solid #39455a;border-radius:12px;background:#101825;overflow:hidden}
-#adminGameDayPanel details.dc728-penalty-admin:not([open]) > :not(summary){display:none!important}
-#adminGameDayPanel .dc729-penalty-toggle{display:flex;align-items:center;justify-content:space-between;min-height:45px;padding:12px 13px;color:#f0e8ff;background:#182237;font-size:11px;font-weight:900;letter-spacing:.075em;cursor:pointer;list-style:none}
-#adminGameDayPanel .dc729-penalty-toggle::-webkit-details-marker{display:none}
-#adminGameDayPanel .dc729-chevron{font-size:17px;color:#b998e3;transition:transform .15s}
-#adminGameDayPanel details[open] > .dc729-penalty-toggle .dc729-chevron{transform:rotate(180deg)}
-#adminGameDayPanel .dc728-penalty-admin-head,#adminGameDayPanel .dc728-penalty-rows,#adminGameDayPanel .dc728-penalty-add,#adminGameDayPanel .dc728-penalty-feedback{margin-left:12px;margin-right:12px}
-#adminGameDayPanel .dc728-penalty-admin-head{margin-top:12px}
-#adminGameDayPanel .dc728-penalty-feedback{margin-bottom:12px}
-#adminGameDayPanel .dc729-add-penalty-btn{display:block!important;width:100%;min-height:42px;background:#7b41bc!important;color:#fff!important;border:1px solid #ad79ec!important;font-size:11px!important;font-weight:900!important;letter-spacing:.045em;opacity:1!important;text-shadow:none!important}
-#adminGameDayPanel .dc729-add-penalty-btn:hover{background:#9256d3!important;color:#fff!important}
-#adminGameDayPanel .dc729-add-penalty-btn:focus-visible{outline:2px solid #ffad63;outline-offset:2px}
-</style>
-<style id="v734-penalty-form-compact">
-#adminGameDayPanel .dc728-penalty-add{padding:10px!important}
-#adminGameDayPanel .dc728-penalty-add-grid{gap:8px!important;margin:10px 0 12px!important;align-items:stretch}
-#adminGameDayPanel .dc728-penalty-add-grid input,
-#adminGameDayPanel .dc728-penalty-add-grid select{
-  box-sizing:border-box!important;display:block!important;width:100%!important;
-  height:43px!important;min-height:43px!important;max-height:43px!important;
-  padding:0 11px!important;border:1px solid #34465b!important;border-radius:10px!important;
-  background:#0b1420!important;color:#f6f8fb!important;font-size:13px!important;
-  line-height:normal!important;box-shadow:none!important;appearance:auto;
-}
-#adminGameDayPanel .dc728-penalty-add-grid input::placeholder{color:#8999ad!important;opacity:1}
-#adminGameDayPanel .dc728-penalty-add-grid select option{background:#101a2b;color:#fff}
-#adminGameDayPanel .dc729-add-penalty-btn{min-height:40px!important;border-radius:10px!important}
-@media(max-width:360px){
- #adminGameDayPanel .dc728-penalty-add-grid{grid-template-columns:1fr!important}
-}
-</style>
-
-<style id="v738-penalty-list-cleanup">
-/* Keep penalty details above actions. Older row and column flex layouts are overridden. */
-#adminGameDayPanel .dc728-penalty-admin-head{margin-bottom:4px!important}
-#adminGameDayPanel .dc728-penalty-admin-head small{display:block;font-size:10px!important;line-height:1.35!important}
-#adminGameDayPanel .dc728-penalty-feedback{font-size:10px!important;line-height:1.35!important;margin:5px 10px 9px!important}
-#adminGameDayPanel .dc728-penalty-rows{gap:7px!important}
-#adminGameDayPanel .dc728-penalty-row{
- display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;
- gap:9px!important;padding:11px!important;margin:0!important;
- background:#101926!important;border:1px solid #344153!important;border-radius:10px!important;
-}
-#adminGameDayPanel .dc728-penalty-description{min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important}
-#adminGameDayPanel .dc728-penalty-description b{font-size:12px!important;line-height:1.3!important;color:#f2f5fb!important}
-#adminGameDayPanel .dc728-penalty-description small{font-size:10px!important;line-height:1.4!important;color:#9dacc0!important}
-#adminGameDayPanel .dc730-row-actions{
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
- flex-direction:row!important;gap:7px!important;width:100%!important;min-width:0!important;
-}
-#adminGameDayPanel .dc730-row-actions button{
- display:flex!important;align-items:center!important;justify-content:center!important;
- width:100%!important;min-width:0!important;min-height:35px!important;height:35px!important;
- padding:5px 4px!important;margin:0!important;border-radius:8px!important;
- font-size:10px!important;font-weight:850!important;letter-spacing:.025em!important;
- white-space:nowrap!important;
-}
-#adminGameDayPanel .dc730-row-actions .dc730-delete-btn{background:#2b1a27!important;color:#ffb6b6!important;border-color:#864452!important}
-#adminGameDayPanel .dc728-penalty-add{margin-top:9px!important}
-</style>
-<style id="v738-penalty-spotlight">
-#publicGameDayCard{position:relative}
-#publicGameDayCard .dc736-penalty-spotlight{position:absolute;inset:0;z-index:9;background:linear-gradient(145deg,#161b31,#241833);border:2px solid #a56cff;border-radius:inherit;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:10px;padding:15px;box-sizing:border-box;pointer-events:none}
-.dc736-penalty-spotlight b{color:#ff974d;letter-spacing:.13em;font-size:20px}
-.dc736-penalty-spotlight strong{color:#fff;font-size:15px}
-.dc736-penalty-spotlight span{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
-</style>
 <style id="v740-featured-phan-refresh">
 /* A focused editorial presentation for the public Phan of the Week tile. */
 #pcPublicView .pc-feature.pc-feature-main{
@@ -8242,7 +8146,6 @@ function setAdminResult(value){
 function setAdminPowerPlay(value){
  const el=document.getElementById('adminPowerPlay'),time=document.getElementById('adminPowerPlayTime'),man=document.getElementById('adminManpowerSituation');if(!el)return;
  var next=String(value||'');
- var wasActive=!!el.value;
  el.value=next;
  if(next){
    if(time&&!time.value)time.value='2:00';
@@ -8253,7 +8156,7 @@ function setAdminPowerPlay(value){
  }
  var four=document.getElementById('adminFourOnFour');if(four)four.value=(man&&man.value==='4-on-4')?'true':'false';
  syncAdminQuickControls();markGameDayDirty();
- if(wasActive&&!next&&typeof dc730ShowPpOffPrompt==='function')dc730ShowPpOffPrompt();
+
 }
 function setAdminPowerPlayTime(value){
  var el=document.getElementById('adminPowerPlayTime');if(!el)return;el.value=String(value||'');syncAdminQuickControls();markGameDayDirty();
@@ -10250,7 +10153,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V741</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V742</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10338,59 +10241,6 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
         <button type="button" class="admin-chip" data-admin-manpower="" onclick="setAdminManpowerSituation('')">EVEN</button>
       </div>
     </div>
-<details class="dc728-penalty-admin" id="dc728PenaltyAdmin">
-  <summary class="dc729-penalty-toggle">PENALTIES <span class="dc729-chevron" aria-hidden="true">⌄</span></summary>
-  <div class="dc728-penalty-admin-head"><small>SHOW displays a penalty on Game Day. HIDE removes the bubble; DELETE archives the entry.</small></div>
-  <div id="dc728PenaltyFeedStatus" class="dc728-penalty-feedback" role="status">Checking HockeyTech penalty feed…</div>
-  <div id="dc728PenaltyRows" class="dc728-penalty-rows"><span class="dc728-penalty-empty">Waiting for penalty data…</span></div>
-  <details class="dc728-penalty-add" id="dc728PenaltyAddForm"><summary>ADD PENALTY MANUALLY</summary>
-   <div class="dc728-penalty-add-grid">
-    <select id="dc728PenaltyTeam" aria-label="Penalized team"><option value="phantoms">Youngstown</option><option value="opponent">Opponent</option></select>
-    <input id="dc728PenaltyPlayer" maxlength="90" placeholder="Player surname" aria-label="Player name">
-    <select id="dc728PenaltyDuration" aria-label="Penalty duration">
-      <option value="2:00">2:00</option>
-      <option value="4:00">4:00</option>
-      <option value="5:00">5:00</option>
-      <option value="5+10">5+10</option>
-      <option value="5+Game">5+Game</option>
-    </select>
-    <select id="dc728PenaltyInfraction" aria-label="Penalty infraction">
-      <option value="Abuse of Officials">Abuse of Officials</option>
-      <option value="Aggressor">Aggressor</option>
-      <option value="Boarding">Boarding</option>
-      <option value="Butt-Ending">Butt-Ending</option>
-      <option value="Charging">Charging</option>
-      <option value="Checking from Behind">Checking from Behind</option>
-      <option value="Checking to the Head">Checking to the Head</option>
-      <option value="Clipping">Clipping</option>
-      <option value="Cross-Checking">Cross-Checking</option>
-      <option value="Delay of Game">Delay of Game</option>
-      <option value="Diving / Embellishment">Diving / Embellishment</option>
-      <option value="Elbowing">Elbowing</option>
-      <option value="Fighting">Fighting</option>
-      <option value="Goalkeeper Interference">Goalkeeper Interference</option>
-      <option value="High-Sticking">High-Sticking</option>
-      <option value="Holding">Holding</option>
-      <option value="Holding the Stick">Holding the Stick</option>
-      <option value="Hooking">Hooking</option>
-      <option value="Illegal Equipment">Illegal Equipment</option>
-      <option value="Instigating">Instigating</option>
-      <option value="Interference">Interference</option>
-      <option value="Kneeing">Kneeing</option>
-      <option value="Puck Over Glass">Puck Over Glass</option>
-      <option value="Roughing">Roughing</option>
-      <option value="Slashing">Slashing</option>
-      <option value="Slew-Footing">Slew-Footing</option>
-      <option value="Spearing">Spearing</option>
-      <option value="Too Many Men on the Ice">Too Many Men on the Ice</option>
-      <option value="Tripping">Tripping</option>
-      <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
-    </select>
-   </div><button id="dc734PenaltySave" type="button" class="btn dc729-add-penalty-btn" onclick="dc728AddPenalty()">ADD & SHOW</button>
-   <button id="dc734PenaltyCancel" type="button" class="admin-chip" hidden onclick="dc734CancelEdit()">CANCEL EDIT</button>
-  </details>
-  <div id="dc728PenaltyFeedback" class="dc728-penalty-feedback" role="status"></div>
-</details>
     <div class="admin-live-console-split">
       <div>
         <div class="admin-quick-label">Game Stoppage</div>
@@ -14793,12 +14643,6 @@ function dcRenderProductionActiveGame(box,g,st,effective){
   var periodText='';if(effective.status==='final')periodText=finalLabel;else if(activeSO)periodText='ROUND '+dcShootoutRound(state);else if(String(effective.clock||'')==='INT')periodText=(String(effective.period||'')+' INT').trim();else periodText=(effective.period+(effective.period&&effective.clock?' • ':'')+displayGameClock(effective.clock||'')).trim();
   function standardTeam(team,role){
     var html=gameDayTeam(team,String(team).toUpperCase(),role);
-    if(effective.status==='live'){
-      var key=String(team)==='Youngstown Phantoms'?'phantoms':'opponent';
-      var pills=dcPenaltyPillsHtml(key);
-      var last=html.lastIndexOf('</div>');
-      if(last>=0)html=html.slice(0,last)+pills+html.slice(last);
-    }
     return html;
   }
   var leftTeamHtml=activeSO?dcProductionShootoutTeam(leftTeam,leftRole,leftKey,state,next):standardTeam(leftTeam,leftRole);
@@ -14821,182 +14665,9 @@ function renderPublicGameDay(){
   var st=getAdminGameState();
   var effective=dcEffectivePublicState(active.g,st);
   if(effective.status==='upcoming'){dcUpgradePregameActions(box,active.g,st);syncMoreWrrForGameDay();return;}
-  dcRenderProductionActiveGame(box,active.g,st,effective);dc736RenderPenaltySpotlight();syncMoreWrrForGameDay();syncGameDayHomePriority();
+  dcRenderProductionActiveGame(box,active.g,st,effective);syncMoreWrrForGameDay();syncGameDayHomePriority();
 }
 
-
-/* V728: Admin-controlled, game-scoped penalties; intermission does not clear them. */
-var dc734EditingPenaltyId=null;
-var dc728Penalties=[],dc728LastKey='',dc728LoadBusy=false,dc728KnownFeed={},dc728FeedInit={},dc728SyncBusy=false,dc731LastImportError='';
-function dc728GameKey(){return String(dcLiveStatsState&&dcLiveStatsState.gameId||'');}
-function dc731FeedStatus(message){var el=document.getElementById('dc728PenaltyFeedStatus');if(el)el.textContent=message;}
-function dcPenaltyPillsHtml(team){
- var matches=dc728Penalties.filter(function(p){return p.displayed&&p.team===team;});
- if(!matches.length)return '';
- return '<div class="dc728-penalty-pills">'+matches.slice(0,4).map(function(p){
-  return '<div class="dc728-penalty-pill" title="'+escapeHtml(p.infraction||'')+'">'+escapeHtml(dc736PenaltyLabel(p))+'</div>';
- }).join('')+(matches.length>4?'<div class="dc728-penalty-more">+'+(matches.length-4)+' MORE</div>':'')+'</div>';
-}
-/* V738: penalty spotlight only for newly displayed, complete records. */
-var dc736PenaltySeen={},dc736ReadyKey='',dc736PenaltyQueue=[],dc736PenaltyUntil=0;
-function dc736PenaltyLabel(p){
- var player=String(p.player||'').trim(),reason=String(p.infraction||'').trim(),minutes=String(p.duration||'').trim();
- if(/^\d+$/.test(minutes))minutes+=':00';
- if(!player||/player not identified/i.test(player))player='Penalty details pending';
- if(!reason||/^\d+$/.test(reason))reason='Infraction pending';
- return player+' · '+minutes+' · '+reason;
-}
-function dc736PenaltyComplete(p){return !!(p&&p.player&&p.infraction&&!/player not identified/i.test(p.player)&&!/^\d+$/.test(String(p.infraction).trim()));}
-function dc736ObservePenalties(key,records){
- if(dc736ReadyKey!==key){dc736ReadyKey=key;dc736PenaltySeen={};records.forEach(function(p){dc736PenaltySeen[p.id]=!!p.displayed;});return;}
- records.forEach(function(p){
-  var prev=dc736PenaltySeen[p.id];
-  if(p.displayed&&(prev===false||prev===undefined)&&dc736PenaltyComplete(p))dc736PenaltyQueue.push({id:p.id,label:dc736PenaltyLabel(p),team:p.team});
-  dc736PenaltySeen[p.id]=!!p.displayed;
- });
- var active={};records.forEach(function(p){active[p.id]=true;});Object.keys(dc736PenaltySeen).forEach(function(id){if(!active[id])delete dc736PenaltySeen[id];});
-}
-function dc736RenderPenaltySpotlight(){
- var box=document.getElementById('publicGameDayCard');if(!box)return;
- var old=box.querySelector('.dc736-penalty-spotlight');if(old)old.remove();
- if(dcPublicGoalFx)return;
- var now=Date.now();
- if(now>=dc736PenaltyUntil){if(!dc736PenaltyQueue.length)return;var next=dc736PenaltyQueue.shift();window.dc736PenaltyActive=next;dc736PenaltyUntil=now+8000;}
- var p=window.dc736PenaltyActive;if(!p)return;
- var el=document.createElement('div');el.className='dc736-penalty-spotlight';el.setAttribute('role','status');
- el.innerHTML='<b>PENALTY</b><strong>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN PHANTOMS':'OPPONENT')+'</strong><span>'+escapeHtml(p.label)+'</span>';
- box.appendChild(el);
-}
-function dc728RenderAdmin(){
- var root=document.getElementById('dc728PenaltyRows');if(!root)return;
- if(!dc728Penalties.length){root.innerHTML='<span class="dc728-penalty-empty">No penalties imported for this game. HockeyTech detections will appear here, or add one manually.</span>';return;}
- root.innerHTML=dc728Penalties.map(function(p){return '<div class="dc728-penalty-row"><div class="dc728-penalty-description"><b>'+escapeHtml(p.player||'Player')+' · '+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</b><small>'+escapeHtml(p.team==='phantoms'?'YOUNGSTOWN':'OPPONENT')+' · '+escapeHtml([p.period,p.game_time].filter(Boolean).join(' · '))+(p.source_key?' · HockeyTech':' · Manual')+'</small></div><div class="dc730-row-actions"><button type="button" class="admin-chip" onclick="dc728TogglePenalty(\''+p.id+'\','+(!p.displayed)+')">'+(p.displayed?'HIDE':'SHOW')+'</button><button type="button" class="admin-chip" onclick="dc734EditPenalty(\''+p.id+'\')">EDIT</button><button type="button" class="admin-chip dc730-delete-btn" onclick="dc730DeletePenalty(\''+p.id+'\')">DELETE</button></div></div>';}).join('');
-}
-async function dc728Request(action,params){
- var key=dc728GameKey();if(!key)throw Error('Waiting for HockeyTech game ID.');
- var session=await dcGetSession();if(!session)throw Error('Please sign into Admin.');
- var res=await fetch(DC_SUPABASE_URL+'/functions/v1/game-day-penalties',{method:'POST',headers:{'apikey':DC_SUPABASE_KEY,'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:action,game_key:key},params||{}))});
- var body=await res.json();if(!res.ok||!body.ok)throw Error(body.error||'Penalty update failed');return body;
-}
-async function dc728LoadPenalties(){
- var key=dc728GameKey();if(!key){dc731FeedStatus('Waiting for HockeyTech game connection. Manual penalties require an identified game.');return;}if(dc728LoadBusy)return;dc728LoadBusy=true;
- try{var res=await fetch(DC_SUPABASE_URL+'/functions/v1/game-day-penalties?game_key='+encodeURIComponent(key),{headers:{'apikey':DC_SUPABASE_KEY},cache:'no-store'});var b=await res.json();if(!res.ok||!b.ok)throw Error(b.error||'Penalty service unavailable');
- var old=JSON.stringify(dc728Penalties);dc728LastKey=key;dc728Penalties=Array.isArray(b.penalties)?b.penalties:[];dc736ObservePenalties(key,dc728Penalties);dc728RenderAdmin();if(old!==JSON.stringify(dc728Penalties)&&typeof refreshPublicGameDay==='function')refreshPublicGameDay();
- }catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent='Penalty data unavailable: '+e.message;}finally{dc728LoadBusy=false;}
-}
-async function dc728TogglePenalty(id,displayed){
- try{await dc728Request('visibility',{id:id,displayed:displayed});await dc728LoadPenalties();}
- catch(e){var status=document.getElementById('dc728PenaltyFeedback');if(status)status.textContent=e.message;}
-}
-function dc734CancelEdit(){
- dc734EditingPenaltyId=null;
- var add=document.getElementById('dc734PenaltySave'),cancel=document.getElementById('dc734PenaltyCancel');
- if(add)add.textContent='ADD & SHOW';if(cancel)cancel.hidden=true;
- var form=document.getElementById('dc728PenaltyAddForm');if(form)form.open=false;
- var f=document.getElementById('dc728PenaltyFeedback');if(f)f.textContent='';
-}
-function dc734EditPenalty(id){
- var p=dc728Penalties.find(function(x){return x.id===id;});if(!p)return;
- dc734EditingPenaltyId=id;
- document.getElementById('dc728PenaltyTeam').value=p.team;
- document.getElementById('dc728PenaltyPlayer').value=p.player||'';
- var d=document.getElementById('dc728PenaltyDuration');
- if(!Array.from(d.options).some(function(x){return x.value===p.duration;})){
-   var o=document.createElement('option');o.value=p.duration;o.textContent=p.duration;d.appendChild(o);
- }
- d.value=p.duration;
- var f=document.getElementById('dc728PenaltyInfraction');
- if(!Array.from(f.options).some(function(x){return x.value===p.infraction;})){
-   var o=document.createElement('option');o.value=p.infraction;o.textContent=p.infraction+' (HockeyTech)';f.appendChild(o);
- }
- f.value=p.infraction;
- var form=document.getElementById('dc728PenaltyAddForm');
- if(form){form.open=true;form.scrollIntoView({behavior:'smooth',block:'nearest'});}
- document.getElementById('dc734PenaltySave').textContent='SAVE CHANGES';
- document.getElementById('dc734PenaltyCancel').hidden=false;
-}
-async function dc728AddPenalty(){
- var p={team:document.getElementById('dc728PenaltyTeam')?.value,player:document.getElementById('dc728PenaltyPlayer')?.value.trim(),duration:document.getElementById('dc728PenaltyDuration')?.value.trim(),infraction:document.getElementById('dc728PenaltyInfraction')?.value.trim(),period:String(document.getElementById('adminPeriod')?.value||''),game_time:String(document.getElementById('adminClock')?.value||'')};
- var status=document.getElementById('dc728PenaltyFeedback');
- try{
-  if(dc734EditingPenaltyId)await dc728Request('edit',Object.assign({id:dc734EditingPenaltyId},p));
-  else await dc728Request('add',p);
-  dc734CancelEdit();await dc728LoadPenalties();
-  document.getElementById('dc728PenaltyPlayer').value='';
-  document.getElementById('dc728PenaltyDuration').value='2:00';
-  document.getElementById('dc728PenaltyInfraction').value='Abuse of Officials';
-  if(status)status.textContent='Penalty saved.';
- }catch(e){if(status)status.textContent=e.message;}
-}
-
-/* V734: optional penalty cleanup after PP OFF; stored penalties remain visible through intermission. */
-function dc730ShowPpOffPrompt(){
- var active=dc728Penalties.filter(function(p){return p.displayed;});
- if(!active.length)return;
- var overlay=document.getElementById('dc730PenaltyPrompt');if(!overlay)return;
- var list=document.getElementById('dc730PenaltyChoices');
- list.innerHTML=active.map(function(p){return '<label class="dc730-choice"><input type="checkbox" value="'+escapeHtml(p.id)+'"><span><b>'+escapeHtml(p.team==='phantoms'?'YNG':'OPP')+' · '+escapeHtml(p.player||'Player')+'</b><small>'+escapeHtml(p.duration||'')+' · '+escapeHtml(p.infraction||'')+'</small></span></label>';}).join('');
- overlay.hidden=false;document.getElementById('dc730ClearSelected').disabled=true;
- list.onchange=function(){document.getElementById('dc730ClearSelected').disabled=!list.querySelector('input:checked');};
-}
-function dc730DismissPrompt(){var el=document.getElementById('dc730PenaltyPrompt');if(el)el.hidden=true;}
-async function dc730RemoveSelected(){
- var btn=document.getElementById('dc730ClearSelected'),list=document.getElementById('dc730PenaltyChoices');
- var checked=Array.from(list.querySelectorAll('input:checked')).map(function(x){return x.value;});
- if(!checked.length)return;
- btn.disabled=true;btn.textContent='REMOVING…';
- try{for(var id of checked)await dc728Request('visibility',{id:id,displayed:false});await dc728LoadPenalties();dc730DismissPrompt();}
- catch(e){document.getElementById('dc730PromptError').textContent='Could not hide all selected penalties: '+e.message;await dc728LoadPenalties();}
- finally{btn.textContent='REMOVE SELECTED';btn.disabled=false;}
-}
-async function dc730DeletePenalty(id){
- var p=dc728Penalties.find(function(x){return x.id===id;});if(!p)return;
- if(!confirm('Delete '+(p.player||'this penalty')+' from the Admin list? This also hides it from Game Day and it cannot be restored.'))return;
- try{await dc728Request('archive',{id:id});await dc728LoadPenalties();}
- catch(e){var el=document.getElementById('dc728PenaltyFeedback');if(el)el.textContent='Delete failed: '+e.message;}
-}
-function dc728FeedPenaltyTeam(p,snap){
- var id=String(p.team_id||''),code=String(p.team_code||'').toUpperCase();
- var sides=dcLiveSides(snap);if(!sides)return '';
- if(id&&id===String(sides.yng.id)||code&&code===String(sides.yng.code||'').toUpperCase())return 'phantoms';
- if(id&&id===String(sides.opp.id)||code&&code===String(sides.opp.code||'').toUpperCase())return 'opponent';return '';
-}
-async function dc728SyncDetectedPenalties(){
- var snap=dcLiveStatsState.snapshot,key=dc728GameKey();if(!key||!snap){dc731FeedStatus('Waiting for HockeyTech game data.');return;}if(!Array.isArray(snap.penalties)){dc731FeedStatus('HockeyTech penalty list not available in this feed response.');return;}if(dc728SyncBusy)return;
- var ctl=document.getElementById('dc728PenaltyAdmin');if(!ctl||!ctl.closest('#adminGameDayPanel'))return;
- var penalties=snap.penalties;
- /* V738: establish a per-game baseline of historical penalty IDs. On initial load,
-    none of the penalties already on the HockeyTech sheet are treated as new. */
- var baselineKey='dc738_penalty_baseline_'+key;
- var baselineIds={};try{baselineIds=JSON.parse(localStorage.getItem(baselineKey)||'{}')||{};}catch(_){}
- var firstObservation=!baselineIds.initialized;
- if(firstObservation){baselineIds={initialized:true};penalties.forEach(function(p){if(p.id)baselineIds[String(p.id)]=true;});}
- var fresh=penalties.filter(function(p){return p.id&&!baselineIds[String(p.id)];});
- /* A bulk increase is almost always a delayed historical feed refresh, not a
-    series of instantaneous penalties. Import it for review, not display. */
- var autoShow=!firstObservation&&fresh.length===1;
- dc731FeedStatus('HockeyTech: '+penalties.length+' penalty event(s) · '+fresh.length+' new');
- dc728SyncBusy=true;dc731LastImportError='';
- try{for(var i=0;i<penalties.length;i++){
-  var p=penalties[i],team=dc728FeedPenaltyTeam(p,snap);if(!team){dc731LastImportError='Unrecognized team for one penalty';continue;}
-  var source=String(p.id||'');if(!source){dc731LastImportError='Penalty without a stable HockeyTech ID';continue;}
-  var stable=key+':'+source;if(dc728KnownFeed[stable])continue;
-  var name=String(p.player_name||((p.player_number?'#'+p.player_number:'')||'Player not identified'));var duration=String(p.duration||'Not reported');var infraction=String(p.infraction||'Penalty');
-  if(/^\d+(?:\.\d+)?$/.test(infraction)||!p.player_name){
-    dc731LastImportError='HockeyTech penalty missing identifying details; entry was not imported.';
-    console.warn('[Game Day penalties] Incomplete penalty feed entry:',p);
-    continue;
-  }
-  if(/^\d+$/.test(duration))duration=duration+':00';
-  await dc728Request('import',{source_key:source,team:team,player:name,duration:duration,infraction:infraction,period:p.period,game_time:p.time,displayed:autoShow&&fresh.some(function(x){return String(x.id)===source;})});
-  dc728KnownFeed[stable]=true;
- }
- penalties.forEach(function(p){if(p.id)baselineIds[String(p.id)]=true;});
- try{localStorage.setItem(baselineKey,JSON.stringify(baselineIds));}catch(_){}
- }catch(e){dc731LastImportError=e.message;console.warn('[Game Day penalties] Feed import:',e.message);}finally{dc728SyncBusy=false;await dc728LoadPenalties();dc731FeedStatus(dc731LastImportError?'Penalty import issue: '+dc731LastImportError:'HockeyTech: '+penalties.length+' penalty event(s) · '+dc728Penalties.length+' in Admin');}
-}
-setInterval(function(){dc728LoadPenalties();dc728SyncDetectedPenalties();},12000);
-setTimeout(function(){dc728LoadPenalties();dc728SyncDetectedPenalties();},1600);
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();},{once:true});else{dcRenderAdminHtLiveStrip();dcSyncLiveStats(true);dcHydrateGameDayRecordsFromServer();}
 setInterval(function(){dcSyncLiveStats(false);},5000);
@@ -16520,17 +16191,6 @@ window.addEventListener('load',initialize);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
-<div id="dc730PenaltyPrompt" class="dc730-prompt" hidden role="dialog" aria-modal="true" aria-labelledby="dc730PromptTitle">
- <div class="dc730-prompt-panel"><h3 id="dc730PromptTitle">POWER PLAY ENDED</h3><p>Remove any penalties that have ended? You can keep the others displayed.</p>
- <div id="dc730PenaltyChoices" class="dc730-choices"></div><div id="dc730PromptError" role="status"></div>
- <div class="dc730-prompt-actions"><button type="button" onclick="dc730DismissPrompt()">KEEP ALL</button><button type="button" id="dc730ClearSelected" onclick="dc730RemoveSelected()" disabled>REMOVE SELECTED</button></div></div>
-</div>
-<style id="v734-penalties">
-.dc730-prompt[hidden]{display:none!important}.dc730-prompt{position:fixed;inset:0;z-index:11050;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:18px}
-.dc730-prompt-panel{background:#141d2a;color:#fff;border:1px solid #544270;border-radius:16px;padding:20px;width:min(420px,100%);max-height:85vh;overflow-y:auto;box-shadow:0 18px 60px #0008}
-.dc730-prompt-panel h3{font-size:16px;margin:0 0 8px;letter-spacing:.05em}.dc730-prompt-panel p{color:#bec5d3;font-size:13px;line-height:1.5;margin:0 0 12px}
-.dc730-choices{display:grid;gap:8px;max-height:45vh;overflow-y:auto}.dc730-choice{display:flex;align-items:center;gap:11px;background:#202b3b;border:1px solid #3c475c;border-radius:10px;padding:11px;cursor:pointer}.dc730-choice input{width:21px;height:21px;accent-color:#9d6ae4}.dc730-choice span{display:grid;gap:4px}.dc730-choice small{color:#a8b5c8}.dc730-prompt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}.dc730-prompt-actions button{border:1px solid #7852a6;border-radius:9px;background:#293448;color:#fff;min-height:44px;font-size:11px;font-weight:850}.dc730-prompt-actions #dc730ClearSelected{background:#7941b8}.dc730-prompt-actions button:disabled{opacity:.45}.dc730-row-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}.dc730-delete-btn{color:#ffb6b6!important;border-color:#8b414b!important;background:#311d29!important}
-</style>
 </body>
 </html>
 
