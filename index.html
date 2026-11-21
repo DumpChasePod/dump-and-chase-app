@@ -10153,7 +10153,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V742</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V743</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -10190,6 +10190,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     <button type="button" data-dc723-stage="extra" aria-selected="false">OT / SO</button>
     <button type="button" data-dc723-stage="final" aria-selected="false">Final</button>
   </div>
+  <div class="dc743-shootout-shortcut"><button type="button" class="admin-chip" id="dc743OpenShootout" onclick="dc743OpenShootoutTracker()">OPEN SHOOTOUT TRACKER</button><span id="dc743ShootoutFeedHint" aria-live="polite"></span></div>
   <div class="dc723-working-area" id="dc723WorkingArea" aria-live="off"></div>
   <details class="dc723-corrections" id="dc723Corrections"><summary>Score, clock &amp; emergency corrections</summary><div id="dc723CorrectionContent"></div></details>
 </div>
@@ -13619,7 +13620,11 @@ function syncAdminShootoutVisibility(){
   if(!panel)return;
   var period=String(document.getElementById('adminPeriod')?.value||'').toUpperCase();
   var status=String(document.getElementById('adminGameStatus')?.value||'upcoming').toLowerCase();
-  panel.hidden=!(period==='SO'&&(status==='live'||status==='final'));
+  // Live HockeyTech shootout may begin before Admin has saved period SO.
+  // Keep the tracker accessible when the operator explicitly opens the SO period,
+  // including during a feed outage or after an unconfirmed game end.
+  var feedSO=typeof dc743HockeyTechShootout==='function'&&dc743HockeyTechShootout();
+  panel.hidden=!((period==='SO'||feedSO)&&(status==='live'||status==='final'||feedSO));
   if(!panel.hidden)renderAdminShootoutTracker();
 }
 function renderAdminShootoutTracker(){
@@ -14480,6 +14485,15 @@ function dcFeedPeriod(snapshot){
   if(g.shootout||/SHOOTOUT|\bSO\b/.test(label)||n>=5)return 'SO';
   if(/OVERTIME|\bOT\b/.test(label)||n===4)return 'OT';
   if(n===1||/1ST|FIRST/.test(label))return '1st';if(n===2||/2ND|SECOND/.test(label))return '2nd';if(n===3||/3RD|THIRD/.test(label))return '3rd';return '';
+}
+// V743: read-only shootout detection; never writes a game state or final result.
+function dc743HockeyTechShootout(){
+  try{
+    var active=dcGameCenterHockeyTechTarget(new Date());
+    if(!active||!active.g)return false;
+    var snap=dcLiveStatsSnapshot(active.g);
+    return !!(snap&&snap.game&&dcFeedPeriod(snap)==='SO');
+  }catch(_){return false;}
 }
 function dcFeedIsIntermission(snapshot){
   var g=snapshot&&snapshot.game||{},blob=[g.period_label,g.raw_status,g.progress].filter(Boolean).join(' ').toUpperCase();
@@ -16111,6 +16125,12 @@ window.addEventListener('load',initialize);
 #publicGameDayCard .dc-so-v718-tile.pending{color:#758198}
 @media(max-width:380px){#publicGameDayCard .dc-so-v718{padding:10px 7px}#publicGameDayCard .dc-so-v718-team{flex-basis:35px;width:35px;font-size:10px}#publicGameDayCard .dc-so-v718-cells{grid-auto-columns:minmax(39px,1fr);gap:5px}}
 </style>
+<style id="dc-v743-shootout-access">
+#adminGameDayPanel .dc743-shootout-shortcut{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:9px 0 12px}
+#adminGameDayPanel #dc743OpenShootout{border:1px solid #9474d7;background:#2b1e43;color:#fff;font-size:12px;font-weight:850;padding:11px 14px;min-height:43px;border-radius:9px}
+#adminGameDayPanel #dc743ShootoutFeedHint{color:#a7b4ce;font-size:11px}
+#adminGameDayPanel #dc723Panel-extra:not([hidden]) .admin-gameday-step-4{opacity:1!important;visibility:visible!important}
+</style>
 <script id="dc-v723-game-center-flow">
 (function(){
  var selected=null,previousAuto='',manualSelection=false;
@@ -16118,9 +16138,13 @@ window.addEventListener('load',initialize);
  function stageFromData(){
    var status=String(el('adminGameStatus')?.value||'upcoming').toLowerCase();
    var period=String(el('adminPeriod')?.value||'').toUpperCase();
+   // A confirmed Admin final stays final; otherwise the live feed can open OT / SO.
+   var confirmedFinal=status==='final'&&String(el('adminResult')?.value||'').trim()!=='';
+   if(confirmedFinal)return 'final';
+   if(period==='SO'||(typeof dc743HockeyTechShootout==='function'&&dc743HockeyTechShootout()))return 'extra';
    if(status==='final')return 'final';
    if(status==='upcoming')return 'pregame';
-   if(period==='OT'||period==='SO')return 'extra';
+   if(period==='OT')return 'extra';
    return 'live';
  }
  function showStage(stage,manual){
@@ -16137,10 +16161,24 @@ window.addEventListener('load',initialize);
    var badge=el('dc723StageState');if(badge)badge.textContent={pregame:'PREGAME',live:'LIVE',extra:'OT / SHOOTOUT',final:'FINAL'}[stage]||'PREGAME';
  }
  function update(){
+   var feedSO=typeof dc743HockeyTechShootout==='function'&&dc743HockeyTechShootout();
+   var hint=el('dc743ShootoutFeedHint');
+   if(hint)hint.textContent=feedSO?'HockeyTech: SHOOTOUT':'Manual access available';
+   if(typeof syncAdminShootoutVisibility==='function')syncAdminShootoutVisibility();
    var auto=stageFromData();
    if(auto!==previousAuto){previousAuto=auto;manualSelection=false;showStage(auto,false);}
    else if(!manualSelection&&auto!==selected)showStage(auto,false);
  }
+ window.dc743OpenShootoutTracker=function(){
+   var btn=document.querySelector('[data-dc723-stage="extra"]');
+   if(btn)btn.click();
+   if(typeof dc743HockeyTechShootout==='function'&&dc743HockeyTechShootout()){
+     if(typeof syncAdminShootoutVisibility==='function')syncAdminShootoutVisibility();
+   }else if(String(el('adminPeriod')?.value||'').toUpperCase()!=='SO'&&typeof setAdminPeriod==='function'){
+     // Manual activation affects only the local draft until an attempt is published.
+     setAdminPeriod('SO');
+   }else if(typeof syncAdminShootoutVisibility==='function')syncAdminShootoutVisibility();
+ };
  function move(target,selector){var node=document.querySelector('#adminGameDayPanel '+selector);if(node&&target)target.appendChild(node);}
  function init(){
    var area=el('dc723WorkingArea');if(!area||area.dataset.ready)return;
