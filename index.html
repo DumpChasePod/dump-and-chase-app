@@ -8827,6 +8827,19 @@ function resultClass(result){
 function resultLabel(result){
   return ({W:'W',L:'L',OTL:'OTL',SOL:'SOL'})[result]||result;
 }
+// V744: one final-score formatter shared by every result surface.
+// The schedule status is authoritative when a completed-results detail is absent.
+function dc744FinalSuffix(result,schedule){
+  var detail=String(result&&result.resultDetail||'').toUpperCase();
+  var status=String(schedule&&schedule.status||'').toUpperCase();
+  var code=String(result&&result.result||'').toUpperCase();
+  if(/(?:^|[^A-Z])SO(?:$|[^A-Z])/.test(detail)||status==='FINAL-SO'||code==='SOL')return ' (SO)';
+  if(/(?:^|[^A-Z])OT(?:$|[^A-Z])/.test(detail)||status==='FINAL-OT'||code==='OTL')return ' (OT)';
+  return '';
+}
+function dc744FinalScore(a,b,result,schedule){
+  return String(a??'—')+'–'+String(b??'—')+dc744FinalSuffix(result,schedule);
+}
 
 // v518: Recent Results helpers must exist before any early renderRecentResults() call.
 function dcBoxScoreKeyFromDateOpponent(dateValue,opponent){
@@ -8905,7 +8918,7 @@ function renderRecentResults(){
         const tagHtml=eventLabel?'<span class="gc-series-event-pill '+(eventLabel.toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(eventLabel)+'</span>':'';
         const scheduleGame=scheduleMatch?[dcScheduleKeyFromRow(scheduleMatch),scheduleMatch.opponent,scheduleMatch.location||'',scheduleMatch.time_label||'TBD']:null;
         const boxUrl=(g.boxScoreUrl?String(g.boxScoreUrl).trim():'')||(scheduleMatch&&scheduleMatch.box_score_url?String(scheduleMatch.box_score_url).trim():'')||(scheduleGame?autoBoxScoreUrlForGame(scheduleGame):'')||dcKnownBoxScoreUrl(g.date,g.opponent);
-        const inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+'</div></div><div class="gc-series-status">'+tagHtml+'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result)+(g.resultDetail||''))+'</span><span class="schedule-final-score">'+escapeHtml(String(g.phantoms)+'–'+String(g.opponentScore))+'</span></span></div>';
+        const inner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place"><div class="v306-game-opponent">'+escapeHtml(g.opponent||'Opponent')+'</div><div class="gc-series-role-line">'+(role?'<b>'+escapeHtml(role)+'</b>':'')+'</div></div><div class="gc-series-status">'+tagHtml+'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(g.result)+'">'+escapeHtml(resultLabel(g.result))+'</span><span class="schedule-final-score">'+escapeHtml(dc744FinalScore(g.phantoms,g.opponentScore,g,scheduleMatch))+'</span></span></div>';
         return dcBoxScoreCardHtml(inner,boxUrl,g.opponent||'Opponent','hq-recent-result-row');
       }).join('')+'</div>';
   boxes.forEach(function(box){box.innerHTML=html;});
@@ -9545,10 +9558,10 @@ function scheduleHTML(monthIndex){
       var status=String(db?(db.status||'SCHEDULED'):'SCHEDULED').toUpperCase();
       var finalish=['FINAL','FINAL-OT','FINAL-SO'].includes(status);
       var result=typeof seriesResultForGame==='function'?seriesResultForGame(g):null;
-      var score=(db&&db.phantoms_score!=null&&db.opponent_score!=null)?String(db.phantoms_score)+'–'+String(db.opponent_score):(result?String(result.phantoms)+'–'+String(result.opponentScore):'');
+      var score=(db&&db.phantoms_score!=null&&db.opponent_score!=null)?dc744FinalScore(db.phantoms_score,db.opponent_score,result,db):(result?dc744FinalScore(result.phantoms,result.opponentScore,result,db):'');
       var statusHtml='';
       if(finalish){
-        statusHtml='<span class="schedule-final-line">'+(result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span>':'<span class="gc-series-status-pill">'+escapeHtml(status.replace('FINAL-','FINAL '))+'</span>')+(score?'<span class="schedule-final-score">'+escapeHtml(score)+'</span>':'')+'</span>';
+        statusHtml='<span class="schedule-final-line">'+(result?'<span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result))+'</span>':'<span class="gc-series-status-pill">'+escapeHtml(status.replace('FINAL-','FINAL '))+'</span>')+(score?'<span class="schedule-final-score">'+escapeHtml(score)+'</span>':'')+'</span>';
       }else if(status==='LIVE'){
         statusHtml='<span class="gc-series-status-pill live">LIVE</span>'+(score?'<span>'+escapeHtml(score)+'</span>':'');
       }else if(status==='POSTPONED'||status==='CANCELLED'){
@@ -9644,7 +9657,7 @@ function renderSelectedMonth(){
       var tagHtml=tag?'<span class="gc-series-event-pill '+(String(tag).toUpperCase()==='PRESEASON'?'preseason':'')+'">'+escapeHtml(tag)+'</span>':'';
       var place='<div class="gc-series-role-line"><b>'+(isHome?'HOME':'AWAY')+'</b>'+tagHtml+'</div>'+escapeHtml(venue.arena||venue.city||row[2]||'');
       var status=result
-        ?'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result)+(result.resultDetail||''))+'</span><span class="schedule-final-score">'+escapeHtml(String(result.phantoms)+'–'+String(result.opponentScore))+'</span></span>'
+        ?'<span class="schedule-final-line"><span class="result-outcome-pill '+resultClass(result.result)+'">'+escapeHtml(resultLabel(result.result))+'</span><span class="schedule-final-score">'+escapeHtml(dc744FinalScore(result.phantoms,result.opponentScore,result,typeof scheduleRowForGame==='function'?scheduleRowForGame(row):null))+'</span></span>'
         :(dt&&dt.getTime()>now?'<span class="gc-series-upcoming">'+escapeHtml(row[3]||'UPCOMING')+'</span>':'<span class="gc-series-upcoming">SCHEDULED</span>');
       var seriesInner='<div class="gc-series-date">'+dateHtml+'</div><div class="gc-series-place">'+place+'</div><div class="gc-series-status">'+status+'</div>';
       if(result){
@@ -9786,7 +9799,7 @@ function renderSelectedMonth(){
     if(result){
       var code=String(result.result||'').toUpperCase();
       var score=(result.phantoms!=null&&result.opponentScore!=null)?String(result.phantoms)+'–'+String(result.opponentScore):'';
-      return {label:(typeof resultLabel==='function'?resultLabel(code):code)+(result.resultDetail||''),score:score,win:code==='W'};
+      return {label:(typeof resultLabel==='function'?resultLabel(code):code),score:dc744FinalScore(result.phantoms,result.opponentScore,result,row),win:code==='W'};
     }
     var status=String(row.status||'').toUpperCase();
     if(status.indexOf('FINAL')!==0)return null;
@@ -9794,7 +9807,7 @@ function renderSelectedMonth(){
     if(ph==null||op==null)return null;
     var code=String(row.result||'').toUpperCase();
     if(!code)code=Number(ph)>Number(op)?'W':'L';
-    return {label:(typeof resultLabel==='function'?resultLabel(code):code),score:String(ph)+'–'+String(op),win:code==='W'};
+    return {label:(typeof resultLabel==='function'?resultLabel(code):code),score:dc744FinalScore(ph,op,null,row),win:code==='W'};
   }
   function dcStandingSeriesGameHtml(row,teamLabel){
     var dl=dcStandingSeriesDateLabel(row&&row.game_date);
@@ -10153,7 +10166,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V743</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V744</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
@@ -11479,7 +11492,7 @@ function renderAdminScheduleList(){
     var cardClass='admin-schedule-game';
     var roleHtml=escapeHtml(r.home_away||'');
     if(adminScheduleIsFinal(r)){
-      return '<div class="'+cardClass+' admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+roleHtml+' · '+escapeHtml(r.time_label||'TBD')+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">FINAL</span></div></div>';
+      return '<div class="'+cardClass+' admin-schedule-game-final" data-schedule-id="'+r.id+'"><div class="admin-schedule-final-main"><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+roleHtml+' · '+escapeHtml(r.time_label||'TBD')+'</span></div><div class="admin-schedule-final-side"><span class="admin-schedule-final-pill">'+escapeHtml(String(r.status||"FINAL").replace("FINAL-","FINAL "))+'</span></div></div>';
     }
     return '<button type="button" class="'+cardClass+'" data-schedule-id="'+r.id+'" onclick="editScheduleGame('+r.id+')"><div><b>'+escapeHtml(scheduleDateLabel(r)+' · '+r.opponent)+'</b><span>'+roleHtml+' · '+escapeHtml((r.time_label||'TBD')+' · '+(r.status||'SCHEDULED'))+'</span></div><span class="admin-schedule-edit-pill">EDIT</span></button>';
   }).join('');
@@ -12761,7 +12774,7 @@ function renderAdminRecentResults(){
  if(!results.length){box.innerHTML='<div class="admin-muted">No saved results.</div>';return;}
  box.innerHTML=results.slice(0,10).map(function(r,i){
   var detail=r.resultDetail||'';
-  return '<div class="admin-result-row"><div><div class="admin-result-title">'+escapeHtml(r.opponent||'Opponent')+' — '+r.result+escapeHtml(detail)+' '+(r.phantoms??'—')+'–'+(r.opponentScore??'—')+'</div><div class="admin-result-meta">'+escapeHtml(r.date||'')+'</div></div>'+
+  return '<div class="admin-result-row"><div><div class="admin-result-title">'+escapeHtml(r.opponent||'Opponent')+' — '+r.result+' '+escapeHtml(dc744FinalScore(r.phantoms,r.opponentScore,r,dcScheduleRowForResult(r)))+'</div><div class="admin-result-meta">'+escapeHtml(r.date||'')+'</div></div>'+
    '<button class="admin-mini-btn" type="button" onclick="editAdminResult('+i+')">EDIT</button>'+
    '<button class="admin-mini-btn delete" type="button" onclick="deleteAdminResult('+i+')">DELETE</button></div>';
  }).join('');
@@ -13063,7 +13076,7 @@ function dcRenderPublicGameDayBase(){
 
  if(keepFinal&&finalResult){
   var finalOpp=String(finalResult.opponent||'Opponent').toUpperCase();
-  var finalScore=(finalResult.phantoms??'—')+' – '+(finalResult.opponentScore??'—');
+  var finalScore=dc744FinalScore(finalResult.phantoms,finalResult.opponentScore,finalResult,dcScheduleRowForResult(finalResult));
   var finalVenue=(finalResult.arena?finalResult.arena+' — ':'')+(finalResult.city||'');
   var featuredFinalRole=featuredHomeAwayRole(g);
   var specialFinalKey=String(g&&g[0]||'').trim().toUpperCase();
@@ -14513,6 +14526,13 @@ function dcFeedClock(snapshot){
   return m?String(Number(m[1]))+':'+m[2]:raw;
 }
 function dcFinalLabel(st,period,snapshot){
+  // Prefer a verified final status on the scheduled game to period-only inference.
+  try{
+    var active=gameDayAutomationWindow(new Date());
+    var row=active&&active.g&&typeof scheduleRowForGame==='function'?scheduleRowForGame(active.g):null;
+    var saved=String(row&&row.status||'').toUpperCase();
+    if(saved==='FINAL-SO'||saved==='FINAL-OT')return saved;
+  }catch(_){}
   var raw=String(st&&st.adminResult||'').toUpperCase();
   if(raw.indexOf('_SO')>0||String(period).toUpperCase()==='SO')return 'FINAL-SO';
   if(raw.indexOf('_OT')>0||String(period).toUpperCase()==='OT'||Number(snapshot&&snapshot.game&&snapshot.game.period||0)===4)return 'FINAL-OT';
