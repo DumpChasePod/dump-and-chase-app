@@ -7497,7 +7497,7 @@ body.game-live #publicGameDayCard .gameday-pp-slot{height:25px;margin:0 0 4px;di
       <label>What's your favorite moment from the Dump &amp; Chase Podcast? <span>*</span><textarea name="favorite_podcast_moment" rows="3" maxlength="4000" required></textarea></label>
       <label>Upload a photo of yourself (optional, JPG, PNG or WebP, up to 5 MB; on iPhone choose a compatible format if HEIC is selected)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
       <label class="pc-consent"><input type="checkbox" name="adult_confirmed" required><span>I confirm that I am at least 18 years old.</span></label>
-      <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required><span>I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app as part of Phan of the Week.</span></label>
+      <label class="pc-consent"><input type="checkbox" name="consent_confirmed" required><span>I understand that, if selected, my name, submitted answers, seating section (if provided), and approved photo may be published in the Dump &amp; Chase Podcast app and on social media channels as part of Phan of the Week.</span></label>
       <div class="pc-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div id="pcSubmissionFeedback" role="status" aria-live="polite"></div>
       <button id="pcSubmitNomination" type="submit" class="pc-primary">SEND MY STORY</button>
@@ -8827,7 +8827,7 @@ function resultClass(result){
 function resultLabel(result){
   return ({W:'W',L:'L',OTL:'OTL',SOL:'SOL'})[result]||result;
 }
-// V744: one final-score formatter shared by every result surface.
+// V745: one final-score formatter shared by every result surface.
 // The schedule status is authoritative when a completed-results detail is absent.
 function dc744FinalSuffix(result,schedule){
   var detail=String(result&&result.resultDetail||'').toUpperCase();
@@ -10166,7 +10166,7 @@ syncCompletedResults(true).then(function(){renderRecentResults();}).catch(functi
     </div>
     <div id="adminDashboard" style="display:none">
       <div class="admin-dashboard-head">
-        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V744</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
+        <div><div class="admin-title-row"><h2>Admin</h2><span class="admin-build-version">V746</span></div><div class="admin-last-saved" id="adminLastSaved">No saves this session</div><div class="admin-connection" id="adminConnection" aria-live="polite"><span class="admin-connection-dot" aria-hidden="true"></span><span id="adminConnectionText">Checking connection…</span></div></div>
         <div class="admin-dashboard-actions"><button class="admin-lock-btn" type="button" onclick="adminLogout()">LOCK</button><button class="admin-close" type="button" aria-label="Close admin" title="Close" onclick="closeAdmin()">×</button></div>
       </div>
       <div class="dc-admin-category-tabs" role="tablist" aria-label="Admin categories">
